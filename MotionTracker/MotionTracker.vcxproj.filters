@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="MotionTracker">
+      <UniqueIdentifier>{419118ac-2b33-4934-ac72-11c05a8ef306}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MotionTracker\DebugHandObserver.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionTracker\Gestures.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionTracker\HandObserver.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionTracker\HandObserverSplitter.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionTracker\HandTracker.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CallbackWrappers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenNIHandTracker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenNIUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DebugHandObserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HandTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenNIHandTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenNIUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

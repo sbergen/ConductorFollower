@@ -1,0 +1,39 @@
+#include "DimensionFeatureExtractor.h"
+
+#include <iostream>
+
+#include <boost/geometry.hpp>
+#include <boost/range/numeric.hpp>
+
+namespace bg = boost::geometry;
+
+namespace cf {
+namespace FeatureExtractor {
+
+DimensionFeatureExtractor::DimensionFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer)
+	: positionBuffer_(eventBuffer)
+{
+}
+
+void
+DimensionFeatureExtractor::CalculateStuff()
+{
+	timestamp_t since = positionBuffer_.LastTimestamp() - 1.0;
+	auto range = positionBuffer_.DataSince<IteratorLinestring>(since);
+
+	Box3D envelope;
+	bg::envelope(range, envelope);
+	
+	Point3D distance = geometry::distance_vector(envelope.min_corner(), envelope.max_corner());
+	//std::cout << "Spatial magnitude of movement: " << boost::geometry::dsv(distance) << std::endl;
+
+	Point3D centroid;
+	bg::centroid(range, centroid);
+	//std::cout << "Centroid of movement: " << boost::geometry::dsv(centroid) << std::endl;
+
+	coord_t length = bg::length(range);
+	//std::cout << "Length of movement: " << length << std::endl;
+}
+
+} // namespace cf
+} // namespace FeatureExtractor
