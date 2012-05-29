@@ -6,10 +6,6 @@ namespace bg = boost::geometry;
 namespace cf {
 namespace FeatureExtractor {
 
-template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
-}
-
 SpeedFeatureExtractor::SpeedFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer)
 	: positionBuffer_(eventBuffer)
 	, speedBuffer_(100)
