@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+# Visual C++ Express 2005
+Project("{38688641-41AC-5E16-9F71-07EC23062764}") = "CFPlugin", "CFPlugin.vcproj", "{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Debug|Win32.Build.0 = Debug|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Release|Win32.ActiveCfg = Release|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
