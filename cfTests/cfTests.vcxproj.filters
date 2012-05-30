@@ -9,25 +9,14 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="cf">
-      <UniqueIdentifier>{5007e23f-d6a0-454a-8a97-d66cf661fcea}</UniqueIdentifier>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cf\cf.h">
-      <Filter>cf</Filter>
-    </ClInclude>
-    <ClInclude Include="cf\time.h">
-      <Filter>cf</Filter>
-    </ClInclude>
-    <ClInclude Include="cf\geometry.h">
-      <Filter>cf</Filter>
-    </ClInclude>
-    <ClInclude Include="cf\math.h">
-      <Filter>cf</Filter>
-    </ClInclude>
-    <ClInclude Include="cf\EventBuffer.h">
-      <Filter>cf</Filter>
-    </ClInclude>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

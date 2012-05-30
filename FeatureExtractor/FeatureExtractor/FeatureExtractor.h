@@ -1,9 +1,9 @@
 #pragma once
 
 #include "cf/cf.h"
+#include "cf/EventBuffer.h"
 #include "MotionTracker/HandObserver.h"
 
-#include "EventBuffer.h"
 #include "DimensionFeatureExtractor.h"
 #include "SpeedFeatureExtractor.h"
 

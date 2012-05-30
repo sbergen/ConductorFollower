@@ -119,7 +119,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DimensionFeatureExtractorTests.h" />
-    <ClInclude Include="EventBufferTests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
