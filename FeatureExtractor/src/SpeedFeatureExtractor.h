@@ -12,7 +12,7 @@ class SpeedFeatureExtractor
 public:
 	SpeedFeatureExtractor(PositionBuffer const & eventBuffer);
 
-	void CalculateStuff();
+	void CalculateStuff(InterThreadEventBuffer & events);
 
 private:
 	void UpdateSpeedBuffer();

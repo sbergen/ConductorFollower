@@ -3,30 +3,46 @@
 #include <boost/format.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include "MotionTracker/HandTracker.h"
-#include "MotionTracker/DebugHandObserver.h"
-#include "FeatureExtractor/FeatureExtractor.h"
+#include <boost/thread.hpp>
+
+#include "FeatureExtractor/EventProvider.h"
+#include "FeatureExtractor/Event.h"
 
 namespace cf {
 
-using namespace MotionTracker;
+using namespace FeatureExtractor;
 
 int main(int argc, char * argv[])
 {
-	boost::scoped_ptr<HandTracker> tracker(HandTracker::Create());
+	boost::scoped_ptr<EventProvider> eventProvider(EventProvider::Create());
 
-	if (!tracker->Init())
+	if (!eventProvider->StartProduction())
 	{
-		std::cout << "Failed to init!" << std::endl;
+		std::cout << "Start failed!" << std::endl;
 		return -1;
 	}
 
-	//Hand hand;
-	//DebugHandObserver hand("foo");
-	FeatureExtractor::FeatureExtractor hand;
-	tracker->StartTrackingHand(GestureWave, hand);
-
-	while(tracker->WaitForData()) {}
+	while(true)
+	{
+		Event e;
+		while (eventProvider->DequeueEvent(e))
+		{
+			switch(e.type())
+			{
+			case Event::TrackingStarted:
+				std::cout << "Tracking started" << std::endl;
+				break;
+			case Event::TrackingEnded:
+				std::cout << "Tracking ended" << std::endl;
+				break;
+			case Event::Beat:
+				std::cout << "-";
+				break;
+			}
+		}
+		
+		boost::thread::sleep(boost::get_system_time() + boost::posix_time::milliseconds(10));
+	}
 
 	return 0;
 }

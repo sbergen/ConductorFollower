@@ -15,7 +15,7 @@ SpeedFeatureExtractor::SpeedFeatureExtractor(PositionBuffer const & eventBuffer)
 }
 
 void
-SpeedFeatureExtractor::CalculateStuff()
+SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 {
 	UpdateSpeedBuffer();
 
@@ -53,7 +53,8 @@ SpeedFeatureExtractor::CalculateStuff()
 
 	if (sgn(prevAvgSeed_.get<1>()) == -1 && sgn(centroid.get<1>()) == 1 && absSpeed > 100)
 	{
-		std::cout << "-";
+		timestamp_t timestamp = speedBuffer_.LastTimestamp() - milliseconds_t(50);
+		events.enqueue(Event(timestamp, Event::Beat));
 	}
 
 	prevAvgSeed_ = centroid;

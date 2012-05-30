@@ -94,7 +94,6 @@ OpenNIHandTracker::GestureRecognizedCallback(
 {
 	OpenNIHandRequest & request = handRequestQueue_.front();
 
-	std::cout << "Gesture recognized!" << std::endl;
 	XnStatus s = gestureGenerator_.RemoveGesture(request.gestureName);
 	CheckXnStatus(s, "Remove gesture tracking");
 

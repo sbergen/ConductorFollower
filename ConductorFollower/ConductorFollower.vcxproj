@@ -22,6 +22,9 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FeatureExtractor\FeatureExtractor.vcxproj">
       <Project>{60400649-f0b8-4318-9e3f-60aa79d9a654}</Project>
     </ProjectReference>

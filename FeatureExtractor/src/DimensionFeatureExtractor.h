@@ -12,7 +12,7 @@ class DimensionFeatureExtractor
 public:
 	DimensionFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer);
 
-	void CalculateStuff();
+	void CalculateStuff(InterThreadEventBuffer & events);
 
 private:
 	EventBuffer<Point3D, timestamp_t> const & positionBuffer_;
