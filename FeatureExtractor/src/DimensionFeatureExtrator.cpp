@@ -10,7 +10,7 @@ namespace bg = boost::geometry;
 namespace cf {
 namespace FeatureExtractor {
 
-DimensionFeatureExtractor::DimensionFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer)
+DimensionFeatureExtractor::DimensionFeatureExtractor(PositionBuffer const & eventBuffer)
 	: positionBuffer_(eventBuffer)
 {
 }

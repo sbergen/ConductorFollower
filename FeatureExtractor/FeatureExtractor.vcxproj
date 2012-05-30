@@ -81,7 +81,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../cf";"../MotionTracker";"./FeatureExtractor"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../cf";"../MotionTracker";"."</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -114,13 +114,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="FeatureExtractor\DimensionFeatureExtractor.h" />
-    <ClInclude Include="FeatureExtractor\EventBuffer.h" />
-    <ClInclude Include="FeatureExtractor\FeatureExtractor.h" />
-    <ClInclude Include="FeatureExtractor\SpeedFeatureExtractor.h" />
+    <ClInclude Include="FeatureExtractor\Event.h" />
+    <ClInclude Include="FeatureExtractor\EventProvider.h" />
+    <ClInclude Include="src\DimensionFeatureExtractor.h" />
+    <ClInclude Include="src\FeatureExtractor.h" />
+    <ClInclude Include="src\SpeedFeatureExtractor.h" />
+    <ClInclude Include="src\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DimensionFeatureExtrator.cpp" />
+    <ClCompile Include="src\EventProvider.cpp" />
     <ClCompile Include="src\FeatureExtractor.cpp" />
     <ClCompile Include="src\SpeedFeatureExtractor.cpp" />
   </ItemGroup>

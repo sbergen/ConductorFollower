@@ -1,7 +1,8 @@
 #pragma once
 
 #include "cf/cf.h"
-#include "cf/EventBuffer.h"
+
+#include "types.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -9,7 +10,7 @@ namespace FeatureExtractor {
 class SpeedFeatureExtractor
 {
 public:
-	SpeedFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer);
+	SpeedFeatureExtractor(PositionBuffer const & eventBuffer);
 
 	void CalculateStuff();
 
@@ -17,8 +18,8 @@ private:
 	void UpdateSpeedBuffer();
 
 private:
-	EventBuffer<Point3D, timestamp_t> const & positionBuffer_;
-	EventBuffer<Point3D, timestamp_t> speedBuffer_;
+	PositionBuffer const & positionBuffer_;
+	SpeedBuffer speedBuffer_;
 
 	Point3D prevAvgSeed_;
 };

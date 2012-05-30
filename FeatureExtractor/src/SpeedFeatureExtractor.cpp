@@ -6,7 +6,7 @@ namespace bg = boost::geometry;
 namespace cf {
 namespace FeatureExtractor {
 
-SpeedFeatureExtractor::SpeedFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer)
+SpeedFeatureExtractor::SpeedFeatureExtractor(PositionBuffer const & eventBuffer)
 	: positionBuffer_(eventBuffer)
 	, speedBuffer_(100)
 	, prevAvgSeed_(bg::make_zero<Point3D>())

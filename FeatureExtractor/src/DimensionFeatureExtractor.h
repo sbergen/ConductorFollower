@@ -1,7 +1,8 @@
 #pragma once
 
 #include "cf/cf.h"
-#include "cf/EventBuffer.h"
+
+#include "types.h"
 
 namespace cf {
 namespace FeatureExtractor {

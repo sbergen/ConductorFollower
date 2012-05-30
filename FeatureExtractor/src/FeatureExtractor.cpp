@@ -10,6 +10,21 @@ FeatureExtractor::FeatureExtractor()
 {
 }
 
+bool FeatureExtractor::StartProduction()
+{
+	return false;
+}
+
+bool FeatureExtractor::StopProduction()
+{
+	return false;
+}
+
+bool FeatureExtractor::DequeueEvent(Event & result)
+{
+	return false;
+}
+
 void
 FeatureExtractor::HandFound()
 {
