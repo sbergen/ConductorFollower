@@ -12,20 +12,20 @@
 #define __PLUGINCHARACTERISTICS_TXQ0D9__
 
 #define JucePlugin_Build_VST    1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-#define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+#define JucePlugin_Build_AU     0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
 #define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
 
-#define JucePlugin_Name                 "Juce Project"
-#define JucePlugin_Desc                 "Juce Project"
-#define JucePlugin_Manufacturer         "yourcompany"
-#define JucePlugin_ManufacturerCode     'Manu'
-#define JucePlugin_PluginCode           'Plug'
-#define JucePlugin_MaxNumInputChannels  2
-#define JucePlugin_MaxNumOutputChannels 2
-#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
+#define JucePlugin_Name                 "Conductor Follower"
+#define JucePlugin_Desc                 "Conductor Follower"
+#define JucePlugin_Manufacturer         "Aalto University Department of Media Technology"
+#define JucePlugin_ManufacturerCode     'Aalt'
+#define JucePlugin_PluginCode           'CFol'
+#define JucePlugin_MaxNumInputChannels  1
+#define JucePlugin_MaxNumOutputChannels 1
+#define JucePlugin_PreferredChannelConfigurations   {1, 1}
 #define JucePlugin_IsSynth              0
 #define JucePlugin_WantsMidiInput       0
-#define JucePlugin_ProducesMidiOutput   0
+#define JucePlugin_ProducesMidiOutput   1
 #define JucePlugin_SilenceInProducesSilenceOut  0
 #define JucePlugin_TailLengthSeconds    0
 #define JucePlugin_EditorRequiresKeyboardFocus  0

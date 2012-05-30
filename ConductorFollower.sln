@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FeatureExtractor", "Feature
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FeatureExtractorTests", "FeatureExtractorTests\FeatureExtractorTests.vcxproj", "{BF980479-4C56-4EA2-960F-2E674A2AD766}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CFPlugin", "CFPlugin\Builds\VisualStudio2010\CFPlugin.vcxproj", "{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -63,6 +65,12 @@ Global
 		{BF980479-4C56-4EA2-960F-2E674A2AD766}.Release|Win32.ActiveCfg = Release|Win32
 		{BF980479-4C56-4EA2-960F-2E674A2AD766}.Release|Win32.Build.0 = Release|Win32
 		{BF980479-4C56-4EA2-960F-2E674A2AD766}.Release|x64.ActiveCfg = Release|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Debug|Win32.Build.0 = Debug|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Debug|x64.ActiveCfg = Debug|x64
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Release|Win32.ActiveCfg = Release|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Release|Win32.Build.0 = Release|Win32
+		{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

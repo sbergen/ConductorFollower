@@ -63,12 +63,12 @@ const String CfpluginAudioProcessor::getOutputChannelName (int channelIndex) con
 
 bool CfpluginAudioProcessor::isInputChannelStereoPair (int index) const
 {
-    return true;
+    return false;
 }
 
 bool CfpluginAudioProcessor::isOutputChannelStereoPair (int index) const
 {
-    return true;
+    return false;
 }
 
 bool CfpluginAudioProcessor::acceptsMidi() const

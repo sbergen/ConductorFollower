@@ -1,6 +1,6 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CFPlugin", "CFPlugin.vcxproj", "{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{38688641-41AC-5E16-9F71-07EC23062764}") = "CFPlugin", "CFPlugin.vcproj", "{4F8F9146-3DFE-5128-CE78-8F9FE9B9B4B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

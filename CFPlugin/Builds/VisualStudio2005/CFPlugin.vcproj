@@ -135,16 +135,17 @@
         <File RelativePath="..\..\Source\PluginEditor.h"/>
       </Filter>
     </Filter>
+    <Filter Name="Juce VST Wrapper">
+      <File RelativePath="..\..\\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp"/>
+    </Filter>
     <Filter Name="Juce Library Code">
+      <File RelativePath="..\..\JuceLibraryCode\AppConfig.h"/>
       <File RelativePath="..\..\JuceLibraryCode\JuceHeader.h"/>
       <File RelativePath="..\..\JuceLibraryCode\JuceLibraryCode1.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\JuceLibraryCode2.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\JuceLibraryCode3.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\JuceLibraryCode4.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\JucePluginCharacteristics.h"/>
-    </Filter>
-    <Filter Name="Juce VST Wrapper">
-      <File RelativePath="..\..\\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp"/>
     </Filter>
   </Files>
   <Globals/>

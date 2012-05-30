@@ -8,8 +8,8 @@
     <Filter Include="CFPlugin\Source">
       <UniqueIdentifier>{5A3FCBC0-B3BC-6BB2-11F2-E765A70D9A0C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Juce Library Code">
-      <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
+    <Filter Include="Juce VST Wrapper">
+      <UniqueIdentifier>{E7C93B65-34E0-8EC9-DCEB-74C257AD64C4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Juce Library Code">
       <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
@@ -21,6 +21,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
       <Filter>CFPlugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\..\..\SDKs\juce\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp">
+      <Filter>Juce VST Wrapper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp">
       <Filter>Juce Library Code</Filter>
@@ -34,9 +37,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp">
-      <Filter>Juce Library Code</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
@@ -44,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
       <Filter>CFPlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
+      <Filter>Juce Library Code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>Juce Library Code</Filter>

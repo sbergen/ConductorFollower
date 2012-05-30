@@ -96,8 +96,17 @@ SOURCE="..\..\Source\PluginEditor.h"
 # End Source File
 # End Group
 # End Group
+# Begin Group "Juce VST Wrapper"
+# PROP Default_Filter "cpp;c;cc;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+SOURCE="..\..\\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp"
+# End Source File
+# End Group
 # Begin Group "Juce Library Code"
 # PROP Default_Filter "cpp;c;cc;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+SOURCE="..\..\JuceLibraryCode\AppConfig.h"
+# End Source File
 # Begin Source File
 SOURCE="..\..\JuceLibraryCode\JuceHeader.h"
 # End Source File
@@ -115,12 +124,6 @@ SOURCE="..\..\JuceLibraryCode\JuceLibraryCode4.cpp"
 # End Source File
 # Begin Source File
 SOURCE="..\..\JuceLibraryCode\JucePluginCharacteristics.h"
-# End Source File
-# End Group
-# Begin Group "Juce VST Wrapper"
-# PROP Default_Filter "cpp;c;cc;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-SOURCE="..\..\\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp"
 # End Source File
 # End Group
 # End Target
