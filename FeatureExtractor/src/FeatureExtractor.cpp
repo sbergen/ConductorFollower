@@ -25,7 +25,7 @@ FeatureExtractor::HandLost()
 void
 FeatureExtractor::NewHandPosition(float time, Point3D const & pos)
 {
-	positionBuffer_.RegisterEvent(time, pos);
+	positionBuffer_.RegisterEvent(boost::chrono::steady_clock::now(), pos);
 	dimExtractor_.CalculateStuff();
 	speedExtractor_.CalculateStuff();
 }

@@ -18,7 +18,7 @@ DimensionFeatureExtractor::DimensionFeatureExtractor(EventBuffer<Point3D, timest
 void
 DimensionFeatureExtractor::CalculateStuff()
 {
-	timestamp_t since = positionBuffer_.LastTimestamp() - 1.0;
+	timestamp_t since = positionBuffer_.LastTimestamp() - milliseconds_t(100);
 	auto range = positionBuffer_.DataSince<IteratorLinestring>(since);
 
 	Box3D envelope;

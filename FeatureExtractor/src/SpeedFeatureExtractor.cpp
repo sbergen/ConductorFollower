@@ -19,7 +19,7 @@ SpeedFeatureExtractor::CalculateStuff()
 {
 	UpdateSpeedBuffer();
 
-	timestamp_t since = speedBuffer_.LastTimestamp() - 0.1;
+	timestamp_t since = speedBuffer_.LastTimestamp() - milliseconds_t(100);
 	auto data = speedBuffer_.DataSince<IteratorLinestring>(since);
 	
 	// First time around, for one position, we can't calculate the speed...
@@ -74,14 +74,14 @@ SpeedFeatureExtractor::UpdateSpeedBuffer()
 		pos != posData.end() && time != timeData.end();
 		++pos, ++time)
 	{
-		timestamp_t timeDiff = *time - prevTime;
-		if (timeDiff <= 0) {
+		duration_t timeDiff = *time - prevTime;
+		if (timeDiff <= duration_t::zero()) {
 			std::cerr << "Invalid time difference in position data!" << std::endl;
 			continue;
 		}
 
 		Point3D posDiff = geometry::distance_vector(prevPos, *pos);
-		bg::divide_value(posDiff, timeDiff);
+		bg::divide_value(posDiff, seconds_t(timeDiff).count());
 		speedBuffer_.RegisterEvent(*time, posDiff);
 	}
 }
