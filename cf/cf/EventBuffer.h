@@ -11,13 +11,14 @@
 namespace cf {
 namespace FeatureExtractor {
 
-template<typename TData, typename TTimestamp>
+template<typename TData, typename TTimestamp,
+	template<typename, typename> class TContainer = boost::circular_buffer, template<typename> class TAlloc = std::allocator>
 class EventBuffer
 {
 public:
 
-	typedef boost::circular_buffer<TData> DataBuffer;
-	typedef boost::circular_buffer<TTimestamp> TimestampBuffer;
+	typedef TContainer<TData, typename TAlloc<TData> > DataBuffer;
+	typedef TContainer<TTimestamp, typename TAlloc<TTimestamp> > TimestampBuffer;
 
 	typedef boost::iterator_range<typename DataBuffer::const_iterator> DataRange;
 	typedef boost::iterator_range<typename TimestampBuffer::const_iterator> TimestampRange;
