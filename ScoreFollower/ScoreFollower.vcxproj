@@ -80,6 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../cf";"."</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -112,6 +113,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ScoreFollower\Follower.h" />
+    <ClInclude Include="ScoreFollower\FollowerPrivate.h" />
+    <ClInclude Include="ScoreFollower\ScoreReader.h" />
+    <ClInclude Include="ScoreFollower\TrackReader.h" />
+    <ClInclude Include="ScoreFollower\types.h" />
+    <ClInclude Include="src\TimeWarper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\FollowerPrivate.cpp" />
+    <ClCompile Include="src\TimeWarper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

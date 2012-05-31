@@ -3,7 +3,6 @@
 #include <boost/range/numeric.hpp>
 
 using namespace cf;
-using namespace cf::FeatureExtractor;
 
 BOOST_AUTO_TEST_SUITE(EventBufferTests)
 

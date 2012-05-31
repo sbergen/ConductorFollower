@@ -9,7 +9,6 @@
 #include <boost/range/iterator_range.hpp>
 
 namespace cf {
-namespace FeatureExtractor {
 
 template<typename TData, typename TTimestamp,
 	template<typename, typename> class TContainer = boost::circular_buffer, template<typename> class TAlloc = std::allocator>
@@ -34,7 +33,7 @@ public:
 
 	// Adding, reading data
 
-	void RegisterEvent(TTimestamp const & time, TData data)
+	void RegisterEvent(TTimestamp const & time, TData const & data)
 	{
 		timestamps_.push_back(time);
 		data_.push_back(data);
@@ -172,5 +171,4 @@ private: // Data
 
 };
 
-} // namespace FeatureExtractor
 } // namespace cf

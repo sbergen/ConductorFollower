@@ -17,4 +17,32 @@
       <UniqueIdentifier>{4e7c18c6-7ec4-484b-bba0-246552601bb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScoreFollower\ScoreReader.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\TrackReader.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\Follower.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\types.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\FollowerPrivate.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TimeWarper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\FollowerPrivate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TimeWarper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
