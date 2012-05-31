@@ -83,7 +83,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>"..\MotionTracker";"..\MotionTracker\src";$(BOOST_INCLUDE);$(OPEN_NI_INCLUDE);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>"..\MotionTracker";"..\MotionTracker\src";$(BOOST_INCLUDE);$(OPEN_NI_INCLUDE);"../boost_lockfree"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

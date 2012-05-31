@@ -20,6 +20,7 @@ class FeatureExtractor : public EventProvider, public MotionTracker::HandObserve
 {
 public:
 	FeatureExtractor();
+	~FeatureExtractor();
 
 public: // EventProvider implementation
 	bool StartProduction();
@@ -39,6 +40,7 @@ private: // Actual feature extraction
 private: // tracker thread state and event buffer
 	bool Init();
 	bool EventLoop();
+	void Cleanup();
 
 	boost::scoped_ptr<LockfreeThread> trackerThread_;
 	boost::scoped_ptr<MotionTracker::HandTracker> tracker_;

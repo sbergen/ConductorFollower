@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
 				break;
 			case Event::TrackingEnded:
 				std::cout << "Tracking ended" << std::endl;
-				break;
+				return 0;
 			case Event::Beat:
 				std::cout << "-";
 				break;

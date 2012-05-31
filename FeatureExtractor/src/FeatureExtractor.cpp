@@ -12,7 +12,14 @@ FeatureExtractor::FeatureExtractor()
 {
 	trackerThread_.reset(new LockfreeThread(
 		boost::bind(&FeatureExtractor::Init, this),
-		boost::bind(&FeatureExtractor::EventLoop, this)));
+		boost::bind(&FeatureExtractor::EventLoop, this),
+		boost::bind(&FeatureExtractor::Cleanup, this)));
+}
+
+FeatureExtractor::~FeatureExtractor()
+{
+	// Stop the thread before anything else gets destructed
+	trackerThread_.reset();
 }
 
 bool FeatureExtractor::StartProduction()
@@ -68,6 +75,12 @@ bool
 FeatureExtractor::EventLoop()
 {
 	return tracker_->WaitForData();
+}
+
+void
+FeatureExtractor::Cleanup()
+{
+	tracker_.reset();
 }
 
 } // namespace cf

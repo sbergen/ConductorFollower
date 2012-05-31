@@ -18,6 +18,9 @@ OpenNIHandTracker::OpenNIHandTracker()
 
 OpenNIHandTracker::~OpenNIHandTracker()
 {
+	gestureGenerator_.Release();
+	handsGenerator_.Release();
+	context_.Release();
 }
 
 bool

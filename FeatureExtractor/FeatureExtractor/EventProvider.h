@@ -18,7 +18,7 @@ public:
 	// returns false if production is already started
 	virtual bool StartProduction() = 0;
 
-	// Will eventually stop producing data, terminates the thread started earlier
+	// Will eventually stop producing data
 	// returns false if production is not running
 	virtual bool StopProduction() = 0;
 
