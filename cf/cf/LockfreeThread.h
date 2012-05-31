@@ -21,7 +21,10 @@ namespace cf {
 class LockfreeThread
 {
 public:
-	LockfreeThread(boost::function<bool()> initFunction, boost::function<bool()> loopFunction);
+	LockfreeThread(
+		boost::function<bool()> initFunction,
+		boost::function<bool()> loopFunction,
+		boost::function<void()> cleanupFunction);
 	~LockfreeThread();
 
 	bool RequestStart();
@@ -35,6 +38,7 @@ private:
 	// These functions are all called from thread_
 	void Run();
 	bool WaitForRunOrInterrupt(unique_lock & lock);
+	void RunLoop();
 
 	enum State
 	{
@@ -49,6 +53,7 @@ private:
 	// Initialized in ctor, not changed aftwewards
 	boost::function<bool ()> const init_;
 	boost::function<bool ()> const loop_;
+	boost::function<void ()> const cleanup_;
 
 	boost::mutex waitMutex_;
 	boost::condition_variable waitCond_;

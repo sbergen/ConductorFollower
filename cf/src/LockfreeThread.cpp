@@ -2,10 +2,13 @@
 
 namespace cf {
 
-LockfreeThread::LockfreeThread(boost::function<bool()> initFunction, boost::function<bool()> loopFunction)
+LockfreeThread::LockfreeThread(boost::function<bool()> initFunction,
+	                           boost::function<bool()> loopFunction,
+							   boost::function<void()> cleanupFunction)
 	: state_(NotRunning)
 	, init_(initFunction)
 	, loop_(loopFunction)
+	, cleanup_(cleanupFunction)
 {
 	// Keep lock until ctor exits, just to be sure...
 	boost::lock_guard<boost::mutex> lock(waitMutex_);
@@ -71,22 +74,13 @@ LockfreeThread::Run()
 	{
 		if (!WaitForRunOrInterrupt(lock)) { return; }
 
-		if (!init_()) {
+		if (init_()) {
+			RunLoop();
+		} else {
 			state_.store(NotRunning);
-			continue;
 		}
 
-		while (true) {
-			State expected = StopRequested;
-			if (state_.compare_exchange_strong(expected, NotRunning)) {
-				continue;
-			}
-
-			if (!loop_()) {
-				state_.store(NotRunning);
-				continue;
-			}
-		}
+		cleanup_();
 	}
 }
 
@@ -101,6 +95,24 @@ LockfreeThread::WaitForRunOrInterrupt(unique_lock & lock)
 		return true;
 	} catch(boost::thread_interrupted) {
 		return false;
+	}
+}
+
+void
+LockfreeThread::RunLoop()
+{
+	while (true) {
+		// Check for stop request
+		State expected = StopRequested;
+		if (state_.compare_exchange_strong(expected, NotRunning)) {
+			break;
+		}
+
+		// Actually run loop
+		if (!loop_()) {
+			state_.store(NotRunning);
+			break;
+		}
 	}
 }
 
