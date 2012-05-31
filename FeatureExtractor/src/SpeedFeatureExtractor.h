@@ -24,5 +24,5 @@ private:
 	Point3D prevAvgSeed_;
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

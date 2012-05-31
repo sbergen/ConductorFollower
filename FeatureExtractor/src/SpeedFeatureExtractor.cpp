@@ -87,5 +87,5 @@ SpeedFeatureExtractor::UpdateSpeedBuffer()
 	}
 }
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

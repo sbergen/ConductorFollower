@@ -83,5 +83,5 @@ FeatureExtractor::Cleanup()
 	tracker_.reset();
 }
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

@@ -8,5 +8,5 @@ enum Gesture
 	GestureWave
 };
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

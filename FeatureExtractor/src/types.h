@@ -15,5 +15,5 @@ typedef EventBuffer<Point3D, timestamp_t> SpeedBuffer;
 
 typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
 	
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

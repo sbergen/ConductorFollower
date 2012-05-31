@@ -183,5 +183,5 @@ OpenNIHandTracker::ProcessNextHandRequest()
 	return CheckXnStatus(s, "Start tracking gesture");
 }
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

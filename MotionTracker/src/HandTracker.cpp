@@ -11,5 +11,5 @@ HandTracker* HandTracker::Create()
 	return new OpenNIHandTracker();
 }
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

@@ -15,5 +15,5 @@ public:
 	virtual void NewHandPosition(float time, Point3D const & pos) = 0;
 };
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

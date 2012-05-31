@@ -32,5 +32,5 @@ private:
 	Type type_;
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

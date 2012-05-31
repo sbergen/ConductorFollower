@@ -24,5 +24,5 @@ OpenNIUtils::CheckStatus(XnStatus status, std::string const & taskDescription, s
 	return false;
 }
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

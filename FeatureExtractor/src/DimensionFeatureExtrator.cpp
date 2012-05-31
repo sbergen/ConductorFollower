@@ -35,5 +35,5 @@ DimensionFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 	//std::cout << "Length of movement: " << length << std::endl;
 }
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

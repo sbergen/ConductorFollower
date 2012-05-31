@@ -47,5 +47,5 @@ private: // tracker thread state and event buffer
 	InterThreadEventBuffer eventBuffer_;
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

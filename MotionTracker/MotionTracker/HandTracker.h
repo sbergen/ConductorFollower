@@ -27,5 +27,5 @@ public:
 	virtual bool WaitForData() = 0;
 };
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

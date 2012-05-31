@@ -33,5 +33,5 @@ private:
 	std::list<ObserverPtr> list_;
 };
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

@@ -18,5 +18,5 @@ private:
 	EventBuffer<Point3D, timestamp_t> const & positionBuffer_;
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

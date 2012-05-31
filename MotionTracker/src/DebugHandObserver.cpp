@@ -36,5 +36,5 @@ DebugHandObserver::NewHandPosition(float time, Point3D const & pos)
 		<< std::endl;
 }
 
-} // namespace cf
 } // namespace MotionTracker
+} // namespace cf

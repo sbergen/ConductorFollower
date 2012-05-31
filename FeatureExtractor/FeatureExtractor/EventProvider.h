@@ -28,5 +28,5 @@ public:
 
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

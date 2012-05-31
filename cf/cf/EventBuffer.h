@@ -172,5 +172,5 @@ private: // Data
 
 };
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf

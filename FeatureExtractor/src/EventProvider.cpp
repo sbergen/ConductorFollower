@@ -10,5 +10,5 @@ EventProvider * EventProvider::Create()
 	return new FeatureExtractor();
 }
 
-} // namespace cf
 } // namespace FeatureExtractor
+} // namespace cf
