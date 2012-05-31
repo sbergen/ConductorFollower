@@ -45,6 +45,27 @@ BOOST_AUTO_TEST_CASE(DataSince)
 	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataSince(0.4), 0), 0);
 }
 
+BOOST_AUTO_TEST_CASE(DataBetween)
+{
+	EventBuffer<int, double> buffer(3);
+	buffer.RegisterEvent(0.1, 1);
+	buffer.RegisterEvent(0.2, 2);
+
+	// past the end
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0, 0.3), 0), 3);
+
+	// single element
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0.1, 0.1), 0), 1);
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0.2, 0.2), 0), 2);
+
+	// "regular access"
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0.1, 0.25), 0), 3);
+
+	// no elements (before and after)
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0.0, 0.01), 0), 0);
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.DataBetween(0.4, 0.5), 0), 0);
+}
+
 BOOST_AUTO_TEST_CASE(LastTimestamp)
 {
 	EventBuffer<int, double> buffer(3);
@@ -72,6 +93,27 @@ BOOST_AUTO_TEST_CASE(TimeStampsSince)
 	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsSince(2), 0), 5);
 	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsSince(3), 0), 3);
 	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsSince(4), 0), 0);
+}
+
+BOOST_AUTO_TEST_CASE(TimeStampsBetween)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(1, 1);
+	buffer.RegisterEvent(2, 2);
+
+	// past the end
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(0, 4), 0), 3);
+
+	// single element
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(1, 1), 0), 1);
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(2, 2), 0), 2);
+
+	// "regular access"
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(1, 2), 0), 3);
+
+	// no elements (before and after)
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(0, 0), 0), 0);
+	BOOST_CHECK_EQUAL(boost::accumulate(buffer.TimestampsBetween(4, 5), 0), 0);
 }
 
 BOOST_AUTO_TEST_CASE(TimestampToData)
