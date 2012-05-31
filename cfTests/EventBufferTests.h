@@ -14,13 +14,13 @@ class NoOperatorType
 BOOST_AUTO_TEST_CASE(TestNoOperatorType)
 {
 	// Check that this compiles even without arithmetic or comparison operators
-	EventBuffer<NoOperatorType> buffer(3);
+	EventBuffer<NoOperatorType, int> buffer(3);
 	BOOST_CHECK(true); // suppress the warnings, as this is a compile time check
 }
 
 BOOST_AUTO_TEST_CASE(DataAccess)
 {
-	EventBuffer<int> buffer(5);
+	EventBuffer<int, double> buffer(5);
 	buffer.RegisterEvent(0.1, 1);
 	buffer.RegisterEvent(0.2, 2);
 
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(DataAccess)
 
 BOOST_AUTO_TEST_CASE(DataSince)
 {
-	EventBuffer<int> buffer(3);
+	EventBuffer<int, double> buffer(3);
 	buffer.RegisterEvent(0.1, 1);
 	buffer.RegisterEvent(0.2, 2);
 	buffer.RegisterEvent(0.3, 3);
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(DataSince)
 
 BOOST_AUTO_TEST_CASE(LastTimestamp)
 {
-	EventBuffer<int> buffer(3);
+	EventBuffer<int, double> buffer(3);
 	BOOST_CHECK_EQUAL(buffer.LastTimestamp(), int());
 
 	buffer.RegisterEvent(0.1, 1);
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(DataToTimestamp)
 
 BOOST_AUTO_TEST_CASE(ContainsDataAfter)
 {
-	EventBuffer<int> buffer(3);
+	EventBuffer<int, double> buffer(3);
 	buffer.RegisterEvent(0.1, 1);
 	buffer.RegisterEvent(0.2, 2);
 	buffer.RegisterEvent(0.3, 3);

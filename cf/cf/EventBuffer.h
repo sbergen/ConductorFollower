@@ -11,7 +11,7 @@
 namespace cf {
 namespace FeatureExtractor {
 
-template<typename TData, typename TTimestamp = double>
+template<typename TData, typename TTimestamp>
 class EventBuffer
 {
 public:
