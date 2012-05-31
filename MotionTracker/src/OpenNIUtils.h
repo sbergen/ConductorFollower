@@ -3,6 +3,9 @@
 #include <string>
 #include <iostream>
 
+#include <boost/thread.hpp>
+#include <boost/atomic.hpp>
+
 #include <XnCppWrapper.h>
 
 namespace cf {
@@ -15,14 +18,19 @@ class OpenNIUtils
 public:
 	static bool CheckStatus(XnStatus status, std::string const & taskDescription, std::string const & file, int line);
 
-	static void SetErrorStream(std::ostream & stream) { err_stream = &stream; }
+	static void SetErrorStream(std::ostream & stream) { ErrorStream().store(&stream); }
 
 	static void ResetErrors() { errorsOccurred_ = false; }
 	static bool ErrorsOccurred() { return errorsOccurred_; }
 
 private:
+	static boost::atomic<std::ostream*> & ErrorStream()
+	{
+		static boost::atomic<std::ostream*> stream(&std::cerr);
+		return stream;
+	}
+
 	static bool errorsOccurred_;
-	static std::ostream * err_stream;
 };
 
 } // namespace MotionTacker
