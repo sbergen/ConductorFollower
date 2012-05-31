@@ -82,16 +82,16 @@ BOOST_AUTO_TEST_CASE(TimestampToData)
 	buffer.RegisterEvent(3, 3);
 
 	auto it = buffer.TimestampsSince(0).begin();
-	BOOST_CHECK_EQUAL(buffer.DataForTimestamp(it), 1);
+	BOOST_CHECK_EQUAL(*buffer.ToDataIterator(it), 1);
 
 	it = buffer.TimestampsSince(1).begin();
-	BOOST_CHECK_EQUAL(buffer.DataForTimestamp(it), 1);
+	BOOST_CHECK_EQUAL(*buffer.ToDataIterator(it), 1);
 
 	it = buffer.TimestampsSince(2).begin();
-	BOOST_CHECK_EQUAL(buffer.DataForTimestamp(it), 2);
+	BOOST_CHECK_EQUAL(*buffer.ToDataIterator(it), 2);
 
 	it = buffer.TimestampsSince(3).begin();
-	BOOST_CHECK_EQUAL(buffer.DataForTimestamp(it), 3);
+	BOOST_CHECK_EQUAL(*buffer.ToDataIterator(it), 3);
 }
 
 BOOST_AUTO_TEST_CASE(DataToTimestamp)
@@ -102,16 +102,16 @@ BOOST_AUTO_TEST_CASE(DataToTimestamp)
 	buffer.RegisterEvent(3, 3);
 
 	auto it = buffer.DataSince(0).begin();
-	BOOST_CHECK_EQUAL(buffer.TimestampForData(it), 1);
+	BOOST_CHECK_EQUAL(*buffer.ToTimestampIterator(it), 1);
 
 	it = buffer.DataSince(1).begin();
-	BOOST_CHECK_EQUAL(buffer.TimestampForData(it), 1);
+	BOOST_CHECK_EQUAL(*buffer.ToTimestampIterator(it), 1);
 
 	it = buffer.DataSince(2).begin();
-	BOOST_CHECK_EQUAL(buffer.TimestampForData(it), 2);
+	BOOST_CHECK_EQUAL(*buffer.ToTimestampIterator(it), 2);
 
 	it = buffer.DataSince(3).begin();
-	BOOST_CHECK_EQUAL(buffer.TimestampForData(it), 3);
+	BOOST_CHECK_EQUAL(*buffer.ToTimestampIterator(it), 3);
 }
 
 BOOST_AUTO_TEST_CASE(ContainsDataAfter)

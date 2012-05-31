@@ -20,8 +20,11 @@ public:
 	typedef TContainer<TData, typename TAlloc<TData> > DataBuffer;
 	typedef TContainer<TTimestamp, typename TAlloc<TTimestamp> > TimestampBuffer;
 
-	typedef boost::iterator_range<typename DataBuffer::const_iterator> DataRange;
-	typedef boost::iterator_range<typename TimestampBuffer::const_iterator> TimestampRange;
+	typedef typename DataBuffer::const_iterator DataIterator;
+	typedef typename TimestampBuffer::const_iterator TimestampIterator;
+
+	typedef boost::iterator_range<DataIterator> DataRange;
+	typedef boost::iterator_range<TimestampIterator> TimestampRange;
 
 	EventBuffer(size_t size)
 		: data_(size)
@@ -44,7 +47,7 @@ public:
 		{
 			throw std::out_of_range("Invalid timestamp given to EventBuffer::DataAt()");
 		}
-		return *DataIterator(range.first);
+		return *ToDataIterator(range.first);
 	}
 	
 	DataRange
@@ -56,13 +59,31 @@ public:
 	template<typename T>
 	T DataSince(TTimestamp const & time) const
 	{
-		return T(FirstDataForPeriod(time), data_.end());
+		return T(DataLowerBound(time), data_.end());
 	}
 
 	template<template<typename> class T>
-	T<typename DataBuffer::const_iterator> DataSince(TTimestamp const & time) const
+	T<typename DataIterator> DataSince(TTimestamp const & time) const
 	{
-		return T<typename DataBuffer::const_iterator>(FirstDataForPeriod(time), data_.end());
+		return T<DataIterator>(DataLowerBound(time), data_.end());
+	}
+
+	DataRange
+	DataBetween(TTimestamp const & from, TTimestamp const & to) const
+	{
+		return DataBetween<DataRange>(from, to);
+	}
+
+	template<typename T>
+	T DataBetween(TTimestamp const & from, TTimestamp const & to) const
+	{
+		return T(DataLowerBound(from), DataUpperBound(to));
+	}
+
+	template<template<typename> class T>
+	T<DataIterator> DataBetween(TTimestamp const & from, TTimestamp const & to) const
+	{
+		return T<DataIterator>(DataLowerBound(from), DataUpperBound(to));
 	}
 
 	// Timestamps
@@ -82,19 +103,33 @@ public:
 	template<typename T>
 	T TimestampsSince(TTimestamp const & time) const
 	{
-		return T(FirstForPeriod(time), timestamps_.end());
+		return T(TimestampLowerBound(time), timestamps_.end());
 	}
 
-	// Timestamp for data iterator and data for timestamp iterator
-
-	TTimestamp const & TimestampForData(typename DataBuffer::const_iterator const & it) const
+	TimestampRange
+	TimestampsBetween(TTimestamp const & from, TTimestamp const & to) const
 	{
-		return *TimestampIterator(it);
+		return TimestampsBetween<TimestampRange>(from, to);
 	}
 
-	TData const &  DataForTimestamp(typename TimestampBuffer::const_iterator const & it) const
+	template<typename T>
+	T TimestampsBetween(TTimestamp const & from, TTimestamp const & to) const
 	{
-		return *DataIterator(it);
+		return T(TimestampLowerBound(from), TimestampUpperBound(to));
+	}
+
+	// Iterator "conversion"
+
+	DataIterator ToDataIterator(TimestampIterator const & it) const
+	{
+		typename TimestampBuffer::difference_type diff = it - timestamps_.begin();
+		return data_.begin() + diff;
+	}
+
+	TimestampIterator ToTimestampIterator(DataIterator const & it) const
+	{
+		typename DataBuffer::difference_type diff = it - data_.begin();
+		return timestamps_.begin() + diff;
 	}
 
 	// Checks
@@ -107,30 +142,28 @@ public:
 
 private:
 
-	// First for period
+	// Lower bound
 
-	typename TimestampBuffer::const_iterator FirstForPeriod(TTimestamp const & since) const
+	typename TimestampIterator TimestampLowerBound(TTimestamp const & since) const
 	{
 		return std::lower_bound(timestamps_.begin(), timestamps_.end(), since);
 	}
 
-	typename DataBuffer::const_iterator FirstDataForPeriod(TTimestamp const & since) const
+	typename DataIterator DataLowerBound(TTimestamp const & since) const
 	{
-		return DataIterator(FirstForPeriod(since));
+		return ToDataIterator(TimestampLowerBound(since));
 	}
 
-	// Iterator "conversion"
+	// Upper bound
 
-	typename DataBuffer::const_iterator DataIterator(typename TimestampBuffer::const_iterator const & it) const
+	typename TimestampIterator TimestampUpperBound(TTimestamp const & since) const
 	{
-		typename TimestampBuffer::difference_type diff = it - timestamps_.begin();
-		return data_.begin() + diff;
+		return std::upper_bound(timestamps_.begin(), timestamps_.end(), since);
 	}
 
-	typename TimestampBuffer::const_iterator TimestampIterator(typename DataBuffer::const_iterator const & it) const
+	typename DataIterator DataUpperBound(TTimestamp const & since) const
 	{
-		typename DataBuffer::difference_type diff = it - data_.begin();
-		return timestamps_.begin() + diff;
+		return ToDataIterator(TimestampUpperBound(since));
 	}
 
 private: // Data
