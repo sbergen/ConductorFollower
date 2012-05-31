@@ -10,18 +10,19 @@ FeatureExtractor::FeatureExtractor()
 	, speedExtractor_(positionBuffer_)
 	, eventBuffer_(1000)
 {
+	trackerThread_.reset(new LockfreeThread(
+		boost::bind(&FeatureExtractor::Init, this),
+		boost::bind(&FeatureExtractor::EventLoop, this)));
 }
 
 bool FeatureExtractor::StartProduction()
 {
-	return trackerThread_.RequestStart(
-		boost::bind(&FeatureExtractor::Init, this),
-		boost::bind(&FeatureExtractor::EventLoop, this));
+	return trackerThread_->RequestStart();
 }
 
 bool FeatureExtractor::StopProduction()
 {
-	return trackerThread_.RequestStop();
+	return trackerThread_->RequestStop();
 }
 
 bool FeatureExtractor::DequeueEvent(Event & result)

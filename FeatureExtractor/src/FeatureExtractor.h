@@ -40,7 +40,7 @@ private: // tracker thread state and event buffer
 	bool Init();
 	bool EventLoop();
 
-	LockfreeThread trackerThread_;
+	boost::scoped_ptr<LockfreeThread> trackerThread_;
 	boost::scoped_ptr<MotionTracker::HandTracker> tracker_;
 	InterThreadEventBuffer eventBuffer_;
 };

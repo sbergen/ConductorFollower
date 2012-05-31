@@ -2,21 +2,25 @@
 
 namespace cf {
 
-LockfreeThread::LockfreeThread()
+LockfreeThread::LockfreeThread(boost::function<bool()> initFunction, boost::function<bool()> loopFunction)
 	: state_(NotRunning)
-{}
+	, init_(initFunction)
+	, loop_(loopFunction)
+{
+	// Keep lock until ctor exits, just to be sure...
+	boost::lock_guard<boost::mutex> lock(waitMutex_);
+	thread_.reset(new boost::thread(boost::bind(&LockfreeThread::Run, this)));
+}
 
 LockfreeThread::~LockfreeThread()
 {
-	if (!thread_) { return; }
-	if (thread_->joinable()) {
-		RequestStop();
-		thread_->join();
-	}
+	state_.store(StopRequested);
+	thread_->interrupt();
+	thread_->join();
 }
 
 bool
-LockfreeThread::RequestStart(boost::function<bool()> initFunction, boost::function<bool()> loopFunction)
+LockfreeThread::RequestStart()
 {
 	State expected = NotRunning;
 	if (!state_.compare_exchange_strong(expected, RunRequested)) {
@@ -46,9 +50,7 @@ LockfreeThread::RequestStart(boost::function<bool()> initFunction, boost::functi
 		}
 	}
 
-	init_ = initFunction;
-	loop_ = loopFunction;
-	thread_.reset(new boost::thread(boost::bind(&LockfreeThread::Run, this)));
+	waitCond_.notify_one();
 	return true;
 }
 
@@ -62,21 +64,43 @@ LockfreeThread::RequestStop()
 void
 LockfreeThread::Run()
 {
-	if (!init_()) {
-		state_.store(NotRunning);
-		return;
-	}
+	// The mutex is locked always but when waiting
+	unique_lock lock(waitMutex_);
 
-	while (true) {
-		State expected = StopRequested;
-		if (state_.compare_exchange_strong(expected, NotRunning)) {
-			return;
-		}
+	while (true)
+	{
+		if (!WaitForRunOrInterrupt(lock)) { return; }
 
-		if (!loop_()) {
+		if (!init_()) {
 			state_.store(NotRunning);
-			return;
+			continue;
 		}
+
+		while (true) {
+			State expected = StopRequested;
+			if (state_.compare_exchange_strong(expected, NotRunning)) {
+				continue;
+			}
+
+			if (!loop_()) {
+				state_.store(NotRunning);
+				continue;
+			}
+		}
+	}
+}
+
+bool
+LockfreeThread::WaitForRunOrInterrupt(unique_lock & lock)
+{
+	try {
+		State expected = RunRequested;
+		while (!state_.compare_exchange_strong(expected, Running)) {
+			waitCond_.wait(lock);
+		}
+		return true;
+	} catch(boost::thread_interrupted) {
+		return false;
 	}
 }
 
