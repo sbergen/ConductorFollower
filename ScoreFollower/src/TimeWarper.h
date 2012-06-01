@@ -22,17 +22,30 @@ public:
 	score_time_t WarpTimestamp(real_time_t const & time);
 
 private:
-	typedef EventBuffer<bool, score_time_t, std::vector> TempoBuffer;
-	// The unit is in the cpp file...
+	// The unit is defined in the cpp file...
 	typedef unsigned long speed_t;
 
-	TempoBuffer tempoBuffer_;
+	speed_t CalculateSpeedAt(real_time_t time);
 
-	speed_t currentSpeed_;
+private:
+	// class for storing warping history
+	class WarpPoint
+	{
+	public:
+		WarpPoint(speed_t speed, real_time_t realTime, score_time_t scoreTime);
+		
+		score_time_t Warp(real_time_t const & time) const;
+		real_time_t Timestamp() const { return realTime_; }
 
-	score_time_t fixedScoreTime_;
-	real_time_t  fixedRealTime_;
+	private:
+		speed_t speed_;
+		real_time_t realTime_;
+		score_time_t scoreTime_;
+	};
 
+	typedef EventBuffer<WarpPoint, real_time_t> WarpHistoryBuffer;
+
+	WarpHistoryBuffer warpHistory_;
 };
 
 } // namespace ScoreFollower

@@ -17,19 +17,6 @@ BOOST_AUTO_TEST_CASE(TestNoOperatorType)
 	BOOST_CHECK(true); // suppress the warnings, as this is a compile time check
 }
 
-BOOST_AUTO_TEST_CASE(DataAccess)
-{
-	EventBuffer<int, double> buffer(5);
-	buffer.RegisterEvent(0.1, 1);
-	buffer.RegisterEvent(0.2, 2);
-
-	BOOST_CHECK_THROW(buffer.DataAt(0.0), std::out_of_range);
-	BOOST_CHECK_EQUAL(buffer.DataAt(0.1), 1);
-	BOOST_CHECK_THROW(buffer.DataAt(0.15), std::out_of_range);
-	BOOST_CHECK_EQUAL(buffer.DataAt(0.2), 2);
-	BOOST_CHECK_THROW(buffer.DataAt(0.3), std::out_of_range);
-}
-
 BOOST_AUTO_TEST_CASE(DataSince)
 {
 	EventBuffer<int, double> buffer(3);
