@@ -49,7 +49,8 @@ TimeWarper::RegisterBeat(real_time_t const & beatTime)
 score_time_t
 TimeWarper::WarpTimestamp(real_time_t const & time)
 {
-	 warpHistory_.DataLowerBoundInclusive(time);
+	 // TODO
+	return score_time_t();
 }
 
 TimeWarper::speed_t
