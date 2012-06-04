@@ -20,7 +20,8 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 	UpdateSpeedBuffer();
 
 	timestamp_t since = speedBuffer_.LastTimestamp() - milliseconds_t(100);
-	auto data = speedBuffer_.DataSince<IteratorLinestring>(since);
+	auto eventsSince = speedBuffer_.EventsSince(since);
+	auto data = eventsSince.DataAs<IteratorLinestring>();
 	
 	// First time around, for one position, we can't calculate the speed...
 	if (data.size() == 0) { return; }
@@ -64,26 +65,21 @@ void
 SpeedFeatureExtractor::UpdateSpeedBuffer()
 {
 	timestamp_t since = speedBuffer_.LastTimestamp();
-	auto posData = positionBuffer_.DataSince(since);
-	auto timeData = positionBuffer_.TimestampsSince(since);
+	auto events = positionBuffer_.EventsSince(since);
 
-	auto pos = posData.begin() + 1;
-	auto time = timeData.begin() + 1;
-	Point3D prevPos = posData.front();
-	timestamp_t prevTime = timeData.front();
-	for(/* initialized above, because limitations with the comma operator */;
-		pos != posData.end() && time != timeData.end();
-		++pos, ++time)
+	Point3D prevPos = events.data();
+	timestamp_t prevTime = events.timestamp();
+	while(events.Next())
 	{
-		duration_t timeDiff = *time - prevTime;
+		duration_t timeDiff = events.timestamp() - prevTime;
 		if (timeDiff <= duration_t::zero()) {
 			std::cerr << "Invalid time difference in position data!" << std::endl;
 			continue;
 		}
 
-		Point3D posDiff = geometry::distance_vector(prevPos, *pos);
+		Point3D posDiff = geometry::distance_vector(prevPos, events.data());
 		bg::divide_value(posDiff, seconds_t(timeDiff).count());
-		speedBuffer_.RegisterEvent(*time, posDiff);
+		speedBuffer_.RegisterEvent(events.timestamp(), posDiff);
 	}
 }
 

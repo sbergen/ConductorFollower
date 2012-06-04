@@ -25,6 +25,44 @@ public:
 	typedef boost::iterator_range<DataIterator> DataRange;
 	typedef boost::iterator_range<TimestampIterator> TimestampRange;
 
+
+	class Range
+	{
+	public:
+		Range(EventBuffer const & parent, TimestampIterator const & begin, TimestampIterator const & end)
+			: timestampRange_(begin, end)
+			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
+		{ Rewind(); }
+
+		bool Empty() { return dataRange_.empty(); }
+
+		// Iterating interface
+		void Rewind() { tIt_ = timestampRange_.begin(); dIt_ = dataRange_.begin(); }
+		bool Next() { ++tIt_; ++dIt_;  return AtEnd(); }
+		bool AtEnd() const { return dIt_ != dataRange_.end(); }
+
+		TTimestamp const & timestamp() const { return *tIt_; }
+		TData const & data() const { return *dIt_; }
+
+		// direct range access
+		TimestampRange const & timestampRange() { return timestampRange_; }
+		DataRange const & dataRange() { return dataRange_; }
+
+		// Data type conversion utilities
+		template<typename T>
+		T DataAs() const { return T(dataRange_.begin(), dataRange_.end()); }
+		
+		template<template<typename> class T>
+		T<DataIterator> DataAs() const { return T<DataIterator>(dataRange_.begin(), dataRange_.end()); }
+
+	private:
+		TimestampRange const timestampRange_;
+		DataRange const dataRange_;
+
+		TimestampIterator tIt_;
+		DataIterator dIt_;
+	};
+
 	EventBuffer(size_t size)
 		: data_(size)
 		, timestamps_(size)
@@ -39,42 +77,29 @@ public:
 		data_.push_back(data);
 	}
 	
-	DataRange AllData() { return DataRange(data_.begin(), data_.end()); }
-
-	DataRange
-	DataSince(TTimestamp const & time) const
+	Range AllEvents()
 	{
-		return DataSince<DataRange>(time);
+		return Range(*this, timestamps_.begin(), timestamps_.end());
 	}
 
-	template<typename T>
-	T DataSince(TTimestamp const & time) const
+	Range EventsSince(TTimestamp const & time) const
 	{
-		return T(DataLowerBound(time), data_.end());
+		return Range(*this, LowerBound(time), timestamps_.end());
 	}
 
-	template<template<typename> class T>
-	T<typename DataIterator> DataSince(TTimestamp const & time) const
+	Range EventsSinceInclusive(TTimestamp const & time) const
 	{
-		return T<DataIterator>(DataLowerBound(time), data_.end());
+		return Range(*this, LowerBoundInclusive(time), timestamps_.end());
 	}
 
-	DataRange
-	DataBetween(TTimestamp const & from, TTimestamp const & to) const
+	Range EventsBetween(TTimestamp const & from, TTimestamp const & to) const
 	{
-		return DataBetween<DataRange>(from, to);
+		return Range(*this, LowerBound(from), UpperBound(to));
 	}
 
-	template<typename T>
-	T DataBetween(TTimestamp const & from, TTimestamp const & to) const
+	Range EventsBetweenInclusive(TTimestamp const & from, TTimestamp const & to) const
 	{
-		return T(DataLowerBound(from), DataUpperBound(to));
-	}
-
-	template<template<typename> class T>
-	T<DataIterator> DataBetween(TTimestamp const & from, TTimestamp const & to) const
-	{
-		return T<DataIterator>(DataLowerBound(from), DataUpperBound(to));
+		return Range(*this, LowerBoundInclusive(time), UpperBound(to));
 	}
 
 	// Timestamps
@@ -85,28 +110,38 @@ public:
 		return timestamps_.back();
 	}
 
-	TimestampRange
-	TimestampsSince(TTimestamp const & time) const
+	// Checks
+
+	typename DataBuffer::size_type size() { return  data_.size(); }
+
+	bool ContainsDataAfter(TTimestamp const & since) const
 	{
-		return TimestampsSince<TimestampRange>(time);
+		if (timestamps_.empty()) { return false; }
+		return (timestamps_.front()) <= since && (timestamps_.back() >= since);
 	}
 
-	template<typename T>
-	T TimestampsSince(TTimestamp const & time) const
+private:
+
+	TimestampIterator LowerBound(TTimestamp const & time) const
 	{
-		return T(TimestampLowerBound(time), timestamps_.end());
+		return std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
 	}
 
-	TimestampRange
-	TimestampsBetween(TTimestamp const & from, TTimestamp const & to) const
+	TimestampIterator UpperBound(TTimestamp const & time) const
 	{
-		return TimestampsBetween<TimestampRange>(from, to);
+		return std::upper_bound(timestamps_.begin(), timestamps_.end(), time);
 	}
 
-	template<typename T>
-	T TimestampsBetween(TTimestamp const & from, TTimestamp const & to) const
+	// LowerBound is "after or at", this is "before or at"
+	TimestampIterator LowerBoundInclusive(TTimestamp const & time) const
 	{
-		return T(TimestampLowerBound(from), TimestampUpperBound(to));
+		TimestampIterator it = std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
+		if (it == timestamps_.end()) { return it; } // All items are smaller
+
+		// *it >= time at this stage
+		if (*it == time) { return it; } // Equal
+		if (it == timestamps_.begin()) { return timestamps_.end(); } // Greater, but the first one
+		return --it;
 	}
 
 	// Iterator "conversion"
@@ -121,61 +156,6 @@ public:
 	{
 		typename DataBuffer::difference_type diff = it - data_.begin();
 		return timestamps_.begin() + diff;
-	}
-
-	// Checks
-
-	typename DataBuffer::size_type size() { return  data_.size(); }
-
-	bool ContainsDataAfter(TTimestamp const & since) const
-	{
-		if (timestamps_.empty()) { return false; }
-		return (timestamps_.front()) <= since && (timestamps_.back() >= since);
-	}
-
-	bool TimestampIteratorIsValid(TimestampIterator it) { return it != timestamps_.end(); }
-	bool DataIteratorIsValid(DataIterator it) { return it != data_.end(); }
-
-	// Lower bound
-
-	TimestampIterator TimestampLowerBound(TTimestamp const & time) const
-	{
-		return std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
-	}
-
-	DataIterator DataLowerBound(TTimestamp const & time) const
-	{
-		return ToDataIterator(TimestampLowerBound(time));
-	}
-
-	// Upper bound
-
-	TimestampIterator TimestampUpperBound(TTimestamp const & time) const
-	{
-		return std::upper_bound(timestamps_.begin(), timestamps_.end(), time);
-	}
-
-	DataIterator DataUpperBound(TTimestamp const & time) const
-	{
-		return ToDataIterator(TimestampUpperBound(time));
-	}
-
-	// Lower bound is "after or at", this is "before or at"
-
-	TimestampIterator TimestampLowerBoundInclusive(TTimestamp const & time)
-	{
-		TimestampIterator it = std::lower_bound(timestamps_.begin(), timestamps_.end(), since);
-		if (!TimestampIteratorIsValid(it)) { return it; } // All items are smaller
-
-		// *it >= time at this stage
-		if (*it == time) { return it; } // Equal
-		if (it == timestamps_.begin()) { return timestamps_.end(); } // Greater, but the first one
-		return --it;
-	}
-
-	DataIterator DataLowerBoundInclusive(TTimestamp const & time)
-	{
-		return ToDataIterator(TimestampLowerBoundInclusive(time));
 	}
 
 private: // Data
