@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="CFPlugin">
@@ -37,6 +36,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
+    <ClCompile Include="MidiReader.cpp">
+      <Filter>CFPlugin\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
@@ -53,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h">
       <Filter>Juce Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="MidiReader.h">
+      <Filter>CFPlugin\Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

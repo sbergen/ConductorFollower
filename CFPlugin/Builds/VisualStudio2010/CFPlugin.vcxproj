@@ -115,9 +115,9 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>c:\SDKs\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);c:\SDKs\vstsdk2.4;../../JuceLibraryCode;"../../../ScoreFollower";"../../../cf";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -137,6 +137,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug\CFPlugin.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(BOOST_LIB)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -231,6 +232,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp" />
+    <ClCompile Include="MidiReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h" />
@@ -238,6 +240,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
+    <ClInclude Include="MidiReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

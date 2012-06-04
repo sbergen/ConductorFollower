@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ScoreFollower/types.h"
+
 namespace cf {
 namespace ScoreFollower {
 

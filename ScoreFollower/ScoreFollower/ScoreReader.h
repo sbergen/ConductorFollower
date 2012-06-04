@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ScoreFollower/types.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -15,7 +17,7 @@ public:
 	virtual int TrackCount() const = 0;
 	virtual TrackReader<TData> * Track(int index) = 0;
 
-	virtual TrackReader<bool> * TempoTrack() = 0;
+	virtual TrackReader<tempo_t> * TempoTrack() = 0;
 	
 };
 

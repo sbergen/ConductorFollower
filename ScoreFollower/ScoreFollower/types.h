@@ -5,10 +5,11 @@
 namespace cf {
 namespace ScoreFollower {
 
-// score_time_t is in nanoseconds
-typedef long long score_time_t;
-
+typedef boost::chrono::microseconds score_time_t;
 typedef cf::timestamp_t real_time_t;
+
+// Tempo is microseconds per quarter note 
+typedef boost::chrono::microseconds tempo_t;
 
 } // namespace ScoreFollower
 } // namespace cf

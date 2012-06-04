@@ -22,8 +22,7 @@ public:
 	score_time_t WarpTimestamp(real_time_t const & time);
 
 private:
-	// The unit is defined in the cpp file...
-	typedef unsigned long speed_t;
+	typedef double speed_t;
 
 	speed_t CalculateSpeedAt(real_time_t time);
 

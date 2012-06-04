@@ -11,6 +11,8 @@
 #ifndef __PLUGINPROCESSOR_H_C2A1EFF0__
 #define __PLUGINPROCESSOR_H_C2A1EFF0__
 
+#include "boost/atomic/
+
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
 

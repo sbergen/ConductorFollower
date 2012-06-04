@@ -19,7 +19,7 @@
 //==============================================================================
 /**
 */
-class CfpluginAudioProcessorEditor  : public AudioProcessorEditor
+class CfpluginAudioProcessorEditor  : public AudioProcessorEditor, public Button::Listener
 {
 public:
     CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter);
@@ -28,6 +28,13 @@ public:
     //==============================================================================
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
+
+public: // Button::Listener implementation
+	void buttonClicked(Button * button);
+	void buttonStateChanged(Button * button);
+
+private:
+	TextButton * playButton; 
 };
 
 

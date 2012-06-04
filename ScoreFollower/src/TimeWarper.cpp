@@ -1,7 +1,5 @@
 #include "TimeWarper.h"
 
-#define SPEED_RATIO 1000UL
-
 namespace cf {
 namespace ScoreFollower {
 
@@ -17,8 +15,11 @@ TimeWarper::WarpPoint::Warp(real_time_t const & time) const
 {
 	// Only allow warping after the fixed point
 	assert(time > realTime_);
+
 	duration_t diff = time - realTime_;
-	score_time_t progress = (diff.count() * speed_) / SPEED_RATIO;
+	duration_t warpedDuration(static_cast<duration_t::rep>(diff.count() * speed_));
+
+	score_time_t progress = boost::chrono::duration_cast<score_time_t>(warpedDuration);
 	return scoreTime_ + progress;
 }
 
@@ -58,7 +59,7 @@ TimeWarper::speed_t
 TimeWarper::CalculateSpeedAt(real_time_t time)
 {
 	// TODO
-	return SPEED_RATIO;
+	return 1.0;
 }
 
 
