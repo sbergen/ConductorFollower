@@ -49,8 +49,9 @@ TimeWarper::RegisterBeat(real_time_t const & beatTime)
 score_time_t
 TimeWarper::WarpTimestamp(real_time_t const & time)
 {
-	 // TODO
-	return score_time_t();
+	auto history = warpHistory_.EventsSinceInclusive(time);
+	assert(!history.Empty());
+	return history.data().Warp(time);
 }
 
 TimeWarper::speed_t

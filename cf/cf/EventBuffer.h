@@ -107,11 +107,13 @@ public: // Main interface
 
 	Range EventsBetween(TTimestamp const & from, TTimestamp const & to) const
 	{
+		assert(from <= to);
 		return Range(*this, LowerBound(from), UpperBound(to));
 	}
 
 	Range EventsBetweenInclusive(TTimestamp const & from, TTimestamp const & to) const
 	{
+		assert(from <= to);
 		auto lowerBound = LowerBoundInclusive(from);
 		if (lowerBound == timestamps_.end()) {
 			return Range(*this, timestamps_.end(), timestamps_.end());
