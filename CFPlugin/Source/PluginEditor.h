@@ -34,6 +34,7 @@ public: // Button::Listener implementation
 	void buttonStateChanged(Button * button);
 
 private:
+	CfpluginAudioProcessor* ownerFilter;
 	TextButton * playButton; 
 };
 

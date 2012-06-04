@@ -15,11 +15,12 @@ class TimeWarper
 public:
 	TimeWarper();
 
-	void ReadTempoTrack(TrackReader<bool> & reader);
+	void ReadTempoTrack(TrackReader<tempo_t> & reader);
 
 	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
 	void RegisterBeat(real_time_t const & beatTime);
 	score_time_t WarpTimestamp(real_time_t const & time);
+	real_time_t InverseWarpTimestamp(real_time_t const & reference, score_time_t const & time);
 
 private:
 	typedef double speed_t;
@@ -34,6 +35,7 @@ private:
 		WarpPoint(speed_t speed, real_time_t realTime, score_time_t scoreTime);
 		
 		score_time_t Warp(real_time_t const & time) const;
+		real_time_t InverseWarp(score_time_t const & time) const;
 		real_time_t Timestamp() const { return realTime_; }
 
 	private:

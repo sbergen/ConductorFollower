@@ -1,5 +1,6 @@
 #include "MidiReader.h"
 
+using namespace cf;
 using namespace cf::ScoreFollower;
 
 MidiReader::MidiReader(String const & filename)
@@ -36,8 +37,8 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 {
 	assert(current_ < count_);
 	
-	boost::chrono::duration<double> seconds(sequence_.getEventTime(current_));
-	timestamp = boost::chrono::duration_cast<score_time_t>(seconds);
+	seconds_t seconds(sequence_.getEventTime(current_));
+	timestamp = time::duration_cast<score_time_t>(seconds);
 	
 	auto ePtr = sequence_.getEventPointer(current_);
 	double tickLength = ePtr->message.getTempoMetaEventTickLength(timeFormat_);
@@ -58,8 +59,8 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 {
 	assert(current_ < count_);
 	
-	boost::chrono::duration<double> seconds(sequence_.getEventTime(current_));
-	timestamp = boost::chrono::duration_cast<score_time_t>(seconds);
+	seconds_t seconds(sequence_.getEventTime(current_));
+	timestamp = time::duration_cast<score_time_t>(seconds);
 
 	data = sequence_.getEventPointer(current_)->message;
 

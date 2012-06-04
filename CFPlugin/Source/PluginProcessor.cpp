@@ -8,12 +8,19 @@
   ==============================================================================
 */
 
+#include "ScoreFollower/TimeUtils.h"
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "MidiReader.h"
 
+using namespace cf;
+using namespace cf::ScoreFollower;
 
 //==============================================================================
 CfpluginAudioProcessor::CfpluginAudioProcessor()
+	: shouldRun(false)
+	, running_(false)
 {
 }
 
@@ -117,6 +124,11 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+	samplerate_ = sampleRate;
+	blockSize_ = samplesPerBlock;
+
+	MidiReader reader("C:\\sample.mid");
+	follower_.CollectData(reader);
 }
 
 void CfpluginAudioProcessor::releaseResources()
@@ -127,13 +139,12 @@ void CfpluginAudioProcessor::releaseResources()
 
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
         float* channelData = buffer.getSampleData (channel);
-
-        // ..do something to the data...
     }
 
     // In case we have more outputs than inputs, we'll clear any output
@@ -143,6 +154,63 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
+
+
+	/************************************************************************************/
+
+	if (!shouldRun.load()) {
+		running_ = false;
+		return;
+	}
+
+	auto currentBlock = TimeUtils::GetTimeSpanEstimateForAudioBlock(blockSize_, samplerate_);
+
+	if (!running_) {
+		// Fix first time around
+		running_ = true;
+		estimatedEndForPrevBuffer = currentBlock.first;
+		follower_.FixTimeMapping(currentBlock.first, score_time_t::zero());
+	}
+
+	// Fix jitter
+	if (currentBlock.first > estimatedEndForPrevBuffer) {
+		PlaySamplesBetween(midiMessages, estimatedEndForPrevBuffer, currentBlock.first, 0);
+		PlaySamplesBetween(midiMessages, currentBlock.first, currentBlock.second, &currentBlock.first);
+	} else if (currentBlock.first < estimatedEndForPrevBuffer) {
+		PlaySamplesBetween(midiMessages, estimatedEndForPrevBuffer, currentBlock.second, &currentBlock.first);
+	} else {
+		PlaySamplesBetween(midiMessages, currentBlock.first, currentBlock.second, &currentBlock.first);
+	}
+
+	estimatedEndForPrevBuffer = currentBlock.second;
+}
+
+void CfpluginAudioProcessor::PlaySamplesBetween(
+	MidiBuffer& midiMessages,
+	cf::timestamp_t begin, cf::timestamp_t end,
+	cf::timestamp_t * reference)
+{
+	// TODO get all tracks
+	auto events = follower_.GetEventsBetween(1, begin, end);
+
+	while(!events.AtEnd()) {
+		MidiMessage message = events.data();
+
+		seconds_t seconds(message.getTimeStamp());
+		score_time_t scoreTime = time::duration_cast<score_time_t>(seconds);
+
+		int sample = 0;
+		if (reference != 0) {
+			real_time_t time = follower_.ScoreToRealTime(*reference, scoreTime);
+			sample = TimeUtils::DurationToSamples(time - *reference, samplerate_);
+		}
+
+		assert(sample >= 0);
+		assert(sample < blockSize_);
+		
+		midiMessages.addEvent(message, sample);
+		events.Next();
+	}
 }
 
 //==============================================================================

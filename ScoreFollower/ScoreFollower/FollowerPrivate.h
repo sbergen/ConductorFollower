@@ -22,11 +22,13 @@ public:
 	FollowerTypeIndependentImpl();
 	~FollowerTypeIndependentImpl();
 
-	void ReadTempoTrack(TrackReader<bool> & reader);
+	void ReadTempoTrack(TrackReader<tempo_t> & reader);
 
 	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
 	void RegisterBeat(real_time_t const & beatTime);
+	
 	score_time_t WarpTimestamp(real_time_t const & time);
+	real_time_t ScoreToRealTime(real_time_t const & anchor, score_time_t const & time);
 
 private: // These could be even more private...
 	boost::scoped_ptr<TimeWarper> timeWarper_;

@@ -15,7 +15,7 @@ FollowerTypeIndependentImpl::~FollowerTypeIndependentImpl()
 }
 
 void
-FollowerTypeIndependentImpl::ReadTempoTrack(TrackReader<bool> & reader)
+FollowerTypeIndependentImpl::ReadTempoTrack(TrackReader<tempo_t> & reader)
 {
 	timeWarper_->ReadTempoTrack(reader);
 }
@@ -36,6 +36,12 @@ score_time_t
 FollowerTypeIndependentImpl::WarpTimestamp(real_time_t const & time)
 {
 	return timeWarper_->WarpTimestamp(time);
+}
+
+real_time_t
+FollowerTypeIndependentImpl::ScoreToRealTime(real_time_t const & anchor, score_time_t const & time)
+{
+	return timeWarper_->InverseWarpTimestamp(anchor, time);
 }
 
 } // namespace ScoreFollower

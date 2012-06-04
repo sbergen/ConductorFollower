@@ -36,7 +36,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="MidiReader.cpp">
+    <ClCompile Include="..\..\Source\MidiReader.cpp">
       <Filter>CFPlugin\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,7 +56,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
-    <ClInclude Include="MidiReader.h">
+    <ClInclude Include="..\..\Source\MidiReader.h">
       <Filter>CFPlugin\Source</Filter>
     </ClInclude>
   </ItemGroup>

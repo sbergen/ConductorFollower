@@ -116,6 +116,7 @@
     <ClInclude Include="ScoreFollower\Follower.h" />
     <ClInclude Include="ScoreFollower\FollowerPrivate.h" />
     <ClInclude Include="ScoreFollower\ScoreReader.h" />
+    <ClInclude Include="ScoreFollower\TimeUtils.h" />
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\TimeWarper.h" />

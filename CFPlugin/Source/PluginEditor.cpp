@@ -15,6 +15,7 @@
 //==============================================================================
 CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
+	, ownerFilter(ownerFilter)
 	, playButton(0)
 {
     // This is where our plugin's editor size is set.
@@ -22,6 +23,7 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 
 	addAndMakeVisible(playButton = new TextButton("Play"));
 	playButton->setBounds(0, 0, 100, 100);
+	playButton->addListener(this);
 
 }
 
@@ -49,7 +51,9 @@ void CfpluginAudioProcessorEditor::paint (Graphics& g)
 void
 CfpluginAudioProcessorEditor::buttonClicked(Button * button)
 {
-
+	if (button == playButton) {
+		ownerFilter->shouldRun.store(!ownerFilter->shouldRun.load());
+	}
 }
 
 void

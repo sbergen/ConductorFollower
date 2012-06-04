@@ -13,6 +13,8 @@ namespace time {
 
 inline timestamp_t now() { return boost::chrono::steady_clock::now(); }
 
+template<typename T, typename Y> T duration_cast(Y y) { return boost::chrono::duration_cast<T>(y); }
+
 } // namespace time
 
 } // namespace cf

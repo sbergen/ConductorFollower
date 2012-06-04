@@ -11,8 +11,13 @@
 #ifndef __PLUGINPROCESSOR_H_C2A1EFF0__
 #define __PLUGINPROCESSOR_H_C2A1EFF0__
 
-#include "boost/atomic/
+#include <boost/atomic.hpp>
 
+#include "cf/cf.h"
+
+#include "ScoreFollower/Follower.h"
+
+// JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
 
@@ -66,6 +71,23 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
+
+public: // Own stuff...
+	boost::atomic<bool> shouldRun;
+
+private:
+	bool running_;
+	unsigned samplerate_;
+	unsigned blockSize_;
+
+	cf::timestamp_t estimatedEndForPrevBuffer;
+
+	cf::ScoreFollower::Follower<MidiMessage> follower_;
+
+	void PlaySamplesBetween(
+		MidiBuffer& midiMessages,
+		cf::timestamp_t begin, cf::timestamp_t end,
+		cf::timestamp_t * reference);
 
 private:
     //==============================================================================

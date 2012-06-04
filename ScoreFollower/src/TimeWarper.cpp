@@ -14,7 +14,7 @@ score_time_t
 TimeWarper::WarpPoint::Warp(real_time_t const & time) const
 {
 	// Only allow warping after the fixed point
-	assert(time > realTime_);
+	assert(time >= realTime_);
 
 	duration_t diff = time - realTime_;
 	duration_t warpedDuration(static_cast<duration_t::rep>(diff.count() * speed_));
@@ -23,13 +23,27 @@ TimeWarper::WarpPoint::Warp(real_time_t const & time) const
 	return scoreTime_ + progress;
 }
 
+
+real_time_t
+TimeWarper::WarpPoint::InverseWarp(score_time_t const & time) const
+{
+	// Only allow warping after the fixed point
+	assert(time >= scoreTime_);
+
+	duration_t diff = time - scoreTime_;
+	duration_t warpedDuration(static_cast<duration_t::rep>(diff.count() * (1.0 / speed_)));
+
+	score_time_t progress = boost::chrono::duration_cast<score_time_t>(warpedDuration);
+	return realTime_ + progress;
+}
+
 TimeWarper::TimeWarper()
 	: warpHistory_(100) // Arbitrary length, should be long enough...
 {
 }
 
 void
-TimeWarper::ReadTempoTrack(TrackReader<bool> & reader)
+TimeWarper::ReadTempoTrack(TrackReader<tempo_t> & reader)
 {
 	// TODO
 }
@@ -53,6 +67,14 @@ TimeWarper::WarpTimestamp(real_time_t const & time)
 	auto history = warpHistory_.EventsSinceInclusive(time);
 	assert(!history.Empty());
 	return history.data().Warp(time);
+}
+
+real_time_t
+TimeWarper::InverseWarpTimestamp(real_time_t const & reference, score_time_t const & time)
+{
+	auto history = warpHistory_.EventsSinceInclusive(reference);
+	assert(!history.Empty());
+	return history.data().InverseWarp(time);
 }
 
 TimeWarper::speed_t
