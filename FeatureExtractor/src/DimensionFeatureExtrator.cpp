@@ -18,7 +18,7 @@ DimensionFeatureExtractor::DimensionFeatureExtractor(PositionBuffer const & even
 void
 DimensionFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 {
-	timestamp_t since = positionBuffer_.LastTimestamp() - milliseconds_t(100);
+	timestamp_t since = positionBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
 	auto eventsSince = positionBuffer_.EventsSince(since);
 	auto range = eventsSince.DataAs<IteratorLinestring>();
 

@@ -14,7 +14,7 @@ template<typename TData, typename TTimestamp,
 	template<typename, typename> class TContainer = boost::circular_buffer, template<typename> class TAlloc = std::allocator>
 class EventBuffer
 {
-public:
+public: // typedefs
 
 	typedef TContainer<TData, typename TAlloc<TData> > DataBuffer;
 	typedef TContainer<TTimestamp, typename TAlloc<TTimestamp> > TimestampBuffer;
@@ -25,6 +25,7 @@ public:
 	typedef boost::iterator_range<DataIterator> DataRange;
 	typedef boost::iterator_range<TimestampIterator> TimestampRange;
 
+public: // Range class
 
 	class Range
 	{
@@ -34,12 +35,22 @@ public:
 			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
 		{ Rewind(); }
 
+		// Checks
+
+		typename DataBuffer::size_type Size() { return  dataRange_.size(); }
+		
 		bool Empty() { return dataRange_.empty(); }
+
+		TTimestamp LastTimestamp() const
+		{
+			if (timestampRange_.empty()) { return TTimestamp(); }
+			return timestampRange_.back();
+		}
 
 		// Iterating interface
 		void Rewind() { tIt_ = timestampRange_.begin(); dIt_ = dataRange_.begin(); }
-		bool Next() { ++tIt_; ++dIt_;  return AtEnd(); }
-		bool AtEnd() const { return dIt_ != dataRange_.end(); }
+		bool Next() { ++tIt_; ++dIt_;  return !AtEnd(); }
+		bool AtEnd() const { return dIt_ == dataRange_.end(); }
 
 		TTimestamp const & timestamp() const { return *tIt_; }
 		TData const & data() const { return *dIt_; }
@@ -56,12 +67,14 @@ public:
 		T<DataIterator> DataAs() const { return T<DataIterator>(dataRange_.begin(), dataRange_.end()); }
 
 	private:
-		TimestampRange const timestampRange_;
-		DataRange const dataRange_;
+		TimestampRange timestampRange_;
+		DataRange dataRange_;
 
 		TimestampIterator tIt_;
 		DataIterator dIt_;
 	};
+
+public: // Main interface
 
 	EventBuffer(size_t size)
 		: data_(size)
@@ -77,7 +90,7 @@ public:
 		data_.push_back(data);
 	}
 	
-	Range AllEvents()
+	Range AllEvents() const
 	{
 		return Range(*this, timestamps_.begin(), timestamps_.end());
 	}
@@ -99,20 +112,12 @@ public:
 
 	Range EventsBetweenInclusive(TTimestamp const & from, TTimestamp const & to) const
 	{
-		return Range(*this, LowerBoundInclusive(time), UpperBound(to));
+		auto lowerBound = LowerBoundInclusive(from);
+		if (lowerBound == timestamps_.end()) {
+			return Range(*this, timestamps_.end(), timestamps_.end());
+		}
+		return Range(*this, lowerBound, UpperBound(to));
 	}
-
-	// Timestamps
-
-	TTimestamp LastTimestamp() const
-	{
-		if (timestamps_.empty()) { return TTimestamp(); }
-		return timestamps_.back();
-	}
-
-	// Checks
-
-	typename DataBuffer::size_type size() { return  data_.size(); }
 
 	bool ContainsDataAfter(TTimestamp const & since) const
 	{
@@ -120,7 +125,7 @@ public:
 		return (timestamps_.front()) <= since && (timestamps_.back() >= since);
 	}
 
-private:
+private: // Private functions
 
 	TimestampIterator LowerBound(TTimestamp const & time) const
 	{
@@ -136,7 +141,8 @@ private:
 	TimestampIterator LowerBoundInclusive(TTimestamp const & time) const
 	{
 		TimestampIterator it = std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
-		if (it == timestamps_.end()) { return it; } // All items are smaller
+		
+		if (it == timestamps_.end()) { return --it; } // All items are smaller, return last
 
 		// *it >= time at this stage
 		if (*it == time) { return it; } // Equal

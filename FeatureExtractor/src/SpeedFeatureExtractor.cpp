@@ -19,7 +19,7 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 {
 	UpdateSpeedBuffer();
 
-	timestamp_t since = speedBuffer_.LastTimestamp() - milliseconds_t(100);
+	timestamp_t since = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
 	auto eventsSince = speedBuffer_.EventsSince(since);
 	auto data = eventsSince.DataAs<IteratorLinestring>();
 	
@@ -54,7 +54,7 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 
 	if (sgn(prevAvgSeed_.get<1>()) == -1 && sgn(centroid.get<1>()) == 1 && absSpeed > 100)
 	{
-		timestamp_t timestamp = speedBuffer_.LastTimestamp() - milliseconds_t(50);
+		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
 		events.enqueue(Event(timestamp, Event::Beat));
 	}
 
@@ -64,7 +64,7 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 void
 SpeedFeatureExtractor::UpdateSpeedBuffer()
 {
-	timestamp_t since = speedBuffer_.LastTimestamp();
+	timestamp_t since = speedBuffer_.AllEvents().LastTimestamp();
 	auto events = positionBuffer_.EventsSince(since);
 
 	Point3D prevPos = events.data();
