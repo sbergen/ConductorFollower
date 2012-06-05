@@ -100,6 +100,9 @@ BOOST_AUTO_TEST_CASE(EventsSinceInclusiveNormal)
 
 	events = buffer.EventsSinceInclusive(0.3);
 	BOOST_CHECK_EQUAL(events.Size(), 1);
+
+	events = buffer.EventsSinceInclusive(0.35);
+	BOOST_CHECK_EQUAL(events.Size(), 1);
 }
 
 BOOST_AUTO_TEST_CASE(EventsBetweenEmpty)

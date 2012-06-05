@@ -44,9 +44,13 @@ private:
 		score_time_t scoreTime_;
 	};
 
+	typedef EventBuffer<tempo_t, score_time_t, std::vector> TempoMap;
 	typedef EventBuffer<WarpPoint, real_time_t> WarpHistoryBuffer;
+	typedef EventBuffer<double, real_time_t> BeatHistoryBuffer;
 
+	TempoMap tempoMap_;
 	WarpHistoryBuffer warpHistory_;
+	BeatHistoryBuffer beatHistory_;
 };
 
 } // namespace ScoreFollower

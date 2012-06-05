@@ -16,6 +16,7 @@
 
 using namespace cf;
 using namespace cf::ScoreFollower;
+using namespace cf::FeatureExtractor;
 
 //==============================================================================
 CfpluginAudioProcessor::CfpluginAudioProcessor()
@@ -129,6 +130,9 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 	MidiReader reader("C:\\sample.mid");
 	follower_.CollectData(reader);
+
+	eventProvider_ = EventProvider::Create();
+	eventProvider_->StartProduction();
 }
 
 void CfpluginAudioProcessor::releaseResources()
@@ -155,7 +159,6 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-
 	/************************************************************************************/
 
 	if (!shouldRun.load()) {
@@ -166,11 +169,38 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	auto currentBlock = TimeUtils::GetTimeSpanEstimateForAudioBlock(blockSize_, samplerate_);
 
 	if (!running_) {
-		// Fix first time around
+		// first time around
 		running_ = true;
+
+		// Empty buffer
+		Event e;
+		while (eventProvider_->DequeueEvent(e));
+
+		// Fix first point
 		estimatedEndForPrevBuffer = currentBlock.first;
 		follower_.FixTimeMapping(currentBlock.first, score_time_t::zero());
 	}
+
+	/************************************************************************************/
+
+	Event e;
+	while (eventProvider_->DequeueEvent(e))
+	{
+		switch(e.type())
+		{
+		case Event::TrackingStarted:
+			//shouldRun.store(true);
+			break;
+		case Event::TrackingEnded:
+			shouldRun.store(false);
+			break;
+		case Event::Beat:
+			follower_.RegisterBeat(e.timestamp());
+			break;
+		}
+	}
+
+	/************************************************************************************/
 
 	// Fix jitter
 	if (currentBlock.first > estimatedEndForPrevBuffer) {

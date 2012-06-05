@@ -121,6 +121,13 @@ public: // Main interface
 		return Range(*this, lowerBound, UpperBound(to));
 	}
 
+	Range LastNumEvnets(int num)
+	{
+		assert(num > 0);
+		assert(timestamps_.size() >= num);
+		return Range(*this, timestamps_.end() - num, timestamps_.end());
+	}
+
 	bool ContainsDataAfter(TTimestamp const & since) const
 	{
 		if (timestamps_.empty()) { return false; }
@@ -142,6 +149,9 @@ private: // Private functions
 	// LowerBound is "after or at", this is "before or at"
 	TimestampIterator LowerBoundInclusive(TTimestamp const & time) const
 	{
+		// Sanity check
+		if (timestamps_.empty()) { return timestamps_.end(); }
+
 		TimestampIterator it = std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
 		
 		if (it == timestamps_.end()) { return --it; } // All items are smaller, return last

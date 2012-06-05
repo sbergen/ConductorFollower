@@ -41,8 +41,9 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	timestamp = time::duration_cast<score_time_t>(seconds);
 	
 	auto ePtr = sequence_.getEventPointer(current_);
-	double tickLength = ePtr->message.getTempoMetaEventTickLength(timeFormat_);
-	data = tempo_t(static_cast<tempo_t::rep>(tickLength));
+	double dqDuration = ePtr->message.getTempoSecondsPerQuarterNote();
+	seconds_t qDuration(dqDuration);
+	data = time::duration_cast<tempo_t>(qDuration);
 
 	++current_;
 	return current_ < count_;

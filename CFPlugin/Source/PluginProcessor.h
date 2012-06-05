@@ -17,6 +17,9 @@
 
 #include "ScoreFollower/Follower.h"
 
+#include "FeatureExtractor/EventProvider.h"
+#include "FeatureExtractor/Event.h"
+
 // JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
@@ -83,6 +86,7 @@ private:
 	cf::timestamp_t estimatedEndForPrevBuffer;
 
 	cf::ScoreFollower::Follower<MidiMessage> follower_;
+	cf::FeatureExtractor::EventProvider * eventProvider_;
 
 	void PlaySamplesBetween(
 		MidiBuffer& midiMessages,

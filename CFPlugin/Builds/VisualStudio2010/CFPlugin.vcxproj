@@ -115,7 +115,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);c:\SDKs\vstsdk2.4;../../JuceLibraryCode;"../../../ScoreFollower";"../../../cf";"../../../boost_lockfree";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);c:\SDKs\vstsdk2.4;../../JuceLibraryCode;"../../../FeatureExtractor";"../../../ScoreFollower";"../../../cf";"../../../boost_lockfree";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -243,6 +243,15 @@
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\FeatureExtractor\FeatureExtractor.vcxproj">
+      <Project>{60400649-f0b8-4318-9e3f-60aa79d9a654}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\MotionTracker\MotionTracker.vcxproj">
+      <Project>{567bba55-f7d3-4a9f-80b3-7f8c5c739c59}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ScoreFollower\ScoreFollower.vcxproj">
       <Project>{262368e6-b5c0-4a0c-94db-e0baf6357069}</Project>
     </ProjectReference>
