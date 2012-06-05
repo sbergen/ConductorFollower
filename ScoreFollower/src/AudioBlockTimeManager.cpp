@@ -58,7 +58,8 @@ void
 AudioBlockTimeManager::UpdateStretchFactor()
 {
 	seconds_t duration = time::duration_cast<seconds_t>(currentBlockEnd_ - currentBlockStart_);
-	currentBlockStretch_ = duration.count() / theoreticalBlockDuration_.count();
+	// Stretch or squeeze the duration to fit into the theoretical length
+	currentBlockStretch_ =  theoreticalBlockDuration_.count() * duration.count();
 }
 
 } // namespace ScoreFollower
