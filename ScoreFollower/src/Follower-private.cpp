@@ -16,7 +16,6 @@ FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, un
 	, rolling_(false)
 {
 	eventProvider_.reset(EventProvider::Create());
-	eventProvider_->StartProduction();
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
 }
@@ -58,7 +57,7 @@ FollowerTypeIndependentImpl::EnsureProperStart()
 	if (started_) { return; }
 	started_ = true;
 
-	//eventProvider_->StartProduction();
+	assert(eventProvider_->StartProduction());
 }
 
 void

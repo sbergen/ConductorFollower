@@ -91,6 +91,7 @@ LockfreeThread::WaitForRunOrInterrupt(unique_lock & lock)
 		State expected = RunRequested;
 		while (!state_.compare_exchange_strong(expected, Running)) {
 			waitCond_.wait(lock);
+			expected = RunRequested;
 		}
 		return true;
 	} catch(boost::thread_interrupted) {
