@@ -1,14 +1,22 @@
 #pragma once
 
+#include <utility>
+
 #include <boost/scoped_ptr.hpp>
 
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
 
 namespace cf {
+
+namespace FeatureExtractor {
+	class EventProvider;
+} // namespace FeatureExtractor
+
 namespace ScoreFollower {
 
 class TimeWarper;
+class AudioBlockTimeManager;
 
 // One class of indirection to make the implementation private
 // This basically implments all the template parameter
@@ -18,20 +26,26 @@ class FollowerTypeIndependentImpl
 private: // Only accessible by Follower
 	template <class TData> friend class Follower;
 
-public:
-	FollowerTypeIndependentImpl();
+	FollowerTypeIndependentImpl(unsigned samplerate, unsigned blockSize);
 	~FollowerTypeIndependentImpl();
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader);
+	void StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange);
 
-	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
-	void RegisterBeat(real_time_t const & beatTime);
-	
-	score_time_t WarpTimestamp(real_time_t const & time);
-	real_time_t ScoreToRealTime(real_time_t const & anchor, score_time_t const & time);
+	unsigned ScoreTimeToFrameOffset(score_time_t const & time);
+	bool Rolling() const { return rolling_; }
 
-private: // These could be even more private...
+private:
+	void EnsureProperStart();
+	void ConsumeEvents();
+
+private:
+	boost::scoped_ptr<FeatureExtractor::EventProvider> eventProvider_;
+	boost::scoped_ptr<AudioBlockTimeManager> timeManager_;
 	boost::scoped_ptr<TimeWarper> timeWarper_;
+
+	bool started_;
+	bool rolling_;
 };
 
 } // namespace ScoreFollower

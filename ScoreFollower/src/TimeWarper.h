@@ -17,7 +17,9 @@ public:
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader);
 
+	// TODO Remove from publi API
 	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
+
 	void RegisterBeat(real_time_t const & beatTime);
 	score_time_t WarpTimestamp(real_time_t const & time);
 	real_time_t InverseWarpTimestamp(real_time_t const & reference, score_time_t const & time);

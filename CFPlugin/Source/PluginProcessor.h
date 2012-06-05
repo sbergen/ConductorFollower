@@ -12,13 +12,10 @@
 #define __PLUGINPROCESSOR_H_C2A1EFF0__
 
 #include <boost/atomic.hpp>
+#include <boost/scoped_ptr.hpp>
 
 #include "cf/cf.h"
-
 #include "ScoreFollower/Follower.h"
-
-#include "FeatureExtractor/EventProvider.h"
-#include "FeatureExtractor/Event.h"
 
 // JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -79,19 +76,16 @@ public: // Own stuff...
 	boost::atomic<bool> shouldRun;
 
 private:
+
 	bool running_;
-	unsigned samplerate_;
-	unsigned blockSize_;
+	unsigned samplesPerBlock_;
 
-	cf::timestamp_t estimatedEndForPrevBuffer;
+	typedef cf::ScoreFollower::Follower<MidiMessage> ScoreFollower;
+	typedef ScoreFollower::BlockBuffer MidiEventBuffer;
+	
+	boost::scoped_ptr<ScoreFollower> follower_;
+	MidiEventBuffer eventBuffer_;
 
-	cf::ScoreFollower::Follower<MidiMessage> follower_;
-	cf::FeatureExtractor::EventProvider * eventProvider_;
-
-	void PlaySamplesBetween(
-		MidiBuffer& midiMessages,
-		cf::timestamp_t begin, cf::timestamp_t end,
-		cf::timestamp_t * reference);
 
 private:
     //==============================================================================

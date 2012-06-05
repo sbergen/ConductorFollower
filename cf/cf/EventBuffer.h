@@ -128,10 +128,18 @@ public: // Main interface
 		return Range(*this, timestamps_.end() - num, timestamps_.end());
 	}
 
+	// Other stuff...
+
 	bool ContainsDataAfter(TTimestamp const & since) const
 	{
 		if (timestamps_.empty()) { return false; }
 		return (timestamps_.front()) <= since && (timestamps_.back() >= since);
+	}
+
+	void Clear()
+	{
+		data_.clear();
+		timestamps_.clear();
 	}
 
 private: // Private functions

@@ -1,12 +1,23 @@
-#include "ScoreFollower/FollowerPrivate.h"
+#include "ScoreFollower/Follower-private.h"
+
+#include "FeatureExtractor/Event.h"
+#include "FeatureExtractor/EventProvider.h"
 
 #include "TimeWarper.h"
+#include "AudioBlockTimeManager.h"
+
+using namespace cf::FeatureExtractor;
 
 namespace cf {
 namespace ScoreFollower {
 
-FollowerTypeIndependentImpl::FollowerTypeIndependentImpl()
+FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, unsigned blockSize)
+	: started_(false)
+	, rolling_(false)
 {
+	eventProvider_.reset(EventProvider::Create());
+	eventProvider_->StartProduction();
+	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
 }
 
@@ -21,27 +32,55 @@ FollowerTypeIndependentImpl::ReadTempoTrack(TrackReader<tempo_t> & reader)
 }
 
 void
-FollowerTypeIndependentImpl::FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime)
+FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange)
 {
-	timeWarper_->FixTimeMapping(realTime, scoreTime);
+	auto currentBlock = timeManager_->GetRangeForNow();
+	EnsureProperStart();
+	ConsumeEvents();
+
+	if (!rolling_) { return; }
+
+	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
+	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
+}
+
+unsigned
+FollowerTypeIndependentImpl::ScoreTimeToFrameOffset(score_time_t const & time)
+{
+	real_time_t const & ref = timeManager_->CurrentBlockStart();
+	real_time_t realTime = timeWarper_->InverseWarpTimestamp(ref, time);
+	return timeManager_->ToSampleOffset(realTime);
 }
 
 void
-FollowerTypeIndependentImpl::RegisterBeat(real_time_t const & beatTime)
+FollowerTypeIndependentImpl::EnsureProperStart()
 {
-	timeWarper_->RegisterBeat(beatTime);
+	if (started_) { return; }
+	started_ = true;
+
+	//eventProvider_->StartProduction();
 }
 
-score_time_t
-FollowerTypeIndependentImpl::WarpTimestamp(real_time_t const & time)
+void
+FollowerTypeIndependentImpl::ConsumeEvents()
 {
-	return timeWarper_->WarpTimestamp(time);
-}
-
-real_time_t
-FollowerTypeIndependentImpl::ScoreToRealTime(real_time_t const & anchor, score_time_t const & time)
-{
-	return timeWarper_->InverseWarpTimestamp(anchor, time);
+	Event e;
+	while (eventProvider_->DequeueEvent(e))
+	{
+		switch(e.type())
+		{
+		case Event::TrackingStarted:
+			// Fix beginning of score, TODO change API!
+			timeWarper_->FixTimeMapping(timeManager_->CurrentBlockStart(), score_time_t::zero());
+			rolling_ = true;
+			break;
+		case Event::TrackingEnded:
+			break;
+		case Event::Beat:
+			timeWarper_->RegisterBeat(e.timestamp());
+			break;
+		}
+	}
 }
 
 } // namespace ScoreFollower

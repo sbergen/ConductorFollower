@@ -94,8 +94,8 @@ TimeWarper::InverseWarpTimestamp(real_time_t const & reference, score_time_t con
 TimeWarper::speed_t
 TimeWarper::CalculateSpeedAt(real_time_t time)
 {
-	// For now, discard the first eight beats...
-	if (beatHistory_.AllEvents().Size() < 8) { return 1.0; }
+	// Ignore beginning for now...
+	if (beatHistory_.AllEvents().Size() < 16) { return 1.0; }
 	
 	speed_t speed = 1.0;
 	

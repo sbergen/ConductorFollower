@@ -34,9 +34,15 @@ AudioBlockTimeManager::GetRangeForNow()
 unsigned
 AudioBlockTimeManager::ToSampleOffset(real_time_t const & time)
 {
+	assert(time >= currentBlockStart_);
+	assert(time <= currentBlockEnd_);
+
 	real_time_t::duration offset = time - currentBlockStart_;
 	seconds_t offsetInSeconds = time::duration_cast<seconds_t>(offset);
 	offsetInSeconds *= currentBlockStretch_;
+
+	// TODO change rounding policy?
+	// The timing difference is so small it shouldn't matter...
 	return static_cast<unsigned>(offsetInSeconds.count() * blockSize_);
 }
 

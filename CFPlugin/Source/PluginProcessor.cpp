@@ -22,6 +22,7 @@ using namespace cf::FeatureExtractor;
 CfpluginAudioProcessor::CfpluginAudioProcessor()
 	: shouldRun(false)
 	, running_(false)
+	, eventBuffer_(100)
 {
 }
 
@@ -123,16 +124,15 @@ void CfpluginAudioProcessor::changeProgramName (int index, const String& newName
 //==============================================================================
 void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-	samplerate_ = sampleRate;
-	blockSize_ = samplesPerBlock;
+	samplesPerBlock_ = samplesPerBlock;
+
+	follower_.reset(new ScoreFollower(sampleRate, samplesPerBlock));
 
 	MidiReader reader("C:\\sample.mid");
-	follower_.CollectData(reader);
+	follower_->CollectData(reader);
 
-	eventProvider_ = EventProvider::Create();
-	eventProvider_->StartProduction();
+	// Lets see...
+	shouldRun.store(true);
 }
 
 void CfpluginAudioProcessor::releaseResources()
@@ -144,7 +144,31 @@ void CfpluginAudioProcessor::releaseResources()
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
-    // This is the place where you'd normally do the guts of your plugin's
+	/************************************************************************************/
+
+	if (!shouldRun.load()) {
+		running_ = false;
+		return;
+	}
+
+	/************************************************************************************/
+
+	// TODO get all tracks
+	follower_->StartNewBlock();
+	follower_->GetTrackEventsForBlock(1, eventBuffer_);
+	auto events = eventBuffer_.AllEvents();
+
+	while(!events.AtEnd()) {
+		assert(events.timestamp() >= 0);
+		assert(events.timestamp() < samplesPerBlock_);
+
+		midiMessages.addEvent(events.data(), events.timestamp());
+		events.Next();
+	}
+
+	/*****************************************************************************************/
+
+	// This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
@@ -158,89 +182,6 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
-
-	/************************************************************************************/
-
-	if (!shouldRun.load()) {
-		running_ = false;
-		return;
-	}
-
-	auto currentBlock = TimeUtils::GetTimeSpanEstimateForAudioBlock(blockSize_, samplerate_);
-
-	if (!running_) {
-		// first time around
-		running_ = true;
-
-		// Empty buffer
-		Event e;
-		while (eventProvider_->DequeueEvent(e));
-
-		// Fix first point
-		estimatedEndForPrevBuffer = currentBlock.first;
-		follower_.FixTimeMapping(currentBlock.first, score_time_t::zero());
-	}
-
-	/************************************************************************************/
-
-	Event e;
-	while (eventProvider_->DequeueEvent(e))
-	{
-		switch(e.type())
-		{
-		case Event::TrackingStarted:
-			//shouldRun.store(true);
-			break;
-		case Event::TrackingEnded:
-			shouldRun.store(false);
-			break;
-		case Event::Beat:
-			follower_.RegisterBeat(e.timestamp());
-			break;
-		}
-	}
-
-	/************************************************************************************/
-
-	// Fix jitter
-	if (currentBlock.first > estimatedEndForPrevBuffer) {
-		PlaySamplesBetween(midiMessages, estimatedEndForPrevBuffer, currentBlock.first, 0);
-		PlaySamplesBetween(midiMessages, currentBlock.first, currentBlock.second, &currentBlock.first);
-	} else if (currentBlock.first < estimatedEndForPrevBuffer) {
-		PlaySamplesBetween(midiMessages, estimatedEndForPrevBuffer, currentBlock.second, &currentBlock.first);
-	} else {
-		PlaySamplesBetween(midiMessages, currentBlock.first, currentBlock.second, &currentBlock.first);
-	}
-
-	estimatedEndForPrevBuffer = currentBlock.second;
-}
-
-void CfpluginAudioProcessor::PlaySamplesBetween(
-	MidiBuffer& midiMessages,
-	cf::timestamp_t begin, cf::timestamp_t end,
-	cf::timestamp_t * reference)
-{
-	// TODO get all tracks
-	auto events = follower_.GetEventsBetween(1, begin, end);
-
-	while(!events.AtEnd()) {
-		MidiMessage message = events.data();
-
-		seconds_t seconds(message.getTimeStamp());
-		score_time_t scoreTime = time::duration_cast<score_time_t>(seconds);
-
-		int sample = 0;
-		if (reference != 0) {
-			real_time_t time = follower_.ScoreToRealTime(*reference, scoreTime);
-			sample = TimeUtils::DurationToSamples(time - *reference, samplerate_);
-		}
-
-		assert(sample >= 0);
-		assert(sample < blockSize_);
-		
-		midiMessages.addEvent(message, sample);
-		events.Next();
-	}
 }
 
 //==============================================================================
