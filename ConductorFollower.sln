@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cfTests", "cfTests\cfTests.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScoreFollower", "ScoreFollower\ScoreFollower.vcxproj", "{262368E6-B5C0-4A0C-94DB-E0BAF6357069}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScoreFollowerTests", "ScoreFollowerTests\ScoreFollowerTests.vcxproj", "{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -91,6 +93,12 @@ Global
 		{262368E6-B5C0-4A0C-94DB-E0BAF6357069}.Release|Win32.ActiveCfg = Release|Win32
 		{262368E6-B5C0-4A0C-94DB-E0BAF6357069}.Release|Win32.Build.0 = Release|Win32
 		{262368E6-B5C0-4A0C-94DB-E0BAF6357069}.Release|x64.ActiveCfg = Release|Win32
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Debug|Win32.Build.0 = Debug|Win32
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Debug|x64.ActiveCfg = Debug|x64
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Release|Win32.ActiveCfg = Release|Win32
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Release|Win32.Build.0 = Release|Win32
+		{8A878126-39A8-428E-A7A7-C1F1EDE66EF2}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

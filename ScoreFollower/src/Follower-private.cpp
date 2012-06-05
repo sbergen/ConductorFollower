@@ -69,8 +69,7 @@ FollowerTypeIndependentImpl::ConsumeEvents()
 		switch(e.type())
 		{
 		case Event::TrackingStarted:
-			// Fix beginning of score, TODO change API!
-			timeWarper_->FixTimeMapping(timeManager_->CurrentBlockStart(), score_time_t::zero());
+			timeWarper_->RegisterBeat(timeManager_->CurrentBlockStart());
 			rolling_ = true;
 			break;
 		case Event::TrackingEnded:

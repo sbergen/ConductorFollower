@@ -60,15 +60,10 @@ TimeWarper::ReadTempoTrack(TrackReader<tempo_t> & reader)
 }
 
 void
-TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime)
-{
-	speed_t speed = CalculateSpeedAt(realTime);
-	warpHistory_.RegisterEvent(realTime, WarpPoint(speed, realTime, scoreTime));
-}
-
-void
 TimeWarper::RegisterBeat(real_time_t const & beatTime)
 {
+	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
+
 	// Beats will probably include a probability later...
 	beatHistory_.RegisterEvent(beatTime, 1.0);
 	score_time_t scoreTime = WarpTimestamp(beatTime);
@@ -78,9 +73,14 @@ TimeWarper::RegisterBeat(real_time_t const & beatTime)
 score_time_t
 TimeWarper::WarpTimestamp(real_time_t const & time)
 {
+	assert(time >= warpHistory_.AllEvents().LastTimestamp());
+
 	auto history = warpHistory_.EventsSinceInclusive(time);
-	assert(!history.Empty());
-	return history.data().Warp(time);
+	if (history.Empty()) {
+		return score_time_t::zero();
+	} else {
+		return history.data().Warp(time);
+	}
 }
 
 real_time_t
@@ -89,6 +89,13 @@ TimeWarper::InverseWarpTimestamp(real_time_t const & reference, score_time_t con
 	auto history = warpHistory_.EventsSinceInclusive(reference);
 	assert(!history.Empty());
 	return history.data().InverseWarp(time);
+}
+
+void
+TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime)
+{
+	speed_t speed = CalculateSpeedAt(realTime);
+	warpHistory_.RegisterEvent(realTime, WarpPoint(speed, realTime, scoreTime));
 }
 
 TimeWarper::speed_t
