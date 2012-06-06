@@ -16,7 +16,9 @@ public:
 	TimeWarper();
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader);
+
 	void RegisterBeat(real_time_t const & beatTime);
+	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
 
 	// Returns the score time that should "occur" at the real time
 	score_time_t WarpTimestamp(real_time_t const & time);
@@ -60,7 +62,6 @@ private:
 	// Actual implementation of inverse warping, used by the two public functions
 	real_time_t InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange);
 
-	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
 	speed_t CalculateSpeedAt(real_time_t time);
 
 private:

@@ -66,8 +66,13 @@ TimeWarper::RegisterBeat(real_time_t const & beatTime)
 
 	// Beats will probably include a probability later...
 	beatHistory_.RegisterEvent(beatTime, 1.0);
-	score_time_t scoreTime = WarpTimestamp(beatTime);
-	FixTimeMapping(beatTime, scoreTime);
+}
+
+void
+TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime)
+{
+	speed_t speed = CalculateSpeedAt(realTime);
+	warpHistory_.RegisterEvent(realTime, WarpPoint(speed, realTime, scoreTime));
 }
 
 score_time_t
@@ -112,13 +117,6 @@ TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::R
 	}
 
 	throw std::logic_error("Should never be reached...");
-}
-
-void
-TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime)
-{
-	speed_t speed = CalculateSpeedAt(realTime);
-	warpHistory_.RegisterEvent(realTime, WarpPoint(speed, realTime, scoreTime));
 }
 
 TimeWarper::speed_t

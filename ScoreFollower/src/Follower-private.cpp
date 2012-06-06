@@ -41,6 +41,8 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
 	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
+
+	timeWarper_->FixTimeMapping(currentBlock.second, scoreRange.second);
 }
 
 unsigned
@@ -69,7 +71,7 @@ FollowerTypeIndependentImpl::ConsumeEvents()
 		switch(e.type())
 		{
 		case Event::TrackingStarted:
-			timeWarper_->RegisterBeat(timeManager_->CurrentBlockStart());
+			timeWarper_->FixTimeMapping(timeManager_->CurrentBlockStart(), score_time_t::zero());
 			rolling_ = true;
 			break;
 		case Event::TrackingEnded:
