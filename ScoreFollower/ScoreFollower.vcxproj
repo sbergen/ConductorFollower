@@ -121,11 +121,13 @@
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />
+    <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TimeWarper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
     <ClCompile Include="src\Follower-private.cpp" />
+    <ClCompile Include="src\TempoFollower.cpp" />
     <ClCompile Include="src\TimeWarper.cpp" />
   </ItemGroup>
   <ItemGroup>

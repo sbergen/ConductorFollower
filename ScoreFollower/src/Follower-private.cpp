@@ -1,9 +1,9 @@
 #include "ScoreFollower/Follower-private.h"
 
-#include "FeatureExtractor/Event.h"
 #include "FeatureExtractor/EventProvider.h"
 
 #include "TimeWarper.h"
+#include "TempoFollower.h"
 #include "AudioBlockTimeManager.h"
 
 using namespace cf::FeatureExtractor;
@@ -18,6 +18,7 @@ FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, un
 	eventProvider_.reset(EventProvider::Create());
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
+	tempoFollower_.reset(new TempoFollower());
 }
 
 FollowerTypeIndependentImpl::~FollowerTypeIndependentImpl()
@@ -27,7 +28,7 @@ FollowerTypeIndependentImpl::~FollowerTypeIndependentImpl()
 void
 FollowerTypeIndependentImpl::ReadTempoTrack(TrackReader<tempo_t> & reader)
 {
-	timeWarper_->ReadTempoTrack(reader);
+	tempoFollower_->ReadTempoTrack(reader);
 }
 
 void
@@ -42,8 +43,9 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 	// Get start estimate based on old data
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
 
-	// Fix the starting point, triggers new estimate
-	timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first);
+	// Fix the starting point, ensures the next warp is "accurate"
+	speed_t speed = tempoFollower_->SpeedEstimateAt(scoreRange.first);
+	timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
 
 	// Now use the new estimate for this block
 	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
@@ -69,20 +71,34 @@ FollowerTypeIndependentImpl::EnsureProperStart()
 void
 FollowerTypeIndependentImpl::ConsumeEvents()
 {
-	Event e;
-	while (eventProvider_->DequeueEvent(e))
-	{
-		switch(e.type())
-		{
-		case Event::TrackingStarted:
-			rolling_ = true;
-			break;
-		case Event::TrackingEnded:
-			break;
-		case Event::Beat:
-			timeWarper_->RegisterBeat(e.timestamp());
+	if (queuedEvent_.isQueued) {
+		ConsumeEvent(queuedEvent_.e);
+		queuedEvent_.isQueued = false;
+	}
+
+	while (eventProvider_->DequeueEvent(queuedEvent_.e)) {
+		if (queuedEvent_.e.timestamp() >= timeManager_->CurrentBlockStart()) {
+			queuedEvent_.isQueued = true;
 			break;
 		}
+		ConsumeEvent(queuedEvent_.e);
+	}
+}
+
+void
+FollowerTypeIndependentImpl::ConsumeEvent(Event const & e)
+{
+	switch(e.type())
+	{
+	case Event::TrackingStarted:
+		rolling_ = true;
+		break;
+	case Event::TrackingEnded:
+		break;
+	case Event::Beat:
+		score_time_t warpedTime = timeWarper_->WarpTimestamp(e.timestamp());
+		tempoFollower_->RegisterBeat(warpedTime);
+		break;
 	}
 }
 

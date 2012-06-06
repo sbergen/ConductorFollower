@@ -1,11 +1,8 @@
 #pragma once
 
-#include <vector>
-
 #include "cf/EventBuffer.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/TrackReader.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -15,10 +12,10 @@ class TimeWarper
 public:
 	TimeWarper();
 
-	void ReadTempoTrack(TrackReader<tempo_t> & reader);
-
-	void RegisterBeat(real_time_t const & beatTime);
-	void FixTimeMapping(real_time_t const & realTime, score_time_t const & scoreTime);
+	void FixTimeMapping(
+		real_time_t const & realTime,
+		score_time_t const & scoreTime,
+		speed_t const & speed);
 
 	// Returns the score time that should "occur" at the real time
 	score_time_t WarpTimestamp(real_time_t const & time);
@@ -32,8 +29,6 @@ public:
 	real_time_t InverseWarpTimestamp(score_time_t const & time);
 
 private:
-	typedef double speed_t;
-
 	// class for storing warping history
 	class WarpPoint
 	{
@@ -54,20 +49,13 @@ private:
 	};
 
 private:
-	typedef EventBuffer<tempo_t, score_time_t, std::vector> TempoMap;
 	typedef EventBuffer<WarpPoint, real_time_t> WarpHistoryBuffer;
-	typedef EventBuffer<double, real_time_t> BeatHistoryBuffer;
 
-private:
 	// Actual implementation of inverse warping, used by the two public functions
 	real_time_t InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange);
 
-	speed_t CalculateSpeedAt(real_time_t time);
-
 private:
-	TempoMap tempoMap_;
 	WarpHistoryBuffer warpHistory_;
-	BeatHistoryBuffer beatHistory_;
 };
 
 } // namespace ScoreFollower

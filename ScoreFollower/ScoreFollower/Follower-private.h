@@ -4,6 +4,8 @@
 
 #include <boost/scoped_ptr.hpp>
 
+#include "FeatureExtractor/Event.h"
+
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
 
@@ -16,6 +18,7 @@ namespace FeatureExtractor {
 namespace ScoreFollower {
 
 class TimeWarper;
+class TempoFollower;
 class AudioBlockTimeManager;
 
 // One class of indirection to make the implementation private
@@ -38,14 +41,24 @@ private: // Only accessible by Follower
 private:
 	void EnsureProperStart();
 	void ConsumeEvents();
+	void ConsumeEvent(FeatureExtractor::Event const & e);
 
 private:
 	boost::scoped_ptr<FeatureExtractor::EventProvider> eventProvider_;
 	boost::scoped_ptr<AudioBlockTimeManager> timeManager_;
 	boost::scoped_ptr<TimeWarper> timeWarper_;
+	boost::scoped_ptr<TempoFollower> tempoFollower_;
 
 	bool started_;
 	bool rolling_;
+
+	struct QueuedEvent
+	{
+		QueuedEvent() : isQueued(false) {}
+		bool isQueued;
+		FeatureExtractor::Event e;
+	};
+	QueuedEvent queuedEvent_;
 };
 
 } // namespace ScoreFollower

@@ -11,5 +11,8 @@ typedef cf::timestamp_t real_time_t;
 // Tempo is microseconds per quarter note 
 typedef boost::chrono::microseconds tempo_t;
 
+// Speed is relative speed (i.e. 1.0 == normal speed)
+typedef double speed_t;
+
 } // namespace ScoreFollower
 } // namespace cf
