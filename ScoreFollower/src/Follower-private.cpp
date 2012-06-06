@@ -39,10 +39,14 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 
 	if (!rolling_) { return; }
 
+	// Get start estimate based on old data
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
-	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
 
-	timeWarper_->FixTimeMapping(currentBlock.second, scoreRange.second);
+	// Fix the starting point, triggers new estimate
+	timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first);
+
+	// Now use the new estimate for this block
+	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
 }
 
 unsigned
@@ -71,7 +75,6 @@ FollowerTypeIndependentImpl::ConsumeEvents()
 		switch(e.type())
 		{
 		case Event::TrackingStarted:
-			timeWarper_->FixTimeMapping(timeManager_->CurrentBlockStart(), score_time_t::zero());
 			rolling_ = true;
 			break;
 		case Event::TrackingEnded:
