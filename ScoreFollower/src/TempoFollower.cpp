@@ -4,24 +4,9 @@ namespace cf {
 namespace ScoreFollower {
 
 TempoFollower::TempoFollower()
-	: tempoMap_(0)
+	: tempoMap_()
 	, beatHistory_(100) // Arbitrary length, should be long enough...
 {
-}
-
-void
-TempoFollower::ReadTempoTrack(TrackReader<tempo_t> & reader)
-{
-	score_time_t timestamp;
-	tempo_t tempo;
-	while (reader.NextEvent(timestamp, tempo)) {
-		tempoMap_.RegisterEvent(timestamp, tempo);
-	}
-
-	if (tempoMap_.AllEvents().Empty()) {
-		seconds_t qDuration(60.0/*s*/ / 120 /*bpm*/);
-		tempoMap_.RegisterEvent(score_time_t::zero(), time::duration_cast<tempo_t>(qDuration));
-	}
 }
 
 void
@@ -42,14 +27,14 @@ TempoFollower::SpeedEstimateAt(score_time_t const & time)
 	
 	speed_t speed = 1.0;
 	
-	auto lastTempoEvent = tempoMap_.EventsSinceInclusive(time);
+	TempoMap::TempoPoint tp = tempoMap_.GetTempoAt(time);
 	auto lastMeasure = beatHistory_.LastNumEvnets(3);
 
 	real_time_t::duration lmDuration = lastMeasure.timestampRange().back() - lastMeasure.timestampRange().front();
 	tempo_t cTempo = time::duration_cast<tempo_t>(lmDuration / 2);
 
 	// tempos are durations, so the division is this way around...
-	speed = (double)lastTempoEvent.data().count() / (double)cTempo.count();
+	speed = (double) tp.tempo.count() / (double)cTempo.count();
 
 	return speed;
 }

@@ -14,5 +14,8 @@ typedef boost::chrono::microseconds tempo_t;
 // Speed is relative speed (i.e. 1.0 == normal speed)
 typedef double speed_t;
 
+// Beat position is plain beats, including fraction
+typedef double beat_pos_t;
+
 } // namespace ScoreFollower
 } // namespace cf
