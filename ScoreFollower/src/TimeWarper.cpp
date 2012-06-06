@@ -84,11 +84,34 @@ TimeWarper::WarpTimestamp(real_time_t const & time)
 }
 
 real_time_t
-TimeWarper::InverseWarpTimestamp(real_time_t const & reference, score_time_t const & time)
+TimeWarper::InverseWarpTimestamp(score_time_t const & time, real_time_t const & reference)
 {
 	auto history = warpHistory_.EventsSinceInclusive(reference);
-	assert(!history.Empty());
-	return history.data().InverseWarp(time);
+	return InverseWarpTimestamp(time, history);
+}
+
+real_time_t
+TimeWarper::InverseWarpTimestamp(score_time_t const & time)
+{
+	auto history = warpHistory_.AllEvents();
+	return InverseWarpTimestamp(time, history);
+}
+
+real_time_t
+TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange)
+{
+	assert(!searchRange.Empty());
+	assert(time >= searchRange.data().scoreTime());
+
+	while (!searchRange.AtEnd()) {
+		WarpPoint const & p = searchRange.data();
+
+		// Check the next one (if it exists)
+		if (searchRange.Next() && (time >= searchRange.data().scoreTime())) { continue; }
+		return p.InverseWarp(time);
+	}
+
+	throw std::logic_error("Should never be reached...");
 }
 
 void

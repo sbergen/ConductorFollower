@@ -47,7 +47,7 @@ unsigned
 FollowerTypeIndependentImpl::ScoreTimeToFrameOffset(score_time_t const & time)
 {
 	real_time_t const & ref = timeManager_->CurrentBlockStart();
-	real_time_t realTime = timeWarper_->InverseWarpTimestamp(ref, time);
+	real_time_t realTime = timeWarper_->InverseWarpTimestamp(time, ref);
 	return timeManager_->ToSampleOffset(realTime);
 }
 
