@@ -26,11 +26,14 @@ private:
 	typedef EventBuffer<double, score_time_t> BeatHistoryBuffer;
 
 private:
-	
+	score_time_t AvgConductedBeatDuration(int averageOver);
 
 private:
 	TempoMap tempoMap_;
 	BeatHistoryBuffer beatHistory_;
+
+	bool newBeats_;
+	speed_t speed_;
 };
 
 } // namespace ScoreFollower

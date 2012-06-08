@@ -1,11 +1,15 @@
 #include "TempoFollower.h"
 
+#include "globals.h"
+
 namespace cf {
 namespace ScoreFollower {
 
 TempoFollower::TempoFollower()
 	: tempoMap_()
 	, beatHistory_(100) // Arbitrary length, should be long enough...
+	, newBeats_(false)
+	, speed_(1.0)
 {
 }
 
@@ -16,29 +20,34 @@ TempoFollower::RegisterBeat(score_time_t const & beatTime)
 
 	// Beats will probably include a probability later...
 	beatHistory_.RegisterEvent(beatTime, 1.0);
+	newBeats_ = true;
 }
 
 
 speed_t
 TempoFollower::SpeedEstimateAt(score_time_t const & time)
 {
+	if (!newBeats_) { return speed_; }
+	newBeats_ = false;
+
 	// Ignore beginning for now...
-	if (beatHistory_.AllEvents().Size() < 16) { return 1.0; }
-	
-	speed_t speed = 1.0;
-	
-	TempoMap::TempoPoint tp = tempoMap_.GetTempoAt(time);
-	auto lastMeasure = beatHistory_.LastNumEvnets(3);
+	if (beatHistory_.AllEvents().Size() < 16) { return speed_; }
 
-	real_time_t::duration lmDuration = lastMeasure.timestampRange().back() - lastMeasure.timestampRange().front();
-	tempo_t cTempo = time::duration_cast<tempo_t>(lmDuration / 2);
+	TempoMap::TempoPoint tempoNow = tempoMap_.GetTempoAt(time);
+	score_time_t avgConductedTempo = AvgConductedBeatDuration(2);
 
-	// tempos are durations, so the division is this way around...
-	speed = (double) tp.tempo.count() / (double)cTempo.count();
+	speed_ *= (double)tempoNow.tempo.count() / (double)avgConductedTempo.count();
 
-	return speed;
+	return speed_;
 }
 
+score_time_t
+TempoFollower::AvgConductedBeatDuration(int averageOver)
+{
+	auto lastBeats = beatHistory_.LastNumEvnets(averageOver + 1);
+	score_time_t duration = lastBeats.LastTimestamp() - lastBeats.timestamp();
+	return duration / averageOver;
+}
 
 } // namespace ScoreFollower
 } // namespace cf
