@@ -32,9 +32,21 @@
     <ClInclude Include="cf\LockfreeThread.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\Logger.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\ButlerThread.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LockfreeThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ButlerThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

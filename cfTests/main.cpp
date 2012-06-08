@@ -3,4 +3,4 @@
 
 // Test suites
 #include "EventBufferTests.h"
-
+#include "LoggerTests.h"

@@ -80,7 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\cf"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\cf";"../boost_lockfree"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,6 +122,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventBufferTests.h" />
+    <ClInclude Include="LoggerTests.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -110,15 +110,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cf\ButlerThread.h" />
     <ClInclude Include="cf\cf.h" />
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\geometry.h" />
     <ClInclude Include="cf\LockfreeThread.h" />
+    <ClInclude Include="cf\Logger.h" />
     <ClInclude Include="cf\math.h" />
     <ClInclude Include="cf\time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ButlerThread.cpp" />
     <ClCompile Include="src\LockfreeThread.cpp" />
+    <ClCompile Include="src\Logger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

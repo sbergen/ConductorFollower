@@ -4,6 +4,8 @@
 
 #include <boost/scoped_ptr.hpp>
 
+#include "cf/Logger.h"
+
 #include "FeatureExtractor/Event.h"
 
 #include "ScoreFollower/types.h"
@@ -17,6 +19,7 @@ namespace FeatureExtractor {
 
 namespace ScoreFollower {
 
+class GlobalsInitializer;
 class TimeWarper;
 class TempoFollower;
 class AudioBlockTimeManager;
@@ -44,6 +47,7 @@ private:
 	void ConsumeEvent(FeatureExtractor::Event const & e);
 
 private:
+	boost::scoped_ptr<GlobalsInitializer> globalsInit_;
 	boost::scoped_ptr<FeatureExtractor::EventProvider> eventProvider_;
 	boost::scoped_ptr<AudioBlockTimeManager> timeManager_;
 	boost::scoped_ptr<TimeWarper> timeWarper_;

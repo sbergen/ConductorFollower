@@ -5,6 +5,7 @@
 #include "TimeWarper.h"
 #include "TempoFollower.h"
 #include "AudioBlockTimeManager.h"
+#include "globals.h"
 
 using namespace cf::FeatureExtractor;
 
@@ -15,6 +16,8 @@ FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, un
 	: started_(false)
 	, rolling_(false)
 {
+	globalsInit_.reset(new GlobalsInitializer());
+
 	eventProvider_.reset(EventProvider::Create());
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
