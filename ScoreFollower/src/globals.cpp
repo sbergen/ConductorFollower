@@ -12,7 +12,7 @@ void Globals::Initialize()
 	logger_ = new FileLogger("ScoreFollower.log");
 	initialized_ = true;
 
-	LOG("Initialized!")
+	LOG("Initialized!");
 }
 
 void Globals::CleanUp()

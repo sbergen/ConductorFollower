@@ -2,18 +2,21 @@
 
 using namespace cf;
 
+#define LOG(fmt, ...) l.Log((LogItem(fmt), __VA_ARGS__));
+
+#include <iostream>
+
 BOOST_AUTO_TEST_SUITE(LoggerTests)
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {
-	Logger l;
-	l.Log(LogItem("foo: %1%") % 1);
-	l.Log(LogItem("bar: %1%") % 42);
+	Logger l(std::cout);
 
-	std::string foo("foo");
-	l.Log(LogItem(foo));
+	LOG("plain")
+	LOG("One arg: %1%", 42);
+	LOG("Three args: %1%", 1, 2, 3);
 
-	l.Commit(std::cout);
+	l.Commit();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

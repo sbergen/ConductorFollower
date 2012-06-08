@@ -61,7 +61,7 @@ public:
 	{
 		args_[argIndex_] = arg;
 		++argIndex_;
-		assert(argIndex < MaxArgs);
+		assert(argIndex_ < MaxArgs);
 		args_[argIndex_] = Arg();
 		return *this;
 	}

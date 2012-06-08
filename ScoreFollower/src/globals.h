@@ -3,19 +3,9 @@
 #include "cf/Logger.h"
 
 #ifdef NDEBUG
-
-#define LOG(...)
-
+	#define LOG(...)
 #else
-
-#define LOG1(fmt) Globals::Logger().Log(LogItem(fmt));
-#define LOG2(fmt, ...) Globals::Logger().Log((LogItem(fmt), __VA_ARGS__));
-
-#define THIRD_ARG(arg1, arg2, arg3, ...) arg3
-#define LOG_CHOOSER(...) THIRD_ARG(__VA_ARGS__, LOG2, LOG1)
-
-#define LOG(...) LOG_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
-
+	#define LOG(fmt, ...) Globals::Logger().Log((LogItem(fmt), __VA_ARGS__))
 #endif
 
 namespace cf {
