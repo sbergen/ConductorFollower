@@ -29,6 +29,18 @@ TTime divide(TTime const & time, TDivisor const & divisor)
 	return TTime(static_cast<TTime::rep>(result));
 }
 
+template<typename TTime, typename TDuration>
+void limitRange(TTime & time, TTime const & min, TTime const & max, TDuration assertThreshold = TDuration::zero())
+{
+	if (time < min) {
+		assert(duration_cast<TDuration>(min - time) < assertThreshold);
+		time = min;
+	} else if (time > max) {
+		assert(duration_cast<TDuration>(time - max) < assertThreshold);
+		time = max;
+	}
+}
+
 } // namespace time
 
 } // namespace cf

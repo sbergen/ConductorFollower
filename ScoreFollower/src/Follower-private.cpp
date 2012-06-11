@@ -62,6 +62,13 @@ FollowerTypeIndependentImpl::ScoreTimeToFrameOffset(score_time_t const & time)
 {
 	real_time_t const & ref = timeManager_->CurrentBlockStart();
 	real_time_t realTime = timeWarper_->InverseWarpTimestamp(time, ref);
+
+	// There are rounding errors sometimes, so allow 10us of "jitter" here
+	// This is perfectly acceptable :)
+	time::limitRange(realTime,
+		timeManager_->CurrentBlockStart(), timeManager_->CurrentBlockEnd(),
+		boost::chrono::microseconds(10));
+
 	return timeManager_->ToSampleOffset(realTime);
 }
 

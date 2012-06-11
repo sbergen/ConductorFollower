@@ -18,6 +18,7 @@ public:
 	unsigned ToSampleOffset(real_time_t const & time) const;
 
 	real_time_t const & CurrentBlockStart() const { return currentBlockStart_; }
+	real_time_t const & CurrentBlockEnd() const { return currentBlockEnd_; }
 
 private:
 
