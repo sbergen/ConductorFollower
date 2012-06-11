@@ -19,7 +19,7 @@ public:
 
 	void Read(TrackReader<tempo_t> & reader);
 
-	TempoPoint GetTempoAt(score_time_t const & time);
+	TempoPoint GetTempoAt(score_time_t const & time) const;
 
 private:
 	void EnsureChangesNotEmpty();

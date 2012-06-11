@@ -28,7 +28,11 @@ private:
 	typedef EventBuffer<double, real_time_t> BeatHistoryBuffer;
 
 private:
-	TempoPoint LastBeat();
+	TempoPoint LastBeat() const;
+	tempo_t BeatLengthEstimate() const;
+
+	speed_t SpeedFromConductedTempo(real_time_t const & now) const;
+	speed_t SpeedFromBeatCatchup() const;
 
 private:
 	TimeWarper const & timeWarper_;

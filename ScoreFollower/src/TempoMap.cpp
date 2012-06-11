@@ -28,7 +28,7 @@ TempoMap::Read(TrackReader<tempo_t> & reader)
 }
 
 TempoPoint
-TempoMap::GetTempoAt(score_time_t const & time)
+TempoMap::GetTempoAt(score_time_t const & time) const
 {
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
