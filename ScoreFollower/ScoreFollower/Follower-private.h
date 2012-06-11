@@ -55,6 +55,7 @@ private:
 
 	bool started_;
 	bool rolling_;
+	speed_t previousSpeed_;
 
 	struct QueuedEvent
 	{

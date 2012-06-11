@@ -34,6 +34,13 @@ public:
 		return (f > 0.5) ? (f - 1.0) : f;
 	}
 
+	// warped fraction of position_: (-0.5, 0.5]
+	beat_pos_t warpedFraction() const
+	{
+		beat_pos_t f = position_ - std::floor(position_);
+		return (f > 0.5) ? (f - 1.0) : f;
+	}
+
 private:
 	beat_pos_t position_;
 	tempo_t tempo_;

@@ -48,7 +48,10 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_->SpeedEstimateAt(currentBlock.first);
-	timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
+	if (speed != previousSpeed_) {
+		previousSpeed_ = speed;
+		timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
+	}
 
 	// Now use the new estimate for this block
 	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);

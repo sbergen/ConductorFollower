@@ -37,37 +37,47 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	// Ignore beginning for now...
 	if (beatHistory_.AllEvents().Size() < 16) { return speed_; }
 
-	speed_ = SpeedFromConductedTempo(time);	
+	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
+	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
+
+	//speed_ = SpeedFromConductedTempo(tempoNow, time);	
+	speed_ = SpeedFromBeatCatchup(tempoNow, 1.0);
 
 	return speed_;
 }
 
 speed_t
-TempoFollower::SpeedFromConductedTempo(real_time_t const & now) const
+TempoFollower::SpeedFromConductedTempo(TempoPoint const & tempoNow, real_time_t const & now) const
 {
-	score_time_t scoreTime = timeWarper_.WarpTimestamp(now);
-	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
-
 	tempo_t conductedTempo = BeatLengthEstimate();
-
 	return static_cast<speed_t>(tempoNow.tempo().count()) / conductedTempo.count();
 }
 
 speed_t
-TempoFollower::SpeedFromBeatCatchup() const
+TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
 {
-	TempoPoint const lastBeatPoint = LastBeat();
-
-	// TODO
-	return speed_;
+	score_time_t catchup = time::multiply(tempoNow.tempo(), BeatOffsetEstimate());
+	tempo_t newTempo = tempoNow.tempo() + time::divide(catchup, catchupTime);
+	return static_cast<speed_t>(tempoNow.tempo().count()) / newTempo.count();
 }
 
-TempoPoint
-TempoFollower::LastBeat() const
+beat_pos_t
+TempoFollower::BeatOffsetEstimate() const
 {
-	real_time_t lastBeatRt = beatHistory_.AllEvents().LastTimestamp();
-	score_time_t lastBeatSt = timeWarper_.WarpTimestamp(lastBeatRt);
-	return tempoMap_.GetTempoAt(lastBeatSt);
+	boost::array<double, 4> weights = { 0.4, 0.3, 0.2, 0.1 };
+
+	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
+	assert(beats.size() > 4);
+
+	beat_pos_t weightedSum = 0.0;
+	auto bIt = beats.begin();
+	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++bIt) {
+		score_time_t beatScoreTime = timeWarper_.WarpTimestamp(*bIt);
+		TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
+		weightedSum += *wIt * tempoPoint.warpedFraction();
+	}
+
+	return weightedSum;
 }
 
 tempo_t
@@ -78,18 +88,17 @@ TempoFollower::BeatLengthEstimate() const
 	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
 	assert(beats.size() > 4);
 
-	double weightedSum = 0.0;
+	duration_t weightedSum = duration_t::zero();
 	auto bIt = beats.begin();
 	real_time_t laterBeat = *bIt;
 	++bIt;
 	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++bIt) {
-		weightedSum += *wIt * (laterBeat - *bIt).count();
+		weightedSum += time::multiply(laterBeat - *bIt, *wIt);
 		laterBeat = *bIt;
 	}
 
 	// Cast down to whole units (micro, nano, whatever, don't care about rounding...)
-	duration_t estimate(static_cast<duration_t::rep>(weightedSum));
-	return time::duration_cast<tempo_t>(estimate);
+	return time::duration_cast<tempo_t>(weightedSum);
 }
 
 } // namespace ScoreFollower

@@ -21,7 +21,8 @@ private:
 		boost::blank,
 		int, unsigned, long,
 		float, double, 
-		timestamp_t, duration_t, milliseconds_t, seconds_t> Arg;
+		timestamp_t, duration_t, milliseconds_t, seconds_t,
+		boost::chrono::microseconds> Arg;
 
 public:
 	LogItem()

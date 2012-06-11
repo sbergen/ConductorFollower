@@ -38,7 +38,7 @@ TimeWarper::WarpPoint::InverseWarp(score_time_t const & time) const
 }
 
 TimeWarper::TimeWarper()
-	: warpHistory_(100) // Arbitrary length, should be long enough...
+	: warpHistory_(128) // Arbitrary length, should be long enough...
 {
 }
 
