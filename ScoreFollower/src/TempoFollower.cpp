@@ -1,12 +1,14 @@
 #include "TempoFollower.h"
 
 #include "globals.h"
+#include "TimeWarper.h"
 
 namespace cf {
 namespace ScoreFollower {
 
-TempoFollower::TempoFollower()
-	: tempoMap_()
+TempoFollower::TempoFollower(TimeWarper const & timeWarper)
+	: timeWarper_(timeWarper)
+	, tempoMap_()
 	, beatHistory_(100) // Arbitrary length, should be long enough...
 	, newBeats_(false)
 	, speed_(1.0)
@@ -14,7 +16,7 @@ TempoFollower::TempoFollower()
 }
 
 void
-TempoFollower::RegisterBeat(score_time_t const & beatTime)
+TempoFollower::RegisterBeat(real_time_t const & beatTime)
 {
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
 
@@ -25,7 +27,7 @@ TempoFollower::RegisterBeat(score_time_t const & beatTime)
 
 
 speed_t
-TempoFollower::SpeedEstimateAt(score_time_t const & time)
+TempoFollower::SpeedEstimateAt(real_time_t const & time)
 {
 	if (!newBeats_) { return speed_; }
 	newBeats_ = false;
@@ -33,20 +35,21 @@ TempoFollower::SpeedEstimateAt(score_time_t const & time)
 	// Ignore beginning for now...
 	if (beatHistory_.AllEvents().Size() < 16) { return speed_; }
 
-	TempoMap::TempoPoint tempoNow = tempoMap_.GetTempoAt(time);
-	score_time_t avgConductedTempo = AvgConductedBeatDuration(2);
+	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
+	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	speed_ *= (double)tempoNow.tempo.count() / (double)avgConductedTempo.count();
+	TempoPoint const lastBeatPoint = LastBeat();
 
 	return speed_;
 }
 
-score_time_t
-TempoFollower::AvgConductedBeatDuration(int averageOver)
+
+TempoPoint
+TempoFollower::LastBeat()
 {
-	auto lastBeats = beatHistory_.LastNumEvnets(averageOver + 1);
-	score_time_t duration = lastBeats.LastTimestamp() - lastBeats.timestamp();
-	return duration / averageOver;
+	real_time_t lastBeatRt = beatHistory_.AllEvents().LastTimestamp();
+	score_time_t lastBeatSt = timeWarper_.WarpTimestamp(lastBeatRt);
+	return tempoMap_.GetTempoAt(lastBeatSt);
 }
 
 } // namespace ScoreFollower

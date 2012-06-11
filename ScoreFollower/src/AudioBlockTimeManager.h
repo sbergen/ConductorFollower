@@ -15,7 +15,7 @@ public:
 	AudioBlockTimeManager(unsigned samplerate, unsigned blockSize);
 	
 	std::pair<real_time_t, real_time_t> GetRangeForNow();
-	unsigned ToSampleOffset(real_time_t const & time);
+	unsigned ToSampleOffset(real_time_t const & time) const;
 
 	real_time_t const & CurrentBlockStart() const { return currentBlockStart_; }
 

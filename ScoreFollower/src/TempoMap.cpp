@@ -17,7 +17,7 @@ TempoMap::Read(TrackReader<tempo_t> & reader)
 	tempo_t tempo;
 
 	while (reader.NextEvent(timestamp, tempo)) {
-		beat_pos_t pos = first ? 0.0 : previousChange.GetTempoAt(timestamp).position;
+		beat_pos_t pos = first ? 0.0 : previousChange.GetTempoAt(timestamp).position();
 		first = false;
 
 		previousChange = TempoChange(timestamp, TempoPoint(pos, tempo));
@@ -27,7 +27,7 @@ TempoMap::Read(TrackReader<tempo_t> & reader)
 	EnsureChangesNotEmpty();
 }
 
-TempoMap::TempoPoint
+TempoPoint
 TempoMap::GetTempoAt(score_time_t const & time)
 {
 	auto range = changes_.EventsSinceInclusive(time);
@@ -53,14 +53,11 @@ TempoMap::TempoChange::TempoChange(score_time_t const & timestamp, TempoPoint co
 {
 }
 
-TempoMap::TempoPoint
+TempoPoint
 TempoMap::TempoChange::GetTempoAt(score_time_t const & time) const
 {
-	score_time_t modulo = time % tempo_.tempo;
-	score_time_t::rep beats = time / tempo_.tempo;
-	beat_pos_t fraction = static_cast<beat_pos_t>(modulo.count()) / tempo_.tempo.count();
-	beat_pos_t position = tempo_.position + beats + fraction;
-	return TempoPoint(position, tempo_.tempo);
+	beat_pos_t position = tempo_.position() + tempo_.wholeBeats(time) + tempo_.fraction(time);
+	return TempoPoint(position, tempo_.tempo());
 }
 
 } // namespace ScoreFollower

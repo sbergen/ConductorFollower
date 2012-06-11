@@ -7,22 +7,13 @@
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
 
+#include "TempoPoint.h"
+
 namespace cf {
 namespace ScoreFollower {
 
 class TempoMap
 {
-public:
-	struct TempoPoint
-	{
-		TempoPoint() {} // Allow uninitialized ctor
-		TempoPoint(beat_pos_t position, tempo_t tempo)
-			: position(position), tempo(tempo) {}
-
-		beat_pos_t position;
-		tempo_t tempo;
-	};
-
 public:
 	TempoMap();
 

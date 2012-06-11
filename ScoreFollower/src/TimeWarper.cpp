@@ -50,7 +50,7 @@ TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & sc
 }
 
 score_time_t
-TimeWarper::WarpTimestamp(real_time_t const & time)
+TimeWarper::WarpTimestamp(real_time_t const & time) const
 {
 	auto history = warpHistory_.EventsSinceInclusive(time);
 	if (history.Empty()) {
@@ -61,21 +61,21 @@ TimeWarper::WarpTimestamp(real_time_t const & time)
 }
 
 real_time_t
-TimeWarper::InverseWarpTimestamp(score_time_t const & time, real_time_t const & reference)
+TimeWarper::InverseWarpTimestamp(score_time_t const & time, real_time_t const & reference) const
 {
 	auto history = warpHistory_.EventsSinceInclusive(reference);
 	return InverseWarpTimestamp(time, history);
 }
 
 real_time_t
-TimeWarper::InverseWarpTimestamp(score_time_t const & time)
+TimeWarper::InverseWarpTimestamp(score_time_t const & time) const
 {
 	auto history = warpHistory_.AllEvents();
 	return InverseWarpTimestamp(time, history);
 }
 
 real_time_t
-TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange)
+TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange) const
 {
 	assert(!searchRange.Empty());
 	assert(time >= searchRange.data().scoreTime());

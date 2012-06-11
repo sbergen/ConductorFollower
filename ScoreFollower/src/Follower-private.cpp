@@ -21,7 +21,7 @@ FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, un
 	eventProvider_.reset(EventProvider::Create());
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
-	tempoFollower_.reset(new TempoFollower());
+	tempoFollower_.reset(new TempoFollower(*timeWarper_));
 }
 
 FollowerTypeIndependentImpl::~FollowerTypeIndependentImpl()
@@ -47,7 +47,7 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
 
 	// Fix the starting point, ensures the next warp is "accurate"
-	speed_t speed = tempoFollower_->SpeedEstimateAt(scoreRange.first);
+	speed_t speed = tempoFollower_->SpeedEstimateAt(currentBlock.first);
 	timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
 
 	// Now use the new estimate for this block
@@ -99,8 +99,7 @@ FollowerTypeIndependentImpl::ConsumeEvent(Event const & e)
 	case Event::TrackingEnded:
 		break;
 	case Event::Beat:
-		score_time_t warpedTime = timeWarper_->WarpTimestamp(e.timestamp());
-		tempoFollower_->RegisterBeat(warpedTime);
+		tempoFollower_->RegisterBeat(e.timestamp());
 		break;
 	}
 }

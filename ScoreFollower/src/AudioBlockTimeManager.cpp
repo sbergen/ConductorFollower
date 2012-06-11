@@ -32,7 +32,7 @@ AudioBlockTimeManager::GetRangeForNow()
 }
 
 unsigned
-AudioBlockTimeManager::ToSampleOffset(real_time_t const & time)
+AudioBlockTimeManager::ToSampleOffset(real_time_t const & time) const
 {
 	assert(time >= currentBlockStart_);
 	assert(time <= currentBlockEnd_);

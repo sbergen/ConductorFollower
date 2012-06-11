@@ -125,6 +125,7 @@
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
+    <ClInclude Include="src\TempoPoint.h" />
     <ClInclude Include="src\TimeWarper.h" />
   </ItemGroup>
   <ItemGroup>

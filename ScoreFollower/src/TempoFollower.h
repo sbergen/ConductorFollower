@@ -12,23 +12,27 @@
 namespace cf {
 namespace ScoreFollower {
 
+class TimeWarper;
+
 class TempoFollower
 {
 public:
-	TempoFollower();
+	TempoFollower(TimeWarper const & timeWarper);
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader) { tempoMap_.Read(reader); }
-	void RegisterBeat(score_time_t const & beatTime);
+	void RegisterBeat(real_time_t const & beatTime);
 
-	speed_t SpeedEstimateAt(score_time_t const & time);
-
-private:
-	typedef EventBuffer<double, score_time_t> BeatHistoryBuffer;
+	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:
-	score_time_t AvgConductedBeatDuration(int averageOver);
+	typedef EventBuffer<double, real_time_t> BeatHistoryBuffer;
 
 private:
+	TempoPoint LastBeat();
+
+private:
+	TimeWarper const & timeWarper_;
+
 	TempoMap tempoMap_;
 	BeatHistoryBuffer beatHistory_;
 
