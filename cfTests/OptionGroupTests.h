@@ -44,7 +44,12 @@ public:
 	template<typename T>
 	void operator()(std::string const & desc, T const & t) const
 	{
-		std::cout << desc << ": " << t.value() << ", max: " << T::max_value << std::endl;
+		std::ostream stream(0);
+		typename T::value_type maxValue = static_cast<typename T::assignable_type>(T::max_value);
+		stream << desc << ": " << t.value()
+			<< ", max: " << maxValue
+			<< ", is enum: " << T::is_enum::value
+			<< std::endl;
 	}
 };
 

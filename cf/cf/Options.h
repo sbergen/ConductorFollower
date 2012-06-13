@@ -4,19 +4,22 @@
 #include <map>
 
 #include <boost/static_assert.hpp>
+#include <boost/type_traits/is_enum.hpp>
 
 namespace cf {
 namespace Options {
 
-template<typename TValue, TValue DefaultValue, TValue MinValue, TValue MaxValue>
-class Option
+template<typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
+class OptionBase
 {
 	BOOST_STATIC_ASSERT(MinValue <= MaxValue);
 	BOOST_STATIC_ASSERT(MinValue <= DefaultValue);
 	BOOST_STATIC_ASSERT(DefaultValue <= MaxValue);
 
 public:
+	typedef TAssignable assignable_type;
 	typedef TValue value_type;
+	typedef boost::is_enum<TAssignable> is_enum;
 
 	enum {
 		default_value = DefaultValue,
@@ -24,7 +27,7 @@ public:
 		max_value = MaxValue
 	};
 
-	Option() : value_(DefaultValue) {}
+	OptionBase() : value_(DefaultValue) {}
 
 	void setValue(TValue const & value)
 	{
@@ -33,16 +36,18 @@ public:
 		else { value_ = value; }
 	}
 
-	//std::string const & description() const { return ; }
 	TValue const & value() const { return value_; }
 
 private:
 	TValue value_;
 };
 
+template<typename TValue, TValue DefaultValue, TValue MinValue, TValue MaxValue>
+class Option : public OptionBase<TValue, TValue, DefaultValue, MinValue, MaxValue> {};
+
 // shorthand for Boost.Enums
 template<typename TValue, typename TValue::domain DefaultValue>
-class EnumOption : public Option<typename TValue::domain, DefaultValue,
+class EnumOption : public OptionBase<TValue, typename TValue::domain, DefaultValue,
 	static_cast<typename TValue::domain>(0),
 	static_cast<typename TValue::domain>(TValue::size - 1)>
 {};
