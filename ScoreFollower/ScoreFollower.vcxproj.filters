@@ -57,6 +57,9 @@
     <ClInclude Include="src\TempoPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreFollower\FollowerStatus.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">

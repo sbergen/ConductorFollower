@@ -40,8 +40,9 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	//speed_ = SpeedFromConductedTempo(tempoNow, time);	
-	speed_ = SpeedFromBeatCatchup(tempoNow, 1.0);
+	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);	
+	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.0);
+	speed_ = 0.4 * tempoSpeed + 0.6 * phaseSpeed;
 
 	return speed_;
 }
@@ -64,7 +65,7 @@ TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catc
 beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
-	boost::array<double, 4> weights = { 0.4, 0.3, 0.2, 0.1 };
+	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
 
 	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
 	assert(beats.size() > 4);
@@ -83,7 +84,7 @@ TempoFollower::BeatOffsetEstimate() const
 tempo_t
 TempoFollower::BeatLengthEstimate() const
 {
-	boost::array<double, 4> weights = { 0.4, 0.3, 0.2, 0.1 };
+	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
 
 	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
 	assert(beats.size() > 4);
