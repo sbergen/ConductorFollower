@@ -8,12 +8,21 @@
 
 using namespace cf;
 
+BOOST_ENUM_VALUES(TestOptionEnum3, std::string,
+	(First)("First")
+	(Second)("Second")
+	(Third)("Third")
+)
+
 typedef Options::Option<int, 42, 0, 100> TestOptionType;
 typedef Options::Option<int, 50, 0, 100> TestOptionType2;
+typedef Options::EnumOption<TestOptionEnum3, TestOptionEnum3::Second> TestOptionType3;
+
 
 CF_OPTION_GROUP(TestOptionGroup,
 	(Option1)("This is the option number 1")(TestOptionType)
 	(Option2)("This is the option number 2")(TestOptionType2)
+	(Option3)("This is the option number 3")(TestOptionType3)
 )
 
 BOOST_AUTO_TEST_SUITE(OptionGroupTests)
@@ -35,7 +44,7 @@ public:
 	template<typename T>
 	void operator()(std::string const & desc, T const & t) const
 	{
-		//std::cout << desc << ": " << t.value() << ", max: " << T::max_value << std::endl;
+		std::cout << desc << ": " << t.value() << ", max: " << T::max_value << std::endl;
 	}
 };
 
