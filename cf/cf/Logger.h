@@ -77,7 +77,7 @@ public:
 private:
 	friend class Logger;
 
-	enum { MaxFmtLen = 512, MaxArgs = 5 };
+	enum { MaxFmtLen = 512, MaxArgs = 6 };
 
 	int argIndex_;
 	boost::array<std::string::value_type, MaxFmtLen> format_;

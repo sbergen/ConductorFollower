@@ -80,7 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\cf";"../boost_lockfree"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\cf";"../boost_lockfree";"../boost_enum"</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="EventBufferTests.h" />
     <ClInclude Include="LoggerTests.h" />
+    <ClInclude Include="OptionsTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

@@ -38,6 +38,9 @@
     <ClInclude Include="cf\ButlerThread.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\Options.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LockfreeThread.cpp">
