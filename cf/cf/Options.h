@@ -4,7 +4,7 @@
 #include <map>
 
 #include <boost/static_assert.hpp>
-#include <boost/type_traits/is_enum.hpp>
+#include <boost/type_traits.hpp>
 
 namespace cf {
 namespace Options {
@@ -20,6 +20,8 @@ public:
 	typedef TAssignable assignable_type;
 	typedef TValue value_type;
 	typedef boost::is_enum<TAssignable> is_enum;
+	typedef boost::is_same<TValue, bool> is_bool;
+	typedef boost::is_integral<TValue> is_integral;
 
 	enum {
 		default_value = DefaultValue,
@@ -58,6 +60,7 @@ class BooleanOption : public Option<bool, DefaultValue, false, true>
 {};
 
 // Helper for converting to and from floats, has to be more "run-timey"
+// Can easily be used to abstract all values to a [0.0, 1.0] range in UIs also
 template<typename OptionType, typename FloatType = double>
 class FloatProxy
 {

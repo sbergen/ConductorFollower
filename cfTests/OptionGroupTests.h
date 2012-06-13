@@ -41,7 +41,7 @@ class OptionPrinter
 {
 public:
 	template<typename T>
-	void operator()(std::string const & desc, T const & t) const
+	void operator()(std::string const & desc, T const & t)
 	{
 		std::ostream stream(0);
 		typename T::value_type maxValue = static_cast<typename T::assignable_type>(T::max_value);
