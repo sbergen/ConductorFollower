@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="EventBufferTests.h" />
     <ClInclude Include="LoggerTests.h" />
+    <ClInclude Include="OptionGroupTests.h" />
     <ClInclude Include="OptionsTest.h" />
   </ItemGroup>
   <ItemGroup>

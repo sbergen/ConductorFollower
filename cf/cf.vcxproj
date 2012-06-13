@@ -117,6 +117,7 @@
     <ClInclude Include="cf\LockfreeThread.h" />
     <ClInclude Include="cf\Logger.h" />
     <ClInclude Include="cf\math.h" />
+    <ClInclude Include="cf\OptionGroup.h" />
     <ClInclude Include="cf\Options.h" />
     <ClInclude Include="cf\time.h" />
   </ItemGroup>

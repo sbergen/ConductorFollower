@@ -29,5 +29,8 @@
     <ClInclude Include="OptionsTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OptionGroupTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

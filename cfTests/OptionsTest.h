@@ -1,17 +1,18 @@
 #include "cf/Options.h"
+#include "cf/OptionGroup.h"
 
 #include <boost/enum.hpp>
 
 using namespace cf;
 using namespace cf::Options;
 
-BOOST_AUTO_TEST_SUITE(OptionsTests)
-
 BOOST_ENUM_VALUES(TestOption, std::string,
 	(First)("First")
 	(Second)("Second")
 	(Third)("Third")
 )
+
+BOOST_AUTO_TEST_SUITE(OptionsTests)
 
 BOOST_AUTO_TEST_CASE(IntTest)
 {
@@ -54,6 +55,11 @@ BOOST_AUTO_TEST_CASE(FloatTest)
 
 	proxy.setValue(-0.1);
 	BOOST_CHECK_CLOSE(proxy.value(), 0.0, 0.1);
+}
+
+BOOST_AUTO_TEST_CASE(TestGroup)
+{
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
