@@ -16,26 +16,38 @@
 CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 	, ownerFilter(ownerFilter)
-	, playButton(0)
+	//, playButton(0)
+	, speedLabel(nullptr)
+	, runningLabel(nullptr)
 {
     // This is where our plugin's editor size is set.
     setSize (400, 300);
 
+	/*
 	addAndMakeVisible(playButton = new TextButton("Play"));
 	playButton->setBounds(0, 0, 100, 100);
 	playButton->addListener(this);
+	*/
 
+	addAndMakeVisible(speedLabel = new Label("", "0.0"));
+	speedLabel->setBounds(0, 0, 400, 30);
+
+	addAndMakeVisible(runningLabel = new Label("", "not running"));
+	runningLabel->setBounds(0, 40, 400, 30);
+
+	ownerFilter->changeBroadcaster.addChangeListener(this);
 }
 
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 {
+	ownerFilter->changeBroadcaster.removeChangeListener(this);
 	deleteAllChildren();
 }
 
 //==============================================================================
 void CfpluginAudioProcessorEditor::paint (Graphics& g)
 {
-    g.fillAll (Colours::white);
+	g.fillAll (Colours::white);
 
 	/*
     g.setColour (Colours::black);
@@ -51,9 +63,11 @@ void CfpluginAudioProcessorEditor::paint (Graphics& g)
 void
 CfpluginAudioProcessorEditor::buttonClicked(Button * button)
 {
+	/*
 	if (button == playButton) {
 		ownerFilter->shouldRun.store(!ownerFilter->shouldRun.load());
 	}
+	*/
 }
 
 void
@@ -61,3 +75,23 @@ CfpluginAudioProcessorEditor::buttonStateChanged(Button * button)
 {
 
 }
+
+
+void
+CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
+{
+	bool running;
+	double speed;
+
+	using cf::ScoreFollower::FollowerStatus;
+	FollowerStatus & status = ownerFilter->followerStatus();
+
+	if (status.running.LoadIfChanged(running)) {
+		runningLabel->setText(running ? "Running" : "Not running", true);
+	}
+
+	if (status.speed.LoadIfChanged(speed)) {
+		speedLabel->setText(String(speed), true);
+	}
+}
+

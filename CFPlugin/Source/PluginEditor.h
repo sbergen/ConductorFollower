@@ -19,7 +19,10 @@
 //==============================================================================
 /**
 */
-class CfpluginAudioProcessorEditor  : public AudioProcessorEditor, public Button::Listener
+class CfpluginAudioProcessorEditor
+	: public AudioProcessorEditor
+	, public Button::Listener
+	, public ChangeListener
 {
 public:
     CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter);
@@ -33,9 +36,15 @@ public: // Button::Listener implementation
 	void buttonClicked(Button * button);
 	void buttonStateChanged(Button * button);
 
+public:
+	void changeListenerCallback(ChangeBroadcaster *source);
+
 private:
 	CfpluginAudioProcessor* ownerFilter;
-	TextButton * playButton; 
+	
+	//TextButton * playButton; 
+	Label * speedLabel;
+	Label * runningLabel;
 };
 
 

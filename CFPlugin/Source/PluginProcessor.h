@@ -16,6 +16,7 @@
 
 #include "cf/cf.h"
 #include "ScoreFollower/Follower.h"
+#include "ScoreFollower/FollowerStatus.h"
 
 // JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -74,6 +75,13 @@ public:
 
 public: // Own stuff...
 	boost::atomic<bool> shouldRun;
+
+	ChangeBroadcaster changeBroadcaster;
+
+	cf::ScoreFollower::FollowerStatus & followerStatus()
+	{
+		return follower_->status();			
+	}
 
 private:
 

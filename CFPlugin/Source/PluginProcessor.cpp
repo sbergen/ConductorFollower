@@ -151,6 +151,11 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 		return;
 	}
 
+	if (followerStatus().SomethingChanged())
+	{
+		changeBroadcaster.sendChangeMessage();
+	}
+
 	/************************************************************************************/
 
 	// TODO get all tracks
