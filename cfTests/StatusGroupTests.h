@@ -4,12 +4,9 @@ using namespace cf;
 
 class TestStatGroup;
 
-typedef ChangeTracked<TestStatGroup, int> StatType1;
-typedef ChangeTracked<TestStatGroup, float> StatType2;
-
 CF_STATUS_GROUP(TestStatGroup,
-	(Stat1)("This is the stat number 1")(StatType1)
-	(Stat2)("This is the stat number 2")(StatType2)
+	(Stat1)("This is the stat number 1")(int)
+	(Stat2)("This is the stat number 2")(float)
 )
 
 BOOST_AUTO_TEST_SUITE(StatusGroupTests)

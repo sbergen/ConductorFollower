@@ -7,29 +7,36 @@
 // The keys have a static descriptio() function, that returns a description.
 // The values can be of any type.
 
+#define CF_FUSION_MAP_make_visit_macro(_data, _i) \
+	BOOST_PP_CAT(BOOST_PP_CAT(CF_FUSION_MAP_, BOOST_PP_TUPLE_ELEM(1, _data)), BOOST_PP_MOD(_i, 3))
+
+// Selection macro for mod3 stuff
+#define CF_FUSION_MAP_VISIT(_r, _data, _i, _elem) \
+	CF_FUSION_MAP_make_visit_macro(_data, _i)(BOOST_PP_TUPLE_ELEM(0, _data), _i, _elem)
+
 // Macros for building the option structs (indexing and description)
-#define CF_FUSION_MAP_struct_i(_r, _data, _i, _elem) \
-	BOOST_PP_CAT(CF_FUSION_MAP_struct_, BOOST_PP_MOD(_i, 3))(_elem)
-#define CF_FUSION_MAP_struct_0(_type) struct _type 
-#define CF_FUSION_MAP_struct_1(_description) { static std::string description() { return _description; } };
-#define CF_FUSION_MAP_struct_2(_optionType) 
+#define CF_FUSION_MAP_struct0(_group, _i, _keyType) struct _keyType 
+#define CF_FUSION_MAP_struct1(_group, _i, _description) { static std::string description() { return _description; } };
+#define CF_FUSION_MAP_struct2(_group, _i, _valueType) 
 
 // Macros for building the fusion::map
-#define CF_FUSION_MAP_map_i(_r, _data, _i, _elem) \
-	BOOST_PP_CAT(CF_FUSION_MAP_map_, BOOST_PP_MOD(_i, 3))(_i, _elem)
-#define CF_FUSION_MAP_map_0(_i, _type) BOOST_PP_COMMA_IF(_i) boost::fusion::pair<_type, 
-#define CF_FUSION_MAP_map_1(_i, _description) 
-#define CF_FUSION_MAP_map_2(_i, _optionType) _optionType>
+#define CF_FUSION_MAP_map0(_group, _i, _keyType) BOOST_PP_COMMA_IF(_i) boost::fusion::pair<_keyType, 
+#define CF_FUSION_MAP_map1(_group, _i, _description) 
+#define CF_FUSION_MAP_map2(_group, _i, _valueType) _valueType>
 
-// Main macro for defining the map
-#define CF_FUSION_MAP(_baseClass, _group, _seq) \
-	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_struct_i, _group, _seq) \
-	class _group : public _baseClass< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_map_i, _group, _seq) > > {};
+// Intermediate layer, which may be customized
+#define CF_FUSION_MAP_CUSTOM(_baseClass, _group, _seq, _struct, _map) \
+	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _struct), _seq) \
+	class _group : public _baseClass< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > {};
 
-// Macro for extra template arguments
-#define CF_FUSION_MAP_T1(_baseClass, _t1, _group, _seq) \
-	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_struct_i, _group, _seq) \
-	class _group : public _baseClass<_t1, boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_map_i, _group, _seq) > > {};
+// Intermediate layer, which may be customized, for template parameters
+#define CF_FUSION_MAP_CUSTOM_T(_baseClass, _t, _group, _seq, _struct, _map) \
+	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _struct), _seq) \
+	class _group : public _baseClass<_t, boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > {};
+
+// Main macros for defining the map, with default generators
+#define CF_FUSION_MAP(_baseClass, _group, _seq) CF_FUSION_MAP_CUSTOM(_baseClass, _group, _seq, struct, map)
+#define CF_FUSION_MAP_T(_baseClass, _t, _group, _seq) CF_FUSION_MAP_CUSTOM_T(_baseClass, _t, _group, _seq, struct, map)
 
 namespace cf {
 
