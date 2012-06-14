@@ -1,33 +1,19 @@
 #pragma once
 
 #include "cf/ChangeTracked.h"
+#include "cf/StatusGroup.h"
 
 namespace cf {
 namespace ScoreFollower {
+namespace Status {
 
-class FollowerStatus
-{
-public:
-	FollowerStatus()
-		: running(false, someChanged_)
-		, speed(0.0, someChanged_)
-		, someChanged_(false) // Nothing wrong with the init order :)
-	{}
+CF_STATUS_GROUP
+(
+FollowerStatus,
+	(Running)("Running")(bool)
+	(Speed)("Speed")(double)
+)
 
-	// Checks whether or not something has changed
-	bool SomethingChanged(bool reset = true)
-	{
-		bool ret = someChanged_;
-		if (reset) { someChanged_ = false; }
-		return ret;
-	}
-
-	ChangeTracked<bool> running;
-	ChangeTracked<double> speed;
-
-private:
-	bool someChanged_;
-};
-
+} // namespace Status
 } // namespace ScoreFollower
 } // namespace cf

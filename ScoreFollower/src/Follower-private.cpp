@@ -42,7 +42,7 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 	ConsumeEvents();
 
 	if (!rolling_) { return; }
-	status_.running = rolling_;
+	status_.SetValue<Status::Running>(rolling_);
 
 	// Get start estimate based on old data
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
@@ -50,7 +50,7 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_->SpeedEstimateAt(currentBlock.first);
 	if (speed != previousSpeed_) {
-		status_.speed = speed;
+		status_.SetValue<Status::Speed>(speed);
 		previousSpeed_ = speed;
 		timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
 	}

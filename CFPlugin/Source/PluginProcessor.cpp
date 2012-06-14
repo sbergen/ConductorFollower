@@ -151,7 +151,7 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 		return;
 	}
 
-	if (followerStatus().SomethingChanged())
+	if (followerStatus().HasSomethingChanged())
 	{
 		changeBroadcaster.sendChangeMessage();
 	}

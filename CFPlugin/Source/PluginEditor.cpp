@@ -83,14 +83,14 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 	bool running;
 	double speed;
 
-	using cf::ScoreFollower::FollowerStatus;
+	using namespace cf::ScoreFollower::Status;
 	FollowerStatus & status = ownerFilter->followerStatus();
 
-	if (status.running.LoadIfChanged(running)) {
+	if (status.LoadIfChanged<Running>(running)) {
 		runningLabel->setText(running ? "Running" : "Not running", true);
 	}
 
-	if (status.speed.LoadIfChanged(speed)) {
+	if (status.LoadIfChanged<Speed>(speed)) {
 		speedLabel->setText(String(speed), true);
 	}
 }

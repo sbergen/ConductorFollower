@@ -78,7 +78,7 @@ public: // Own stuff...
 
 	ChangeBroadcaster changeBroadcaster;
 
-	cf::ScoreFollower::FollowerStatus & followerStatus()
+	cf::ScoreFollower::Status::FollowerStatus & followerStatus()
 	{
 		return follower_->status();			
 	}

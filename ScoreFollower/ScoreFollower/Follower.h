@@ -23,7 +23,7 @@ public:
 public:
 	Follower(unsigned samplerate, unsigned blockSize);
 
-	FollowerStatus & status() { return tiImpl_.status(); }
+	Status::FollowerStatus & status() { return tiImpl_.status(); }
 
 	void CollectData(ScoreReader<TData> & scoreReader);
 	void StartNewBlock();
