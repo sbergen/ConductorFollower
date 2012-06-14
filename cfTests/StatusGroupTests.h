@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_SUITE(StatusGroupTests)
 template<typename KeyType, typename ValueType>
 struct OtherType
 {
-	void f(ValueType const & v) { std::cout << v << std::endl; }
+	void f(ValueType const & v) { std::cout << v.value() << std::endl; }
 	void foo() { std::cout << "Foo" << std::endl; }
 };
 
@@ -30,7 +30,7 @@ struct Transformer
 	template<typename PairType>
 	void operator()(PairType const & pair) const
 	{
-		at_key<typename PairType::first_type>(t).f(pair.second.value());
+		at_key<typename PairType::first_type>(t).f(pair.second);
 	}
 
 	mutable T & t;
