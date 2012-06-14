@@ -22,17 +22,28 @@
 // Macros for building the fusion::map
 #define CF_FUSION_MAP_map0(_group, _i, _keyType) BOOST_PP_COMMA_IF(_i) boost::fusion::pair<_keyType, 
 #define CF_FUSION_MAP_map1(_group, _i, _description) 
-#define CF_FUSION_MAP_map2(_group, _i, _valueType) _valueType>
+#define CF_FUSION_MAP_map2(_group, _i, _valueType) _valueType >
+
+// Macros for building transformations
+#define CF_FUSION_MAP_transformed(_group, _seq) \
+	public:  template<template<typename, typename> class T> struct transformed { \
+	typedef boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, transformed), _seq) > type; \
+	};
+#define CF_FUSION_MAP_transformed0(_group, _i, _keyType) BOOST_PP_COMMA_IF(_i) boost::fusion::pair<_keyType, T<_keyType, 
+#define CF_FUSION_MAP_transformed1(_group, _i, _description)
+#define CF_FUSION_MAP_transformed2(_group, _i, _valueType) _valueType > >
 
 // Intermediate layer, which may be customized
 #define CF_FUSION_MAP_CUSTOM(_baseClass, _group, _seq, _struct, _map) \
 	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _struct), _seq) \
-	class _group : public _baseClass< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > {};
+	class _group : public _baseClass< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > \
+	{ CF_FUSION_MAP_transformed(_group, _seq) };
 
 // Intermediate layer, which may be customized, for template parameters
 #define CF_FUSION_MAP_CUSTOM_T(_baseClass, _t, _group, _seq, _struct, _map) \
 	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _struct), _seq) \
-	class _group : public _baseClass<_t, boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > {};
+	class _group : public _baseClass<_t, boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_VISIT, (_group, _map), _seq) > > \
+	{ CF_FUSION_MAP_transformed(_group, _seq) };
 
 // Main macros for defining the map, with default generators
 #define CF_FUSION_MAP(_baseClass, _group, _seq) CF_FUSION_MAP_CUSTOM(_baseClass, _group, _seq, struct, map)

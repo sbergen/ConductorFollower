@@ -8,7 +8,7 @@
 
 // Customized macros for map item generation
 #define CF_STATUS_GROUP_make_value_type(_group, _valueType) \
-	ChangeTracked<_group BOOST_PP_COMMA() _valueType> 
+	ChangeTracked<_group BOOST_PP_COMMA() _valueType > 
 #define CF_FUSION_MAP_statusGroup_map0(_group, _i, _keyType) CF_FUSION_MAP_map0(_group, _i, _keyType)
 #define CF_FUSION_MAP_statusGroup_map1(_group, _i, _description) CF_FUSION_MAP_map1(_group, _i, _description) 
 #define CF_FUSION_MAP_statusGroup_map2(_group, _i, _valueType) CF_FUSION_MAP_map2(_group, _i, CF_STATUS_GROUP_make_value_type(_group, _valueType))
