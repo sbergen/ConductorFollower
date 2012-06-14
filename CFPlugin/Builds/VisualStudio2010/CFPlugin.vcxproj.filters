@@ -13,6 +13,9 @@
     <Filter Include="Juce Library Code">
       <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CFPlugin\Source\Components">
+      <UniqueIdentifier>{307cf19f-0f79-49c9-8fac-d592495bdc51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
@@ -58,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\MidiReader.h">
       <Filter>CFPlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Components\StatusWidget.h">
+      <Filter>CFPlugin\Source\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Components\WidgetHelpers.h">
+      <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

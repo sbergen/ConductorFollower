@@ -11,10 +11,17 @@
 #ifndef __PLUGINEDITOR_H_D516F0C3__
 #define __PLUGINEDITOR_H_D516F0C3__
 
+#include <boost/fusion/include/for_each.hpp>
+
+#include "ScoreFollower/FollowerStatus.h"
+
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "PluginProcessor.h"
 
+#include "Components/StatusWidget.h"
+
+using namespace cf::ScoreFollower;
 
 //==============================================================================
 /**
@@ -41,10 +48,10 @@ public:
 
 private:
 	CfpluginAudioProcessor* ownerFilter;
-	
-	//TextButton * playButton; 
-	Label * speedLabel;
-	Label * runningLabel;
+
+private:
+	typedef Status::FollowerStatus::transformed<StatusWidget>::type FollowerStatusWidgets;
+	FollowerStatusWidgets statusWidgets;
 };
 
 
