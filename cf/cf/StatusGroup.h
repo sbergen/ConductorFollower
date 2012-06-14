@@ -33,13 +33,19 @@ public:
 	template<typename OptionType, typename ValueType>
 	void SetValue(ValueType const & value)
 	{
-		boost::fusion::at_key<OptionType>(map).Set(value);
+		boost::fusion::at_key<OptionType>(map()).Set(value);
 	}
 
 	template<typename OptionType, typename ValueType>
-	bool LoadIfChanged(ValueType & result)
+	void GetValue(ValueType & result) const
 	{
-		return boost::fusion::at_key<OptionType>(map).LoadIfChanged(result);
+		result = boost::fusion::at_key<OptionType>(map()).value();
+	}
+
+	template<typename OptionType, typename ValueType>
+	bool LoadIfChanged(ValueType & result) const
+	{
+		return boost::fusion::at_key<OptionType>(map()).LoadIfChanged(result);
 	}
 
 	bool HasSomethingChanged(bool reset = true)

@@ -48,12 +48,13 @@ public:
 	template<typename Functor>
 	void ForEach(Functor f)
 	{
-		boost::fusion::for_each(map, ForeachHelper<Functor>(f));
+		boost::fusion::for_each(map_, ForeachHelper<Functor>(f));
 	}
 
-protected:
-	MapType map;
+	MapType const & map() const { return map_; }
+	MapType & map() { return map_; }
 
+protected:
 	template<typename F>
 	struct ForeachHelper
 	{
@@ -67,6 +68,9 @@ protected:
 			f(keyType::description(), pair.second);
 		}
 	};
+
+private:
+	MapType map_;
 };
 
 } // namespace cf

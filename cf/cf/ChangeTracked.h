@@ -6,6 +6,9 @@ template<typename GroupParent, typename ValueType>
 class ChangeTracked
 {
 public:
+	typedef ValueType value_type;
+
+public:
 	ChangeTracked() : changed_(false), value_() {}
 
 	template<typename Y>
@@ -16,6 +19,8 @@ public:
 		changed_ = true;
 		ChangeTrackedGroup<GroupParent>::Changed();
 	}
+
+	ValueType const & value() const { return value_; }
 
 	template<typename Y>
 	bool LoadIfChanged(Y & value) const
