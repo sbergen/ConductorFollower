@@ -1,30 +1,11 @@
 #pragma once
 
-#include <boost/preprocessor.hpp>
-#include <boost/fusion/include/map.hpp>
-#include <boost/fusion/include/at_key.hpp>
 #include <boost/fusion/include/key_of.hpp>
+#include <boost/fusion/include/at_key.hpp>
 
-/* Internal pre-processor stuff */
-
-// Macros for building the option structs (indexing and description)
-#define CF_OPTION_GROUP_struct_i(_r, _data, _i, _elem) \
-	BOOST_PP_CAT(CF_OPTION_GROUP_struct_, BOOST_PP_MOD(_i, 3))(_elem)
-#define CF_OPTION_GROUP_struct_0(_type) struct _type 
-#define CF_OPTION_GROUP_struct_1(_description) { static std::string description() { return _description; } };
-#define CF_OPTION_GROUP_struct_2(_optionType) 
-
-// Macros for building the fusion::map
-#define CF_OPTION_GROUP_map_i(_r, _data, _i, _elem) \
-	BOOST_PP_CAT(CF_OPTION_GROUP_map_, BOOST_PP_MOD(_i, 3))(_i, _elem)
-#define CF_OPTION_GROUP_map_0(_i, _type) BOOST_PP_COMMA_IF(_i) boost::fusion::pair<_type, 
-#define CF_OPTION_GROUP_map_1(_i, _description) 
-#define CF_OPTION_GROUP_map_2(_i, _optionType) _optionType>
-
-/**** Use only stuff below! ****/
+#include "cf/FusionMap.h"
 
 /*
-
 define an option group like this:
 
 typedef Options::Option<int, 42, 0, 100> TestOptionType1;
@@ -45,9 +26,8 @@ group.GetValue<Option1>(value);
 group.SetValue<Option1>(50);
 
 */
-#define CF_OPTION_GROUP(_group, _seq) \
-	BOOST_PP_SEQ_FOR_EACH_I(CF_OPTION_GROUP_struct_i, _group, _seq) \
-	class _group : public cf::Options::OptionGroup< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_OPTION_GROUP_map_i, _group, _seq) > > {};
+
+#define CF_OPTION_GROUP(_group, _seq) CF_FUSION_MAP(cf::Options::OptionGroup, _group, _seq)
 
 namespace cf {
 namespace Options {

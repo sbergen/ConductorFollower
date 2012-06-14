@@ -47,6 +47,9 @@
     <ClInclude Include="cf\ChangeTracked.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\FusionMap.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LockfreeThread.cpp">

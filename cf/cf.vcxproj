@@ -113,6 +113,7 @@
     <ClInclude Include="cf\ButlerThread.h" />
     <ClInclude Include="cf\cf.h" />
     <ClInclude Include="cf\EventBuffer.h" />
+    <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\geometry.h" />
     <ClInclude Include="cf\LockfreeThread.h" />
     <ClInclude Include="cf\Logger.h" />
