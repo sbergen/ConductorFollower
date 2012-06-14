@@ -7,7 +7,6 @@
 #include <boost/type_traits.hpp>
 
 namespace cf {
-namespace Options {
 
 template<typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
 class OptionBase
@@ -98,5 +97,4 @@ private:
 	FloatType floatRange_;
 };
 
-} // namespace Options
 } // namespace cf

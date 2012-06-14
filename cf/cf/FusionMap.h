@@ -26,3 +26,40 @@
 	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_struct_i, _group, _seq) \
 	class _group : public _baseClass< boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_map_i, _group, _seq) > > {};
 
+// Macro for extra template arguments
+#define CF_FUSION_MAP_T1(_baseClass, _t1, _group, _seq) \
+	BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_struct_i, _group, _seq) \
+	class _group : public _baseClass<_t1, boost::fusion::map< BOOST_PP_SEQ_FOR_EACH_I(CF_FUSION_MAP_map_i, _group, _seq) > > {};
+
+namespace cf {
+
+template<typename MapType>
+class FusionMapBase
+{
+public:
+	// Calls F::operator(string, ValueType) for each option
+	template<typename Functor>
+	void ForEach(Functor f)
+	{
+		boost::fusion::for_each(map, ForeachHelper<Functor>(f));
+	}
+
+protected:
+	MapType map;
+
+	template<typename F>
+	struct ForeachHelper
+	{
+		ForeachHelper(F & f) : f(f) {}
+		F & f;
+
+		template<typename PairType>
+		void operator()(PairType const & pair) const
+		{
+			typedef PairType::first_type keyType;
+			f(keyType::description(), pair.second);
+		}
+	};
+};
+
+} // namespace cf

@@ -2,27 +2,19 @@
 
 namespace cf {
 
-template<typename T>
+template<typename GroupParent, typename ValueType>
 class ChangeTracked
 {
 public:
-	ChangeTracked() : changed_(false), globalChanged_(nullptr) {}
+	ChangeTracked() : changed_(false), value_() {}
 
 	template<typename Y>
-	ChangeTracked(Y value) : changed_(false), globalChanged_(nullptr), value_(value) {}
-
-	template<typename Y>
-	ChangeTracked(Y value, bool & globalChanged) : changed_(false), globalChanged_(&globalChanged), value_(value) {}
-
-	template<typename Y>
-	ChangeTracked & operator=(Y const & value)
+	void Set(Y const & value)
 	{
-		if (value != value_) {
-			value_ = value;
-			changed_ = true;
-			if (globalChanged_) { *globalChanged_ = true; }
-		}
-		return *this;
+		if (value == value_) { return; }
+		value_ = value;
+		changed_ = true;
+		ChangeTrackedGroup<GroupParent>::Changed();
 	}
 
 	template<typename Y>
@@ -38,8 +30,27 @@ public:
 
 private:
 	mutable bool changed_;
-	bool * const globalChanged_;
-	T value_;
+	ValueType value_;
 };
+
+template<typename ParentType>
+class ChangeTrackedGroup
+{
+public:
+	static bool HasSomethingChanged(bool reset = true)
+	{
+		bool ret = changed;
+		if (reset) { changed = false; }
+		return ret;
+	}
+
+	static void Changed() { changed = true; }
+
+private:
+	static bool changed;
+};
+
+template<typename T>
+bool ChangeTrackedGroup<T>::changed = false;
 
 } // namespace cf

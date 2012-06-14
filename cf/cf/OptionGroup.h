@@ -8,9 +8,9 @@
 /*
 define an option group like this:
 
-typedef Options::Option<int, 42, 0, 100> TestOptionType1;
-typedef Options::Option<int, 50, 0, 100> TestOptionType2;
-typedef Options::EnumOption<TestOptionEnum3, TestOptionEnum3::Second> TestOptionType3;
+typedef Option<int, 42, 0, 100> TestOptionType1;
+typedef Option<int, 50, 0, 100> TestOptionType2;
+typedef EnumOption<TestOptionEnum3, TestOptionEnum3::Second> TestOptionType3;
 
 CF_OPTION_GROUP(TestOptionGroup,
 	(Option1)("This is the option number 1")(TestOptionType1)
@@ -27,13 +27,13 @@ group.SetValue<Option1>(50);
 
 */
 
-#define CF_OPTION_GROUP(_group, _seq) CF_FUSION_MAP(cf::Options::OptionGroup, _group, _seq)
+#define CF_OPTION_GROUP(_group, _seq) CF_FUSION_MAP(cf::OptionGroup, _group, _seq)
 
 namespace cf {
-namespace Options {
 
+// Mapped values should derive from cf::Option<...>
 template<typename MapType>
-class OptionGroup
+class OptionGroup : public FusionMapBase<MapType>
 {
 public:
 	template<typename OptionType, typename ValueType>
@@ -47,32 +47,7 @@ public:
 	{
 		result = boost::fusion::at_key<OptionType>(map).value();
 	}
-
-	// Calls F::operator(string, OptionType) for each option
-	template<typename Functor>
-	void ForEach(Functor f)
-	{
-		boost::fusion::for_each(map, ForeachHelper<Functor>(f));
-	}
-
-private:
-	MapType map;
-
-	template<typename F>
-	struct ForeachHelper
-	{
-		ForeachHelper(F & f) : f(f) {}
-		F & f;
-
-		template<typename PairType>
-		void operator()(PairType const & pair) const
-		{
-			typedef PairType::first_type keyType;
-			f(keyType::description(), pair.second);
-		}
-	};
 };
 
-} // namespace Options
 } // namespace cf
 

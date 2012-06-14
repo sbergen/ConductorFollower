@@ -126,6 +126,7 @@
     <ClInclude Include="LoggerTests.h" />
     <ClInclude Include="OptionGroupTests.h" />
     <ClInclude Include="OptionsTest.h" />
+    <ClInclude Include="StatusGroupTests.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

@@ -4,7 +4,6 @@
 #include <boost/enum.hpp>
 
 using namespace cf;
-using namespace cf::Options;
 
 BOOST_ENUM_VALUES(TestOption, std::string,
 	(First)("First")
