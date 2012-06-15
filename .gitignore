@@ -1,6 +1,8 @@
 # Build dirs
 /Debug
 /CFPlugin/Builds/VisualStudio2010/Debug
+/build
+/x64
 
 # VS stuff
 *.opensdf
