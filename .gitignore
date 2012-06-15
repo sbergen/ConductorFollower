@@ -1,5 +1,11 @@
-# Manual stuff..
+# Build dirs
 /Debug
+/CFPlugin/Builds/VisualStudio2010/Debug
+
+# VS stuff
+*.opensdf
+*.sdf
+*.user
 
 # Compiled Object files
 *.slo
@@ -13,6 +19,3 @@
 *.lai
 *.la
 *.a
-
-/Debug
-/CFPlugin/Builds/VisualStudio2010/Debug
