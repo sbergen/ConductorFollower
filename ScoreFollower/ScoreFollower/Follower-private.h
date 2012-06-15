@@ -8,6 +8,7 @@
 
 #include "FeatureExtractor/Event.h"
 
+#include "ScoreFollower/FollowerOptions.h"
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
@@ -32,6 +33,7 @@ class FollowerPrivate
 {
 public:
 	Status::FollowerStatus & status() { return status_; }
+	Options::FollowerOptions & options() { return options_; }
 
 private: // Only accessible by Follower
 	template <class TData> friend class Follower;
@@ -52,6 +54,7 @@ private:
 
 private:
 	Status::FollowerStatus status_;
+	Options::FollowerOptions options_;
 
 	boost::scoped_ptr<GlobalsInitializer> globalsInit_;
 	boost::scoped_ptr<FeatureExtractor::EventProvider> eventProvider_;

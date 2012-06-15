@@ -45,7 +45,17 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);	
 	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.0);
-	speed_ = 0.4 * tempoSpeed + 0.6 * phaseSpeed;
+	
+	auto & options = parent_.options();
+	double phaseThresh;
+	options.GetValue<Options::TempoFromPhaseThresh>(phaseThresh);
+	double tempoDiff = std::abs((tempoSpeed / speed_) - 1.0) * 100;
+	
+	if (tempoDiff < phaseThresh) {
+		speed_ = phaseSpeed;
+	} else {
+		speed_ = tempoSpeed;
+	}
 
 	auto & status = parent_.status();
 	status.SetValue<Status::SpeedFromTempo>(tempoSpeed);

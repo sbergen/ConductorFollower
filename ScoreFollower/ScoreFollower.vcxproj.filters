@@ -60,6 +60,9 @@
     <ClInclude Include="ScoreFollower\FollowerStatus.h">
       <Filter>ScoreFollower</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreFollower\FollowerOptions.h">
+      <Filter>ScoreFollower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">

@@ -11,6 +11,7 @@
 /ipch
 
 # Compiled Object files
+*.suo
 *.slo
 *.lo
 *.o
