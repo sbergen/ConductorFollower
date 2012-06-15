@@ -122,6 +122,7 @@
     <ClInclude Include="cf\OptionGroup.h" />
     <ClInclude Include="cf\Options.h" />
     <ClInclude Include="cf\StatusGroup.h" />
+    <ClInclude Include="cf\StatusItem.h" />
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
   </ItemGroup>

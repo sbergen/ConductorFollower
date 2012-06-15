@@ -4,11 +4,11 @@
 #include <boost/fusion/include/at_key.hpp>
 
 #include "cf/FusionMap.h"
-#include "cf/ChangeTracked.h"
+#include "cf/StatusItem.h"
 
 // Customized macros for map item generation
 #define CF_STATUS_GROUP_make_value_type(_group, _valueType) \
-	ChangeTracked<_group BOOST_PP_COMMA() _valueType > 
+	typename _valueType::grouped<_group>::type 
 
 /*
 Use this like:
@@ -30,7 +30,7 @@ public:
 	template<typename OptionType, typename ValueType>
 	void SetValue(ValueType const & value)
 	{
-		boost::fusion::at_key<OptionType>(map()).Set(value);
+		boost::fusion::at_key<OptionType>(map()).setValue(value);
 	}
 
 	template<typename OptionType, typename ValueType>

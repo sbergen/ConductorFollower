@@ -10,9 +10,10 @@ public:
 
 public:
 	ChangeTracked() : changed_(false), value_() {}
+	ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
 
 	template<typename Y>
-	void Set(Y const & value)
+	void setValue(Y const & value)
 	{
 		if (value == value_) { return; }
 		value_ = value;
@@ -31,6 +32,15 @@ public:
 			return true;
 		}
 		return false;
+	}
+
+	operator ValueType() const { return value_; }
+
+	template<typename Y>
+	ChangeTracked & operator= (Y const & value)
+	{
+		setValue(value);
+		return *this;
 	}
 
 private:
