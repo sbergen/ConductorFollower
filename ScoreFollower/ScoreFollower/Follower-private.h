@@ -30,13 +30,14 @@ class AudioBlockTimeManager;
 // independent parts of Follower
 class FollowerPrivate
 {
+public:
+	Status::FollowerStatus & status() { return status_; }
+
 private: // Only accessible by Follower
 	template <class TData> friend class Follower;
 
 	FollowerPrivate(unsigned samplerate, unsigned blockSize);
 	~FollowerPrivate();
-
-	Status::FollowerStatus & status() { return status_; }
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader);
 	void StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange);

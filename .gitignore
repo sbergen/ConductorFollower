@@ -8,6 +8,7 @@
 *.opensdf
 *.sdf
 *.user
+/ipch
 
 # Compiled Object files
 *.slo

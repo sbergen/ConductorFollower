@@ -21,7 +21,7 @@ FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	eventProvider_.reset(EventProvider::Create());
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
-	tempoFollower_.reset(new TempoFollower(*timeWarper_));
+	tempoFollower_.reset(new TempoFollower(*timeWarper_, *this));
 }
 
 FollowerPrivate::~FollowerPrivate()

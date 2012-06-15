@@ -2,14 +2,17 @@
 
 #include <boost/range/adaptors.hpp>
 
+#include "ScoreFollower/Follower-private.h"
+
 #include "globals.h"
 #include "TimeWarper.h"
 
 namespace cf {
 namespace ScoreFollower {
 
-TempoFollower::TempoFollower(TimeWarper const & timeWarper)
+TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerPrivate & parent)
 	: timeWarper_(timeWarper)
+	, parent_(parent)
 	, tempoMap_()
 	, beatHistory_(100) // Arbitrary length, should be long enough...
 	, newBeats_(false)
@@ -43,6 +46,10 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);	
 	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.0);
 	speed_ = 0.4 * tempoSpeed + 0.6 * phaseSpeed;
+
+	auto & status = parent_.status();
+	status.SetValue<Status::SpeedFromTempo>(tempoSpeed);
+	status.SetValue<Status::SpeedFromPhase>(phaseSpeed);
 
 	return speed_;
 }
