@@ -77,7 +77,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../boost_lockfree";"."</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../boost_lockfree";"../boost_enum";"."</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,6 +115,7 @@
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\geometry.h" />
+    <ClInclude Include="cf\Limited.h" />
     <ClInclude Include="cf\LockfreeThread.h" />
     <ClInclude Include="cf\Logger.h" />
     <ClInclude Include="cf\math.h" />
