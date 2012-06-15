@@ -23,7 +23,7 @@ public:
 		layout_.setItemLayout(1, -0.2, -0.8, -0.4);
 	}
 
-	void Update(ValueType value)
+	void Update(ValueType const & value)
 	{
 		ValueType::value_type val;
 		if (value.LoadIfChanged(val)) {

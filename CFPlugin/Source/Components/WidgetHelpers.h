@@ -7,7 +7,7 @@ public:
 	WidgetInitializer(MapType & map) : map_(map) {}
 
 	template<typename PairType>
-	void operator()(PairType const & pair) const
+	void operator()(PairType & pair) const
 	{
 		boost::fusion::at_key<typename PairType::first_type>(map_).Initialize(pair.second);
 	}
@@ -23,7 +23,7 @@ public:
 	WidgetUpdater(MapType & map) : map_(map) {}
 
 	template<typename PairType>
-	void operator()(PairType const & pair) const
+	void operator()(PairType & pair) const
 	{
 		boost::fusion::at_key<typename PairType::first_type>(map_).Update(pair.second);
 	}

@@ -83,6 +83,11 @@ public: // Own stuff...
 		return follower_->status();			
 	}
 
+	cf::ScoreFollower::Options::FollowerOptions & followerOptions()
+	{
+		return follower_->options();			
+	}
+
 private:
 
 	bool running_;

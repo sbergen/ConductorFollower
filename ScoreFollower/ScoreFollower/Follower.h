@@ -24,6 +24,7 @@ public:
 	Follower(unsigned samplerate, unsigned blockSize);
 
 	Status::FollowerStatus & status() { return private_.status(); }
+	Options::FollowerOptions & options() { return private_.options(); }
 
 	void CollectData(ScoreReader<TData> & scoreReader);
 	void StartNewBlock();

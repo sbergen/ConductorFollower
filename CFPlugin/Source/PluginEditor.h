@@ -20,6 +20,7 @@
 #include "PluginProcessor.h"
 
 #include "Components/StatusWidget.h"
+#include "Components/OptionWidget.h"
 
 using namespace cf::ScoreFollower;
 
@@ -52,6 +53,9 @@ private:
 private:
 	typedef Status::FollowerStatus::transformed<StatusWidget>::type FollowerStatusWidgets;
 	FollowerStatusWidgets statusWidgets;
+
+	typedef Options::FollowerOptions::transformed<OptionWidget>::type FollowerOptionWidgets;
+	FollowerOptionWidgets optionWidgets;
 };
 
 

@@ -68,5 +68,8 @@
     <ClInclude Include="..\..\Source\Components\WidgetHelpers.h">
       <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Components\OptionWidget.h">
+      <Filter>CFPlugin\Source\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

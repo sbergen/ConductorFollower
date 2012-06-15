@@ -22,24 +22,49 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	//, runningLabel(nullptr)
 {
     // This is where our plugin's editor size is set.
-    setSize (400, 300);
+    setSize (600, 300);
 
-	using namespace cf::ScoreFollower::Status;
-	FollowerStatus & status = ownerFilter->followerStatus();
-	WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
-	boost::fusion::for_each(status.map(), initializer);
+	/**************************/
+	{
+		using namespace cf::ScoreFollower::Status;
+		FollowerStatus & status = ownerFilter->followerStatus();
+		WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
+		boost::fusion::for_each(status.map(), initializer);
 
-	std::vector<Component *> components;
-	WidgetCollector<std::vector<Component *> > collector(components);
-	boost::fusion::for_each(statusWidgets, collector);
+		std::vector<Component *> components;
+		WidgetCollector<std::vector<Component *> > collector(components);
+		boost::fusion::for_each(statusWidgets, collector);
 
-	int yPos = 0;
-	int const height = 30;
-	for(auto it = components.begin(); it != components.end(); ++it) {
-		addAndMakeVisible(*it);
-		(*it)->setBounds(0, yPos, 150, height);
-		yPos += height;
+		int yPos = 0;
+		int const height = 30;
+		for(auto it = components.begin(); it != components.end(); ++it) {
+			addAndMakeVisible(*it);
+			(*it)->setBounds(0, yPos, 300, height);
+			yPos += height;
+		}
 	}
+
+	/**************************/
+	{
+		using namespace cf::ScoreFollower::Options;
+		FollowerOptions & options = ownerFilter->followerOptions();
+		WidgetInitializer<FollowerOptionWidgets> initializer(optionWidgets);
+		boost::fusion::for_each(options.map(), initializer);
+
+		std::vector<Component *> components;
+		WidgetCollector<std::vector<Component *> > collector(components);
+		boost::fusion::for_each(optionWidgets, collector);
+
+		int yPos = 0;
+		int const height = 50;
+		for(auto it = components.begin(); it != components.end(); ++it) {
+			addAndMakeVisible(*it);
+			(*it)->setBounds(300, yPos, 300, height);
+			yPos += height;
+		}
+	}
+
+	/**************************/
 
 	ownerFilter->changeBroadcaster.addChangeListener(this);
 }
