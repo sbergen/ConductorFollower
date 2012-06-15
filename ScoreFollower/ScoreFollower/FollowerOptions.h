@@ -7,7 +7,7 @@ namespace cf {
 namespace ScoreFollower {
 namespace Options {
 
-typedef Option<int, 10, 0, 20> TempoFromPhaseThreshType;
+typedef FloatOption<10, 0, 20> TempoFromPhaseThreshType;
 
 CF_OPTION_GROUP
 (

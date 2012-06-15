@@ -20,7 +20,8 @@ public:
 		ValueType::value_type val = value.value();
 		addAndMakeVisible(slider_ = new Slider("slider"));
 		slider_->setSliderStyle(Slider::LinearHorizontal);
-		slider_->setRange(ValueType::min_value, ValueType::max_value, 1.0);
+		double stepSize = ValueType::is_integral::value ? 1.0 : 0.0;
+		slider_->setRange(ValueType::min_value, ValueType::max_value, stepSize);
 		slider_->setValue(val);
 		slider_->addListener(this);
 

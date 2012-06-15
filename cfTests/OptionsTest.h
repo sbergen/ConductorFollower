@@ -42,18 +42,17 @@ BOOST_AUTO_TEST_CASE(EnumTest)
 
 BOOST_AUTO_TEST_CASE(FloatTest)
 {
-	Option<int, 42, 0, 100> option;
-	FloatProxy<Option<int, 42, 0, 100> > proxy(option, 0.0, 1.0);
-	BOOST_CHECK_CLOSE(proxy.value(), 0.42, 1);
+	FloatOption<10, 0, 100> option;
+	BOOST_CHECK_CLOSE(option.value(), 10.0, 0.1);
 
-	proxy.setValue(0.7);
-	BOOST_CHECK_CLOSE(proxy.value(), 0.7, 0.1);
+	option.setValue(1.5);
+	BOOST_CHECK_CLOSE(option.value(), 1.5, 0.1);
 
-	proxy.setValue(1.7);
-	BOOST_CHECK_CLOSE(proxy.value(), 1.0, 0.1);
+	option.setValue(110);
+	BOOST_CHECK_CLOSE(option.value(), 100.0, 0.1);
 
-	proxy.setValue(-0.1);
-	BOOST_CHECK_CLOSE(proxy.value(), 0.0, 0.1);
+	option.setValue(-0.1);
+	BOOST_CHECK_CLOSE(option.value(), 0.0, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(TestGroup)

@@ -58,43 +58,9 @@ template<bool DefaultValue>
 class BooleanOption : public Option<bool, DefaultValue, false, true>
 {};
 
-// Helper for converting to and from floats, has to be more "run-timey"
-// Can easily be used to abstract all values to a [0.0, 1.0] range in UIs also
-template<typename OptionType, typename FloatType = double>
-class FloatProxy
-{
-	enum {
-		min_value_ = OptionType::min_value,
-		range_ = OptionType::max_value - OptionType::min_value
-	};
-	typedef typename OptionType::value_type value_type;
-
-public:
-	FloatProxy(OptionType & option, FloatType min, FloatType max)
-		: option_(option)
-		, floatMin_(min)
-		, floatRange_(max - min)
-	{
-		assert(max >= min);
-	}
-
-	void setValue(FloatType value)
-	{
-		FloatType fraction = (value - floatMin_) / floatRange_;
-		value_type diff = static_cast<value_type>(fraction * range_);
-		option_.setValue(min_value_ + diff);
-	}
-
-	FloatType value()
-	{
-		FloatType fraction = static_cast<FloatType>(option_.value() - min_value_) / range_;
-		return floatMin_ + (fraction * floatRange_);
-	}
-
-private:
-	OptionType & option_;
-	FloatType floatMin_;
-	FloatType floatRange_;
-};
+// Shorthand for double
+template<int DefaultValue, int MinValue, int MaxValue>
+class FloatOption : public OptionBase<double, int, DefaultValue, MinValue, MaxValue>
+{};
 
 } // namespace cf
