@@ -1,6 +1,6 @@
 template<typename TData>
 Follower<TData>::Follower(unsigned samplerate, unsigned blockSize)
-	: tiImpl_(samplerate, blockSize)
+	: private_(samplerate, blockSize)
 {
 
 }
@@ -10,7 +10,7 @@ void Follower<TData>::CollectData(ScoreReader<TData> & scoreReader)
 {
 	{
 		boost::scoped_ptr<TrackReader<tempo_t> > tempoReader(scoreReader.TempoTrack());
-		tiImpl_.ReadTempoTrack(*tempoReader);
+		private_.ReadTempoTrack(*tempoReader);
 	}
 	ReadNormalTracks(scoreReader);
 }
@@ -18,7 +18,7 @@ void Follower<TData>::CollectData(ScoreReader<TData> & scoreReader)
 template<typename TData>
 void Follower<TData>::StartNewBlock()
 {
-	tiImpl_.StartNewBlock(currentScoreBlock_);
+	private_.StartNewBlock(currentScoreBlock_);
 }
 
 template<typename TData>
@@ -28,10 +28,10 @@ void Follower<TData>::GetTrackEventsForBlock(unsigned track, BlockBuffer & event
 	auto ev = trackBuffers_[track].EventsBetween(currentScoreBlock_.first, currentScoreBlock_.second);
 
 	events.Clear();
-	if (!tiImpl_.Rolling()) { return; }
+	if (!private_.Rolling()) { return; }
 
 	while (!ev.AtEnd()) {
-		unsigned frameOffset = tiImpl_.ScoreTimeToFrameOffset(ev.timestamp());
+		unsigned frameOffset = private_.ScoreTimeToFrameOffset(ev.timestamp());
 		events.RegisterEvent(frameOffset, ev.data());
 		ev.Next();
 	}

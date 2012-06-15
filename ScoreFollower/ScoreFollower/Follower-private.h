@@ -28,13 +28,13 @@ class AudioBlockTimeManager;
 // One class of indirection to make the implementation private
 // This basically implments all the template parameter
 // independent parts of Follower
-class FollowerTypeIndependentImpl
+class FollowerPrivate
 {
 private: // Only accessible by Follower
 	template <class TData> friend class Follower;
 
-	FollowerTypeIndependentImpl(unsigned samplerate, unsigned blockSize);
-	~FollowerTypeIndependentImpl();
+	FollowerPrivate(unsigned samplerate, unsigned blockSize);
+	~FollowerPrivate();
 
 	Status::FollowerStatus & status() { return status_; }
 

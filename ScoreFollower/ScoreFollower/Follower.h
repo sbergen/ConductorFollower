@@ -23,7 +23,7 @@ public:
 public:
 	Follower(unsigned samplerate, unsigned blockSize);
 
-	Status::FollowerStatus & status() { return tiImpl_.status(); }
+	Status::FollowerStatus & status() { return private_.status(); }
 
 	void CollectData(ScoreReader<TData> & scoreReader);
 	void StartNewBlock();
@@ -37,7 +37,7 @@ private:
 	std::vector<TrackBuffer> trackBuffers_;
 
 	// Type independent part of implementation
-	FollowerTypeIndependentImpl tiImpl_;
+	FollowerPrivate private_;
 	std::pair<score_time_t, score_time_t> currentScoreBlock_;
 };
 

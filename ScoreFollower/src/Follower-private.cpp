@@ -12,7 +12,7 @@ using namespace cf::FeatureExtractor;
 namespace cf {
 namespace ScoreFollower {
 
-FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, unsigned blockSize)
+FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	: started_(false)
 	, rolling_(false)
 {
@@ -24,18 +24,18 @@ FollowerTypeIndependentImpl::FollowerTypeIndependentImpl(unsigned samplerate, un
 	tempoFollower_.reset(new TempoFollower(*timeWarper_));
 }
 
-FollowerTypeIndependentImpl::~FollowerTypeIndependentImpl()
+FollowerPrivate::~FollowerPrivate()
 {
 }
 
 void
-FollowerTypeIndependentImpl::ReadTempoTrack(TrackReader<tempo_t> & reader)
+FollowerPrivate::ReadTempoTrack(TrackReader<tempo_t> & reader)
 {
 	tempoFollower_->ReadTempoTrack(reader);
 }
 
 void
-FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange)
+FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange)
 {
 	auto currentBlock = timeManager_->GetRangeForNow();
 	EnsureProperStart();
@@ -60,7 +60,7 @@ FollowerTypeIndependentImpl::StartNewBlock(std::pair<score_time_t, score_time_t>
 }
 
 unsigned
-FollowerTypeIndependentImpl::ScoreTimeToFrameOffset(score_time_t const & time)
+FollowerPrivate::ScoreTimeToFrameOffset(score_time_t const & time)
 {
 	real_time_t const & ref = timeManager_->CurrentBlockStart();
 	real_time_t realTime = timeWarper_->InverseWarpTimestamp(time, ref);
@@ -75,7 +75,7 @@ FollowerTypeIndependentImpl::ScoreTimeToFrameOffset(score_time_t const & time)
 }
 
 void
-FollowerTypeIndependentImpl::EnsureProperStart()
+FollowerPrivate::EnsureProperStart()
 {
 	if (started_) { return; }
 	started_ = true;
@@ -84,7 +84,7 @@ FollowerTypeIndependentImpl::EnsureProperStart()
 }
 
 void
-FollowerTypeIndependentImpl::ConsumeEvents()
+FollowerPrivate::ConsumeEvents()
 {
 	if (queuedEvent_.isQueued) {
 		ConsumeEvent(queuedEvent_.e);
@@ -101,7 +101,7 @@ FollowerTypeIndependentImpl::ConsumeEvents()
 }
 
 void
-FollowerTypeIndependentImpl::ConsumeEvent(Event const & e)
+FollowerPrivate::ConsumeEvent(Event const & e)
 {
 	switch(e.type())
 	{
