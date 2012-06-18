@@ -9,6 +9,7 @@
 #include "ScoreFollower/Follower-private.h"
 #include "ScoreFollower/ScoreReader.h"
 #include "ScoreFollower/TrackReader.h"
+#include "ScoreFollower/MidiManipulator.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -28,7 +29,7 @@ public:
 
 	void CollectData(ScoreReader<TData> & scoreReader);
 	void StartNewBlock();
-	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
+	void GetTrackEventsForBlock(unsigned track, MidiManipulator<TData> & manipulator, BlockBuffer & events);
 
 private:
 	void ReadNormalTracks(ScoreReader<TData> & scoreReader);

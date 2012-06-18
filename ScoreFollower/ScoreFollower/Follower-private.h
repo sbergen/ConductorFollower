@@ -45,6 +45,7 @@ private: // Only accessible by Follower
 	void StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange);
 
 	unsigned ScoreTimeToFrameOffset(score_time_t const & time);
+	double VelocityAt(score_time_t const & time);
 	bool Rolling() const { return rolling_; }
 
 private:
@@ -65,6 +66,7 @@ private:
 	bool started_;
 	bool rolling_;
 	speed_t previousSpeed_;
+	double velocity_;
 
 	struct QueuedEvent
 	{

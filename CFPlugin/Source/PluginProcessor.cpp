@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MidiReader.h"
+#include "MidiManipulator.h"
 
 using namespace cf;
 using namespace cf::ScoreFollower;
@@ -160,7 +161,7 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	// TODO get all tracks
 	follower_->StartNewBlock();
-	follower_->GetTrackEventsForBlock(1, eventBuffer_);
+	follower_->GetTrackEventsForBlock(1, ::MidiManipulator(), eventBuffer_);
 	auto events = eventBuffer_.AllEvents();
 
 	while(!events.AtEnd()) {

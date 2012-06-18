@@ -22,7 +22,7 @@ void Follower<TData>::StartNewBlock()
 }
 
 template<typename TData>
-void Follower<TData>::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
+void Follower<TData>::GetTrackEventsForBlock(unsigned track, MidiManipulator<TData> & manipulator, BlockBuffer & events)
 {
 	assert(track < trackBuffers_.size());
 	auto ev = trackBuffers_[track].EventsBetween(currentScoreBlock_.first, currentScoreBlock_.second);
@@ -32,7 +32,11 @@ void Follower<TData>::GetTrackEventsForBlock(unsigned track, BlockBuffer & event
 
 	while (!ev.AtEnd()) {
 		unsigned frameOffset = private_.ScoreTimeToFrameOffset(ev.timestamp());
-		events.RegisterEvent(frameOffset, ev.data());
+		double velocity = private_.VelocityAt(ev.timestamp());
+		
+		TData data = ev.data();
+		manipulator.ApplyVelocity(data, velocity);
+		events.RegisterEvent(frameOffset, data);
 		ev.Next();
 	}
 }

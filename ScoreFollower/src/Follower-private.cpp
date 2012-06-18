@@ -74,6 +74,13 @@ FollowerPrivate::ScoreTimeToFrameOffset(score_time_t const & time)
 	return timeManager_->ToSampleOffset(realTime);
 }
 
+double
+FollowerPrivate::VelocityAt(score_time_t const & time)
+{
+	// TODO use time
+	return velocity_;
+}
+
 void
 FollowerPrivate::EnsureProperStart()
 {
@@ -114,7 +121,10 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 		tempoFollower_->RegisterBeat(e.timestamp());
 		break;
 	case Event::Magnitude:
-		status_.SetValue<Status::MagnitudeOfMovement>(e.data<Status::MagnitudeType::value_type>());
+		// TODO store timestamps...
+		auto value = e.data<Status::MagnitudeType::value_type>();
+		status_.SetValue<Status::MagnitudeOfMovement>(value);
+		velocity_ = value / 500;
 		break;
 	}
 }
