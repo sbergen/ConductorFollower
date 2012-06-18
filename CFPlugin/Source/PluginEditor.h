@@ -51,7 +51,7 @@ private:
 	CfpluginAudioProcessor* ownerFilter;
 
 private:
-	typedef Status::FollowerStatus::transformed<StatusWidget>::type FollowerStatusWidgets;
+	typedef Status::FollowerStatus::transformed<StatusWidgetSelector>::type FollowerStatusWidgets;
 	FollowerStatusWidgets statusWidgets;
 
 	typedef Options::FollowerOptions::transformed<OptionWidget>::type FollowerOptionWidgets;

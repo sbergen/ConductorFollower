@@ -17,8 +17,7 @@ StatusType,
 template<typename TGroup, StatusType::domain Type, typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
 struct StatusItemGrouped : public ChangeTracked<TGroup, Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> >
 {
-	StatusItemGrouped() : status_type(Type) {}
-	StatusType::domain status_type;
+	enum { status_type = Type };
 };
 
 template<StatusType::domain Type, typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>

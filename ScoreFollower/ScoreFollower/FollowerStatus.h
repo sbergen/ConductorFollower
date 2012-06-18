@@ -7,13 +7,12 @@ namespace cf {
 namespace ScoreFollower {
 namespace Status {
 
-typedef BooleanStatusItem<false> RunningType;
 typedef FloatStatusItem<StatusType::Bar, 1, 0, 2> SpeedType;
 
 CF_STATUS_GROUP
 (
 FollowerStatus,
-	(Running)("Running")(RunningType)
+	(Running)("Running")(BooleanStatusItem<false>)
 	(Speed)("Speed")(SpeedType)
 	(SpeedFromTempo)("Speed from tempo")(SpeedType)
 	(SpeedFromPhase)("Speed from phase")(SpeedType)
