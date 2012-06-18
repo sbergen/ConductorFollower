@@ -25,6 +25,8 @@ struct StatusItemBase
 {
 	template<typename TGroup>
 	struct grouped { typedef StatusItemGrouped<TGroup, Type, TValue, TAssignable, DefaultValue, MinValue, MaxValue> type; };
+
+	typedef TValue value_type;
 };
 
 // When TValue == TAssignable

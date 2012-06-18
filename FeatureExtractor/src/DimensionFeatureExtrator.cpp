@@ -18,7 +18,8 @@ DimensionFeatureExtractor::DimensionFeatureExtractor(PositionBuffer const & even
 void
 DimensionFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 {
-	timestamp_t since = positionBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
+	timestamp_t lastTimestamp = positionBuffer_.AllEvents().LastTimestamp();
+	timestamp_t since = lastTimestamp - milliseconds_t(1000);
 	auto eventsSince = positionBuffer_.EventsSince(since);
 	auto range = eventsSince.DataAs<IteratorLinestring>();
 
@@ -26,6 +27,8 @@ DimensionFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 	bg::envelope(range, envelope);
 	
 	Point3D distance = geometry::distance_vector(envelope.min_corner(), envelope.max_corner());
+	coord_t magnitude = geometry::abs(distance);
+	assert(events.enqueue(Event(lastTimestamp, Event::Magnitude, magnitude)));
 	//std::cout << "Spatial magnitude of movement: " << boost::geometry::dsv(distance) << std::endl;
 
 	Point3D centroid;

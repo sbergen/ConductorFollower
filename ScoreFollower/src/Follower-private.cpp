@@ -113,6 +113,9 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 	case Event::Beat:
 		tempoFollower_->RegisterBeat(e.timestamp());
 		break;
+	case Event::Magnitude:
+		status_.SetValue<Status::MagnitudeOfMovement>(e.data<Status::MagnitudeType::value_type>());
+		break;
 	}
 }
 

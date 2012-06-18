@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
@@ -27,6 +29,13 @@ namespace geometry
 		T result(to);
 		boost::geometry::subtract_point(result, from);
 		return result;
+	}
+
+	inline coord_t abs(Point3D const & point)
+	{
+		return std::sqrt(std::pow(point.get<0>(), 2) +
+		                 std::pow(point.get<1>(), 2) +
+						 std::pow(point.get<2>(), 2));
 	}
 
 } // namespace geometry
