@@ -70,7 +70,6 @@ public:
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
 		addAndMakeVisible(valueRect_ = new DrawableRectangle());
-		valueRect_->setFill(FillType(Colours::green));
 
 		layout_.setItemLayout(0, -0.2, -0.8, -0.5);
 		layout_.setItemLayout(1, -0.2, -0.8, -0.5);
@@ -91,6 +90,16 @@ public:
 		
 		int range = value_type::max_value - value_type::min_value;
 		float fraction = (val - value_type::min_value) / range;
+
+		if (fraction < 0.01) {
+			valueRect_->setFill(FillType(Colours::red));
+			fraction = 0.01;
+		} else if(fraction > 0.99) {
+			valueRect_->setFill(FillType(Colours::red));
+			fraction = 1.0;
+		} else {
+			valueRect_->setFill(FillType(Colours::green));
+		}
 
 		Rectangle<float> rect(
 			valueRect_->getX(), valueRect_->getY(),
