@@ -92,6 +92,7 @@ private:
 
 	bool running_;
 	unsigned samplesPerBlock_;
+	int trackCount_;
 
 	typedef cf::ScoreFollower::Follower<MidiMessage> ScoreFollower;
 	typedef ScoreFollower::BlockBuffer MidiEventBuffer;

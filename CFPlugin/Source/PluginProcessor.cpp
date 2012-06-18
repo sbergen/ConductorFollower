@@ -24,6 +24,7 @@ CfpluginAudioProcessor::CfpluginAudioProcessor()
 	: shouldRun(false)
 	, running_(false)
 	, eventBuffer_(100)
+	, trackCount_(0)
 {
 }
 
@@ -131,6 +132,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 	MidiReader reader("C:\\sample.mid");
 	follower_->CollectData(reader);
+	trackCount_ = reader.TrackCount();
 
 	// Lets see...
 	shouldRun.store(true);
@@ -159,17 +161,20 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	/************************************************************************************/
 
-	// TODO get all tracks
-	follower_->StartNewBlock();
-	follower_->GetTrackEventsForBlock(1, ::MidiManipulator(), eventBuffer_);
-	auto events = eventBuffer_.AllEvents();
+	// Track 0 is supposed to be the tempo track
+	for (int i = 1; i < trackCount_; ++i) {
+		follower_->StartNewBlock();
+		follower_->GetTrackEventsForBlock(i, ::MidiManipulator(), eventBuffer_);
+		auto events = eventBuffer_.AllEvents();
 
-	while(!events.AtEnd()) {
-		assert(events.timestamp() >= 0);
-		assert(events.timestamp() < samplesPerBlock_);
+		while(!events.AtEnd()) {
+			assert(events.timestamp() >= 0);
+			assert(events.timestamp() < samplesPerBlock_);
 
-		midiMessages.addEvent(events.data(), events.timestamp());
-		events.Next();
+			MidiMessage msg = events.data();
+			midiMessages.addEvent(events.data(), events.timestamp());
+			events.Next();
+		}
 	}
 
 	/*****************************************************************************************/
