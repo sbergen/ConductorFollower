@@ -8,6 +8,7 @@ template<typename TData>
 class MidiManipulator
 {
 public:
+	virtual double GetVelocity(TData & data) = 0;
 	virtual void ApplyVelocity(TData & data, double velocity) = 0;
 
 };

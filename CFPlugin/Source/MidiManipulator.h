@@ -8,9 +8,6 @@
 class MidiManipulator : public cf::ScoreFollower::MidiManipulator<MidiMessage>
 {
 public:
-	void ApplyVelocity(MidiMessage & data, double velocity)
-	{
-		data.setVelocity(data.getFloatVelocity() + (velocity - 0.5));
-		//data.multiplyVelocity(velocity);
-	}
+	double GetVelocity(MidiMessage & data) { return data.getFloatVelocity(); }
+	void ApplyVelocity(MidiMessage & data, double velocity) { data.setVelocity(velocity); }
 };

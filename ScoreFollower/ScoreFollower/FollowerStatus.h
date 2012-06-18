@@ -8,7 +8,7 @@ namespace ScoreFollower {
 namespace Status {
 
 typedef FloatStatusItem<StatusType::Bar, 1, 0, 2> SpeedType;
-typedef FloatStatusItem<StatusType::Bar, 150, 0, 500> MagnitudeType;
+typedef FloatStatusItem<StatusType::Bar, 150, 50, 600> MagnitudeType;
 
 CF_STATUS_GROUP
 (

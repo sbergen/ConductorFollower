@@ -32,9 +32,9 @@ void Follower<TData>::GetTrackEventsForBlock(unsigned track, MidiManipulator<TDa
 
 	while (!ev.AtEnd()) {
 		unsigned frameOffset = private_.ScoreTimeToFrameOffset(ev.timestamp());
-		double velocity = private_.VelocityAt(ev.timestamp());
 		
 		TData data = ev.data();
+		double velocity = private_.NewVelocityAt(manipulator.GetVelocity(data), ev.timestamp());
 		manipulator.ApplyVelocity(data, velocity);
 		events.RegisterEvent(frameOffset, data);
 		ev.Next();

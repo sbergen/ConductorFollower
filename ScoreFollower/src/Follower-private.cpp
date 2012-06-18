@@ -75,10 +75,10 @@ FollowerPrivate::ScoreTimeToFrameOffset(score_time_t const & time)
 }
 
 double
-FollowerPrivate::VelocityAt(score_time_t const & time)
+FollowerPrivate::NewVelocityAt(double oldVelocity, score_time_t const & time)
 {
-	// TODO use time
-	return velocity_;
+	// TODO use time and something fancier :)
+	return (oldVelocity + (velocity_ - 0.5));
 }
 
 void
@@ -124,7 +124,7 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 		// TODO store timestamps...
 		auto value = e.data<Status::MagnitudeType::value_type>();
 		status_.SetValue<Status::MagnitudeOfMovement>(value);
-		velocity_ = value / 500;
+		velocity_ = value / 600;
 		break;
 	}
 }
