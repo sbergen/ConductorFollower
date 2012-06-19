@@ -5,15 +5,21 @@
 
 #include <boost/thread.hpp>
 
+/*
 #include "FeatureExtractor/EventProvider.h"
 #include "FeatureExtractor/Event.h"
+*/
 
 namespace cf {
 
-using namespace FeatureExtractor;
+//using namespace FeatureExtractor;
 
 int main(int argc, char * argv[])
 {
+	std::cout << "I don't do anything ATM!" << std::endl;
+	return 0;
+	/*
+
 	boost::scoped_ptr<EventProvider> eventProvider(EventProvider::Create());
 
 	if (!eventProvider->StartProduction())
@@ -45,6 +51,7 @@ int main(int argc, char * argv[])
 	}
 
 	return 0;
+	*/
 }
 
 } // namespace cf
