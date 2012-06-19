@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FeatureExtractor\EventProvider.h">
-      <Filter>FeatureExtractor</Filter>
-    </ClInclude>
     <ClInclude Include="src\DimensionFeatureExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -29,7 +26,7 @@
     <ClInclude Include="src\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureExtractor\Event.h">
+    <ClInclude Include="FeatureExtractor\Extractor.h">
       <Filter>FeatureExtractor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,9 +38,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SpeedFeatureExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EventProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

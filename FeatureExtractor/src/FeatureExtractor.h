@@ -4,10 +4,8 @@
 
 #include "cf/cf.h"
 #include "cf/LockfreeThread.h"
-#include "MotionTracker/HandObserver.h"
-#include "MotionTracker/HandTracker.h"
 
-#include "FeatureExtractor/EventProvider.h"
+#include "FeatureExtractor/Extractor.h"
 
 #include "types.h"
 #include "DimensionFeatureExtractor.h"
@@ -16,35 +14,20 @@
 namespace cf {
 namespace FeatureExtractor {
 
-class FeatureExtractor : public EventProvider, public MotionTracker::HandObserver
+class FeatureExtractor : public Extractor
 {
 public:
 	FeatureExtractor();
 	~FeatureExtractor();
 
-public: // EventProvider implementation
-	bool StartProduction();
-	bool StopProduction();
-	bool DequeueEvent(Event & result);
-
-public: // HandObserver implementation, called from tracker thread
-	void HandFound();
-	void HandLost();
-	void NewHandPosition(float time, Point3D const & pos);
+public: // Extractor implementation
+	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
+	void GetBeatsSince(timestamp_t const & since, GestureBuffer & beats);
 
 private: // Actual feature extraction
 	PositionBuffer positionBuffer_;
 	DimensionFeatureExtractor dimExtractor_;
 	SpeedFeatureExtractor speedExtractor_;
-
-private: // tracker thread state and event buffer
-	bool Init();
-	bool EventLoop();
-	void Cleanup();
-
-	boost::scoped_ptr<LockfreeThread> trackerThread_;
-	boost::scoped_ptr<MotionTracker::HandTracker> tracker_;
-	InterThreadEventBuffer eventBuffer_;
 };
 
 } // namespace FeatureExtractor

@@ -5,6 +5,12 @@
 namespace cf {
 namespace MotionTracker {
 
+EventProvider *
+EventProvider::Create()
+{
+	return new EventProviderImpl();
+}
+
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
 {

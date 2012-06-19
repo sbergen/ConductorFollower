@@ -12,7 +12,8 @@ class SpeedFeatureExtractor
 public:
 	SpeedFeatureExtractor(PositionBuffer const & eventBuffer);
 
-	void CalculateStuff(InterThreadEventBuffer & events);
+	void Update();
+	void BeatsSince(timestamp_t const & time, GestureBuffer & beats);
 
 private:
 	void UpdateSpeedBuffer();
@@ -20,7 +21,8 @@ private:
 private:
 	PositionBuffer const & positionBuffer_;
 	SpeedBuffer speedBuffer_;
-
+	
+	GestureBuffer beatBuffer_;
 	Point3D prevAvgSeed_;
 };
 

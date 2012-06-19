@@ -56,8 +56,8 @@ public: // Range class
 		TData const & data() const { return *dIt_; }
 
 		// direct range access
-		TimestampRange const & timestampRange() { return timestampRange_; }
-		DataRange const & dataRange() { return dataRange_; }
+		TimestampRange const & timestampRange() const { return timestampRange_; }
+		DataRange const & dataRange() const { return dataRange_; }
 
 		// Data type conversion utilities
 		template<typename T>
@@ -80,6 +80,16 @@ public: // Main interface
 		: data_(size)
 		, timestamps_(size)
 	{
+	}
+
+	EventBuffer & operator=(Range const & range)
+	{
+		Clear();
+		DataRange data = range.dataRange();
+		TimestampRange timestamps = range.timestampRange();
+		std::copy(data.begin(), data.end(), std::back_inserter(data_));
+		std::copy(timestamps.begin(), timestamps.end(), std::back_inserter(timestamps_));
+		return *this;
 	}
 
 	// Adding, reading data

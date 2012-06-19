@@ -1,11 +1,9 @@
 #pragma once
 
-#include <boost/lockfree/ringbuffer.hpp>
-
 #include "cf/cf.h"
 #include "cf/EventBuffer.h"
 
-#include "FeatureExtractor/Event.h"
+#include "FeatureExtractor/Extractor.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -13,7 +11,8 @@ namespace FeatureExtractor {
 typedef EventBuffer<Point3D, timestamp_t> PositionBuffer;
 typedef EventBuffer<Point3D, timestamp_t> SpeedBuffer;
 
-typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
+// Visible to the outside, needs to be defined this way around
+typedef Extractor::GestureBuffer GestureBuffer;
 	
 } // namespace FeatureExtractor
 } // namespace cf

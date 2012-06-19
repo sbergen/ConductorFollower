@@ -8,14 +8,15 @@ namespace FeatureExtractor {
 
 SpeedFeatureExtractor::SpeedFeatureExtractor(PositionBuffer const & eventBuffer)
 	: positionBuffer_(eventBuffer)
-	, speedBuffer_(100)
+	, speedBuffer_(128)
+	, beatBuffer_(128)
 	, prevAvgSeed_(bg::make_zero<Point3D>())
 {
 
 }
 
 void
-SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
+SpeedFeatureExtractor::Update()
 {
 	UpdateSpeedBuffer();
 
@@ -55,16 +56,24 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 	if (sgn(prevAvgSeed_.get<1>()) == -1 && sgn(centroid.get<1>()) == 1 && absSpeed > 100)
 	{
 		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
-		events.enqueue(Event(timestamp, Event::Beat));
+		beatBuffer_.RegisterEvent(timestamp, 1.0);
 	}
 
 	if (sgn(prevAvgSeed_.get<1>()) == 1 && sgn(centroid.get<1>()) == -1 && absSpeed > 100)
 	{
 		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
-		events.enqueue(Event(timestamp, Event::Apex));
+		// TODO
+		//events.enqueue(Event(timestamp, Event::Apex));
 	}
 
 	prevAvgSeed_ = centroid;
+}
+
+void
+SpeedFeatureExtractor::BeatsSince(timestamp_t const & time, GestureBuffer & beats)
+{
+	GestureBuffer::Range beatRange = beatBuffer_.EventsSince(time);
+	beats = beatRange;
 }
 
 void
