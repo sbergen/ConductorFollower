@@ -14,21 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MotionTracker\DebugHandObserver.h">
-      <Filter>MotionTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionTracker\Gestures.h">
-      <Filter>MotionTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionTracker\HandObserver.h">
-      <Filter>MotionTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionTracker\HandObserverSplitter.h">
-      <Filter>MotionTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionTracker\HandTracker.h">
-      <Filter>MotionTracker</Filter>
-    </ClInclude>
     <ClInclude Include="src\CallbackWrappers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,6 +21,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OpenNIUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DebugHandObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gestures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HandObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HandObserverSplitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HandTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

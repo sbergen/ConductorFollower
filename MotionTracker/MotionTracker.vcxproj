@@ -114,12 +114,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MotionTracker\DebugHandObserver.h" />
-    <ClInclude Include="MotionTracker\Gestures.h" />
-    <ClInclude Include="MotionTracker\HandObserver.h" />
-    <ClInclude Include="MotionTracker\HandObserverSplitter.h" />
-    <ClInclude Include="MotionTracker\HandTracker.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
+    <ClInclude Include="src\DebugHandObserver.h" />
+    <ClInclude Include="src\Gestures.h" />
+    <ClInclude Include="src\HandObserver.h" />
+    <ClInclude Include="src\HandObserverSplitter.h" />
+    <ClInclude Include="src\HandTracker.h" />
     <ClInclude Include="src\OpenNIHandTracker.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
   </ItemGroup>
