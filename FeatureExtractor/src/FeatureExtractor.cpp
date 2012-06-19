@@ -9,7 +9,7 @@ Extractor * Extractor::Create()
 }
 
 FeatureExtractor::FeatureExtractor()
-	: positionBuffer_(1024)
+	: positionBuffer_(128)
 	, dimExtractor_(positionBuffer_)
 	, speedExtractor_(positionBuffer_)
 {

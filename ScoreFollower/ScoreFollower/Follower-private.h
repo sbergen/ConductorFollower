@@ -6,7 +6,8 @@
 
 #include "cf/Logger.h"
 
-#include "FeatureExtractor/Event.h"
+#include "MotionTracker/Event.h"
+#include "FeatureExtractor/Extractor.h"
 
 #include "ScoreFollower/FollowerOptions.h"
 #include "ScoreFollower/FollowerStatus.h"
@@ -15,9 +16,9 @@
 
 namespace cf {
 
-namespace FeatureExtractor {
+namespace MotionTracker {
 	class EventProvider;
-} // namespace FeatureExtractor
+} // namespace MotionTracker
 
 namespace ScoreFollower {
 
@@ -51,20 +52,25 @@ private: // Only accessible by Follower
 private:
 	void EnsureProperStart();
 	void ConsumeEvents();
-	void ConsumeEvent(FeatureExtractor::Event const & e);
+	void ConsumeEvent(MotionTracker::Event const & e);
+
+	void HandlePossibleNewBeats();
 
 private:
 	Status::FollowerStatus status_;
 	Options::FollowerOptions options_;
 
 	boost::scoped_ptr<GlobalsInitializer> globalsInit_;
-	boost::scoped_ptr<FeatureExtractor::EventProvider> eventProvider_;
+	boost::scoped_ptr<MotionTracker::EventProvider> eventProvider_;
+	boost::scoped_ptr<FeatureExtractor::Extractor> featureExtractor_;
 	boost::scoped_ptr<AudioBlockTimeManager> timeManager_;
 	boost::scoped_ptr<TimeWarper> timeWarper_;
 	boost::scoped_ptr<TempoFollower> tempoFollower_;
 
 	bool started_;
 	bool rolling_;
+	
+	real_time_t previousBeat_;
 	speed_t previousSpeed_;
 	double velocity_;
 
@@ -72,9 +78,13 @@ private:
 	{
 		QueuedEvent() : isQueued(false) {}
 		bool isQueued;
-		FeatureExtractor::Event e;
+		MotionTracker::Event e;
 	};
 	QueuedEvent queuedEvent_;
+
+	FeatureExtractor::Extractor::GestureBuffer gestureBuffer_;
+
+	std::pair<score_time_t, score_time_t> prevScoreRange_;
 };
 
 } // namespace ScoreFollower

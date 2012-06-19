@@ -1,6 +1,7 @@
 #include "ScoreFollower/Follower-private.h"
 
-#include "FeatureExtractor/EventProvider.h"
+#include "MotionTracker/EventProvider.h"
+#include "FeatureExtractor/Extractor.h"
 
 #include "TimeWarper.h"
 #include "TempoFollower.h"
@@ -8,6 +9,7 @@
 #include "globals.h"
 
 using namespace cf::FeatureExtractor;
+using namespace cf::MotionTracker;
 
 namespace cf {
 namespace ScoreFollower {
@@ -15,10 +17,14 @@ namespace ScoreFollower {
 FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	: started_(false)
 	, rolling_(false)
+	, previousBeat_(real_time_t::min())
+	, velocity_(0.5)
+	, gestureBuffer_(128)
 {
 	globalsInit_.reset(new GlobalsInitializer());
 
 	eventProvider_.reset(EventProvider::Create());
+	featureExtractor_.reset(Extractor::Create());
 	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
 	timeWarper_.reset(new TimeWarper());
 	tempoFollower_.reset(new TempoFollower(*timeWarper_, *this));
@@ -56,6 +62,12 @@ FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRang
 
 	// Now use the new estimate for this block
 	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
+
+	if (scoreRange.first != score_time_t::zero()) {
+		assert(prevScoreRange_.second == scoreRange.first);
+	}
+	prevScoreRange_ = scoreRange;
+	
 }
 
 unsigned
@@ -109,17 +121,22 @@ FollowerPrivate::ConsumeEvents()
 void
 FollowerPrivate::ConsumeEvent(Event const & e)
 {
+	// TODO clean up!
+
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
+		rolling_ = true;
 		status_.SetValue<Status::Running>(true);
 		break;
 	case Event::TrackingEnded:
 		status_.SetValue<Status::Running>(false);
 		break;
-	case Event::Beat:
-		tempoFollower_->RegisterBeat(e.timestamp());
+	case Event::Position:
+		featureExtractor_->RegisterPosition(e.timestamp(), e.data<Point3D>());
+		HandlePossibleNewBeats();
 		break;
+		/*
 	case Event::Apex:
 		//tempoFollower_->RegisterApex(e.timestamp());
 		break;
@@ -130,6 +147,22 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 		status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
 		velocity_ = magnitude / 600;
 		break;
+		*/
+	}
+}
+
+void
+FollowerPrivate::HandlePossibleNewBeats()
+{
+	real_time_t since = previousBeat_ + milliseconds_t(1);
+	featureExtractor_->GetBeatsSince(since, gestureBuffer_);
+
+	auto beats = gestureBuffer_.AllEvents();
+	while (!beats.AtEnd()) {
+		assert(beats.timestamp() < timeManager_->CurrentBlockStart());
+		tempoFollower_->RegisterBeat(beats.timestamp());
+		previousBeat_ = beats.timestamp();
+		beats.Next();
 	}
 }
 

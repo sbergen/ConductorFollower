@@ -5,22 +5,22 @@
 
 #include <boost/thread.hpp>
 
-/*
-#include "FeatureExtractor/EventProvider.h"
-#include "FeatureExtractor/Event.h"
-*/
+#include "MotionTracker/EventProvider.h"
+#include "MotionTracker/Event.h"
+
+#include "FeatureExtractor/Extractor.h"
 
 namespace cf {
 
-//using namespace FeatureExtractor;
+using namespace FeatureExtractor;
+using namespace MotionTracker;
 
 int main(int argc, char * argv[])
 {
-	std::cout << "I don't do anything ATM!" << std::endl;
-	return 0;
-	/*
-
 	boost::scoped_ptr<EventProvider> eventProvider(EventProvider::Create());
+	boost::scoped_ptr<Extractor> featureExtractor(Extractor::Create());
+	timestamp_t prevBeat = timestamp_t::min();
+	Extractor::GestureBuffer buffer(16);
 
 	if (!eventProvider->StartProduction())
 	{
@@ -41,17 +41,26 @@ int main(int argc, char * argv[])
 			case Event::TrackingEnded:
 				std::cout << "Tracking ended" << std::endl;
 				return 0;
-			case Event::Beat:
-				std::cout << "-";
+			case Event::Position:
+				featureExtractor->RegisterPosition(e.timestamp(), e.data<Point3D>());
 				break;
 			}
 		}
+
+		featureExtractor->GetBeatsSince(prevBeat, buffer);
+		auto beats = buffer.AllEvents();
+		while(!beats.AtEnd())
+		{
+			std::cout << beats.timestamp() << std::endl;
+			prevBeat = beats.timestamp() + milliseconds_t(1);
+			beats.Next();
+		}
+
 		
 		boost::thread::sleep(boost::get_system_time() + boost::posix_time::milliseconds(10));
 	}
 
 	return 0;
-	*/
 }
 
 } // namespace cf
