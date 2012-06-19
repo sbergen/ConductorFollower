@@ -1,4 +1,4 @@
-#include "MotionTracker/HandTracker.h"
+#include "HandTracker.h"
 
 #include "OpenNIHandTracker.h"
 

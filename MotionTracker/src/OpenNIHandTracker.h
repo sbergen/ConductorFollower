@@ -6,9 +6,9 @@
 
 #include <XnCppWrapper.h>
 
-#include "MotionTracker/Gestures.h"
-#include "MotionTracker/HandTracker.h"
-#include "MotionTracker/HandObserver.h"
+#include "Gestures.h"
+#include "HandTracker.h"
+#include "HandObserver.h"
 
 namespace cf {
 namespace MotionTracker {

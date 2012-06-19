@@ -1,4 +1,4 @@
-#include "MotionTracker/DebugHandObserver.h"
+#include "DebugHandObserver.h"
 
 #include <iostream>
 
