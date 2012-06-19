@@ -27,8 +27,7 @@ DimensionFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 	bg::envelope(range, envelope);
 	
 	Point3D distance = geometry::distance_vector(envelope.min_corner(), envelope.max_corner());
-	coord_t magnitude = geometry::abs(distance);
-	assert(events.enqueue(Event(lastTimestamp, Event::Magnitude, magnitude)));
+	assert(events.enqueue(Event(lastTimestamp, Event::Magnitude, distance)));
 	//std::cout << "Spatial magnitude of movement: " << boost::geometry::dsv(distance) << std::endl;
 
 	Point3D centroid;

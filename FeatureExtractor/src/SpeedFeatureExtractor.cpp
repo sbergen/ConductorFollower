@@ -58,6 +58,12 @@ SpeedFeatureExtractor::CalculateStuff(InterThreadEventBuffer & events)
 		events.enqueue(Event(timestamp, Event::Beat));
 	}
 
+	if (sgn(prevAvgSeed_.get<1>()) == 1 && sgn(centroid.get<1>()) == -1 && absSpeed > 100)
+	{
+		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
+		events.enqueue(Event(timestamp, Event::Apex));
+	}
+
 	prevAvgSeed_ = centroid;
 }
 

@@ -42,7 +42,6 @@ FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRang
 	ConsumeEvents();
 
 	if (!rolling_) { return; }
-	status_.SetValue<Status::Running>(rolling_);
 
 	// Get start estimate based on old data
 	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
@@ -113,18 +112,23 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
-		rolling_ = true;
+		status_.SetValue<Status::Running>(true);
 		break;
 	case Event::TrackingEnded:
+		status_.SetValue<Status::Running>(false);
 		break;
 	case Event::Beat:
 		tempoFollower_->RegisterBeat(e.timestamp());
 		break;
+	case Event::Apex:
+		//tempoFollower_->RegisterApex(e.timestamp());
+		break;
 	case Event::Magnitude:
 		// TODO store timestamps...
-		auto value = e.data<Status::MagnitudeType::value_type>();
-		status_.SetValue<Status::MagnitudeOfMovement>(value);
-		velocity_ = value / 600;
+		Point3D distance = e.data<Point3D>();
+		coord_t magnitude = geometry::abs(distance);
+		status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
+		velocity_ = magnitude / 600;
 		break;
 	}
 }

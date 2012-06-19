@@ -17,11 +17,12 @@ public:
 		TrackingStarted,
 		TrackingEnded,
 		Beat,
+		Apex,
 		Magnitude
 	};
 
 	// Data
-	typedef boost::variant<int, double> Data;
+	typedef boost::variant<Point3D> Data;
 
 	// Ctors
 	Event() : type_(Invalid) {}
@@ -30,6 +31,7 @@ public:
 		: timestamp_(timestamp)
 		, type_(type)
 	{
+		// Assert that data containing events are not created without data
 		assert(type != Magnitude);
 	}
 
