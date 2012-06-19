@@ -146,7 +146,6 @@ void CfpluginAudioProcessor::releaseResources()
 
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-
 	/************************************************************************************/
 
 	if (!shouldRun.load()) {
@@ -161,9 +160,10 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	/************************************************************************************/
 
+	follower_->StartNewBlock();
+
 	// Track 0 is supposed to be the tempo track
 	for (int i = 1; i < trackCount_; ++i) {
-		follower_->StartNewBlock();
 		follower_->GetTrackEventsForBlock(i, ::MidiManipulator(), eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
 
@@ -172,7 +172,8 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 			assert(events.timestamp() < samplesPerBlock_);
 
 			MidiMessage msg = events.data();
-			midiMessages.addEvent(events.data(), events.timestamp());
+			msg.setChannel(i);
+			midiMessages.addEvent(msg, events.timestamp());
 			events.Next();
 		}
 	}

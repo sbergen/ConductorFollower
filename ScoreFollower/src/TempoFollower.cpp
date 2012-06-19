@@ -49,10 +49,10 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	auto & options = parent_.options();
 	double phaseThresh;
 	options.GetValue<Options::TempoFromPhaseThresh>(phaseThresh);
-	double tempoDiff = std::abs((tempoSpeed / speed_) - 1.0) * 100;
+	double tempoDiff = std::abs((phaseSpeed / tempoSpeed) - 1.0) * 100;
 	
 	if (tempoDiff < phaseThresh) {
-		speed_ = phaseSpeed;
+		speed_ = phaseSpeed;	
 	} else {
 		speed_ = tempoSpeed;
 	}

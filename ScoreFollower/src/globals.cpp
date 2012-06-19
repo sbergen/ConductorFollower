@@ -8,7 +8,7 @@ FileLogger * Globals::logger_ = 0;
 
 void Globals::Initialize()
 {
-	assert(!initialized_);
+	if (initialized_) { return; }
 	logger_ = new FileLogger("ScoreFollower.log");
 	initialized_ = true;
 
@@ -17,7 +17,7 @@ void Globals::Initialize()
 
 void Globals::CleanUp()
 {
-	assert(initialized_);
+	if (!initialized_) { return; }
 	initialized_ = false;
 	delete logger_;
 }
