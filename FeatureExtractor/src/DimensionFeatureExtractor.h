@@ -14,6 +14,8 @@ public:
 
 	void Update();
 
+	Point3D MagnitudeSince(timestamp_t const & time);
+
 private:
 	EventBuffer<Point3D, timestamp_t> const & positionBuffer_;
 };

@@ -39,5 +39,18 @@ DimensionFeatureExtractor::Update()
 	//std::cout << "Length of movement: " << length << std::endl;
 }
 
+Point3D
+DimensionFeatureExtractor::MagnitudeSince(timestamp_t const & time)
+{
+	auto eventsSince = positionBuffer_.EventsSince(time);
+	auto range = eventsSince.DataAs<IteratorLinestring>();
+
+	Box3D envelope;
+	bg::envelope(range, envelope);
+	
+	return geometry::distance_vector(envelope.min_corner(), envelope.max_corner());
+}
+
+
 } // namespace FeatureExtractor
 } // namespace cf

@@ -23,6 +23,8 @@ public:
 public: // Extractor implementation
 	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
 	void GetBeatsSince(timestamp_t const & since, GestureBuffer & beats);
+	
+	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
 
 private: // Actual feature extraction
 	PositionBuffer positionBuffer_;

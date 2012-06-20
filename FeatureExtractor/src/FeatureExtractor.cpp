@@ -33,5 +33,11 @@ FeatureExtractor::GetBeatsSince(timestamp_t const & since, GestureBuffer & beats
 	speedExtractor_.BeatsSince(since, beats);
 }
 
+Point3D
+FeatureExtractor::MagnitudeOfMovementSince(timestamp_t const & time)
+{
+	return dimExtractor_.MagnitudeSince(time);
+}
+
 } // namespace FeatureExtractor
 } // namespace cf

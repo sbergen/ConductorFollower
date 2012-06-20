@@ -135,6 +135,13 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 	case Event::Position:
 		featureExtractor_->RegisterPosition(e.timestamp(), e.data<Point3D>());
 		HandlePossibleNewBeats();
+
+		// TODO move elsewhere, use some beat related time
+		Point3D distance = featureExtractor_->MagnitudeOfMovementSince(e.timestamp() - milliseconds_t(1000));
+		coord_t magnitude = geometry::abs(distance);
+		status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
+		velocity_ = magnitude / 600;
+
 		break;
 		/*
 	case Event::Apex:
