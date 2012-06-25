@@ -40,8 +40,21 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	if (!newBeats_) { return speed_; }
 	newBeats_ = false;
 
-	// Ignore beginning for now...
-	if (beatHistory_.AllEvents().Size() < 16) { return speed_; }
+	// Beginning (TODO, clean up)
+	if (beatHistory_.AllEvents().Size() == 2) {
+		tempo_t tempo = tempoMap_.GetTempoAt(score_time_t::zero()).tempo();
+		auto beats = beatHistory_.AllEvents();
+		real_time_t firstBeat = beats.timestamp();
+		beats.Next();
+		real_time_t secondBeat = beats.timestamp();
+		tempo_t cTempo = time::duration_cast<tempo_t>(secondBeat - firstBeat);
+		speed_ = static_cast<speed_t>(tempo.count()) / cTempo.count();
+
+		LOG("CTempo: %1%, speed_: %2%", cTempo, speed_);
+	}
+
+	// TODO fix
+	if (beatHistory_.AllEvents().Size() <= 4) { return speed_; }
 
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
@@ -74,7 +87,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 TempoFollower::BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time)
 {
-	if (beatHistory_.AllEvents().Size() < 1) { return BeatClassification(0, 1.0); }
+	if (beatHistory_.AllEvents().Size() < 1) { return BeatClassification(-1, 1.0); }
 
 	score_time_t prevBeatScoreTime = timeWarper_.WarpTimestamp(beatHistory_.AllEvents().LastTimestamp());
 	TempoPoint prevTempoPoint = tempoMap_.GetTempoAt(prevBeatScoreTime);

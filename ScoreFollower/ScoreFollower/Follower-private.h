@@ -54,7 +54,10 @@ private:
 	void ConsumeEvents();
 	void ConsumeEvent(MotionTracker::Event const & e);
 
+	void HandleNewPosition(real_time_t const & timestamp);
+	void HandleStartGesture();
 	void HandlePossibleNewBeats();
+	void UpdateMagnitude(real_time_t const & timestamp);
 
 private:
 	Status::FollowerStatus status_;
@@ -69,6 +72,7 @@ private:
 
 	bool started_;
 	bool rolling_;
+	bool gotStartGesture_;
 	
 	real_time_t previousBeat_;
 	speed_t previousSpeed_;

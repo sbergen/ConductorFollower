@@ -14,6 +14,7 @@ public:
 
 	void Update();
 	void BeatsSince(timestamp_t const & time, GestureBuffer & beats);
+	void ApexesSince(timestamp_t const & time, GestureBuffer & apexes);
 
 private:
 	void UpdateSpeedBuffer();
@@ -23,6 +24,7 @@ private:
 	SpeedBuffer speedBuffer_;
 	
 	GestureBuffer beatBuffer_;
+	GestureBuffer apexBuffer_;
 	Point3D prevAvgSeed_;
 };
 

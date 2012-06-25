@@ -92,6 +92,8 @@ public: // Main interface
 		return *this;
 	}
 
+	operator Range () const { return AllEvents(); }
+
 	// Adding, reading data
 
 	void RegisterEvent(TTimestamp const & time, TData const & data)

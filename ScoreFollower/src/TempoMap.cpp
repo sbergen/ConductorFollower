@@ -6,7 +6,7 @@ namespace cf {
 namespace ScoreFollower {
 
 TempoMap::TempoMap()
-	: changes_(16)
+	: changes_(0)
 {
 }
 
@@ -22,6 +22,7 @@ TempoMap::Read(TrackReader<tempo_t> & reader)
 		beat_pos_t pos = first ? 0.0 : previousChange.GetTempoAt(timestamp).position();
 		first = false;
 
+		LOG("Tempo change, timestamp: %1%, pos: %2%, tempo: %3%", timestamp, pos, tempo);
 		previousChange = TempoChange(timestamp, TempoPoint(timestamp, pos, tempo));
 		changes_.RegisterEvent(timestamp, previousChange);
 	}

@@ -24,6 +24,8 @@ public:
 
 	virtual void GetBeatsSince(timestamp_t const & since, GestureBuffer & beats) = 0;
 
+	virtual void GetApexesSince(timestamp_t const & since, GestureBuffer & apexes) = 0;
+
 	virtual Point3D MagnitudeOfMovementSince(timestamp_t const & time) = 0;
 
 };

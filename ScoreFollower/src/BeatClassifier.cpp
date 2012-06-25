@@ -23,7 +23,7 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 	bestPos = 1;
 	bestProb = ProbabilityAt(quartersSincePreviousBeat, bestPos, eightDeviation, bestProbNormalized);
 
-	// Now check qarters
+	// Now check quarters
 	for (int pos = 2; pos < 128; pos += 2) {
 		double probNormalized = -1.0;
 		double prob = ProbabilityAt(quartersSincePreviousBeat, pos, quarterDeviation, probNormalized);
@@ -33,6 +33,9 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 			bestProb = prob;
 			bestProbNormalized = probNormalized;
 		} else if (bestProb > 0.001) {
+			// The condition is here because if there is a long pause in conducting,
+			// the rounding errors will prevail, and we will not get the
+			// growing probablility we would expect in a "normal" case.
 			return Result(bestPos, bestProbNormalized);
 		}
 	}

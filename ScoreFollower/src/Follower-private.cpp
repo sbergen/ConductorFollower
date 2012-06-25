@@ -17,6 +17,7 @@ namespace ScoreFollower {
 FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	: started_(false)
 	, rolling_(false)
+	, gotStartGesture_(false)
 	, previousBeat_(real_time_t::min())
 	, velocity_(0.5)
 	, gestureBuffer_(128)
@@ -126,7 +127,6 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
-		rolling_ = true;
 		status_.SetValue<Status::Running>(true);
 		break;
 	case Event::TrackingEnded:
@@ -134,28 +134,46 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 		break;
 	case Event::Position:
 		featureExtractor_->RegisterPosition(e.timestamp(), e.data<Point3D>());
-		HandlePossibleNewBeats();
-
-		// TODO move elsewhere, use some beat related time
-		Point3D distance = featureExtractor_->MagnitudeOfMovementSince(e.timestamp() - milliseconds_t(1000));
-		coord_t magnitude = geometry::abs(distance);
-		status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
-		velocity_ = magnitude / 600;
-
+		HandleNewPosition(e.timestamp());
 		break;
-		/*
-	case Event::Apex:
-		//tempoFollower_->RegisterApex(e.timestamp());
-		break;
-	case Event::Magnitude:
-		// TODO store timestamps...
-		Point3D distance = e.data<Point3D>();
-		coord_t magnitude = geometry::abs(distance);
-		status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
-		velocity_ = magnitude / 600;
-		break;
-		*/
 	}
+}
+
+void
+FollowerPrivate::HandleNewPosition(real_time_t const & timestamp)
+{
+	HandlePossibleNewBeats();
+	UpdateMagnitude(timestamp);
+	HandleStartGesture();
+}
+
+void
+FollowerPrivate::HandleStartGesture()
+{
+	if (gotStartGesture_) { return; }
+
+	// TODO move all constants elsewhere!
+
+	if (previousBeat_ == real_time_t::min()) { return; }
+
+	// Check apexes
+	featureExtractor_->GetApexesSince(previousBeat_, gestureBuffer_);
+	auto apexes = gestureBuffer_.AllEvents();
+	if (apexes.Empty()) { return; }
+
+	// Check y-movement magnitude
+	auto magnitude = featureExtractor_->MagnitudeOfMovementSince(previousBeat_);
+	if (magnitude.get<1>() < 200) { return; }
+
+	// Check duration
+	duration_t gestureLength = apexes.timestamp() - previousBeat_;
+	seconds_t minTempo(60.0 / 40 / 2);
+	seconds_t maxTempo(60.0 / 200 / 2);
+	if (gestureLength > minTempo || gestureLength < maxTempo) { return; }
+
+	// Done!
+	tempoFollower_->RegisterBeat(previousBeat_);
+	gotStartGesture_ = true;
 }
 
 void
@@ -167,10 +185,23 @@ FollowerPrivate::HandlePossibleNewBeats()
 	auto beats = gestureBuffer_.AllEvents();
 	while (!beats.AtEnd()) {
 		assert(beats.timestamp() < timeManager_->CurrentBlockStart());
-		tempoFollower_->RegisterBeat(beats.timestamp());
+		if (gotStartGesture_) {
+			tempoFollower_->RegisterBeat(beats.timestamp());
+			rolling_ = true;
+		}
 		previousBeat_ = beats.timestamp();
 		beats.Next();
 	}
+}
+
+void
+FollowerPrivate::UpdateMagnitude(real_time_t const & timestamp)
+{
+	// Make better
+	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
+	coord_t magnitude = geometry::abs(distance);
+	status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
+	velocity_ = magnitude / 600;
 }
 
 } // namespace ScoreFollower

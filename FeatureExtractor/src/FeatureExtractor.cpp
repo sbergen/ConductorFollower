@@ -33,6 +33,12 @@ FeatureExtractor::GetBeatsSince(timestamp_t const & since, GestureBuffer & beats
 	speedExtractor_.BeatsSince(since, beats);
 }
 
+void
+FeatureExtractor::GetApexesSince(timestamp_t const & since, GestureBuffer & apexes)
+{
+	speedExtractor_.ApexesSince(since, apexes);
+}
+
 Point3D
 FeatureExtractor::MagnitudeOfMovementSince(timestamp_t const & time)
 {
