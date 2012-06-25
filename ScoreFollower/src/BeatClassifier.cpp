@@ -10,7 +10,7 @@ namespace ScoreFollower {
 BeatClassifier::Result
 BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 {
-	double const eightDeviation = 1.0 / 22;
+	double const eightDeviation = 1.0 / 16;
 	double const quarterDeviation = 1.0 / 6;
 
 	int bestPos = -1;
@@ -24,7 +24,7 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 	bestProb = ProbabilityAt(quartersSincePreviousBeat, bestPos, eightDeviation, bestProbNormalized);
 
 	// Now check qarters
-	for (int pos = 2; /* break from loop */; pos += 2) {
+	for (int pos = 2; pos < 128; pos += 2) {
 		double probNormalized = -1.0;
 		double prob = ProbabilityAt(quartersSincePreviousBeat, pos, quarterDeviation, probNormalized);
 
@@ -32,14 +32,13 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 			bestPos = pos;
 			bestProb = prob;
 			bestProbNormalized = probNormalized;
-		} else {
-			break;
+		} else if (bestProb > 0.001) {
+			return Result(bestPos, bestProbNormalized);
 		}
 	}
 
-	//LOG("pos: %1%, %2% eights, prob: %3%", quartersSincePreviousBeat, bestPos, bestProbNormalized);
-
-	return Result(bestPos, bestProbNormalized);
+	// TODO stop the whole thing now!
+	return Result();
 }
 
 double

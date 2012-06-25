@@ -27,8 +27,10 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime)
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
 
 	auto classification = ClassifyBeatAt(beatTime);
-	beatHistory_.RegisterEvent(beatTime, classification);
-	newBeats_ = true;
+	if (classification.probability > 0) {
+		beatHistory_.RegisterEvent(beatTime, classification);
+		newBeats_ = true;
+	}
 }
 
 
@@ -45,7 +47,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
 	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);
-	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 2.0);
+	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.5);
 
 	speed_ = phaseSpeed;
 	
@@ -79,12 +81,16 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 
 	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
-		
+	
 	beat_pos_t rawOffset = tempoPoint.position() - prevTempoPoint.position();
 	auto classification = BeatClassifier::ClassifyBeat(rawOffset);
 	beat_pos_t offset = rawOffset - (static_cast<beat_pos_t>(classification.eightsSincePrevious) / 2);
-	LOG("rawOffset: %1%, classification.eightsSincePrevious: %2%, offset: %3%",
-		rawOffset, classification.eightsSincePrevious, offset);
+
+	// Remove beats that happen "too soon"
+	if (classification.eightsSincePrevious == 1 && classification.probability < 0.1) {
+		classification.probability = 0.0;
+	}
+
 	return BeatClassification(offset, classification.probability);
 }
 
@@ -98,10 +104,11 @@ TempoFollower::SpeedFromConductedTempo(TempoPoint const & tempoNow, real_time_t 
 speed_t
 TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
 {
-	score_time_t catchup = time::multiply(tempoNow.tempo(), BeatOffsetEstimate());
-	tempo_t newTempo = tempoNow.tempo() + time::divide(catchup, catchupTime);
+	tempo_t actualTempo = time::divide(tempoNow.tempo(), speed_);
+	score_time_t catchup = time::multiply(actualTempo, BeatOffsetEstimate());
+	tempo_t newTempo = actualTempo + time::divide(catchup, catchupTime);
 	speed_t speed = static_cast<speed_t>(tempoNow.tempo().count()) / newTempo.count();
-	
+
 	assert(speed >= 0.0);
 	return speed;
 }
@@ -120,8 +127,6 @@ TempoFollower::BeatOffsetEstimate() const
 	auto tIt = times.begin();
 	auto cIt = classifications.begin();
 	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++tIt, ++cIt) {
-		// weight by probablitiy
-		*wIt *= cIt->probability;
 		weightedSum += *wIt * cIt->offset;
 	}
 
