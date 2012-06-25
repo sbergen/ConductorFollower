@@ -114,6 +114,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BeatClassifier.h" />
     <ClInclude Include="ScoreFollower\Follower-inl.h" />
     <ClInclude Include="ScoreFollower\Follower-private.h" />
     <ClInclude Include="ScoreFollower\Follower.h" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
+    <ClCompile Include="src\BeatClassifier.cpp" />
     <ClCompile Include="src\Follower-private.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />

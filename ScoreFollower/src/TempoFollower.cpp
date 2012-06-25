@@ -4,6 +4,7 @@
 
 #include "ScoreFollower/Follower-private.h"
 
+#include "BeatClassifier.h"
 #include "globals.h"
 #include "TimeWarper.h"
 
@@ -25,8 +26,8 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime)
 {
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
 
-	// Beats will probably include a probability later...
-	beatHistory_.RegisterEvent(beatTime, 1.0);
+	auto classification = ClassifyBeatAt(beatTime);
+	beatHistory_.RegisterEvent(beatTime, classification);
 	newBeats_ = true;
 }
 
@@ -43,9 +44,12 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);	
-	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.0);
+	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);
+	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 2.0);
+
+	speed_ = phaseSpeed;
 	
+	/*
 	auto & options = parent_.options();
 	double phaseThresh;
 	options.GetValue<Options::TempoFromPhaseThresh>(phaseThresh);
@@ -56,12 +60,32 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	} else {
 		speed_ = tempoSpeed;
 	}
+	*/
 
 	auto & status = parent_.status();
 	status.SetValue<Status::SpeedFromTempo>(tempoSpeed);
 	status.SetValue<Status::SpeedFromPhase>(phaseSpeed);
 
 	return speed_;
+}
+
+TempoFollower::BeatClassification
+TempoFollower::ClassifyBeatAt(real_time_t const & time)
+{
+	if (beatHistory_.AllEvents().Size() < 1) { return BeatClassification(0, 1.0); }
+
+	score_time_t prevBeatScoreTime = timeWarper_.WarpTimestamp(beatHistory_.AllEvents().LastTimestamp());
+	TempoPoint prevTempoPoint = tempoMap_.GetTempoAt(prevBeatScoreTime);
+
+	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
+	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
+		
+	beat_pos_t rawOffset = tempoPoint.position() - prevTempoPoint.position();
+	auto classification = BeatClassifier::ClassifyBeat(rawOffset);
+	beat_pos_t offset = rawOffset - (static_cast<beat_pos_t>(classification.eightsSincePrevious) / 2);
+	LOG("rawOffset: %1%, classification.eightsSincePrevious: %2%, offset: %3%",
+		rawOffset, classification.eightsSincePrevious, offset);
+	return BeatClassification(offset, classification.probability);
 }
 
 speed_t
@@ -76,26 +100,34 @@ TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catc
 {
 	score_time_t catchup = time::multiply(tempoNow.tempo(), BeatOffsetEstimate());
 	tempo_t newTempo = tempoNow.tempo() + time::divide(catchup, catchupTime);
-	return static_cast<speed_t>(tempoNow.tempo().count()) / newTempo.count();
+	speed_t speed = static_cast<speed_t>(tempoNow.tempo().count()) / newTempo.count();
+	
+	assert(speed >= 0.0);
+	return speed;
 }
 
 beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
-	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
+	assert(beatHistory_.AllEvents().Size() > 4);
 
-	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
-	assert(beats.size() > 4);
+	auto times = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
+	auto classifications = beatHistory_.AllEvents().dataRange() | boost::adaptors::reversed;
 
+	boost::array<double, 4> weights = { 10.0, 6.0, 2.0, 1.0 };
 	beat_pos_t weightedSum = 0.0;
-	auto bIt = beats.begin();
-	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++bIt) {
-		score_time_t beatScoreTime = timeWarper_.WarpTimestamp(*bIt);
-		TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
-		weightedSum += *wIt * tempoPoint.warpedFraction();
+
+	auto tIt = times.begin();
+	auto cIt = classifications.begin();
+	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++tIt, ++cIt) {
+		// weight by probablitiy
+		*wIt *= cIt->probability;
+		weightedSum += *wIt * cIt->offset;
 	}
 
-	return weightedSum;
+	double normalizationTerm = std::accumulate(weights.begin(), weights.end(), 0.0);
+	double estimate = weightedSum / normalizationTerm;
+	return estimate;
 }
 
 tempo_t

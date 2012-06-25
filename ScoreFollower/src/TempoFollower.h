@@ -26,9 +26,20 @@ public:
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:
-	typedef EventBuffer<double, real_time_t> BeatHistoryBuffer;
+
+	struct BeatClassification
+	{
+		BeatClassification(beat_pos_t offset, double probability)
+			: offset(offset), probability(probability) {}
+
+		beat_pos_t offset;
+		double probability;
+	};
+
+	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
 
 private:
+	BeatClassification ClassifyBeatAt(real_time_t const & time);
 	beat_pos_t BeatOffsetEstimate() const;
 	tempo_t BeatLengthEstimate() const;
 
