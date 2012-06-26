@@ -6,6 +6,7 @@
 #include <exception>
 
 #include <boost/circular_buffer.hpp>
+#include <boost/range/adaptors.hpp>
 #include <boost/range/iterator_range.hpp>
 
 namespace cf {
@@ -30,6 +31,16 @@ public: // Range class
 	class Range
 	{
 	public:
+		struct DataPair
+		{
+			DataPair(TTimestamp const & timestamp, TData const & data)
+				: timestamp(timestamp), data(data) {}
+
+			TTimestamp const & timestamp;
+			TData const & data;
+		};
+
+	public:
 		Range(EventBuffer const & parent, TimestampIterator const & begin, TimestampIterator const & end)
 			: timestampRange_(begin, end)
 			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
@@ -47,6 +58,33 @@ public: // Range class
 			return timestampRange_.back();
 		}
 
+		// Data access
+		DataPair operator[](size_t i)
+		{
+			return DataPair(timestampRange_[i], dataRange_[i]);
+		}
+
+		// Traversal
+
+		// Call func for each (timestamp, data) pair
+		template<typename Func>
+		void ForEach(Func & func) const
+		{
+			ForEachWhile([&func](TTimestamp const & ts, TData const & data) ->
+				bool { func(ts, data); return true; });
+		}
+
+		// Call func for each (timestamp, data) pair, until it returns a value that converts to false
+		template<typename Func>
+		void ForEachWhile(Func & func) const
+		{
+			auto tIt = timestampRange_.begin();
+			auto dIt = dataRange_.begin();
+			for(/* inited above */; tIt != timestampRange_.end(); ++tIt, ++dIt) {
+				if (!func(*tIt, *dIt)) { return; }
+			}
+		}
+
 		// Iterating interface
 		void Rewind() { tIt_ = timestampRange_.begin(); dIt_ = dataRange_.begin(); }
 		bool Next() { ++tIt_; ++dIt_;  return !AtEnd(); }
@@ -59,7 +97,7 @@ public: // Range class
 		TimestampRange const & timestampRange() const { return timestampRange_; }
 		DataRange const & dataRange() const { return dataRange_; }
 
-		// Data type conversion utilities
+		// Data container conversion utilities
 		template<typename T>
 		T DataAs() const { return T(dataRange_.begin(), dataRange_.end()); }
 		

@@ -30,15 +30,16 @@ void Follower<TData>::GetTrackEventsForBlock(unsigned track, MidiManipulator<TDa
 	events.Clear();
 	if (!private_.Rolling()) { return; }
 
-	while (!ev.AtEnd()) {
-		unsigned frameOffset = private_.ScoreTimeToFrameOffset(ev.timestamp());
-		
-		TData data = ev.data();
-		double velocity = private_.NewVelocityAt(manipulator.GetVelocity(data), ev.timestamp());
-		manipulator.ApplyVelocity(data, velocity);
-		events.RegisterEvent(frameOffset, data);
-		ev.Next();
-	}
+	ev.ForEach(boost::bind(&Follower<TData>::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
+}
+
+template<typename TData>
+void Follower<TData>::CopyEventToBuffer(score_time_t const & time, TData data, MidiManipulator<TData> & manipulator, BlockBuffer & events)
+{
+	unsigned frameOffset = private_.ScoreTimeToFrameOffset(time);
+	double velocity = private_.NewVelocityAt(manipulator.GetVelocity(data), time);
+	manipulator.ApplyVelocity(data, velocity);
+	events.RegisterEvent(frameOffset, data);
 }
 
 template<typename TData>

@@ -49,12 +49,11 @@ int main(int argc, char * argv[])
 
 		featureExtractor->GetBeatsSince(prevBeat, buffer);
 		auto beats = buffer.AllEvents();
-		while(!beats.AtEnd())
+		beats.ForEach([&prevBeat](timestamp_t const & timestamp, double data)
 		{
-			std::cout << beats.timestamp() << std::endl;
-			prevBeat = beats.timestamp() + milliseconds_t(1);
-			beats.Next();
-		}
+			std::cout << timestamp << std::endl;
+			prevBeat = timestamp + milliseconds_t(1);
+		});
 
 		
 		boost::thread::sleep(boost::get_system_time() + boost::posix_time::milliseconds(10));

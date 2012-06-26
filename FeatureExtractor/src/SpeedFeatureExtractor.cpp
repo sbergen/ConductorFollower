@@ -87,19 +87,20 @@ SpeedFeatureExtractor::UpdateSpeedBuffer()
 	timestamp_t since = speedBuffer_.AllEvents().LastTimestamp();
 	auto events = positionBuffer_.EventsSince(since);
 
-	Point3D prevPos = events.data();
-	timestamp_t prevTime = events.timestamp();
-	while(events.Next())
+	for (int i = 1; i < events.Size(); ++i)
 	{
-		duration_t timeDiff = events.timestamp() - prevTime;
+		auto curr = events[i];
+		auto prev = events[i - 1];
+
+		duration_t timeDiff = curr.timestamp - prev.timestamp;
 		if (timeDiff <= duration_t::zero()) {
 			std::cerr << "Invalid time difference in position data!" << std::endl;
 			continue;
 		}
 
-		Point3D posDiff = geometry::distance_vector(prevPos, events.data());
+		Point3D posDiff = geometry::distance_vector(prev.data, curr.data);
 		bg::divide_value(posDiff, seconds_t(timeDiff).count());
-		speedBuffer_.RegisterEvent(events.timestamp(), posDiff);
+		speedBuffer_.RegisterEvent(curr.timestamp, posDiff);
 	}
 }
 

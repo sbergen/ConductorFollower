@@ -166,16 +166,15 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	for (int i = 1; i < trackCount_; ++i) {
 		follower_->GetTrackEventsForBlock(i, ::MidiManipulator(), eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
+		events.ForEach([this, &midiMessages, i](unsigned int sample, MidiMessage const & message)
+		{
+			assert(sample >= 0);
+			assert(sample < samplesPerBlock_);
 
-		while(!events.AtEnd()) {
-			assert(events.timestamp() >= 0);
-			assert(events.timestamp() < samplesPerBlock_);
-
-			MidiMessage msg = events.data();
+			MidiMessage msg = message;
 			msg.setChannel(i);
-			midiMessages.addEvent(msg, events.timestamp());
-			events.Next();
-		}
+			midiMessages.addEvent(msg, sample);
+		});
 	}
 
 	/*****************************************************************************************/

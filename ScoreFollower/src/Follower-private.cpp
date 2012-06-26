@@ -182,16 +182,16 @@ FollowerPrivate::HandlePossibleNewBeats()
 	real_time_t since = previousBeat_ + milliseconds_t(1);
 	featureExtractor_->GetBeatsSince(since, gestureBuffer_);
 
-	auto beats = gestureBuffer_.AllEvents();
-	while (!beats.AtEnd()) {
-		assert(beats.timestamp() < timeManager_->CurrentBlockStart());
+	gestureBuffer_.AllEvents().ForEach(
+		[this](timestamp_t const & timestamp, double data)
+	{
+		assert(timestamp < timeManager_->CurrentBlockStart());
 		if (gotStartGesture_) {
-			tempoFollower_->RegisterBeat(beats.timestamp());
+			tempoFollower_->RegisterBeat(timestamp);
 			rolling_ = true;
 		}
-		previousBeat_ = beats.timestamp();
-		beats.Next();
-	}
+		previousBeat_ = timestamp;
+	});
 }
 
 void

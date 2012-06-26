@@ -80,15 +80,15 @@ TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::R
 	assert(!searchRange.Empty());
 	assert(time >= searchRange.data().scoreTime());
 
-	while (!searchRange.AtEnd()) {
-		WarpPoint const & p = searchRange.data();
+	WarpPoint const * point = &searchRange[0].data;
+	searchRange.ForEachWhile([&time, &point](real_time_t const &, WarpPoint const & p) -> bool
+	{
+		if (time >= p.scoreTime()) { return false; }
+		point = &p;
+		return true;
+	});
 
-		// Check the next one (if it exists)
-		if (searchRange.Next() && (time >= searchRange.data().scoreTime())) { continue; }
-		return p.InverseWarp(time);
-	}
-
-	throw std::logic_error("Should never be reached...");
+	return point->InverseWarp(time);
 }
 
 } // namespace ScoreFollower

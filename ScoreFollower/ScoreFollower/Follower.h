@@ -32,6 +32,8 @@ public:
 	void GetTrackEventsForBlock(unsigned track, MidiManipulator<TData> & manipulator, BlockBuffer & events);
 
 private:
+	// The data is copied here on purpose
+	void CopyEventToBuffer(score_time_t const & time, TData data, MidiManipulator<TData> & manipulator, BlockBuffer & events);
 	void ReadNormalTracks(ScoreReader<TData> & scoreReader);
 
 private:

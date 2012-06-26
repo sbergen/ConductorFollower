@@ -36,9 +36,8 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime)
 	if (beatHistory_.AllEvents().Size() == 2) {
 		tempo_t tempo = tempoMap_.GetTempoAt(score_time_t::zero()).tempo();
 		auto beats = beatHistory_.AllEvents();
-		real_time_t firstBeat = beats.timestamp();
-		beats.Next();
-		real_time_t secondBeat = beats.timestamp();
+		real_time_t firstBeat = beats[0].timestamp;
+		real_time_t secondBeat = beats[1].timestamp;
 		tempo_t cTempo = time::duration_cast<tempo_t>(secondBeat - firstBeat);
 		speed_ = static_cast<speed_t>(tempo.count()) / cTempo.count();
 
@@ -133,6 +132,8 @@ beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
 	assert(beatHistory_.AllEvents().Size() > 4);
+
+	auto beats = beatHistory_.AllEvents();
 
 	auto times = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
 	auto classifications = beatHistory_.AllEvents().dataRange() | boost::adaptors::reversed;

@@ -337,4 +337,63 @@ BOOST_AUTO_TEST_CASE(Rewind)
 	BOOST_CHECK(events.AtEnd());
 }
 
+BOOST_AUTO_TEST_CASE(IndexedDataAccess)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+
+	auto events = buffer.AllEvents();
+
+	BOOST_CHECK_EQUAL(events[0].timestamp, 0);
+	BOOST_CHECK_EQUAL(events[0].data, 1);
+
+	BOOST_CHECK_EQUAL(events[1].timestamp, 1);
+	BOOST_CHECK_EQUAL(events[1].data, 2);
+}
+
+BOOST_AUTO_TEST_CASE(ForEach)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+
+	auto events = buffer.AllEvents();
+
+	int tsSum = 0;
+	int dataSum = 0;
+
+	events.ForEach([&tsSum, &dataSum](int const & ts, int const & data)
+	{
+		tsSum += ts;
+		dataSum += data;
+	});
+
+	BOOST_CHECK_EQUAL(tsSum, 1);
+	BOOST_CHECK_EQUAL(dataSum, 3);
+}
+
+BOOST_AUTO_TEST_CASE(ForEachWhile)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+	buffer.RegisterEvent(2, 3);
+
+	auto events = buffer.AllEvents();
+
+	int tsSum = 0;
+	int dataSum = 0;
+
+	events.ForEachWhile([&tsSum, &dataSum](int const & ts, int const & data) -> bool
+	{
+		tsSum += ts;
+		dataSum += data;
+		return (dataSum < 3);
+	});
+
+	BOOST_CHECK_EQUAL(tsSum, 1);
+	BOOST_CHECK_EQUAL(dataSum, 3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
