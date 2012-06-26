@@ -30,6 +30,14 @@ public: // Range class
 
 	class Range
 	{
+	private:
+		friend class EventBuffer;
+
+		Range(EventBuffer const & parent, TimestampIterator const & begin, TimestampIterator const & end)
+			: timestampRange_(begin, end)
+			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
+		{}
+
 	public:
 		struct DataPair
 		{
@@ -41,11 +49,6 @@ public: // Range class
 		};
 
 	public:
-		Range(EventBuffer const & parent, TimestampIterator const & begin, TimestampIterator const & end)
-			: timestampRange_(begin, end)
-			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
-		{}
-
 		// Checks
 
 		typename DataBuffer::size_type Size() { return  dataRange_.size(); }
@@ -70,26 +73,36 @@ public: // Range class
 		template<typename Func>
 		void ForEach(Func & func) const
 		{
-			ForEachWhile([&func](TTimestamp const & ts, TData const & data) ->
-				bool { func(ts, data); return true; });
+			ForEachWhile([&func] (TTimestamp const & ts, TData const & data) -> bool
+				{ func(ts, data); return true; });
 		}
 
 		// Call func for each (timestamp, data) pair, until it returns a value that converts to false
 		template<typename Func>
 		void ForEachWhile(Func & func) const
 		{
-			auto tIt = timestampRange_.begin();
-			auto dIt = dataRange_.begin();
-			for(/* inited above */; tIt != timestampRange_.end(); ++tIt, ++dIt) {
-				if (!func(*tIt, *dIt)) { return; }
-			}
+			ForEachWhile(func, timestampRange_.begin(), timestampRange_.end(), dataRange_.begin());
 		}
 
-		// direct range access
-		TimestampRange const & timestampRange() const { return timestampRange_; }
-		DataRange const & dataRange() const { return dataRange_; }
+		// Reverse versions of the above
+
+		template<typename Func>
+		void ReverseForEach(Func & func) const
+		{
+			ReverseForEachWhile([&func] (TTimestamp const & ts, TData const & data) -> bool
+				{ func(ts, data); return true; });
+		}
+
+		template<typename Func>
+		void ReverseForEachWhile(Func & func) const
+		{
+			auto tRange = timestampRange_ | boost::adaptors::reversed;
+			auto dRange = dataRange_ | boost::adaptors::reversed;
+			ForEachWhile(func, tRange.begin(), tRange.end(), dRange.begin());
+		}
 
 		// Data container conversion utilities
+
 		template<typename T>
 		T DataAs() const { return T(dataRange_.begin(), dataRange_.end()); }
 		
@@ -97,6 +110,16 @@ public: // Range class
 		T<DataIterator> DataAs() const { return T<DataIterator>(dataRange_.begin(), dataRange_.end()); }
 
 	private:
+		template<typename Func, typename TIterator, typename DIterator>
+		void ForEachWhile(Func & func, TIterator tBegin, TIterator tEnd, DIterator dBegin) const
+		{
+			TIterator tIt = tBegin;
+			DIterator dIt = dBegin;
+			for(/* inited above */; tIt != tEnd; ++tIt, ++dIt) {
+				if (!func(*tIt, *dIt)) { return; }
+			}
+		}
+
 		TimestampRange timestampRange_;
 		DataRange dataRange_;
 	};
@@ -112,8 +135,8 @@ public: // Main interface
 	EventBuffer & operator=(Range const & range)
 	{
 		Clear();
-		DataRange data = range.dataRange();
-		TimestampRange timestamps = range.timestampRange();
+		DataRange data = range.dataRange_;
+		TimestampRange timestamps = range.timestampRange_;
 		std::copy(data.begin(), data.end(), std::back_inserter(data_));
 		std::copy(timestamps.begin(), timestamps.end(), std::back_inserter(timestamps_));
 		return *this;

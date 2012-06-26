@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(AllEvents)
 	BOOST_CHECK_EQUAL(events.LastTimestamp(), 3);
 
 	BOOST_CHECK_EQUAL(events[0].data, 1);
-	BOOST_CHECK_EQUAL(events.dataRange().back(), 3);
+	BOOST_CHECK_EQUAL(events[2].data, 3);
 }
 
 BOOST_AUTO_TEST_CASE(EventsSince)
@@ -349,6 +349,50 @@ BOOST_AUTO_TEST_CASE(ForEachWhile)
 
 	BOOST_CHECK_EQUAL(tsSum, 1);
 	BOOST_CHECK_EQUAL(dataSum, 3);
+}
+
+BOOST_AUTO_TEST_CASE(ReverseForEach)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+
+	auto events = buffer.AllEvents();
+
+	int tsSum = 0;
+	int dataSum = 0;
+
+	events.ReverseForEach([&tsSum, &dataSum](int const & ts, int const & data)
+	{
+		tsSum += ts;
+		dataSum += data;
+	});
+
+	BOOST_CHECK_EQUAL(tsSum, 1);
+	BOOST_CHECK_EQUAL(dataSum, 3);
+}
+
+BOOST_AUTO_TEST_CASE(ReverseForEachWhile)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+	buffer.RegisterEvent(2, 3);
+
+	auto events = buffer.AllEvents();
+
+	int tsSum = 0;
+	int dataSum = 0;
+
+	events.ReverseForEachWhile([&tsSum, &dataSum](int const & ts, int const & data) -> bool
+	{
+		tsSum += ts;
+		dataSum += data;
+		return (dataSum < 5);
+	});
+
+	BOOST_CHECK_EQUAL(tsSum, 3);
+	BOOST_CHECK_EQUAL(dataSum, 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

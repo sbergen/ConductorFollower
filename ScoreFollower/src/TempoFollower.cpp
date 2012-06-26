@@ -1,7 +1,5 @@
 #include "TempoFollower.h"
 
-#include <boost/range/adaptors.hpp>
-
 #include "ScoreFollower/Follower-private.h"
 
 #include "BeatClassifier.h"
@@ -52,8 +50,8 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	if (!newBeats_) { return speed_; }
 	newBeats_ = false;
 
-	// TODO fix
-	if (beatHistory_.AllEvents().Size() <= 4) { return speed_; }
+	// The first few beats are not useful
+	if (beatHistory_.AllEvents().Size() <= 3) { return speed_; }
 
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
@@ -131,23 +129,21 @@ TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catc
 beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
-	assert(beatHistory_.AllEvents().Size() > 4);
-
-	auto beats = beatHistory_.AllEvents();
-
-	auto times = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
-	auto classifications = beatHistory_.AllEvents().dataRange() | boost::adaptors::reversed;
-
 	boost::array<double, 4> weights = { 10.0, 6.0, 2.0, 1.0 };
 	beat_pos_t weightedSum = 0.0;
+	double normalizationTerm = 0.0;
 
-	auto tIt = times.begin();
-	auto cIt = classifications.begin();
-	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++tIt, ++cIt) {
-		weightedSum += *wIt * cIt->offset;
-	}
+	auto wIt = weights.begin();
+	auto wEnd = weights.end();
+	beatHistory_.AllEvents().ReverseForEachWhile(
+		[&weightedSum, &normalizationTerm, &wIt, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
+	{
+		double weight = *wIt;
+		weightedSum += weight * classification.offset;
+		normalizationTerm += weight;
+		return ++wIt == wEnd;
+	});
 
-	double normalizationTerm = std::accumulate(weights.begin(), weights.end(), 0.0);
 	double estimate = weightedSum / normalizationTerm;
 	return estimate;
 }
@@ -155,7 +151,8 @@ TempoFollower::BeatOffsetEstimate() const
 tempo_t
 TempoFollower::BeatLengthEstimate() const
 {
-	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
+	// TODO implement if needed!
+/*	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
 
 	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
 	assert(beats.size() > 4);
@@ -171,6 +168,8 @@ TempoFollower::BeatLengthEstimate() const
 
 	// Cast down to whole units (micro, nano, whatever, don't care about rounding...)
 	return time::duration_cast<tempo_t>(weightedSum);
+	*/
+	return tempo_t(10000);
 }
 
 } // namespace ScoreFollower
