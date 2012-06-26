@@ -19,6 +19,14 @@ TempoMap::Read(TrackReader<tempo_t> & reader)
 	tempo_t tempo;
 
 	while (reader.NextEvent(timestamp, tempo)) {
+		// If the first tempo change is not at zero, insert default tempo at beginning
+		if (first && timestamp > score_time_t::zero()) {
+			EnsureChangesNotEmpty();
+			previousChange = changes_.AllEvents()[0].data;
+			first = false;
+		}
+
+		// Then continue normally...
 		beat_pos_t pos = first ? 0.0 : previousChange.GetTempoAt(timestamp).position();
 		first = false;
 
