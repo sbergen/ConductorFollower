@@ -76,6 +76,7 @@ private:
 	
 	real_time_t previousBeat_;
 	speed_t previousSpeed_;
+	real_time_t startRollingTime_;
 	double velocity_;
 
 	struct QueuedEvent

@@ -19,6 +19,7 @@ FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	, rolling_(false)
 	, gotStartGesture_(false)
 	, previousBeat_(real_time_t::min())
+	, startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
 	, gestureBuffer_(128)
 {
@@ -47,6 +48,9 @@ FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRang
 	auto currentBlock = timeManager_->GetRangeForNow();
 	EnsureProperStart();
 	ConsumeEvents();
+
+	// TODO: Does not do intra-buffer estimation!
+	rolling_ = (currentBlock.first >= startRollingTime_);
 
 	if (!rolling_) { return; }
 
@@ -172,6 +176,7 @@ FollowerPrivate::HandleStartGesture()
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return; }
 
 	// Done!
+	startRollingTime_ = apexes[0].timestamp + gestureLength;
 	tempoFollower_->RegisterBeat(previousBeat_);
 	gotStartGesture_ = true;
 }
@@ -188,7 +193,6 @@ FollowerPrivate::HandlePossibleNewBeats()
 		assert(timestamp < timeManager_->CurrentBlockStart());
 		if (gotStartGesture_) {
 			tempoFollower_->RegisterBeat(timestamp);
-			rolling_ = true;
 		}
 		previousBeat_ = timestamp;
 	});
