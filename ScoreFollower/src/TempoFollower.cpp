@@ -31,14 +31,6 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime)
 		beatHistory_.RegisterEvent(beatTime, classification);
 		newBeats_ = true;
 	}
-}
-
-
-speed_t
-TempoFollower::SpeedEstimateAt(real_time_t const & time)
-{
-	if (!newBeats_) { return speed_; }
-	newBeats_ = false;
 
 	// Beginning (TODO, clean up)
 	if (beatHistory_.AllEvents().Size() == 2) {
@@ -50,8 +42,16 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		tempo_t cTempo = time::duration_cast<tempo_t>(secondBeat - firstBeat);
 		speed_ = static_cast<speed_t>(tempo.count()) / cTempo.count();
 
-		LOG("CTempo: %1%, speed_: %2%", cTempo, speed_);
+		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", cTempo, speed_, secondBeat, firstBeat);
 	}
+}
+
+
+speed_t
+TempoFollower::SpeedEstimateAt(real_time_t const & time)
+{
+	if (!newBeats_) { return speed_; }
+	newBeats_ = false;
 
 	// TODO fix
 	if (beatHistory_.AllEvents().Size() <= 4) { return speed_; }
@@ -87,7 +87,9 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 TempoFollower::BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time)
 {
-	if (beatHistory_.AllEvents().Size() < 1) { return BeatClassification(-1, 1.0); }
+	// Special case for the first two beats
+	if (beatHistory_.AllEvents().Size() == 0) { return BeatClassification(-1, 1.0); }
+	if (beatHistory_.AllEvents().Size() == 1) { return BeatClassification(2, 1.0); }
 
 	score_time_t prevBeatScoreTime = timeWarper_.WarpTimestamp(beatHistory_.AllEvents().LastTimestamp());
 	TempoPoint prevTempoPoint = tempoMap_.GetTempoAt(prevBeatScoreTime);
@@ -101,6 +103,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 
 	// Remove beats that happen "too soon"
 	if (classification.eightsSincePrevious == 1 && classification.probability < 0.1) {
+		LOG("Dropping beat at %1%, prob: %2%", time, classification.probability);
 		classification.probability = 0.0;
 	}
 
