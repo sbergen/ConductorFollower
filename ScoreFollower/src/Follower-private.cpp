@@ -166,7 +166,7 @@ FollowerPrivate::HandleStartGesture()
 	if (magnitude.get<1>() < 200) { return; }
 
 	// Check duration
-	duration_t gestureLength = apexes.timestamp() - previousBeat_;
+	duration_t gestureLength = apexes[0].timestamp - previousBeat_;
 	seconds_t minTempo(60.0 / 40 / 2);
 	seconds_t maxTempo(60.0 / 200 / 2);
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return; }

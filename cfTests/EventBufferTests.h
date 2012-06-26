@@ -28,10 +28,10 @@ BOOST_AUTO_TEST_CASE(AllEvents)
 
 	BOOST_CHECK_EQUAL(events.Size(), 3);
 
-	BOOST_CHECK_EQUAL(events.timestamp(), 1);
+	BOOST_CHECK_EQUAL(events[0].timestamp, 1);
 	BOOST_CHECK_EQUAL(events.LastTimestamp(), 3);
 
-	BOOST_CHECK_EQUAL(events.data(), 1);
+	BOOST_CHECK_EQUAL(events[0].data, 1);
 	BOOST_CHECK_EQUAL(events.dataRange().back(), 3);
 }
 
@@ -290,51 +290,6 @@ BOOST_AUTO_TEST_CASE(LastTimestamp)
 
 	buffer.RegisterEvent(4, 4);
 	BOOST_CHECK_EQUAL(buffer.AllEvents().LastTimestamp(), 4);
-}
-
-BOOST_AUTO_TEST_CASE(Iterate)
-{
-	EventBuffer<int, int> buffer(3);
-	buffer.RegisterEvent(0, 1);
-	buffer.RegisterEvent(1, 2);
-
-	auto events = buffer.AllEvents();
-
-	BOOST_CHECK(!events.AtEnd());
-
-	BOOST_CHECK_EQUAL(events.data(), 1);
-	BOOST_CHECK_EQUAL(events.timestamp(), 0);
-	BOOST_CHECK(events.Next());
-
-	BOOST_CHECK_EQUAL(events.data(), 2);
-	BOOST_CHECK_EQUAL(events.timestamp(), 1);
-	BOOST_CHECK(!events.Next());
-
-	BOOST_CHECK(events.AtEnd());
-}
-
-BOOST_AUTO_TEST_CASE(Rewind)
-{
-	EventBuffer<int, int> buffer(3);
-	buffer.RegisterEvent(0, 1);
-	buffer.RegisterEvent(1, 2);
-
-	auto events = buffer.AllEvents();
-
-	BOOST_CHECK(events.Next());
-	events.Rewind();
-
-	BOOST_CHECK(!events.AtEnd());
-
-	BOOST_CHECK_EQUAL(events.data(), 1);
-	BOOST_CHECK_EQUAL(events.timestamp(), 0);
-	BOOST_CHECK(events.Next());
-
-	BOOST_CHECK_EQUAL(events.data(), 2);
-	BOOST_CHECK_EQUAL(events.timestamp(), 1);
-	BOOST_CHECK(!events.Next());
-
-	BOOST_CHECK(events.AtEnd());
 }
 
 BOOST_AUTO_TEST_CASE(IndexedDataAccess)

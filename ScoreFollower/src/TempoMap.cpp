@@ -35,7 +35,7 @@ TempoMap::GetTempoAt(score_time_t const & time) const
 {
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
-	return range.data().GetTempoAt(time);
+	return range[0].data.GetTempoAt(time);
 }
 
 void

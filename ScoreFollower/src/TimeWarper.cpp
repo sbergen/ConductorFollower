@@ -56,7 +56,7 @@ TimeWarper::WarpTimestamp(real_time_t const & time) const
 	if (history.Empty()) {
 		return score_time_t::zero();
 	} else {
-		return history.data().Warp(time);
+		return history[0].data.Warp(time);
 	}
 }
 
@@ -78,7 +78,7 @@ real_time_t
 TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange) const
 {
 	assert(!searchRange.Empty());
-	assert(time >= searchRange.data().scoreTime());
+	assert(time >= searchRange[0].data.scoreTime());
 
 	WarpPoint const * point = &searchRange[0].data;
 	searchRange.ForEachWhile([&time, &point](real_time_t const &, WarpPoint const & p) -> bool

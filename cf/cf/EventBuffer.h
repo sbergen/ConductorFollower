@@ -44,7 +44,7 @@ public: // Range class
 		Range(EventBuffer const & parent, TimestampIterator const & begin, TimestampIterator const & end)
 			: timestampRange_(begin, end)
 			, dataRange_(parent.ToDataIterator(begin), parent.ToDataIterator(end))
-		{ Rewind(); }
+		{}
 
 		// Checks
 
@@ -85,14 +85,6 @@ public: // Range class
 			}
 		}
 
-		// Iterating interface
-		void Rewind() { tIt_ = timestampRange_.begin(); dIt_ = dataRange_.begin(); }
-		bool Next() { ++tIt_; ++dIt_;  return !AtEnd(); }
-		bool AtEnd() const { return dIt_ == dataRange_.end(); }
-
-		TTimestamp const & timestamp() const { return *tIt_; }
-		TData const & data() const { return *dIt_; }
-
 		// direct range access
 		TimestampRange const & timestampRange() const { return timestampRange_; }
 		DataRange const & dataRange() const { return dataRange_; }
@@ -107,9 +99,6 @@ public: // Range class
 	private:
 		TimestampRange timestampRange_;
 		DataRange dataRange_;
-
-		TimestampIterator tIt_;
-		DataIterator dIt_;
 	};
 
 public: // Main interface
