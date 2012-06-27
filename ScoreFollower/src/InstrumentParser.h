@@ -5,39 +5,79 @@
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/karma_strict_relaxed.hpp>
 
 #include "InstrumentDefinition.h"
 
 namespace cf {
 namespace ScoreFollower {
 
+typedef std::vector<InstrumentDefinition> InstrumentDefinitionList;
+
+class InstrumentParser
+{
+public:
+	InstrumentParser(std::string filename);
+	InstrumentDefinitionList const & Instruments() const { return data; }
+
+private:
+	InstrumentDefinitionList data;
+};
+
+/* Boost.Spirit Qi grammar */
+
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 namespace phoenix = boost::phoenix;
 
 template <typename Iterator>
-struct InstrumentParser : qi::grammar<Iterator, std::vector<InstrumentDefinition>(), ascii::space_type>
+struct InstrumentGrammar : qi::grammar<Iterator, InstrumentDefinitionList(), ascii::space_type>
 {
-    InstrumentParser() : InstrumentParser::base_type(start)
+    InstrumentGrammar() : InstrumentGrammar::base_type(start, "instrument definition list")
     {
         using qi::int_;
         using qi::lit;
         using qi::lexeme;
         using ascii::char_;
 
-        quoted_string %= lexeme['"' >> +(char_ - '"') >> '"'];
-		int_array %= '[' >> (int_ % ',') >> ']';
-		
-		name %= lit("name") >> ':' >> quoted_string >> -lit(',');
-		program_changes %= lit("programChanges") >> ':' >> int_array >> -lit(',');
-		channel %= lit("channel") >> ':' >> int_ >> -lit(',');
-		content %= (name ^ program_changes ^ channel);
-		// TODO why does this not work???
-		//content %= boost::spirit::strict[name ^ program_changes ^ channel];
+		// Grammar definitions
 
-        start %= '[' >> (lit("instrument") >> '{' >> content >>  '}') % ',' >> ']';
+        quoted_string = lexeme['"' > +(char_ - '"') > '"'];
+		int_array = '[' > (int_ % ',') > ']';
+		
+		name = lit("name") >> ':' > quoted_string >> -lit(',');
+		program_changes = lit("programChanges") >> ':' > int_array >> -lit(',');
+		channel = lit("channel") >> ':' > int_ >> -lit(',');
+		content = name ^ program_changes ^ channel;
+
+        start = '[' >> (lit("instrument") >> '{' > content >  '}') % ',' >> ']';
+
+		// Names
+		quoted_string.name("string literal");
+		int_array.name("integer array");
+		name.name("name specification");
+		program_changes.name("program change definition");
+		channel.name("output channel definition");
+		content.name("definition body");
+		start.name("list body");
+
+		// Error handling
+		using namespace qi::labels;
+		using phoenix::construct;
+        using phoenix::val;
+
+		qi::on_error<qi::rethrow>
+        (
+            start
+          , std::cout
+                << val("* Error, Expecting ")
+                << _4                               // what failed?
+                << val(" here: '")
+                << construct<std::string>(_3, _2)   // iterators to error-pos, end
+                << val("'")
+                << std::endl
+        );
     }
+
     qi::rule<Iterator, std::string(), ascii::space_type> quoted_string;
 	qi::rule<Iterator, std::vector<int>(), ascii::space_type> int_array;
 
@@ -46,7 +86,7 @@ struct InstrumentParser : qi::grammar<Iterator, std::vector<InstrumentDefinition
 	qi::rule<Iterator, int(), ascii::space_type> channel;
 	qi::rule<Iterator, InstrumentDefinition(), ascii::space_type> content;
 
-    qi::rule<Iterator, std::vector<InstrumentDefinition>(), ascii::space_type> start;
+    qi::rule<Iterator, InstrumentDefinitionList(), ascii::space_type> start;
 };
 
 } // namespace ScoreFollower

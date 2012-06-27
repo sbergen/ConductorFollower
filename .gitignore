@@ -23,3 +23,6 @@
 *.lai
 *.la
 *.a
+
+# Test related sutff
+*.testdata

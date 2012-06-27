@@ -10,6 +10,8 @@ namespace ScoreFollower {
 
 struct InstrumentDefinition
 {
+	InstrumentDefinition() : outChannel(-1) {}
+
 	std::string name;
 	std::vector<int> programChanges;
 	int outChannel;

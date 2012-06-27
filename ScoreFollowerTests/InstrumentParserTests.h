@@ -1,5 +1,7 @@
 #include "InstrumentParser.h"
 
+#include <fstream>
+
 BOOST_AUTO_TEST_SUITE(InstrumentParserTests)
 
 using namespace cf;
@@ -7,19 +9,20 @@ using namespace cf::ScoreFollower;
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {
-	typedef std::string::const_iterator iterator_type;
-    typedef InstrumentParser<iterator_type> Parser;
+	std::string filename = "test.testdata";
 
-	std::string data = "[ instrument { name: \"piano\", channel: 1, programChanges: [1, 2] }, instrument { name: \"violin\", channel: 2, programChanges: [3, 4] } ]";
-	Parser p;
+	{
+		std::ofstream ofs(filename, std::ios_base::trunc);
+		ofs << "["
+			<< "instrument { name: \"piano\", channel: 1, programChanges: [1, 2] },"
+			<< "instrument { name: \"violin\", channel: 2, programChanges: [3, 4] }"
+			<< "]";
+	}
+
+	InstrumentParser parser(filename);
 	
-	std::vector<InstrumentDefinition> defs;
-	iterator_type iter = data.begin();
-    iterator_type end = data.end();
-	bool success = qi::phrase_parse(iter, end, p, ascii::space, defs);
-	
-	BOOST_REQUIRE(success);
-	BOOST_REQUIRE(iter == end);
+	InstrumentDefinitionList const & defs = parser.Instruments();
+
 	BOOST_REQUIRE(defs.size() > 0);
 
 	InstrumentDefinition def = defs[0];
