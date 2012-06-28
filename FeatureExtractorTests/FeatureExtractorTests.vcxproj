@@ -118,9 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DimensionFeatureExtractorTests.h" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="DimensionFeatureExtractorTests.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
