@@ -15,7 +15,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::EnvelopeLevels,
     (double, attack)
 	(double, decay)
-	(double, values)
+	(double, sustain)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
