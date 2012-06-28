@@ -123,10 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="InstrumentParserTests.h" />
-    <ClInclude Include="TimeWarperTests.h" />
+    <ClCompile Include="TimeWarperTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ScoreFollower\ScoreFollower.vcxproj">

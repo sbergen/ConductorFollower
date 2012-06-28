@@ -18,13 +18,8 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="TimeWarperTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InstrumentParserTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="TimeWarperTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
