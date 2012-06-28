@@ -1,3 +1,5 @@
+#include <boost/test/unit_test.hpp>
+
 #include "cf/EventBuffer.h"
 
 #include <boost/range/numeric.hpp>

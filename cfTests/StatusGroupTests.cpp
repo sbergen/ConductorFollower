@@ -1,3 +1,5 @@
+#include <boost/test/unit_test.hpp>
+
 #include "cf/StatusGroup.h"
 
 #include <boost/fusion/include/transform.hpp>

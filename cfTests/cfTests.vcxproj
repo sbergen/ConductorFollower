@@ -119,14 +119,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EventBufferTests.cpp" />
+    <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="EventBufferTests.h" />
-    <ClInclude Include="LoggerTests.h" />
-    <ClInclude Include="OptionGroupTests.h" />
-    <ClInclude Include="OptionsTest.h" />
-    <ClInclude Include="StatusGroupTests.h" />
+    <ClCompile Include="OptionGroupTests.cpp" />
+    <ClCompile Include="OptionsTest.cpp" />
+    <ClCompile Include="StatusGroupTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

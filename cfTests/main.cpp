@@ -1,9 +1,4 @@
 #define BOOST_TEST_MODULE cf
 #include <boost/test/unit_test.hpp>
 
-// Test suites
-#include "EventBufferTests.h"
-#include "LoggerTests.h"
-#include "OptionsTest.h"
-#include "OptionGroupTests.h"
-#include "StatusGroupTests.h"
+/* Only contains the module definition and automatic entrypoint */
