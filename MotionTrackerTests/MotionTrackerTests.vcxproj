@@ -122,10 +122,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GlobalSetup.h" />
-    <ClInclude Include="OpenNIUtilsTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OpenNIUtilsTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MotionTracker\MotionTracker.vcxproj">

@@ -5,6 +5,3 @@
 #include "GlobalSetup.h"
 BOOST_GLOBAL_FIXTURE(GlobalSetup)
 
-// Test suites
-#include "OpenNIUtilsTest.h"
-

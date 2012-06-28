@@ -1,3 +1,5 @@
+#include <boost/test/unit_test.hpp>
+
 #include "OpenNIUtils.h"
 
 BOOST_AUTO_TEST_SUITE(OpenNIUtilsTests)
