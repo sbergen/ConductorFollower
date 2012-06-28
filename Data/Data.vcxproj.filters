@@ -13,12 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{fa9086e7-3bfb-48a1-b171-00a5547dc61a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CommentSkipper.h">
+    <ClInclude Include="src\InstrumentGrammar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorHandler.h">
+    <ClInclude Include="src\CommentSkipper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ErrorHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\InstrumentPatch.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\InstrumentParser.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Instrument.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InstrumentAdapters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
