@@ -23,8 +23,8 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 					<< "patch {"
 						<< "name: \"regular\""
 						<< "keyswitch: 42"
-						<< "t_ads: [ 0.55, 0.22, 0.11 ]"
-						<< "l_ads: [ 0.55, 0.22, 0.11 ]"
+						<< "t_ads: [ 0.11, 0.22, 0.33 ]"
+						<< "l_ads: [ 0.11, 0.22, 0.33 ]"
 					<< "},"
 					<< "patch { name: \"dummy\" }" // dummy patch
 				<< "]"
@@ -57,13 +57,13 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	BOOST_CHECK_EQUAL(patch.name, "regular");
 	BOOST_CHECK_EQUAL(patch.keyswitch, 42);
 
-	BOOST_CHECK_EQUAL(patch.envelopeTimes.attack, 0.55);
+	BOOST_CHECK_EQUAL(patch.envelopeTimes.attack, 0.11);
 	BOOST_CHECK_EQUAL(patch.envelopeTimes.decay, 0.22);
-	BOOST_CHECK_EQUAL(patch.envelopeTimes.sustain, 0.11);
+	BOOST_CHECK_EQUAL(patch.envelopeTimes.sustain, 0.33);
 
-	BOOST_CHECK_EQUAL(patch.envelopeLevels.attack, 0.55);
+	BOOST_CHECK_EQUAL(patch.envelopeLevels.attack, 0.11);
 	BOOST_CHECK_EQUAL(patch.envelopeLevels.decay, 0.22);
-	BOOST_CHECK_EQUAL(patch.envelopeLevels.sustain, 0.11);
+	BOOST_CHECK_EQUAL(patch.envelopeLevels.sustain, 0.33);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
