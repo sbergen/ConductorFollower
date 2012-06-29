@@ -153,10 +153,8 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 		return;
 	}
 
-	if (followerStatus().HasSomethingChanged())
-	{
-		changeBroadcaster.sendChangeMessage();
-	}
+	// Update UI on every run, TODO make this happen every n times?
+	changeBroadcaster.sendChangeMessage();
 
 	/************************************************************************************/
 

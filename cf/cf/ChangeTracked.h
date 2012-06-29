@@ -2,7 +2,7 @@
 
 namespace cf {
 
-template<typename GroupParent, typename ValueType>
+template<typename ValueType>
 class ChangeTracked
 {
 public:
@@ -11,8 +11,6 @@ public:
 public:
 	ChangeTracked() : changed_(false), value_() {}
 	ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
-
-	//ValueType const & value() const { return value_; }
 
 	template<typename Y>
 	bool LoadIfChanged(Y & value) const
@@ -33,7 +31,6 @@ public:
 		if (value != value_) {
 			value_ = value;
 			changed_ = true;
-			ChangeTrackedGroup<GroupParent>::Changed();
 		}
 		return *this;
 	}
@@ -42,25 +39,5 @@ private:
 	mutable bool changed_;
 	ValueType value_;
 };
-
-template<typename ParentType>
-class ChangeTrackedGroup
-{
-public:
-	static bool HasSomethingChanged(bool reset = true)
-	{
-		bool ret = changed;
-		if (reset) { changed = false; }
-		return ret;
-	}
-
-	static void Changed() { changed = true; }
-
-private:
-	static bool changed;
-};
-
-template<typename T>
-bool ChangeTrackedGroup<T>::changed = false;
 
 } // namespace cf

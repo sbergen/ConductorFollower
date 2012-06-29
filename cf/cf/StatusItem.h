@@ -14,32 +14,32 @@ StatusType,
 	(Bar)
 )
 
-template<typename TGroup, StatusType::domain Type, typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
-struct StatusItemGrouped : public ChangeTracked<TGroup, Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> >
+template<StatusType::domain Type, typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
+struct StatusItemBase : public ChangeTracked<Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> >
 {
 	enum { status_type = Type };
 	using ChangeTracked::operator=;
 };
 
-template<StatusType::domain Type, typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
-struct StatusItemBase
-{
-	template<typename TGroup>
-	struct grouped { typedef StatusItemGrouped<TGroup, Type, TValue, TAssignable, DefaultValue, MinValue, MaxValue> type; };
-
-	typedef TValue value_type;
-};
-
 // When TValue == TAssignable
 template<StatusType::domain Type, typename TValue, TValue DefaultValue, TValue MinValue, TValue MaxValue>
-class StatusItem : public StatusItemBase<Type, TValue, TValue, DefaultValue, MinValue, MaxValue> {};
+class StatusItem : public StatusItemBase<Type, TValue, TValue, DefaultValue, MinValue, MaxValue>
+{
+	using StatusItemBase::operator=;
+};
 
 // Shorthand for bool
 template<bool DefaultValue>
-class BooleanStatusItem : public StatusItem<StatusType::Boolean, bool, DefaultValue, false, true> {};
+class BooleanStatusItem : public StatusItem<StatusType::Boolean, bool, DefaultValue, false, true>
+{
+	using StatusItem::operator=;
+};
 
 // Shorthand for double
 template<StatusType::domain Type, int DefaultValue, int MinValue, int MaxValue>
-class FloatStatusItem : public StatusItemBase<Type, double, int, DefaultValue, MinValue, MaxValue> {};
+class FloatStatusItem : public StatusItemBase<Type, double, int, DefaultValue, MinValue, MaxValue>
+{
+	using StatusItemBase::operator=;
+};
 
 } // namespace cf
