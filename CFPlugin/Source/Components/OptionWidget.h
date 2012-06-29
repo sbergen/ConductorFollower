@@ -17,7 +17,7 @@ public:
 		value_ = &value;
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
-		ValueType::value_type val = value.value();
+		auto val = static_cast<ValueType::value_type>(value);
 		addAndMakeVisible(slider_ = new Slider("slider"));
 		slider_->setSliderStyle(Slider::LinearHorizontal);
 		double stepSize = ValueType::is_integral::value ? 1.0 : 0.0;
@@ -32,7 +32,7 @@ public:
 public: // Slider::Listener implementation
 	void sliderValueChanged (Slider *slider)
 	{
-		value_->setValue(slider->getValue());
+		*value_ = slider->getValue();
 	}
 
 public: // GUI stuff

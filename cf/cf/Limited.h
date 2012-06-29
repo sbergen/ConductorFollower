@@ -30,22 +30,14 @@ public:
 
 	Limited() : value_(DefaultValue) {}
 
-	template<typename Y>
-	void setValue(Y const & value)
-	{
-		if (value < MinValue) { value_ = MinValue; }
-		else if (value > MaxValue) { value_ = MaxValue; }
-		else { value_ = value; }
-	}
-
-	TValue const & value() const { return value_; }
-
 	operator TValue() const { return value_; }
 
 	template<typename Y>
 	Limited & operator= (Y const & value)
 	{
-		setValue(value);
+		if (value < MinValue) { value_ = MinValue; }
+		else if (value > MaxValue) { value_ = MaxValue; }
+		else { value_ = value; }
 		return *this;
 	}
 

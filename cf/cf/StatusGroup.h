@@ -30,13 +30,13 @@ public:
 	template<typename OptionType, typename ValueType>
 	void SetValue(ValueType const & value)
 	{
-		boost::fusion::at_key<OptionType>(map()).setValue(value);
+		boost::fusion::at_key<OptionType>(map()) = value;
 	}
 
 	template<typename OptionType, typename ValueType>
 	void GetValue(ValueType & result) const
 	{
-		result = boost::fusion::at_key<OptionType>(map()).value();
+		result = boost::fusion::at_key<OptionType>(map());
 	}
 
 	template<typename OptionType, typename ValueType>

@@ -12,16 +12,7 @@ public:
 	ChangeTracked() : changed_(false), value_() {}
 	ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
 
-	template<typename Y>
-	void setValue(Y const & value)
-	{
-		if (value == value_) { return; }
-		value_ = value;
-		changed_ = true;
-		ChangeTrackedGroup<GroupParent>::Changed();
-	}
-
-	ValueType const & value() const { return value_; }
+	//ValueType const & value() const { return value_; }
 
 	template<typename Y>
 	bool LoadIfChanged(Y & value) const
@@ -39,7 +30,11 @@ public:
 	template<typename Y>
 	ChangeTracked & operator= (Y const & value)
 	{
-		setValue(value);
+		if (value != value_) {
+			value_ = value;
+			changed_ = true;
+			ChangeTrackedGroup<GroupParent>::Changed();
+		}
 		return *this;
 	}
 

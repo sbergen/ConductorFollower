@@ -19,7 +19,7 @@ public:
 	{
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
-		ValueType::value_type val = value.value();
+		auto val = static_cast<ValueType::value_type>(value);
 		addAndMakeVisible(value_ = new Label("val", String(val)));
 
 		layout_.setItemLayout(0, -0.2, -0.8, -0.6);
@@ -83,7 +83,7 @@ public:
 
 		value_type val;
 		if (forceUpdate) {
-			val = value.value();
+			val = static_cast<value_type>(value);
 		} else {
 			if (!value.LoadIfChanged(val)) { return; }
 		}
