@@ -53,12 +53,12 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 		patch = lit("patch") > '{' > -patch_body > '}';
 
 		// Instrument
-		patches = lit("patches") > ':' > "[" > (patch % ",") > "]";
+		patches = lit("patches") > ':' > "[" > *(patch >> elem_separator) > "]";
 		instrument_body = name ^ patches;
 		instrument = lit("instrument") > '{' > -instrument_body > '}';
 
 		// Start
-		start = "[" > (instrument[phoenix::bind(insert_instrument, _val, _1)] % ',') > "]";
+		start = "[" > *(instrument[phoenix::bind(insert_instrument, _val, _1)] >> elem_separator) > "]";
 
 		// Error handling
 		qi::on_error<qi::fail> (start, error_handler);
