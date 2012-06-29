@@ -22,14 +22,14 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 				<< "patches: ["
 					<< "patch {"
 						<< "name: \"regular\""
-						<< "keyswitch: 42"
+						<< "keyswitch: F#-2"
 						<< "t_ads: [ 0.11, 0.22, 0.33 ]"
 						<< "l_ads: [ 0.11, 0.22, 0.33 ]"
 					<< "},"
-					<< "patch { name: \"dummy\" }" // dummy patch
+					<< "patch { }" // dummy patch
 				<< "]"
 			<< "},"
-			<< "instrument { name: \"dummy\" }" // dummy instrument
+			<< "instrument {  }" // dummy instrument
 		<< "]";
 
 	//std::cout << oss.str();

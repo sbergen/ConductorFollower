@@ -122,6 +122,7 @@
     <ClInclude Include="src\ErrorHandler.h" />
     <ClInclude Include="src\InstrumentGrammar.h" />
     <ClInclude Include="src\InstrumentAdapters.h" />
+    <ClInclude Include="src\keyswitch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp" />

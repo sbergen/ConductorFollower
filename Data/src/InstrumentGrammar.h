@@ -5,12 +5,10 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
 
-#include <boost/fusion/adapted/boost_tuple.hpp>
-#include <boost/fusion/include/boost_tuple.hpp>
-
 #include "CommentSkipper.h"
 #include "ErrorHandler.h"
 #include "InstrumentAdapters.h"
+#include "keyswitch.h"
 
 namespace cf {
 namespace Data {
@@ -37,17 +35,20 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
 		elem_separator = -lit(',');
 		name = lit("name") > ':' > quoted_string >> elem_separator;
 
-		// Patch, TODO factor out the double triplse
-		keyswitch = lit("keyswitch") > ':' > int_ >> elem_separator;
-		t_ads = lit("t_ads") > ':' > ('[' > double_ >> elem_separator >> double_ >> elem_separator >> double_ > ']') >> elem_separator;
-		l_ads = lit("l_ads") > ':' > ('[' > double_ >> elem_separator >> double_ >> elem_separator >> double_ > ']') >> elem_separator;
+		// Patch helpers
+		auto double_triple = double_ >> elem_separator >> double_ >> elem_separator >> double_;
+
+		// Patch
+		keyswitch = lit("keyswitch") > ':' > (keyswitch_str | int_) >> elem_separator;
+		t_ads = lit("t_ads") > ':' > ('[' > double_triple > ']') >> elem_separator;
+		l_ads = lit("l_ads") > ':' > ('[' > double_triple > ']') >> elem_separator;
 		patch_body = name ^ keyswitch ^ t_ads ^ l_ads;
-		patch = lit("patch") > '{' > patch_body > '}';
+		patch = lit("patch") > '{' > -patch_body > '}';
 
 		// Instrument
 		patches = lit("patches") > ':' > "[" > (patch % ",") > "]";
 		instrument_body = name ^ patches;
-		instrument = lit("instrument") > '{' > instrument_body > '}';
+		instrument = lit("instrument") > '{' > -instrument_body > '}';
 
 		// Start
 		start = "[" > (instrument % ',') > "]";
@@ -69,6 +70,7 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
 	
 	qi::rule<Iterator, InstrumentPatch(), SkipperType> patch;
 	qi::rule<Iterator, InstrumentPatch(), SkipperType> patch_body;
+	keyswitch::grammar<Iterator, SkipperType> keyswitch_str;
 	qi::rule<Iterator, int(), SkipperType> keyswitch;
 	qi::rule<Iterator, EnvelopeTimes(), SkipperType> t_ads;
 	qi::rule<Iterator, EnvelopeLevels(), SkipperType> l_ads;
