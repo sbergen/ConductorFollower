@@ -21,6 +21,7 @@ private:
 		boost::blank,
 		int, unsigned, long,
 		float, double, 
+		char const *,
 		timestamp_t, duration_t, milliseconds_t, seconds_t,
 		boost::chrono::microseconds> Arg;
 

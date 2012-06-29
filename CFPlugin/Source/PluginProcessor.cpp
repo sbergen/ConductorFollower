@@ -172,6 +172,13 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 			assert(sample < samplesPerBlock_);
 
 			MidiMessage msg = message;
+
+			// Prohibit PCs for now 
+			if (msg.isProgramChange()) {
+				//int const pc = msg.getProgramChangeNumber();
+				return;
+			}
+
 			msg.setChannel(i);
 			midiMessages.addEvent(msg, sample);
 		});
