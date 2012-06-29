@@ -18,43 +18,43 @@ BOOST_AUTO_TEST_SUITE(OptionsTests)
 BOOST_AUTO_TEST_CASE(IntTest)
 {
 	Option<int, 42, 0, 100> option;
-	BOOST_CHECK_EQUAL(option.value(), 42);
+	BOOST_CHECK_EQUAL(option, 42);
 
-	option.setValue(50);
-	BOOST_CHECK_EQUAL(option.value(), 50);
+	option = 50;
+	BOOST_CHECK_EQUAL(option, 50);
 
-	option.setValue(-1);
-	BOOST_CHECK_EQUAL(option.value(), 0);
+	option = -1;
+	BOOST_CHECK_EQUAL(option, 0);
 
-	option.setValue(150);
-	BOOST_CHECK_EQUAL(option.value(), 100);
+	option = 150;
+	BOOST_CHECK_EQUAL(option, 100);
 }
 
 BOOST_AUTO_TEST_CASE(EnumTest)
 {
 	EnumOption<TestOption, TestOption::Second> option;
-	BOOST_CHECK_EQUAL(option.value(), TestOption::Second);
+	BOOST_CHECK_EQUAL(static_cast<TestOption>(option), TestOption::Second);
 
-	option.setValue(TestOption::Third);
-	BOOST_CHECK_EQUAL(option.value(), TestOption::Third);
+	option = TestOption::Third;
+	BOOST_CHECK_EQUAL(static_cast<TestOption>(option), TestOption::Third);
 
-	option.setValue(TestOption::First);
-	BOOST_CHECK_EQUAL(option.value(), TestOption::First);
+	option = TestOption::First;
+	BOOST_CHECK_EQUAL(static_cast<TestOption>(option), TestOption::First);
 }
 
 BOOST_AUTO_TEST_CASE(FloatTest)
 {
 	FloatOption<10, 0, 100> option;
-	BOOST_CHECK_CLOSE(option.value(), 10.0, 0.1);
+	BOOST_CHECK_CLOSE(static_cast<double>(option), 10.0, 0.1);
 
-	option.setValue(1.5);
-	BOOST_CHECK_CLOSE(option.value(), 1.5, 0.1);
+	option = 1.5;
+	BOOST_CHECK_CLOSE(static_cast<double>(option), 1.5, 0.1);
 
-	option.setValue(110);
-	BOOST_CHECK_CLOSE(option.value(), 100.0, 0.1);
+	option = 110;
+	BOOST_CHECK_CLOSE(static_cast<double>(option), 100.0, 0.1);
 
-	option.setValue(-0.1);
-	BOOST_CHECK_CLOSE(option.value(), 0.0, 0.1);
+	option = -0.1;
+	BOOST_CHECK_CLOSE(static_cast<double>(option), 0.0, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(TestGroup)

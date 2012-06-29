@@ -47,7 +47,7 @@ public:
 	{
 		std::ostream stream(0);
 		typename T::value_type maxValue = static_cast<typename T::assignable_type>(T::max_value);
-		stream << desc << ": " << t.value()
+		stream << desc << ": " << static_cast<T::value_type>(t)
 			<< ", max: " << maxValue
 			<< ", is enum: " << T::is_enum::value
 			<< std::endl;
