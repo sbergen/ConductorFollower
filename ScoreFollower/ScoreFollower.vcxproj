@@ -127,8 +127,6 @@
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />
     <ClInclude Include="src\globals.h" />
-    <ClInclude Include="src\InstrumentDefinition.h" />
-    <ClInclude Include="src\InstrumentGrammar.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
     <ClInclude Include="src\TempoPoint.h" />
