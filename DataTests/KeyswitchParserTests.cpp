@@ -46,19 +46,19 @@ BOOST_AUTO_TEST_CASE(TestRandomNotes)
 {
 	int r;
 	
-	r = ParseString("C-5");
+	r = ParseString("C-1");
 	BOOST_CHECK_EQUAL(r, 0);
 	
-	r = ParseString("G#-4");
+	r = ParseString("G#0");
 	BOOST_CHECK_EQUAL(r, 20);
 
-	r = ParseString("E0");
+	r = ParseString("E4");
 	BOOST_CHECK_EQUAL(r, 64);
 
-	r = ParseString("B2");
+	r = ParseString("B6");
 	BOOST_CHECK_EQUAL(r, 95);
 
-	r = ParseString("F#5");
+	r = ParseString("F#9");
 	BOOST_CHECK_EQUAL(r, 126);
 }
 
@@ -67,40 +67,40 @@ BOOST_AUTO_TEST_CASE(TestOneOctave)
 	int r;
 	
 	r = ParseString("C0");
-	BOOST_CHECK_EQUAL(r, 60);
+	BOOST_CHECK_EQUAL(r, 12);
 	
 	r = ParseString("C#0");
-	BOOST_CHECK_EQUAL(r, 61);
+	BOOST_CHECK_EQUAL(r, 13);
 
 	r = ParseString("D0");
-	BOOST_CHECK_EQUAL(r, 62);
+	BOOST_CHECK_EQUAL(r, 14);
 
 	r = ParseString("D#0");
-	BOOST_CHECK_EQUAL(r, 63);
+	BOOST_CHECK_EQUAL(r, 15);
 
 	r = ParseString("E0");
-	BOOST_CHECK_EQUAL(r, 64);
+	BOOST_CHECK_EQUAL(r, 16);
 
 	r = ParseString("F0");
-	BOOST_CHECK_EQUAL(r, 65);
+	BOOST_CHECK_EQUAL(r, 17);
 
 	r = ParseString("F#0");
-	BOOST_CHECK_EQUAL(r, 66);
+	BOOST_CHECK_EQUAL(r, 18);
 
 	r = ParseString("G0");
-	BOOST_CHECK_EQUAL(r, 67);
+	BOOST_CHECK_EQUAL(r, 19);
 
 	r = ParseString("G#0");
-	BOOST_CHECK_EQUAL(r, 68);
+	BOOST_CHECK_EQUAL(r, 20);
 
 	r = ParseString("A0");
-	BOOST_CHECK_EQUAL(r, 69);
+	BOOST_CHECK_EQUAL(r, 21);
 
 	r = ParseString("A#0");
-	BOOST_CHECK_EQUAL(r, 70);
+	BOOST_CHECK_EQUAL(r, 22);
 
 	r = ParseString("B0");
-	BOOST_CHECK_EQUAL(r, 71);
+	BOOST_CHECK_EQUAL(r, 23);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

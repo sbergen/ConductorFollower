@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 				<< "patches: ["
 					<< "patch {"
 						<< "name: \"regular\""
-						<< "keyswitch: F#-2"
+						<< "keyswitch: F#2"
 						<< "t_ads: [ 0.11, 0.22, 0.33 ]"
 						<< "l_ads: [ 0.11, 0.22, 0.33 ]"
 					<< "},"

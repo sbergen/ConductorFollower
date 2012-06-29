@@ -49,9 +49,8 @@ struct grammar : qi::grammar<Iterator, int(), SkipperType>
 		using qi::_1;
 
 		start =
-				keys  [_val = _1] >>
-				int_  [_val += 12 * (_1 + 5)]
-			;
+			keys  [_val = _1] >>
+			int_  [_val += 12 * (_1 + 1)];
 	}
 
 	keys_ keys;
