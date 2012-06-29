@@ -16,10 +16,10 @@ public:
 	InstrumentParser();
 
 	bool parse(std::string const & filename);
-	InstrumentMap const & Instruments() const { return data; }
+	InstrumentMap const & Instruments() const { return data_; }
 
 private:
-	InstrumentMap data;
+	InstrumentMap data_;
 };
 
 } // namespace Data

@@ -42,9 +42,30 @@
     <ClInclude Include="src\keyswitch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Data\Track.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Score.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScoreAdapters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScoreGrammar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ScoreParser.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\parse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScoreParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

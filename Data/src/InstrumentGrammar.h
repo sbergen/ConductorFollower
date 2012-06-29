@@ -21,7 +21,6 @@ namespace qi = spirit::qi;
 namespace ascii = spirit::ascii;
 namespace phoenix = boost::phoenix;
 
-typedef std::vector<Instrument> InstrumentList;
 typedef std::map<std::string, Instrument> InstrumentMap;
 
 template <typename Iterator, typename SkipperType = CommentSkipper<Iterator> >
@@ -36,19 +35,22 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
         using ascii::char_;
 		using spirit::_val;
 		using spirit::_1;
+		using spirit::_2;
+		using spirit::_3;
+		using spirit::_4;
 
 		// Supporting rules
-        quoted_string = lexeme['"' > +(char_ - '"') > '"'];
+        quoted_string = lexeme['"' > *(char_ - '"') > '"'];
 		elem_separator = -lit(',');
 		name = lit("name") > ':' > quoted_string >> elem_separator;
 
 		// Patch helpers
-		auto double_triple = double_ >> elem_separator >> double_ >> elem_separator >> double_;
+		auto double_triple = '[' > double_ >> elem_separator >> double_ >> elem_separator >> double_ > ']';
 
 		// Patch
 		keyswitch = lit("keyswitch") > ':' > (keyswitch_str | int_) >> elem_separator;
-		t_ads = lit("t_ads") > ':' > ('[' > double_triple > ']') >> elem_separator;
-		l_ads = lit("l_ads") > ':' > ('[' > double_triple > ']') >> elem_separator;
+		t_ads = lit("t_ads") > ':' > double_triple >> elem_separator;
+		l_ads = lit("l_ads") > ':' > double_triple >> elem_separator;
 		patch_body = name ^ keyswitch ^ t_ads ^ l_ads;
 		patch = lit("patch") > '{' > -patch_body > '}';
 
@@ -61,7 +63,7 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 		start = "[" > *(instrument[phoenix::bind(insert_instrument, _val, _1)] >> elem_separator) > "]";
 
 		// Error handling
-		qi::on_error<qi::fail> (start, error_handler);
+		qi::on_error<qi::fail> (start, error_handler(_4, _3, _2));
     }
 
 	static void insert_instrument(InstrumentMap & map, Instrument const & instrument)
@@ -69,7 +71,7 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 		map[instrument.name] = instrument;
 	}
 
-	phoenix::function<error_handler_impl> error_handler;
+	phoenix::function<error_handler_impl<Iterator> > error_handler;
 
     qi::rule<Iterator, std::string(), SkipperType> quoted_string;
 	qi::rule<Iterator, void(), SkipperType> elem_separator;

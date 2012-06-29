@@ -118,14 +118,21 @@
     <ClInclude Include="Data\Instrument.h" />
     <ClInclude Include="Data\InstrumentParser.h" />
     <ClInclude Include="Data\InstrumentPatch.h" />
+    <ClInclude Include="Data\Score.h" />
+    <ClInclude Include="Data\ScoreParser.h" />
+    <ClInclude Include="Data\Track.h" />
     <ClInclude Include="src\CommentSkipper.h" />
     <ClInclude Include="src\ErrorHandler.h" />
     <ClInclude Include="src\InstrumentGrammar.h" />
     <ClInclude Include="src\InstrumentAdapters.h" />
     <ClInclude Include="src\keyswitch.h" />
+    <ClInclude Include="src\parse.h" />
+    <ClInclude Include="src\ScoreAdapters.h" />
+    <ClInclude Include="src\ScoreGrammar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp" />
+    <ClCompile Include="src\ScoreParser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

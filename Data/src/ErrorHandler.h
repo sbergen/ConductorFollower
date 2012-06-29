@@ -5,12 +5,12 @@
 namespace cf {
 namespace Data {
 
+template<typename Iterator>
 struct error_handler_impl
 {
 	template <typename, typename, typename>
 	struct result { typedef void type; };
 
-	template <typename Iterator>
 	void operator()(qi::info const & what, Iterator const & whereBegin, Iterator const & whereEnd) const
 	{
 		// This need not be realtime safe
@@ -20,7 +20,7 @@ struct error_handler_impl
 			<< " here "
 			<< std::string(whereBegin, whereEnd);
 		//LOG(ss.str());
-		std::cout << ss.str();
+		std::cout << ss.str() << std::endl;
 	}
 };
 
