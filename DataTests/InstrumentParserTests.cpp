@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	// Instrument
 	BOOST_REQUIRE_GT(instruments.size(), 0);
 	BOOST_CHECK_EQUAL(instruments.size(), 2);
-	auto instrument = instruments[0];
-	BOOST_CHECK_EQUAL(instrument.name, "piano");
+	auto instrument = instruments["piano"];
+	BOOST_CHECK_EQUAL(instrument.name, "piano"); // Check that it was really found
 
 	// Patch
 	BOOST_REQUIRE_GT(instrument.patches.size(), 0);

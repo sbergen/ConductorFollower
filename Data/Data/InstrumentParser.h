@@ -1,13 +1,14 @@
 #pragma once
 
-#include <vector>
+#include <map>
+#include <string>
 
-#include "Instrument.h"
+#include "Data/Instrument.h"
 
 namespace cf {
 namespace Data {
 
-typedef std::vector<Instrument> InstrumentList;
+typedef std::map<std::string, Instrument> InstrumentMap;
 
 class InstrumentParser
 {
@@ -15,10 +16,10 @@ public:
 	InstrumentParser();
 
 	bool parse(std::string const & filename);
-	InstrumentList const & Instruments() const { return data; }
+	InstrumentMap const & Instruments() const { return data; }
 
 private:
-	InstrumentList data;
+	InstrumentMap data;
 };
 
 } // namespace Data

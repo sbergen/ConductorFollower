@@ -1,9 +1,12 @@
 #pragma once
 
+#include <map>
+
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
+#include <boost/spirit/include/phoenix_bind.hpp>
 
 #include "CommentSkipper.h"
 #include "ErrorHandler.h"
@@ -13,14 +16,16 @@
 namespace cf {
 namespace Data {
 
-namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
+namespace spirit = boost::spirit;
+namespace qi = spirit::qi;
+namespace ascii = spirit::ascii;
 namespace phoenix = boost::phoenix;
 
 typedef std::vector<Instrument> InstrumentList;
+typedef std::map<std::string, Instrument> InstrumentMap;
 
 template <typename Iterator, typename SkipperType = CommentSkipper<Iterator> >
-struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
+struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 {
     InstrumentGrammar() : InstrumentGrammar::base_type(start, "instrument definition list")
     {
@@ -29,6 +34,8 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
         using qi::lit;
         using qi::lexeme;
         using ascii::char_;
+		using spirit::_val;
+		using spirit::_1;
 
 		// Supporting rules
         quoted_string = lexeme['"' > +(char_ - '"') > '"'];
@@ -51,11 +58,16 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
 		instrument = lit("instrument") > '{' > -instrument_body > '}';
 
 		// Start
-		start = "[" > (instrument % ',') > "]";
+		start = "[" > (instrument[phoenix::bind(insert_instrument, _val, _1)] % ',') > "]";
 
 		// Error handling
 		qi::on_error<qi::fail> (start, error_handler);
     }
+
+	static void insert_instrument(InstrumentMap & map, Instrument const & instrument)
+	{
+		map[instrument.name] = instrument;
+	}
 
 	phoenix::function<error_handler_impl> error_handler;
 
@@ -75,7 +87,7 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentList(), SkipperType>
 	qi::rule<Iterator, EnvelopeTimes(), SkipperType> t_ads;
 	qi::rule<Iterator, EnvelopeLevels(), SkipperType> l_ads;
 
-	qi::rule<Iterator, InstrumentList(), SkipperType> start;
+	qi::rule<Iterator, InstrumentMap(), SkipperType> start;
 };
 
 } // namespace Data
