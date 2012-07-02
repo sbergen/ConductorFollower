@@ -10,7 +10,7 @@ public:
 
 public:
 	ChangeTracked() : changed_(false), value_() {}
-	ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
+	explicit ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
 
 	template<typename Y>
 	bool LoadIfChanged(Y & value) const

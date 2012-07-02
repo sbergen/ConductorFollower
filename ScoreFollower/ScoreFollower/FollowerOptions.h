@@ -6,12 +6,12 @@ namespace cf {
 namespace ScoreFollower {
 namespace Options {
 
-typedef FloatStatusItem<StatusType::Setting, StatusPresentation::Bar, 10, 0, 20> TempoFromPhaseThreshType;
+typedef StringStatusItem<StatusType::Setting, StatusPresentation::File> FileType;
 
 CF_STATUS_GROUP
 (
 FollowerOptions,
-	((TempoFromPhaseThresh, "Tempo diff threshold for phase following (%)", TempoFromPhaseThreshType))
+	((InstrumentDefinitions, "Instrument definitions file", FileType))
 )
 
 } // namespace Options
