@@ -21,9 +21,9 @@ typedef Option<int, 50, 0, 100> TestOptionType2;
 typedef EnumOption<TestOptionEnum3, TestOptionEnum3::Second> TestOptionType3;
 
 CF_OPTION_GROUP(TestOptionGroup,
-	(Option1)("This is the option number 1")(TestOptionType)
-	(Option2)("This is the option number 2")(TestOptionType2)
-	(Option3)("This is the option number 3")(TestOptionType3)
+	((Option1, "This is the option number 1", TestOptionType))
+	((Option2, "This is the option number 2", TestOptionType2))
+	((Option3, "This is the option number 3", TestOptionType3))
 )
 
 BOOST_AUTO_TEST_SUITE(OptionGroupTests)

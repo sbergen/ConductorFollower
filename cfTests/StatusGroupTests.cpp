@@ -12,8 +12,8 @@ typedef StatusItem<StatusType::Text, int, 42, 0, 100> IntStatus;
 typedef FloatStatusItem<StatusType::Bar, 5, 0, 10> FloatStatus;
 
 CF_STATUS_GROUP(TestStatGroup,
-	(Stat1)("This is the stat number 1")(IntStatus)
-	(Stat2)("This is the stat number 2")(FloatStatus)
+	((Stat1, "This is the stat number 1", IntStatus))
+	((Stat2, "This is the stat number 2", FloatStatus))
 )
 
 using namespace boost::fusion;

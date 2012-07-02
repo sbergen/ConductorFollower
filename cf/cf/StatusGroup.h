@@ -9,8 +9,8 @@
 /*
 Use this like:
 CF_STATUS_GROUP(TestStatGroup,
-	(Stat1)("This is the stat number 1")(int)
-	(Stat2)("This is the stat number 2")(float)
+	((Stat1, "This is the stat number 1", int))
+	(Stat2, "This is the stat number 2", float)
 )
 */
 

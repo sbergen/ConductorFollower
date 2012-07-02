@@ -12,7 +12,7 @@ typedef FloatOption<10, 0, 20> TempoFromPhaseThreshType;
 CF_OPTION_GROUP
 (
 FollowerOptions,
-	(TempoFromPhaseThresh)("Tempo diff threshold for phase following (%)")(TempoFromPhaseThreshType)
+	((TempoFromPhaseThresh, "Tempo diff threshold for phase following (%)", TempoFromPhaseThreshType))
 )
 
 } // namespace Options
