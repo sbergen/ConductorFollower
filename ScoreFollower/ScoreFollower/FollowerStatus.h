@@ -7,13 +7,14 @@ namespace cf {
 namespace ScoreFollower {
 namespace Status {
 
-typedef FloatStatusItem<StatusType::Bar, 1, 0, 2> SpeedType;
-typedef FloatStatusItem<StatusType::Bar, 150, 50, 600> MagnitudeType;
+typedef BooleanStatusItem<StatusType::Information, false> BooleanTypeFalse;
+typedef FloatStatusItem<StatusType::Information, StatusPresentation::Bar, 1, 0, 2> SpeedType;
+typedef FloatStatusItem<StatusType::Information, StatusPresentation::Bar, 150, 50, 600> MagnitudeType;
 
 CF_STATUS_GROUP
 (
 FollowerStatus,
-	((Running, "Running", BooleanStatusItem<false>))
+	((Running, "Running", BooleanTypeFalse))
 	((Speed, "Speed", SpeedType))
 	((SpeedFromTempo, "Speed from tempo", SpeedType))
 	((SpeedFromPhase, "Speed from phase", SpeedType))

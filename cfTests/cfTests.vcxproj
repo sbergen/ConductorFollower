@@ -122,8 +122,6 @@
     <ClCompile Include="EventBufferTests.cpp" />
     <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OptionGroupTests.cpp" />
-    <ClCompile Include="OptionsTest.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />
   </ItemGroup>
   <ItemGroup>

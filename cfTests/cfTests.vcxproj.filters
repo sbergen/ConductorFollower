@@ -24,12 +24,6 @@
     <ClCompile Include="LoggerTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OptionGroupTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OptionsTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StatusGroupTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

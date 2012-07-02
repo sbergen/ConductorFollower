@@ -1,11 +1,12 @@
 #pragma once
 
-// JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
 
-template<typename KeyType, typename ValueType>
+template<typename KeyType, typename ValueType, int Presentation>
 class OptionWidget : public Component, public Slider::Listener
 {
+	typedef typename ValueType::value_type limited_type;
+
 public:
 	~OptionWidget()
 	{
@@ -20,8 +21,8 @@ public:
 		auto val = static_cast<ValueType::value_type>(value);
 		addAndMakeVisible(slider_ = new Slider("slider"));
 		slider_->setSliderStyle(Slider::LinearHorizontal);
-		double stepSize = ValueType::is_integral::value ? 1.0 : 0.0;
-		slider_->setRange(ValueType::min_value, ValueType::max_value, stepSize);
+		double stepSize = limited_type::is_integral::value ? 1.0 : 0.0;
+		slider_->setRange(limited_type::min_value, limited_type::max_value, stepSize);
 		slider_->setValue(val);
 		slider_->addListener(this);
 
