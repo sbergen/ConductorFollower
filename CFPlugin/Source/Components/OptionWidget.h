@@ -13,6 +13,12 @@ class OptionWidget : public Component, public Slider::Listener
 	typedef typename ValueType::value_type limited_type;
 
 public:
+	OptionWidget()
+		: description_(nullptr)
+		, slider_(nullptr)
+		, value_(nullptr)
+	{}
+
 	~OptionWidget()
 	{
 		deleteAllChildren();
@@ -66,6 +72,12 @@ class OptionWidget<typename KeyType, typename ValueType, cf::StatusPresentation:
 	BOOST_STATIC_ASSERT((boost::is_same<actual_type, std::string>::value));
 
 public:
+	OptionWidget()
+		: description_(nullptr)
+		, fileChooser_(nullptr)
+		, value_(nullptr)
+	{}
+
 	~OptionWidget()
 	{
 		deleteAllChildren();
