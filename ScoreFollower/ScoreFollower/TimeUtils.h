@@ -2,12 +2,14 @@
 
 #include <utility>
 
+#include <boost/utility.hpp>
+
 #include "ScoreFollower/types.h"
 
 namespace cf {
 namespace ScoreFollower {
 
-class TimeUtils
+class TimeUtils : public boost::noncopyable
 {
 public:
 	static std::pair<real_time_t, real_time_t>

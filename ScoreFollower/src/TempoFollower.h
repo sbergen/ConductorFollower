@@ -9,13 +9,15 @@
 
 #include "TempoMap.h"
 
+#include <boost/utility.hpp>
+
 namespace cf {
 namespace ScoreFollower {
 
 class TimeWarper;
 class Follower;
 
-class TempoFollower
+class TempoFollower : public boost::noncopyable
 {
 public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);

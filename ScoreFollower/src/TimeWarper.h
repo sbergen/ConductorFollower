@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #include "cf/EventBuffer.h"
 
 #include "ScoreFollower/types.h"
@@ -7,7 +9,7 @@
 namespace cf {
 namespace ScoreFollower {
 
-class TimeWarper
+class TimeWarper : public boost::noncopyable
 {
 public:
 	TimeWarper();

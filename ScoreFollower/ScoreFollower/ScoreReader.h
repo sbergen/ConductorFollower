@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include <boost/utility.hpp>
 
 #include "ScoreFollower/types.h"
 
@@ -14,7 +15,7 @@ typedef boost::shared_ptr<TrackReader<ScoreEventHandle> > TrackReaderPtr;
 typedef boost::shared_ptr<TrackReader<tempo_t> > TempoReaderPtr;
 
 // Abstraction of reading a score (e.g. midi)
-class ScoreReader
+class ScoreReader : public boost::noncopyable
 {
 public:
 	virtual ~ScoreReader()  {}

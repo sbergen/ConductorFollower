@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include <boost/utility.hpp>
 
 #include "cf/EventBuffer.h"
 
@@ -12,7 +13,7 @@ namespace ScoreFollower {
 
 class ScoreReader;
 
-class ScoreHelper
+class ScoreHelper : public boost::noncopyable
 {
 	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
 

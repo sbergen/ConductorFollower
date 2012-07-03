@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <boost/utility.hpp>
+
 #include "cf/EventBuffer.h"
 
 #include "ScoreFollower/types.h"
@@ -12,7 +14,7 @@
 namespace cf {
 namespace ScoreFollower {
 
-class TempoMap
+class TempoMap : public boost::noncopyable
 {
 public:
 	TempoMap();

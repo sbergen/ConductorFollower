@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include <boost/utility.hpp>
+
 #include "cf/cf.h"
 
 #include "ScoreFollower/types.h"
@@ -9,7 +11,7 @@
 namespace cf {
 namespace ScoreFollower {
 
-class AudioBlockTimeManager
+class AudioBlockTimeManager : public boost::noncopyable
 {
 public:
 	AudioBlockTimeManager(unsigned samplerate, unsigned blockSize);

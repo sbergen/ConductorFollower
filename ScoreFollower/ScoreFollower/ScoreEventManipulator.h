@@ -1,12 +1,14 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 namespace cf {
 namespace ScoreFollower {
 
 class ScoreEventHandle;
 
 // Interface for manipulating ScoreEvents via ScoreEventHandle
-class ScoreEventManipulator
+class ScoreEventManipulator : public boost::noncopyable
 {
 public:
 	virtual ~ScoreEventManipulator() {}

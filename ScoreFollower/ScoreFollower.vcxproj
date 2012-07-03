@@ -115,7 +115,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BeatClassifier.h" />
-    <ClInclude Include="ScoreFollower\Follower-inl.h" />
     <ClInclude Include="ScoreFollower\Follower.h" />
     <ClInclude Include="ScoreFollower\FollowerOptions.h" />
     <ClInclude Include="ScoreFollower\FollowerStatus.h" />

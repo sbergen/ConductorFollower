@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include <boost/utility.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -17,7 +18,7 @@ class ScoreReader;
 namespace Status { class FollowerStatus; }
 namespace Options { class FollowerOptions; }
 
-class Follower
+class Follower : public boost::noncopyable
 {
 public:
 	// Container for fetching events for each block

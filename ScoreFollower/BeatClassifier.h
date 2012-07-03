@@ -1,9 +1,11 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 namespace cf {
 namespace ScoreFollower {
 
-class BeatClassifier
+class BeatClassifier : public boost::noncopyable
 {
 public:
 

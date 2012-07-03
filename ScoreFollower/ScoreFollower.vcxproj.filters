@@ -39,9 +39,6 @@
     <ClInclude Include="src\AudioBlockTimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreFollower\Follower-inl.h">
-      <Filter>ScoreFollower</Filter>
-    </ClInclude>
     <ClInclude Include="src\TempoFollower.h">
       <Filter>Header Files</Filter>
     </ClInclude>

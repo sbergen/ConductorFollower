@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <boost/utility.hpp>
 
 #include "ScoreFollower/types.h"
 
@@ -13,7 +14,7 @@ namespace ScoreFollower {
 
 class Follower;
 
-class TimeHelper
+class TimeHelper : public boost::noncopyable
 {
 public:
 	typedef std::pair<score_time_t, score_time_t> ScoreTimeBlock;
