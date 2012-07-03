@@ -31,8 +31,6 @@ class AudioBlockTimeManager;
 
 class FollowerImpl : public Follower
 {
-	//typedef Follower::BlockBuffer BlockBuffer;
-
 public:
 	FollowerImpl(unsigned samplerate, unsigned blockSize);
 	~FollowerImpl();
@@ -47,13 +45,9 @@ public: // Follower implementation
 
 private:
 	void CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events) const;
-
-public:
 	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
 	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
-	bool Rolling() const { return rolling_; }
 
-private:
 	void EnsureProperStart();
 	void ConsumeEvents();
 	void ConsumeEvent(MotionTracker::Event const & e);
@@ -93,11 +87,9 @@ private:
 
 	FeatureExtractor::Extractor::GestureBuffer gestureBuffer_;
 
-	std::pair<score_time_t, score_time_t> prevScoreRange_;
+	std::pair<score_time_t, score_time_t> scoreRange_;
 
-	// New stuff from refactoring TODO refactor more!
 	boost::shared_ptr<ScoreReader> scoreReader_;
-
 	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
 	std::vector<TrackBuffer> trackBuffers_;
 

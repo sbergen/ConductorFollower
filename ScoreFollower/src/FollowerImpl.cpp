@@ -51,7 +51,6 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreReader_ = scoreReader;
 	
 	// Tempo
-	// TODO refactor to be safer
 	tempoFollower_->ReadTempoTrack(scoreReader->TempoTrack());
 
 	// Tracks
@@ -94,17 +93,16 @@ FollowerImpl::StartNewBlock()
 	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
 
 	if (scoreRange.first != score_time_t::zero()) {
-		assert(prevScoreRange_.second == scoreRange.first);
+		assert(scoreRange_.second == scoreRange.first);
 	}
-	prevScoreRange_ = scoreRange;
+	scoreRange_ = scoreRange;
 }
 
 void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
 {
 	assert(track < trackBuffers_.size());
-	// TODO refactor prevScoreRange_ var name
-	auto ev = trackBuffers_[track].EventsBetween(prevScoreRange_.first, prevScoreRange_.second);
+	auto ev = trackBuffers_[track].EventsBetween(scoreRange_.first, scoreRange_.second);
 
 	events.Clear();
 	if (!rolling_) { return; }
