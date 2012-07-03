@@ -12,7 +12,7 @@ typedef EventBuffer<Point3D, timestamp_t> PositionBuffer;
 typedef EventBuffer<Point3D, timestamp_t> SpeedBuffer;
 
 // Visible to the outside, needs to be defined this way around
-typedef Extractor::GestureBuffer GestureBuffer;
+typedef Extractor::EventSignal EventSignal;
 	
 } // namespace FeatureExtractor
 } // namespace cf

@@ -72,7 +72,7 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	// this makes sure the pointer to the event stays valid
 	auto eventPointer = sequence_.getEventPointer(current_);
 	events_.push_back(new MidiMessage(eventPointer->message));
-	data = ScoreEventHandle(events_.back());
+	data = ScoreEventHandle::Create(events_.back());
 
 	++current_;
 	return current_ < count_;

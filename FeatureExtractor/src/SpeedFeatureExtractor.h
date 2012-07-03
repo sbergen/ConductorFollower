@@ -12,6 +12,9 @@ class SpeedFeatureExtractor
 public:
 	SpeedFeatureExtractor(PositionBuffer const & eventBuffer);
 
+	EventSignal BeatDetected;
+	EventSignal ApexDetected;
+
 	void Update();
 	void BeatsSince(timestamp_t const & time, GestureBuffer & beats);
 	void ApexesSince(timestamp_t const & time, GestureBuffer & apexes);

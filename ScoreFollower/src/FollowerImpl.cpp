@@ -24,21 +24,14 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 }
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
-	: started_(false)
-	, rolling_(false)
-	, gotStartGesture_(false)
-	, previousBeat_(real_time_t::min())
+	: timeManager_(samplerate, blockSize)
+	, tempoFollower_(timeWarper_, *this) 
+	, gestureBuffer_(128)
 	, startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
-	, gestureBuffer_(128)
 {
-	globalsInit_.reset(new GlobalsInitializer());
-
 	eventProvider_.reset(EventProvider::Create());
 	featureExtractor_.reset(Extractor::Create());
-	timeManager_.reset(new AudioBlockTimeManager(samplerate, blockSize));
-	timeWarper_.reset(new TimeWarper());
-	tempoFollower_.reset(new TempoFollower(*timeWarper_, *this));
 }
 
 FollowerImpl::~FollowerImpl()
@@ -51,7 +44,7 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreReader_ = scoreReader;
 	
 	// Tempo
-	tempoFollower_->ReadTempoTrack(scoreReader->TempoTrack());
+	tempoFollower_.ReadTempoTrack(scoreReader->TempoTrack());
 
 	// Tracks
 	score_time_t timestamp;
@@ -63,34 +56,43 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 			trackBuffers_[i].RegisterEvent(timestamp, data);
 		}
 	}
+
+	{ // TODO handle state better
+		state_ = WaitingForStartGesture;
+		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
+			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
+		assert(eventProvider_->StartProduction());
+	}
 }
 
 void
 FollowerImpl::StartNewBlock()
 {
 	std::pair<score_time_t, score_time_t> scoreRange;
-	auto currentBlock = timeManager_->GetRangeForNow();
-	EnsureProperStart();
+	auto currentBlock = timeManager_.GetRangeForNow();
 	ConsumeEvents();
 
-	// TODO: Does not do intra-buffer estimation!
-	rolling_ = (currentBlock.first >= startRollingTime_);
+	if (state_ == WaitingForStartGesture && currentBlock.first >= startRollingTime_) {
+		state_ = Rolling;
+		beatConnection_ = featureExtractor_->BeatDetected.connect(
+			boost::bind(&FollowerImpl::GotBeat, this, _1));
+	}
 
-	if (!rolling_) { return; }
+	if (state_ != Rolling) { return; }
 
 	// Get start estimate based on old data
-	scoreRange.first = timeWarper_->WarpTimestamp(currentBlock.first);
+	scoreRange.first = timeWarper_.WarpTimestamp(currentBlock.first);
 
 	// Fix the starting point, ensures the next warp is "accurate"
-	speed_t speed = tempoFollower_->SpeedEstimateAt(currentBlock.first);
+	speed_t speed = tempoFollower_.SpeedEstimateAt(currentBlock.first);
 	if (speed != previousSpeed_) {
 		status_.SetValue<Status::Speed>(speed);
 		previousSpeed_ = speed;
-		timeWarper_->FixTimeMapping(currentBlock.first, scoreRange.first, speed);
+		timeWarper_.FixTimeMapping(currentBlock.first, scoreRange.first, speed);
 	}
 
 	// Now use the new estimate for this block
-	scoreRange.second = timeWarper_->WarpTimestamp(currentBlock.second);
+	scoreRange.second = timeWarper_.WarpTimestamp(currentBlock.second);
 
 	if (scoreRange.first != score_time_t::zero()) {
 		assert(scoreRange_.second == scoreRange.first);
@@ -105,9 +107,10 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & man
 	auto ev = trackBuffers_[track].EventsBetween(scoreRange_.first, scoreRange_.second);
 
 	events.Clear();
-	if (!rolling_) { return; }
+	if (state_ != Rolling) { return; }
 
 	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
+	//LOG("Total of %1% events for track %2%", (unsigned)events.AllEvents().Size(), track);
 }
 
 void
@@ -117,24 +120,26 @@ FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle cons
 	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
 	
 	// TODO fugly const modification, think about this...
-	ScoreEventHandle ev = ScoreEventHandle(data);
+	ScoreEventHandle ev(data);
 	manipulator.ApplyVelocity(ev, velocity);
 	events.RegisterEvent(frameOffset, ev);
+
+	LOG("Playing event at %1% with velocity %2%", frameOffset, velocity);
 }
 
 unsigned
 FollowerImpl::ScoreTimeToFrameOffset(score_time_t const & time) const
 {
-	real_time_t const & ref = timeManager_->CurrentBlockStart();
-	real_time_t realTime = timeWarper_->InverseWarpTimestamp(time, ref);
+	real_time_t const & ref = timeManager_.CurrentBlockStart();
+	real_time_t realTime = timeWarper_.InverseWarpTimestamp(time, ref);
 
 	// There are rounding errors sometimes, so allow 10us of "jitter" here
 	// This is perfectly acceptable :)
 	time::limitRange(realTime,
-		timeManager_->CurrentBlockStart(), timeManager_->CurrentBlockEnd(),
+		timeManager_.CurrentBlockStart(), timeManager_.CurrentBlockEnd(),
 		boost::chrono::microseconds(10));
 
-	return timeManager_->ToSampleOffset(realTime);
+	return timeManager_.ToSampleOffset(realTime);
 }
 
 double
@@ -145,12 +150,19 @@ FollowerImpl::NewVelocityAt(double oldVelocity, score_time_t const & time) const
 }
 
 void
-FollowerImpl::EnsureProperStart()
+FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime)
 {
-	if (started_) { return; }
-	started_ = true;
+	startGestureConnection_.disconnect();
 
-	assert(eventProvider_->StartProduction());
+	tempoFollower_.RegisterBeat(beatTime);
+	startRollingTime_ = startTime;
+}
+
+void
+FollowerImpl::GotBeat(real_time_t const & time)
+{
+	assert(time < timeManager_.CurrentBlockStart());
+	tempoFollower_.RegisterBeat(time);
 }
 
 void
@@ -162,7 +174,7 @@ FollowerImpl::ConsumeEvents()
 	}
 
 	while (eventProvider_->DequeueEvent(queuedEvent_.e)) {
-		if (queuedEvent_.e.timestamp() >= timeManager_->CurrentBlockStart()) {
+		if (queuedEvent_.e.timestamp() >= timeManager_.CurrentBlockStart()) {
 			queuedEvent_.isQueued = true;
 			break;
 		}
@@ -193,56 +205,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 void
 FollowerImpl::HandleNewPosition(real_time_t const & timestamp)
 {
-	HandlePossibleNewBeats();
 	UpdateMagnitude(timestamp);
-	HandleStartGesture();
-}
-
-void
-FollowerImpl::HandleStartGesture()
-{
-	if (gotStartGesture_) { return; }
-
-	// TODO move all constants elsewhere!
-
-	if (previousBeat_ == real_time_t::min()) { return; }
-
-	// Check apexes
-	featureExtractor_->GetApexesSince(previousBeat_, gestureBuffer_);
-	auto apexes = gestureBuffer_.AllEvents();
-	if (apexes.Empty()) { return; }
-
-	// Check y-movement magnitude
-	auto magnitude = featureExtractor_->MagnitudeOfMovementSince(previousBeat_);
-	if (magnitude.get<1>() < 200) { return; }
-
-	// Check duration
-	duration_t gestureLength = apexes[0].timestamp - previousBeat_;
-	seconds_t minTempo(60.0 / 40 / 2);
-	seconds_t maxTempo(60.0 / 200 / 2);
-	if (gestureLength > minTempo || gestureLength < maxTempo) { return; }
-
-	// Done!
-	startRollingTime_ = apexes[0].timestamp + gestureLength;
-	tempoFollower_->RegisterBeat(previousBeat_);
-	gotStartGesture_ = true;
-}
-
-void
-FollowerImpl::HandlePossibleNewBeats()
-{
-	real_time_t since = previousBeat_ + milliseconds_t(1);
-	featureExtractor_->GetBeatsSince(since, gestureBuffer_);
-
-	gestureBuffer_.AllEvents().ForEach(
-		[this](timestamp_t const & timestamp, double data)
-	{
-		assert(timestamp < timeManager_->CurrentBlockStart());
-		if (gotStartGesture_) {
-			tempoFollower_->RegisterBeat(timestamp);
-		}
-		previousBeat_ = timestamp;
-	});
 }
 
 void

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -7,14 +10,19 @@ namespace ScoreFollower {
 class ScoreEventHandle
 {
 public:
+	// Has to be default constructible, copy-constructible and assignable
+	// in order to work with collections.
+	// Default copy-ctor and assignment are fine
 	ScoreEventHandle() : data_(nullptr) {}
 
-	explicit ScoreEventHandle(ScoreEventHandle const & other)
-		: data_(other.data_) {}
-
+	// Explicit creation from other types
 	template<typename T>
-	ScoreEventHandle(T & t) : data_(&t)
-	{}
+	static ScoreEventHandle Create(T & t)
+	{
+		return ScoreEventHandle(&t);
+	}
+
+	// Explicit conversion of data
 
 	template<typename T>
 	T & data() { return *static_cast<T *>(data_); }
@@ -23,8 +31,17 @@ public:
 	T const & data() const { return *static_cast<T const *>(data_); }
 
 private:
+	// Has to be a pointer type, otherwise messes up copy-ctor
+	template<typename T>
+	ScoreEventHandle(T * t)
+		: data_(t)
+	{
+		BOOST_STATIC_ASSERT((!boost::is_same<T, ScoreEventHandle>::value));
+	}
+
 	void * data_;
 };
+
 
 } // namespace ScoreFollower
 } // namespace cf

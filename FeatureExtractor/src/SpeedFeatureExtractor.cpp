@@ -58,12 +58,14 @@ SpeedFeatureExtractor::Update()
 	{
 		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
 		beatBuffer_.RegisterEvent(timestamp, 1.0);
+		BeatDetected(timestamp);
 	}
 
 	if (sgn(prevAvgSeed_.get<1>()) == 1 && sgn(centroid.get<1>()) == -1 && absSpeed > 100)
 	{
 		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
 		apexBuffer_.RegisterEvent(timestamp, 1.0);
+		ApexDetected(timestamp);
 	}
 
 	prevAvgSeed_ = centroid;

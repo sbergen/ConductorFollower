@@ -3,6 +3,7 @@
 #include <utility>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/signals2.hpp>
 
 #include "cf/Logger.h"
 
@@ -16,18 +17,16 @@
 #include "ScoreFollower/TrackReader.h"
 #include "ScoreFollower/ScoreReader.h"
 
+#include "AudioBlockTimeManager.h"
+#include "globals.h"
+#include "TimeWarper.h"
+#include "TempoFollower.h"
+
 namespace cf {
 
-namespace MotionTracker {
-	class EventProvider;
-} // namespace MotionTracker
+namespace MotionTracker { class EventProvider; }
 
 namespace ScoreFollower {
-
-class GlobalsInitializer;
-class TimeWarper;
-class TempoFollower;
-class AudioBlockTimeManager;
 
 class FollowerImpl : public Follower
 {
@@ -48,33 +47,42 @@ private:
 	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
 	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
 
-	void EnsureProperStart();
+	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);
+	void GotBeat(real_time_t const & time);
+
 	void ConsumeEvents();
 	void ConsumeEvent(MotionTracker::Event const & e);
 
 	void HandleNewPosition(real_time_t const & timestamp);
-	void HandleStartGesture();
-	void HandlePossibleNewBeats();
 	void UpdateMagnitude(real_time_t const & timestamp);
 
 private:
+	// Temporarily private, until GUI is updated to support enums
+	enum State
+	{
+		WaitingForStartGesture = 0,
+		Rolling,
+		Stopped
+	};
+
+	State state_;
+
+private:
+	GlobalsInitializer globalsInit_;
+
 	Status::FollowerStatus status_;
 	Options::FollowerOptions options_;
 
-	boost::scoped_ptr<GlobalsInitializer> globalsInit_;
-	boost::scoped_ptr<MotionTracker::EventProvider> eventProvider_;
-	boost::scoped_ptr<FeatureExtractor::Extractor> featureExtractor_;
-	boost::scoped_ptr<AudioBlockTimeManager> timeManager_;
-	boost::scoped_ptr<TimeWarper> timeWarper_;
-	boost::scoped_ptr<TempoFollower> tempoFollower_;
+	// Created via shared_ptr
+	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
+	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 
-	bool started_;
-	bool rolling_;
-	bool gotStartGesture_;
-	
-	real_time_t previousBeat_;
-	speed_t previousSpeed_;
+	AudioBlockTimeManager timeManager_;
+	TimeWarper timeWarper_;
+	TempoFollower tempoFollower_;
+
 	real_time_t startRollingTime_;
+	speed_t previousSpeed_;
 	double velocity_;
 
 	struct QueuedEvent
@@ -85,14 +93,19 @@ private:
 	};
 	QueuedEvent queuedEvent_;
 
-	FeatureExtractor::Extractor::GestureBuffer gestureBuffer_;
+	FeatureExtractor::GestureBuffer gestureBuffer_;
 
 	std::pair<score_time_t, score_time_t> scoreRange_;
 
-	boost::shared_ptr<ScoreReader> scoreReader_;
 	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
+
+	boost::shared_ptr<ScoreReader> scoreReader_;
 	std::vector<TrackBuffer> trackBuffers_;
 
+	typedef boost::signals2::connection SignalConnection;
+
+	SignalConnection startGestureConnection_;
+	SignalConnection beatConnection_;
 };
 
 } // namespace ScoreFollower

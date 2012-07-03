@@ -22,13 +22,20 @@ public:
 
 public: // Extractor implementation
 	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
-	void GetBeatsSince(timestamp_t const & since, GestureBuffer & beats);
-	void GetApexesSince(timestamp_t const & since, GestureBuffer & apexes);
-	
 	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
 
-private: // Actual feature extraction
+private:
+	void UpdateLatestBeat(timestamp_t const & time);
+	void DetectStartGesture();
+
+private: // Buffers
 	PositionBuffer positionBuffer_;
+	GestureBuffer gestureBuffer_;
+
+private: // Other data
+	timestamp_t previousBeat_;
+
+private: // slave extractors
 	DimensionFeatureExtractor dimExtractor_;
 	SpeedFeatureExtractor speedExtractor_;
 };
