@@ -8,12 +8,13 @@
 #include <boost/circular_buffer.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/utility.hpp>
 
 namespace cf {
 
 template<typename TData, typename TTimestamp,
 	template<typename, typename> class TContainer = boost::circular_buffer, template<typename> class TAlloc = std::allocator>
-class EventBuffer
+class EventBuffer : public boost::noncopyable
 {
 public: // typedefs
 
@@ -39,7 +40,7 @@ public: // Range class
 		{}
 
 	public:
-		struct DataPair
+		struct DataPair : public boost::noncopyable
 		{
 			DataPair(TTimestamp const & timestamp, TData const & data)
 				: timestamp(timestamp), data(data) {}

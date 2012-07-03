@@ -4,6 +4,7 @@
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 #include <boost/function.hpp>
+#include <boost/utility.hpp>
 
 namespace cf {
 
@@ -18,7 +19,7 @@ namespace cf {
 // or a stop is requested.
 // The thread execution is also lock free, until stopped.
 
-class LockfreeThread
+class LockfreeThread : public boost::noncopyable
 {
 public:
 	LockfreeThread(

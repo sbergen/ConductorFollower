@@ -5,12 +5,13 @@
 #include <boost/function.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
+#include <boost/utility.hpp>
 
 #include "cf/cf.h"
 
 namespace cf {
 
-class ButlerThread
+class ButlerThread : public boost::noncopyable
 {
 public:
 	typedef boost::function<void()> Callback;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/utility.hpp>
 
 #include "cf/EventBuffer.h"
@@ -24,7 +25,9 @@ public:
 private:
 	// Keep reference to scoreReader, so that the events are valid
 	boost::shared_ptr<ScoreReader> scoreReader_;
-	std::vector<TrackBuffer> trackBuffers_;
+
+	// Use a ptr_vector here, because EventBuffer is noncopyable (for a reason)
+	boost::ptr_vector<TrackBuffer> trackBuffers_;
 };
 
 } // namespace ScoreFollower

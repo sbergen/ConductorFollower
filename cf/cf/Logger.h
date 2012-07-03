@@ -8,6 +8,7 @@
 #include <boost/variant.hpp>
 #include <boost/array.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
+#include <boost/utility.hpp>
 
 #include "cf/cf.h"
 #include "cf/ButlerThread.h"
@@ -85,7 +86,7 @@ private:
 	boost::array<Arg, MaxArgs> args_;
 };
 
-class Logger
+class Logger : public boost::noncopyable
 {
 public:
 	Logger(std::ostream & stream)
