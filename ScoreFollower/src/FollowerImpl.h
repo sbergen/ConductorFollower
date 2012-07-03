@@ -88,8 +88,6 @@ private:
 	speed_t previousSpeed_;
 	double velocity_;
 
-	FeatureExtractor::GestureBuffer gestureBuffer_;
-
 	std::pair<score_time_t, score_time_t> scoreRange_;
 
 	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;

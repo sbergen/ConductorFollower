@@ -28,7 +28,6 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
 	: timeManager_(samplerate, blockSize)
 	, tempoFollower_(timeWarper_, *this) 
-	, gestureBuffer_(128)
 	, startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
 {
