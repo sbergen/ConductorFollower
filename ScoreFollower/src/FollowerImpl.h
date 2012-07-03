@@ -19,6 +19,7 @@
 
 #include "AudioBlockTimeManager.h"
 #include "globals.h"
+#include "ScoreHelper.h"
 #include "TimeWarper.h"
 #include "TempoFollower.h"
 
@@ -83,17 +84,13 @@ private:
 	AudioBlockTimeManager timeManager_;
 	TimeWarper timeWarper_;
 	TempoFollower tempoFollower_;
+	ScoreHelper scoreHelper_;
 
 	real_time_t startRollingTime_;
 	speed_t previousSpeed_;
 	double velocity_;
 
 	std::pair<score_time_t, score_time_t> scoreRange_;
-
-	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
-
-	boost::shared_ptr<ScoreReader> scoreReader_;
-	std::vector<TrackBuffer> trackBuffers_;
 
 	typedef boost::signals2::connection SignalConnection;
 

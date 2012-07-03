@@ -43,21 +43,8 @@ FollowerImpl::~FollowerImpl()
 void
 FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 {
-	scoreReader_ = scoreReader;
-	
-	// Tempo
 	tempoFollower_.ReadTempoTrack(scoreReader->TempoTrack());
-
-	// Tracks
-	score_time_t timestamp;
-	ScoreEventHandle data;
-	for (int i = 0; i < scoreReader->TrackCount(); ++i) {
-		trackBuffers_.push_back(TrackBuffer(0));
-		auto reader = scoreReader->Track(i);
-		while (reader->NextEvent(timestamp, data)) {
-			trackBuffers_[i].RegisterEvent(timestamp, data);
-		}
-	}
+	scoreHelper_.CollectData(scoreReader);
 
 	{ // TODO handle state better
 		state_ = WaitingForStartGesture;
@@ -108,8 +95,7 @@ FollowerImpl::StartNewBlock()
 void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
 {
-	assert(track < trackBuffers_.size());
-	auto ev = trackBuffers_[track].EventsBetween(scoreRange_.first, scoreRange_.second);
+	auto ev = scoreHelper_[track].EventsBetween(scoreRange_.first, scoreRange_.second);
 
 	events.Clear();
 	if (state_ != Rolling) { return; }
