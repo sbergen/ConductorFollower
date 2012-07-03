@@ -3,49 +3,43 @@
 #include <vector>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "cf/EventBuffer.h"
-
-#include "ScoreFollower/Follower-private.h"
-#include "ScoreFollower/ScoreReader.h"
-#include "ScoreFollower/TrackReader.h"
-#include "ScoreFollower/MidiManipulator.h"
 
 namespace cf {
 namespace ScoreFollower {
 
-template<typename TData>
+class ScoreEventHandle;
+class ScoreEventManipulator;
+class ScoreReader;
+
+namespace Status { class FollowerStatus; }
+namespace Options { class FollowerOptions; }
+
 class Follower
 {
 public:
 	// Container for fetching events for each block
-	typedef EventBuffer<TData, unsigned> BlockBuffer;
+	typedef EventBuffer<ScoreEventHandle, unsigned> BlockBuffer;
 
 public:
-	Follower(unsigned samplerate, unsigned blockSize);
+	// Implementation is hidde behind the factory function
+	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize);
+	virtual ~Follower() {}
 
-	Status::FollowerStatus & status() { return private_.status(); }
-	Options::FollowerOptions & options() { return private_.options(); }
+	virtual Status::FollowerStatus & status() = 0;
+	virtual Options::FollowerOptions & options() = 0;
 
-	void CollectData(ScoreReader<TData> & scoreReader);
-	void StartNewBlock();
-	void GetTrackEventsForBlock(unsigned track, MidiManipulator<TData> & manipulator, BlockBuffer & events);
+	// Collect data from scoreReader and keep it in scope as long as the data is used.
+	virtual void CollectData(boost::shared_ptr<ScoreReader> scoreReader) = 0;
 
-private:
-	// The data is copied here on purpose
-	void CopyEventToBuffer(score_time_t const & time, TData data, MidiManipulator<TData> & manipulator, BlockBuffer & events);
-	void ReadNormalTracks(ScoreReader<TData> & scoreReader);
+	// Start new audio block (blocksize defined in ctor)
+	virtual void StartNewBlock() = 0;
 
-private:
-	typedef EventBuffer<TData, score_time_t, std::vector> TrackBuffer;
-	std::vector<TrackBuffer> trackBuffers_;
-
-	// Type independent part of implementation
-	FollowerPrivate private_;
-	std::pair<score_time_t, score_time_t> currentScoreBlock_;
+	// Gets events for track in current block, using the given manipulator
+	virtual void GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events) = 0;
 };
-
-#include "ScoreFollower/Follower-inl.h"
 
 } // namespace ScoreFollower
 } // namespace cf

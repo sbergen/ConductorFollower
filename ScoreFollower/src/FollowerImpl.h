@@ -9,10 +9,12 @@
 #include "MotionTracker/Event.h"
 #include "FeatureExtractor/Extractor.h"
 
+#include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerOptions.h"
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
+#include "ScoreFollower/ScoreReader.h"
 
 namespace cf {
 
@@ -27,26 +29,28 @@ class TimeWarper;
 class TempoFollower;
 class AudioBlockTimeManager;
 
-// One class of indirection to make the implementation private
-// This basically implments all the template parameter
-// independent parts of Follower
-class FollowerPrivate
+class FollowerImpl : public Follower
 {
+	//typedef Follower::BlockBuffer BlockBuffer;
+
 public:
+	FollowerImpl(unsigned samplerate, unsigned blockSize);
+	~FollowerImpl();
+
+public: // Follower implementation
 	Status::FollowerStatus & status() { return status_; }
 	Options::FollowerOptions & options() { return options_; }
 
-private: // Only accessible by Follower
-	template <class TData> friend class Follower;
+	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);
+	void StartNewBlock();
+	void GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events);
 
-	FollowerPrivate(unsigned samplerate, unsigned blockSize);
-	~FollowerPrivate();
+private:
+	void CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events) const;
 
-	void ReadTempoTrack(TrackReader<tempo_t> & reader);
-	void StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange);
-
-	unsigned ScoreTimeToFrameOffset(score_time_t const & time);
-	double NewVelocityAt(double oldVelocity, score_time_t const & time);
+public:
+	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
+	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
 	bool Rolling() const { return rolling_; }
 
 private:
@@ -90,6 +94,13 @@ private:
 	FeatureExtractor::Extractor::GestureBuffer gestureBuffer_;
 
 	std::pair<score_time_t, score_time_t> prevScoreRange_;
+
+	// New stuff from refactoring TODO refactor more!
+	boost::shared_ptr<ScoreReader> scoreReader_;
+
+	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
+	std::vector<TrackBuffer> trackBuffers_;
+
 };
 
 } // namespace ScoreFollower

@@ -1,25 +1,3 @@
-template<typename TData>
-Follower<TData>::Follower(unsigned samplerate, unsigned blockSize)
-	: private_(samplerate, blockSize)
-{
-
-}
-
-template<typename TData>
-void Follower<TData>::CollectData(ScoreReader<TData> & scoreReader)
-{
-	{
-		boost::scoped_ptr<TrackReader<tempo_t> > tempoReader(scoreReader.TempoTrack());
-		private_.ReadTempoTrack(*tempoReader);
-	}
-	ReadNormalTracks(scoreReader);
-}
-
-template<typename TData>
-void Follower<TData>::StartNewBlock()
-{
-	private_.StartNewBlock(currentScoreBlock_);
-}
 
 template<typename TData>
 void Follower<TData>::GetTrackEventsForBlock(unsigned track, MidiManipulator<TData> & manipulator, BlockBuffer & events)

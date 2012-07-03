@@ -1,20 +1,21 @@
 #pragma once
 
-#include "ScoreFollower/MidiManipulator.h"
+#include "ScoreFollower/ScoreEventManipulator.h"
 
 // The juce header has evil macros, so be sure to include it last...
 #include "JuceHeader.h"
 
-class MidiManipulator : public cf::ScoreFollower::MidiManipulator<MidiMessage>
+class MidiManipulator : public cf::ScoreFollower::ScoreEventManipulator
 {
 public:
-	double GetVelocity(MidiMessage const & data)
+	double GetVelocity(ScoreEventHandle const & handle)
 	{
-		return data.getFloatVelocity();
+		return handle.data<MidiMessage>().getFloatVelocity();
 	}
 
-	void ApplyVelocity(MidiMessage & data, double velocity)
+	void ApplyVelocity(ScoreEventHandle & handle, double velocity)
 	{
+		MidiMessage & data = handle.data<MidiMessage>();
 		if (!data.isNoteOn()) { return; }
 		data.setVelocity(velocity);
 	}

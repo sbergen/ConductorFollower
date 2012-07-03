@@ -1,6 +1,7 @@
 #include "TempoFollower.h"
 
-#include "ScoreFollower/Follower-private.h"
+#include "ScoreFollower/Follower.h"
+#include "ScoreFollower/FollowerStatus.h"
 
 #include "BeatClassifier.h"
 #include "globals.h"
@@ -9,7 +10,7 @@
 namespace cf {
 namespace ScoreFollower {
 
-TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerPrivate & parent)
+TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	: timeWarper_(timeWarper)
 	, parent_(parent)
 	, tempoMap_()

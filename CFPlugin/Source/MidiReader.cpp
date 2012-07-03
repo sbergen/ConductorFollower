@@ -11,17 +11,17 @@ MidiReader::MidiReader(String const & filename)
 	file_.convertTimestampTicksToSeconds();
 }
 
-TrackReader<MidiMessage> *
+MidiReader::TrackReaderPtr
 MidiReader::Track(int index)
 {
 	assert(index < TrackCount());
-	return new TrackReaderImpl(*file_.getTrack(index));
+	return TrackReaderPtr(new TrackReaderImpl(*file_.getTrack(index), events_));
 }
 
-TrackReader<tempo_t> *
+MidiReader::TempoReaderPtr
 MidiReader::TempoTrack()
 {
-	return new TempoReaderImpl(file_);
+	return TempoReaderPtr(new TempoReaderImpl(file_));
 }
 
 MidiReader::TempoReaderImpl::TempoReaderImpl(MidiFile const & file)
@@ -49,21 +49,23 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	return current_ < count_;
 }
 
-MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequence)
-	: sequence_(sequence)
+MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequence, EventContainer & events)
+	: events_(events)
+	, sequence_(sequence)
 	, count_(sequence.getNumEvents())
 	, current_(0)
 {}
 
 bool
-MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, MidiMessage & data)
+MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, sf::ScoreEventHandle & data)
 {
 	assert(current_ < count_);
 	
 	seconds_t seconds(sequence_.getEventTime(current_));
 	timestamp = time::duration_cast<score_time_t>(seconds);
 
-	data = sequence_.getEventPointer(current_)->message;
+	events_.push_back(sequence_.getEventPointer(current_)->message);
+	data = ScoreEventHandle(events_.back());
 
 	++current_;
 	return current_ < count_;

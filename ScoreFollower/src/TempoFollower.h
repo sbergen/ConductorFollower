@@ -13,12 +13,12 @@ namespace cf {
 namespace ScoreFollower {
 
 class TimeWarper;
-class FollowerPrivate;
+class Follower;
 
 class TempoFollower
 {
 public:
-	TempoFollower(TimeWarper const & timeWarper, FollowerPrivate & parent);
+	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
 	void ReadTempoTrack(TrackReader<tempo_t> & reader) { tempoMap_.Read(reader); }
 	void RegisterBeat(real_time_t const & beatTime);
@@ -48,7 +48,7 @@ private:
 
 private:
 	TimeWarper const & timeWarper_;
-	FollowerPrivate & parent_;
+	Follower & parent_;
 
 	TempoMap tempoMap_;
 	BeatHistoryBuffer beatHistory_;

@@ -17,7 +17,7 @@
 
 using namespace cf;
 using namespace cf::ScoreFollower;
-using namespace cf::FeatureExtractor;
+//using namespace cf::FeatureExtractor;
 
 //==============================================================================
 CfpluginAudioProcessor::CfpluginAudioProcessor()
@@ -128,11 +128,11 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
 	samplesPerBlock_ = samplesPerBlock;
 
-	follower_.reset(new ScoreFollower(sampleRate, samplesPerBlock));
+	follower_ = ScoreFollower::Create(sampleRate, samplesPerBlock);
 
-	MidiReader reader("C:\\sample.mid");
+	boost::shared_ptr<MidiReader> reader(new MidiReader("C:\\sample.mid"));
 	follower_->CollectData(reader);
-	trackCount_ = reader.TrackCount();
+	trackCount_ = reader->TrackCount();
 
 	// Lets see...
 	shouldRun.store(true);
@@ -164,12 +164,13 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	for (int i = 1; i < trackCount_; ++i) {
 		follower_->GetTrackEventsForBlock(i, ::MidiManipulator(), eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
-		events.ForEach([this, &midiMessages, i](unsigned int sample, MidiMessage const & message)
+		events.ForEach([this, &midiMessages, i](unsigned int sample, ScoreEventHandle const & message)
 		{
 			assert(sample >= 0);
 			assert(sample < samplesPerBlock_);
 
-			MidiMessage msg = message;
+			// Make a copy
+			MidiMessage msg = message.data<MidiMessage>();
 
 			// Prohibit PCs for now 
 			if (msg.isProgramChange()) {

@@ -1,7 +1,10 @@
-#include "ScoreFollower/Follower-private.h"
+#include "FollowerImpl.h"
 
 #include "MotionTracker/EventProvider.h"
 #include "FeatureExtractor/Extractor.h"
+
+#include "ScoreFollower/ScoreEventHandle.h"
+#include "ScoreFollower/ScoreEventManipulator.h"
 
 #include "TimeWarper.h"
 #include "TempoFollower.h"
@@ -14,7 +17,13 @@ using namespace cf::MotionTracker;
 namespace cf {
 namespace ScoreFollower {
 
-FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
+boost::shared_ptr<Follower>
+Follower::Create(unsigned samplerate, unsigned blockSize)
+{
+	return boost::shared_ptr<Follower>(new FollowerImpl(samplerate, blockSize));
+}
+
+FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
 	: started_(false)
 	, rolling_(false)
 	, gotStartGesture_(false)
@@ -32,19 +41,35 @@ FollowerPrivate::FollowerPrivate(unsigned samplerate, unsigned blockSize)
 	tempoFollower_.reset(new TempoFollower(*timeWarper_, *this));
 }
 
-FollowerPrivate::~FollowerPrivate()
+FollowerImpl::~FollowerImpl()
 {
 }
 
 void
-FollowerPrivate::ReadTempoTrack(TrackReader<tempo_t> & reader)
+FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 {
-	tempoFollower_->ReadTempoTrack(reader);
+	scoreReader_ = scoreReader;
+	
+	// Tempo
+	// TODO refactor to be safer
+	tempoFollower_->ReadTempoTrack(*scoreReader->TempoTrack());
+
+	// Tracks
+	score_time_t timestamp;
+	ScoreEventHandle data;
+	for (int i = 0; i < scoreReader->TrackCount(); ++i) {
+		trackBuffers_.push_back(TrackBuffer(100));
+		auto reader = scoreReader->Track(i);
+		while (reader->NextEvent(timestamp, data)) {
+			trackBuffers_[i].RegisterEvent(timestamp, data);
+		}
+	}
 }
 
 void
-FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRange)
+FollowerImpl::StartNewBlock()
 {
+	std::pair<score_time_t, score_time_t> scoreRange;
 	auto currentBlock = timeManager_->GetRangeForNow();
 	EnsureProperStart();
 	ConsumeEvents();
@@ -72,11 +97,35 @@ FollowerPrivate::StartNewBlock(std::pair<score_time_t, score_time_t> & scoreRang
 		assert(prevScoreRange_.second == scoreRange.first);
 	}
 	prevScoreRange_ = scoreRange;
+}
+
+void
+FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
+{
+	assert(track < trackBuffers_.size());
+	// TODO refactor prevScoreRange_ var name
+	auto ev = trackBuffers_[track].EventsBetween(prevScoreRange_.first, prevScoreRange_.second);
+
+	events.Clear();
+	if (!rolling_) { return; }
+
+	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
+}
+
+void
+FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events)  const
+{
+	unsigned frameOffset = ScoreTimeToFrameOffset(time);
+	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
 	
+	// TODO fugly const modification, think about this...
+	ScoreEventHandle ev = data;
+	manipulator.ApplyVelocity(ev, velocity);
+	events.RegisterEvent(frameOffset, ev);
 }
 
 unsigned
-FollowerPrivate::ScoreTimeToFrameOffset(score_time_t const & time)
+FollowerImpl::ScoreTimeToFrameOffset(score_time_t const & time) const
 {
 	real_time_t const & ref = timeManager_->CurrentBlockStart();
 	real_time_t realTime = timeWarper_->InverseWarpTimestamp(time, ref);
@@ -91,14 +140,14 @@ FollowerPrivate::ScoreTimeToFrameOffset(score_time_t const & time)
 }
 
 double
-FollowerPrivate::NewVelocityAt(double oldVelocity, score_time_t const & time)
+FollowerImpl::NewVelocityAt(double oldVelocity, score_time_t const & time) const
 {
 	// TODO use time and something fancier :)
 	return (oldVelocity + (velocity_ - 0.5));
 }
 
 void
-FollowerPrivate::EnsureProperStart()
+FollowerImpl::EnsureProperStart()
 {
 	if (started_) { return; }
 	started_ = true;
@@ -107,7 +156,7 @@ FollowerPrivate::EnsureProperStart()
 }
 
 void
-FollowerPrivate::ConsumeEvents()
+FollowerImpl::ConsumeEvents()
 {
 	if (queuedEvent_.isQueued) {
 		ConsumeEvent(queuedEvent_.e);
@@ -124,7 +173,7 @@ FollowerPrivate::ConsumeEvents()
 }
 
 void
-FollowerPrivate::ConsumeEvent(Event const & e)
+FollowerImpl::ConsumeEvent(Event const & e)
 {
 	// TODO clean up!
 
@@ -144,7 +193,7 @@ FollowerPrivate::ConsumeEvent(Event const & e)
 }
 
 void
-FollowerPrivate::HandleNewPosition(real_time_t const & timestamp)
+FollowerImpl::HandleNewPosition(real_time_t const & timestamp)
 {
 	HandlePossibleNewBeats();
 	UpdateMagnitude(timestamp);
@@ -152,7 +201,7 @@ FollowerPrivate::HandleNewPosition(real_time_t const & timestamp)
 }
 
 void
-FollowerPrivate::HandleStartGesture()
+FollowerImpl::HandleStartGesture()
 {
 	if (gotStartGesture_) { return; }
 
@@ -182,7 +231,7 @@ FollowerPrivate::HandleStartGesture()
 }
 
 void
-FollowerPrivate::HandlePossibleNewBeats()
+FollowerImpl::HandlePossibleNewBeats()
 {
 	real_time_t since = previousBeat_ + milliseconds_t(1);
 	featureExtractor_->GetBeatsSince(since, gestureBuffer_);
@@ -199,7 +248,7 @@ FollowerPrivate::HandlePossibleNewBeats()
 }
 
 void
-FollowerPrivate::UpdateMagnitude(real_time_t const & timestamp)
+FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 {
 	// Make better
 	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));

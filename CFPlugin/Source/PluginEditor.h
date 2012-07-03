@@ -14,6 +14,7 @@
 #include <boost/fusion/include/for_each.hpp>
 
 #include "ScoreFollower/FollowerStatus.h"
+#include "ScoreFollower/FollowerOptions.h"
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"

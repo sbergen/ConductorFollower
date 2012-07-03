@@ -17,6 +17,7 @@
 #include "cf/cf.h"
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
+#include "ScoreFollower/ScoreEventHandle.h"
 
 // JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -94,10 +95,10 @@ private:
 	unsigned samplesPerBlock_;
 	int trackCount_;
 
-	typedef cf::ScoreFollower::Follower<MidiMessage> ScoreFollower;
+	typedef cf::ScoreFollower::Follower ScoreFollower;
 	typedef ScoreFollower::BlockBuffer MidiEventBuffer;
 	
-	boost::scoped_ptr<ScoreFollower> follower_;
+	boost::shared_ptr<ScoreFollower> follower_;
 	MidiEventBuffer eventBuffer_;
 
 

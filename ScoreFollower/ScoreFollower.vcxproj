@@ -116,16 +116,17 @@
   <ItemGroup>
     <ClInclude Include="BeatClassifier.h" />
     <ClInclude Include="ScoreFollower\Follower-inl.h" />
-    <ClInclude Include="ScoreFollower\Follower-private.h" />
     <ClInclude Include="ScoreFollower\Follower.h" />
     <ClInclude Include="ScoreFollower\FollowerOptions.h" />
     <ClInclude Include="ScoreFollower\FollowerStatus.h" />
-    <ClInclude Include="ScoreFollower\MidiManipulator.h" />
+    <ClInclude Include="ScoreFollower\ScoreEventHandle.h" />
+    <ClInclude Include="ScoreFollower\ScoreEventManipulator.h" />
     <ClInclude Include="ScoreFollower\ScoreReader.h" />
     <ClInclude Include="ScoreFollower\TimeUtils.h" />
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />
+    <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
@@ -135,7 +136,7 @@
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
     <ClCompile Include="src\BeatClassifier.cpp" />
-    <ClCompile Include="src\Follower-private.cpp" />
+    <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />
     <ClCompile Include="src\TempoMap.cpp" />
