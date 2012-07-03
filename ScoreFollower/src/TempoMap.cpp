@@ -1,5 +1,7 @@
 #include "TempoMap.h"
 
+#include "ScoreFollower/TrackReader.h"
+
 #include "globals.h"
 
 namespace cf {
@@ -11,14 +13,14 @@ TempoMap::TempoMap()
 }
 
 void
-TempoMap::Read(TrackReader<tempo_t> & reader)
+TempoMap::Read(TempoReaderPtr reader)
 {
 	bool first = true;
 	TempoChange previousChange;
 	score_time_t timestamp;
 	tempo_t tempo;
 
-	while (reader.NextEvent(timestamp, tempo)) {
+	while (reader->NextEvent(timestamp, tempo)) {
 		// If the first tempo change is not at zero, insert default tempo at beginning
 		if (first && timestamp > score_time_t::zero()) {
 			EnsureChangesNotEmpty();

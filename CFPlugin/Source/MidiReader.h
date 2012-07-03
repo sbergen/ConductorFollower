@@ -20,12 +20,9 @@ public:
 	~MidiReader();
 
 public: // ScoreReader implementation
-	typedef sf::ScoreReader::TrackReaderPtr TrackReaderPtr;
-	typedef sf::ScoreReader::TempoReaderPtr TempoReaderPtr;
-
 	int TrackCount() const { return file_.getNumTracks(); }
-	TrackReaderPtr Track(int index);
-	TempoReaderPtr TempoTrack();
+	sf::TrackReaderPtr Track(int index);
+	sf::TempoReaderPtr TempoTrack();
 
 private:
 

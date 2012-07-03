@@ -5,7 +5,7 @@
 #include "cf/EventBuffer.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/TrackReader.h"
+#include "ScoreFollower/ScoreReader.h"
 
 #include "TempoPoint.h"
 
@@ -17,7 +17,7 @@ class TempoMap
 public:
 	TempoMap();
 
-	void Read(TrackReader<tempo_t> & reader);
+	void Read(TempoReaderPtr reader);
 
 	TempoPoint GetTempoAt(score_time_t const & time) const;
 

@@ -5,7 +5,7 @@
 #include "cf/EventBuffer.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/TrackReader.h"
+#include "ScoreFollower/ScoreReader.h"
 
 #include "TempoMap.h"
 
@@ -20,7 +20,7 @@ class TempoFollower
 public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
-	void ReadTempoTrack(TrackReader<tempo_t> & reader) { tempoMap_.Read(reader); }
+	void ReadTempoTrack(TempoReaderPtr & reader) { tempoMap_.Read(reader); }
 	void RegisterBeat(real_time_t const & beatTime);
 
 	speed_t SpeedEstimateAt(real_time_t const & time);

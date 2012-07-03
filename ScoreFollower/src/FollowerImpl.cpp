@@ -52,7 +52,7 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 	
 	// Tempo
 	// TODO refactor to be safer
-	tempoFollower_->ReadTempoTrack(*scoreReader->TempoTrack());
+	tempoFollower_->ReadTempoTrack(scoreReader->TempoTrack());
 
 	// Tracks
 	score_time_t timestamp;

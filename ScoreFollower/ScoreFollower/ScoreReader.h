@@ -10,6 +10,9 @@ namespace ScoreFollower {
 template<typename TData> class TrackReader;
 class ScoreEventHandle;
 
+typedef boost::shared_ptr<TrackReader<ScoreEventHandle> > TrackReaderPtr;
+typedef boost::shared_ptr<TrackReader<tempo_t> > TempoReaderPtr;
+
 // Abstraction of reading a score (e.g. midi)
 class ScoreReader
 {
@@ -17,9 +20,6 @@ public:
 	virtual ~ScoreReader()  {}
 
 	virtual int TrackCount() const = 0;
-
-	typedef boost::shared_ptr<TrackReader<ScoreEventHandle> > TrackReaderPtr;
-	typedef boost::shared_ptr<TrackReader<tempo_t> > TempoReaderPtr;
 
 	// The events referenced by the ScoreEventHandles have to be valid
 	// as long as the ScoreReader is valid

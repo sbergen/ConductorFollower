@@ -7,7 +7,6 @@ namespace ScoreFollower {
 class ScoreEventHandle
 {
 public:
-	// TODO think about this a bit more stil...
 	ScoreEventHandle() : data_(nullptr) {}
 
 	ScoreEventHandle(const ScoreEventHandle & other)

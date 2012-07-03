@@ -15,14 +15,14 @@ MidiReader::~MidiReader()
 {
 }
 
-MidiReader::TrackReaderPtr
+sf::TrackReaderPtr
 MidiReader::Track(int index)
 {
 	assert(index < TrackCount());
 	return TrackReaderPtr(new TrackReaderImpl(*file_.getTrack(index), events_));
 }
 
-MidiReader::TempoReaderPtr
+sf::TempoReaderPtr
 MidiReader::TempoTrack()
 {
 	return TempoReaderPtr(new TempoReaderImpl(file_));
