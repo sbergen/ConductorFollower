@@ -10,6 +10,9 @@ public:
 	// TODO think about this a bit more stil...
 	ScoreEventHandle() : data_(nullptr) {}
 
+	ScoreEventHandle(const ScoreEventHandle & other)
+		: data_(other.data_) {}
+
 	template<typename T>
 	ScoreEventHandle(T & t) : data_(&t)
 	{}

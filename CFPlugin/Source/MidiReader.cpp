@@ -11,6 +11,10 @@ MidiReader::MidiReader(String const & filename)
 	file_.convertTimestampTicksToSeconds();
 }
 
+MidiReader::~MidiReader()
+{
+}
+
 MidiReader::TrackReaderPtr
 MidiReader::Track(int index)
 {
@@ -64,7 +68,10 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	seconds_t seconds(sequence_.getEventTime(current_));
 	timestamp = time::duration_cast<score_time_t>(seconds);
 
-	events_.push_back(sequence_.getEventPointer(current_)->message);
+	// Make a copy of the event and pass ownership to the ptr_vector
+	// this makes sure the pointer to the event stays valid
+	auto eventPointer = sequence_.getEventPointer(current_);
+	events_.push_back(new MidiMessage(eventPointer->message));
 	data = ScoreEventHandle(events_.back());
 
 	++current_;

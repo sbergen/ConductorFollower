@@ -1,7 +1,6 @@
 #pragma once
 
-#include <list>
-#include <vector>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include "ScoreFollower/ScoreReader.h"
 #include "ScoreFollower/TrackReader.h"
@@ -14,10 +13,11 @@ namespace sf = cf::ScoreFollower;
 
 class MidiReader : public sf::ScoreReader
 {
-	typedef std::vector<MidiMessage> EventContainer;
+	typedef boost::ptr_vector<MidiMessage> EventContainer;
 
 public:
 	MidiReader(String const & filename);
+	~MidiReader();
 
 public: // ScoreReader implementation
 	typedef sf::ScoreReader::TrackReaderPtr TrackReaderPtr;
