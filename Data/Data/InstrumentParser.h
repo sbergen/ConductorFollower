@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #include <map>
 #include <string>
 
@@ -10,7 +12,7 @@ namespace Data {
 
 typedef std::map<std::string, Instrument> InstrumentMap;
 
-class InstrumentParser
+class InstrumentParser : public boost::noncopyable
 {
 public:
 	InstrumentParser();

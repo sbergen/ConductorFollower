@@ -2,12 +2,14 @@
 
 #include <string>
 
+#include <boost/utility.hpp>
+
 #include "Data/Score.h"
 
 namespace cf {
 namespace Data {
 
-class ScoreParser
+class ScoreParser : public boost::noncopyable
 {
 public:
 	ScoreParser();
