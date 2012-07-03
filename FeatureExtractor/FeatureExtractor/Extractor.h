@@ -4,6 +4,7 @@
 
 #include <boost/signals2.hpp>
 #include <boost/signals2/mutex.hpp>
+#include <boost/utility.hpp>
 
 #include "cf/cf.h"
 #include "cf/EventBuffer.h"
@@ -15,7 +16,7 @@ namespace bs2 = boost::signals2;
 
 typedef EventBuffer<double, timestamp_t> GestureBuffer;
 
-class Extractor
+class Extractor : public boost::noncopyable
 {
 public:
 	// Hide implementation

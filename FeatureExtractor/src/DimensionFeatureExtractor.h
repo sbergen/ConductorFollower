@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #include "cf/cf.h"
 
 #include "types.h"
@@ -7,7 +9,7 @@
 namespace cf {
 namespace FeatureExtractor {
 
-class DimensionFeatureExtractor
+class DimensionFeatureExtractor : public boost::noncopyable
 {
 public:
 	DimensionFeatureExtractor(EventBuffer<Point3D, timestamp_t> const & eventBuffer);
