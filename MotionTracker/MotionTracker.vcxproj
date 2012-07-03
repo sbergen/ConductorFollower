@@ -116,6 +116,7 @@
   <ItemGroup>
     <ClInclude Include="MotionTracker\Event.h" />
     <ClInclude Include="MotionTracker\EventProvider.h" />
+    <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
     <ClInclude Include="src\DebugHandObserver.h" />
     <ClInclude Include="src\EventProviderImpl.h" />
@@ -129,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp" />
     <ClCompile Include="src\EventProviderImpl.cpp" />
+    <ClCompile Include="src\EventThrottler.cpp" />
     <ClCompile Include="src\HandTracker.cpp" />
     <ClCompile Include="src\OpenNIHandTracker.cpp" />
     <ClCompile Include="src\OpenNIUtils.cpp" />

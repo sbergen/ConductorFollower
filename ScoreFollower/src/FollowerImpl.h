@@ -24,7 +24,10 @@
 
 namespace cf {
 
-namespace MotionTracker { class EventProvider; }
+namespace MotionTracker {
+	class EventProvider;
+	class EventThrottler;
+} // namespace MotionTracker 
 
 namespace ScoreFollower {
 
@@ -50,7 +53,6 @@ private:
 	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);
 	void GotBeat(real_time_t const & time);
 
-	void ConsumeEvents();
 	void ConsumeEvent(MotionTracker::Event const & e);
 
 	void HandleNewPosition(real_time_t const & timestamp);
@@ -75,6 +77,7 @@ private:
 
 	// Created via shared_ptr
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
+	boost::scoped_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 
 	AudioBlockTimeManager timeManager_;
@@ -84,14 +87,6 @@ private:
 	real_time_t startRollingTime_;
 	speed_t previousSpeed_;
 	double velocity_;
-
-	struct QueuedEvent
-	{
-		QueuedEvent() : isQueued(false) {}
-		bool isQueued;
-		MotionTracker::Event e;
-	};
-	QueuedEvent queuedEvent_;
 
 	FeatureExtractor::GestureBuffer gestureBuffer_;
 

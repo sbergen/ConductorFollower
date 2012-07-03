@@ -47,6 +47,9 @@
     <ClInclude Include="src\EventProviderImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MotionTracker\EventThrottler.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">
@@ -62,6 +65,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EventProviderImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EventThrottler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

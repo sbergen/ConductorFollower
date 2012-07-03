@@ -1,6 +1,8 @@
 #include "FollowerImpl.h"
 
 #include "MotionTracker/EventProvider.h"
+#include "MotionTracker/EventThrottler.h"
+
 #include "FeatureExtractor/Extractor.h"
 
 #include "ScoreFollower/ScoreEventHandle.h"
@@ -31,6 +33,7 @@ FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
 	, velocity_(0.5)
 {
 	eventProvider_.reset(EventProvider::Create());
+	eventThrottler_.reset(new EventThrottler(*eventProvider_));
 	featureExtractor_.reset(Extractor::Create());
 }
 
@@ -70,7 +73,10 @@ FollowerImpl::StartNewBlock()
 {
 	std::pair<score_time_t, score_time_t> scoreRange;
 	auto currentBlock = timeManager_.GetRangeForNow();
-	ConsumeEvents();
+	
+	eventThrottler_->ConsumeEventsUntil(
+		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
+		currentBlock.first);
 
 	if (state_ == WaitingForStartGesture && currentBlock.first >= startRollingTime_) {
 		state_ = Rolling;
@@ -110,7 +116,6 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & man
 	if (state_ != Rolling) { return; }
 
 	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
-	//LOG("Total of %1% events for track %2%", (unsigned)events.AllEvents().Size(), track);
 }
 
 void
@@ -123,8 +128,6 @@ FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle cons
 	ScoreEventHandle ev(data);
 	manipulator.ApplyVelocity(ev, velocity);
 	events.RegisterEvent(frameOffset, ev);
-
-	LOG("Playing event at %1% with velocity %2%", frameOffset, velocity);
 }
 
 unsigned
@@ -163,23 +166,6 @@ FollowerImpl::GotBeat(real_time_t const & time)
 {
 	assert(time < timeManager_.CurrentBlockStart());
 	tempoFollower_.RegisterBeat(time);
-}
-
-void
-FollowerImpl::ConsumeEvents()
-{
-	if (queuedEvent_.isQueued) {
-		ConsumeEvent(queuedEvent_.e);
-		queuedEvent_.isQueued = false;
-	}
-
-	while (eventProvider_->DequeueEvent(queuedEvent_.e)) {
-		if (queuedEvent_.e.timestamp() >= timeManager_.CurrentBlockStart()) {
-			queuedEvent_.isQueued = true;
-			break;
-		}
-		ConsumeEvent(queuedEvent_.e);
-	}
 }
 
 void
