@@ -1,11 +1,13 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #include "cf/cf.h"
 
 namespace cf {
 namespace MotionTracker {
 
-class HandObserver
+class HandObserver : public boost::noncopyable
 {
 public:
 	virtual ~HandObserver() {}

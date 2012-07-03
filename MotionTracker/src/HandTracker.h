@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #include "Gestures.h"
 
 namespace cf {
@@ -7,7 +9,7 @@ namespace MotionTracker {
 
 class HandObserver;
 
-class HandTracker
+class HandTracker : public boost::noncopyable
 {
 public:
 	// Factory function to hide dependencies to implementations

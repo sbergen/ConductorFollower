@@ -1,11 +1,13 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 namespace cf {
 namespace MotionTracker {
 
 class Event;
 
-class EventProvider
+class EventProvider : public boost::noncopyable
 {
 public:
 	// Hide implementation

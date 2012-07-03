@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/function.hpp>
+#include <boost/utility.hpp>
 
 #include "MotionTracker/Event.h"
 
@@ -9,7 +10,7 @@ namespace MotionTracker {
 
 class EventProvider;
 
-class EventThrottler
+class EventThrottler : public boost::noncopyable
 {
 public:
 	EventThrottler(EventProvider & provider);

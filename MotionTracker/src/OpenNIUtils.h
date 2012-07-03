@@ -5,6 +5,7 @@
 
 #include <boost/thread.hpp>
 #include <boost/atomic.hpp>
+#include <boost/utility.hpp>
 
 #include <XnCppWrapper.h>
 
@@ -13,7 +14,7 @@ namespace MotionTracker {
 
 #define CheckXnStatus(status, desc) OpenNIUtils::CheckStatus(status, desc, __FILE__, __LINE__)
 
-class OpenNIUtils
+class OpenNIUtils : public boost::noncopyable
 {
 public:
 	static bool CheckStatus(XnStatus status, std::string const & taskDescription, std::string const & file, int line);
