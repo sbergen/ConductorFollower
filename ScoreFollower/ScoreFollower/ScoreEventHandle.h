@@ -9,7 +9,7 @@ class ScoreEventHandle
 public:
 	ScoreEventHandle() : data_(nullptr) {}
 
-	ScoreEventHandle(const ScoreEventHandle & other)
+	explicit ScoreEventHandle(ScoreEventHandle const & other)
 		: data_(other.data_) {}
 
 	template<typename T>

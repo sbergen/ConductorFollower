@@ -117,7 +117,7 @@ FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle cons
 	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
 	
 	// TODO fugly const modification, think about this...
-	ScoreEventHandle ev = data;
+	ScoreEventHandle ev = ScoreEventHandle(data);
 	manipulator.ApplyVelocity(ev, velocity);
 	events.RegisterEvent(frameOffset, ev);
 }
