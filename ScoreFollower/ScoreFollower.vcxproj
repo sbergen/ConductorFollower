@@ -132,6 +132,7 @@
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
     <ClInclude Include="src\TempoPoint.h" />
+    <ClInclude Include="src\TimeHelper.h" />
     <ClInclude Include="src\TimeWarper.h" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <ClCompile Include="src\ScoreHelper.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />
     <ClCompile Include="src\TempoMap.cpp" />
+    <ClCompile Include="src\TimeHelper.cpp" />
     <ClCompile Include="src\TimeWarper.cpp" />
   </ItemGroup>
   <ItemGroup>

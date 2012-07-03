@@ -20,6 +20,7 @@
 #include "AudioBlockTimeManager.h"
 #include "globals.h"
 #include "ScoreHelper.h"
+#include "TimeHelper.h"
 #include "TimeWarper.h"
 #include "TempoFollower.h"
 
@@ -48,12 +49,9 @@ public: // Follower implementation
 
 private:
 	void CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events) const;
-	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
 	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
 
 	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);
-	void GotBeat(real_time_t const & time);
-
 	void ConsumeEvent(MotionTracker::Event const & e);
 
 	void HandleNewPosition(real_time_t const & timestamp);
@@ -81,16 +79,11 @@ private:
 	boost::scoped_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 
-	AudioBlockTimeManager timeManager_;
-	TimeWarper timeWarper_;
-	TempoFollower tempoFollower_;
+	TimeHelper timeHelper_;
 	ScoreHelper scoreHelper_;
 
 	real_time_t startRollingTime_;
-	speed_t previousSpeed_;
 	double velocity_;
-
-	std::pair<score_time_t, score_time_t> scoreRange_;
 
 	typedef boost::signals2::connection SignalConnection;
 

@@ -26,8 +26,7 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 }
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
-	: timeManager_(samplerate, blockSize)
-	, tempoFollower_(timeWarper_, *this) 
+	: timeHelper_(*this, samplerate, blockSize)
 	, startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
 {
@@ -43,7 +42,7 @@ FollowerImpl::~FollowerImpl()
 void
 FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 {
-	tempoFollower_.ReadTempoTrack(scoreReader->TempoTrack());
+	timeHelper_.ReadTempoTrack(scoreReader->TempoTrack());
 	scoreHelper_.CollectData(scoreReader);
 
 	{ // TODO handle state better
@@ -57,45 +56,34 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 void
 FollowerImpl::StartNewBlock()
 {
-	std::pair<score_time_t, score_time_t> scoreRange;
-	auto currentBlock = timeManager_.GetRangeForNow();
-	
+	// Start new RT block
+	timeHelper_.StartNewBlock();
+	auto const & currentBlock = timeHelper_.CurrentRealTimeBlock();
+
+	// Consume events until the start of this block
+	LOG("Consuming events until: %1%", currentBlock.first);
 	eventThrottler_->ConsumeEventsUntil(
 		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
 		currentBlock.first);
 
+	// Check state
 	if (state_ == WaitingForStartGesture && currentBlock.first >= startRollingTime_) {
 		state_ = Rolling;
 		beatConnection_ = featureExtractor_->BeatDetected.connect(
-			boost::bind(&FollowerImpl::GotBeat, this, _1));
+			boost::bind(&TimeHelper::RegisterBeat, &timeHelper_, _1));
 	}
 
 	if (state_ != Rolling) { return; }
 
-	// Get start estimate based on old data
-	scoreRange.first = timeWarper_.WarpTimestamp(currentBlock.first);
-
-	// Fix the starting point, ensures the next warp is "accurate"
-	speed_t speed = tempoFollower_.SpeedEstimateAt(currentBlock.first);
-	if (speed != previousSpeed_) {
-		status_.SetValue<Status::Speed>(speed);
-		previousSpeed_ = speed;
-		timeWarper_.FixTimeMapping(currentBlock.first, scoreRange.first, speed);
-	}
-
-	// Now use the new estimate for this block
-	scoreRange.second = timeWarper_.WarpTimestamp(currentBlock.second);
-
-	if (scoreRange.first != score_time_t::zero()) {
-		assert(scoreRange_.second == scoreRange.first);
-	}
-	scoreRange_ = scoreRange;
+	// If rolling, fix score range
+	timeHelper_.FixScoreRange();
 }
 
 void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
 {
-	auto ev = scoreHelper_[track].EventsBetween(scoreRange_.first, scoreRange_.second);
+	auto scoreRange = timeHelper_.CurrentScoreTimeBlock();
+	auto ev = scoreHelper_[track].EventsBetween(scoreRange.first, scoreRange.second);
 
 	events.Clear();
 	if (state_ != Rolling) { return; }
@@ -106,28 +94,13 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & man
 void
 FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events)  const
 {
-	unsigned frameOffset = ScoreTimeToFrameOffset(time);
+	unsigned frameOffset = timeHelper_.ScoreTimeToFrameOffset(time);
 	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
 	
 	// TODO fugly const modification, think about this...
 	ScoreEventHandle ev(data);
 	manipulator.ApplyVelocity(ev, velocity);
 	events.RegisterEvent(frameOffset, ev);
-}
-
-unsigned
-FollowerImpl::ScoreTimeToFrameOffset(score_time_t const & time) const
-{
-	real_time_t const & ref = timeManager_.CurrentBlockStart();
-	real_time_t realTime = timeWarper_.InverseWarpTimestamp(time, ref);
-
-	// There are rounding errors sometimes, so allow 10us of "jitter" here
-	// This is perfectly acceptable :)
-	time::limitRange(realTime,
-		timeManager_.CurrentBlockStart(), timeManager_.CurrentBlockEnd(),
-		boost::chrono::microseconds(10));
-
-	return timeManager_.ToSampleOffset(realTime);
 }
 
 double
@@ -142,21 +115,16 @@ FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & 
 {
 	startGestureConnection_.disconnect();
 
-	tempoFollower_.RegisterBeat(beatTime);
+	timeHelper_.RegisterBeat(beatTime);
 	startRollingTime_ = startTime;
-}
-
-void
-FollowerImpl::GotBeat(real_time_t const & time)
-{
-	assert(time < timeManager_.CurrentBlockStart());
-	tempoFollower_.RegisterBeat(time);
 }
 
 void
 FollowerImpl::ConsumeEvent(Event const & e)
 {
 	// TODO clean up!
+
+	LOG("Block start looks like: %1%", timeHelper_.CurrentRealTimeBlock().first);
 
 	switch(e.type())
 	{
