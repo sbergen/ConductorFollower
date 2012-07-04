@@ -118,6 +118,7 @@
     <ClInclude Include="ScoreFollower\Follower.h" />
     <ClInclude Include="ScoreFollower\FollowerOptions.h" />
     <ClInclude Include="ScoreFollower\FollowerStatus.h" />
+    <ClInclude Include="ScoreFollower\ScoreEventAdapter.h" />
     <ClInclude Include="ScoreFollower\ScoreEventHandle.h" />
     <ClInclude Include="ScoreFollower\ScoreEventManipulator.h" />
     <ClInclude Include="ScoreFollower\ScoreReader.h" />

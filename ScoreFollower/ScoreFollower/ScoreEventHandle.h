@@ -15,14 +15,15 @@ public:
 	// Default copy-ctor and assignment are fine
 	ScoreEventHandle() : data_(nullptr) {}
 
-	// Explicit creation from other types
+private: // Explicit creation from and conversion to data only via ScoreEventAdapter
+	template<typename T>
+	friend class ScoreEventAdapter;
+	
 	template<typename T>
 	static ScoreEventHandle Create(T & t)
 	{
 		return ScoreEventHandle(&t);
 	}
-
-	// Explicit conversion of data
 
 	template<typename T>
 	T & data() { return *static_cast<T *>(data_); }

@@ -2,6 +2,8 @@
 
 #include "ScoreFollower/ScoreEventManipulator.h"
 
+#include "common.h"
+
 // The juce header has evil macros, so be sure to include it last...
 #include "JuceHeader.h"
 
@@ -10,12 +12,12 @@ class MidiManipulator : public cf::ScoreFollower::ScoreEventManipulator
 public:
 	double GetVelocity(ScoreEventHandle const & handle)
 	{
-		return handle.data<MidiMessage>().getFloatVelocity();
+		return EventAdapter::Adapt(handle).getFloatVelocity();
 	}
 
 	void ApplyVelocity(ScoreEventHandle & handle, double velocity)
 	{
-		MidiMessage & data = handle.data<MidiMessage>();
+		MidiMessage & data = EventAdapter::Adapt(handle);
 		if (!data.isNoteOn()) { return; }
 		data.setVelocity(velocity);
 	}

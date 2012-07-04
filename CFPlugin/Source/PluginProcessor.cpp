@@ -10,6 +10,7 @@
 
 #include "ScoreFollower/TimeUtils.h"
 
+#include "common.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MidiReader.h"
@@ -170,7 +171,7 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 			assert(sample < samplesPerBlock_);
 
 			// Make a copy
-			MidiMessage msg = message.data<MidiMessage>();
+			MidiMessage msg = EventAdapter::Adapt(message);
 
 			// Prohibit PCs for now 
 			if (msg.isProgramChange()) {
