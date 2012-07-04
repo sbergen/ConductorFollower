@@ -22,6 +22,7 @@
 	{ \
 	public: \
 		enum Value { CF_STRING_ENUM_enum_values(_seq) }; \
+		BOOST_STATIC_CONSTANT(unsigned, size = BOOST_PP_SEQ_SIZE(_seq) ); \
 		_className () : value_( CF_STRING_ENUM_first_value(_seq) ) { } \
 		_className (Value val) : value_(val) { } \
 		_className & operator=(Value val) { value_ = val; return *this; } \

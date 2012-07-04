@@ -51,4 +51,9 @@ BOOST_AUTO_TEST_CASE(TestConversion)
 	BOOST_CHECK_EQUAL(e, TestEnum::Second);
 }
 
+BOOST_AUTO_TEST_CASE(TestSize)
+{
+	BOOST_CHECK_EQUAL(TestEnum::size, 2);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
