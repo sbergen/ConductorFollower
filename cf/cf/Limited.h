@@ -40,6 +40,12 @@ public:
 		else { value_ = value; }
 		return *this;
 	}
+	
+	template<typename Y>
+	bool operator== (Y const & value) { return value != value_; }
+
+	template<typename Y>
+	bool operator!= (Y const & value) { return !(*this == value); }
 
 private:
 	TValue value_;

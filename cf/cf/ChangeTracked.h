@@ -28,7 +28,7 @@ public:
 	template<typename Y>
 	ChangeTracked & operator= (Y const & value)
 	{
-		if (value != value_) {
+		if (value_ != value) {
 			value_ = value;
 			changed_ = true;
 		}
