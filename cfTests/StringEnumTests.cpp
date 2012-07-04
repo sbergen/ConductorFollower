@@ -56,4 +56,16 @@ BOOST_AUTO_TEST_CASE(TestSize)
 	BOOST_CHECK_EQUAL(TestEnum::size, 2);
 }
 
+BOOST_AUTO_TEST_CASE(TestCompare)
+{
+	TestEnum e1(TestEnum::First);
+	TestEnum e2(TestEnum::Second);
+
+	BOOST_CHECK(e1 == e1);
+	BOOST_CHECK(e1 != e2);
+
+	BOOST_CHECK(e1 == TestEnum::First);
+	BOOST_CHECK(e1 != TestEnum::Second);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
