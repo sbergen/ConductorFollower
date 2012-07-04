@@ -42,7 +42,7 @@ public:
 	}
 	
 	template<typename Y>
-	bool operator== (Y const & value) { return value != value_; }
+	bool operator== (Y const & value) { return value_ == value; }
 
 	template<typename Y>
 	bool operator!= (Y const & value) { return !(*this == value); }
