@@ -43,9 +43,6 @@ struct StatusItemBase
 	, public StatusItemTags<Type, Presentation>
 {
 	using ChangeTracked::operator=;
-
-	// Direct type conversion
-
 };
 
 template<Status::Type Type, Status::Presentation Presentation,
@@ -55,6 +52,10 @@ struct LimitedStatusItemBase
 	, public StatusItemTags<Type, Presentation>
 {
 	using ChangeTracked::operator=;
+
+	// Type conversion forwarding
+	typedef Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> limited_type;
+	operator TValue() const { return static_cast<limited_type const &>(*this); }
 };
 
 // When TValue == TAssignable
