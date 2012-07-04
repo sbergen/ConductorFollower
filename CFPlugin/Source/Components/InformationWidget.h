@@ -1,11 +1,15 @@
 #pragma once
 
+#include "StringExtractor.h"
+
 #include "../JuceLibraryCode/JuceHeader.h"
 
 // Basic type, shows text. Specializations and template selctor below
 template<typename KeyType, typename ValueType, int Presentation>
 class InformationWidget : public Component
 {
+	typedef typename ValueType::value_type value_type;
+
 public:
 	~InformationWidget()
 	{
@@ -16,19 +20,25 @@ public:
 	{
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
-		auto val = static_cast<ValueType::value_type>(value);
-		addAndMakeVisible(value_ = new Label("val", String(val)));
+		auto val = static_cast<value_type>(value);
+		addAndMakeVisible(value_ = new Label("val", ExtractString(val)));
 
-		layout_.setItemLayout(0, -0.2, -0.8, -0.6);
-		layout_.setItemLayout(1, -0.2, -0.8, -0.4);
+		layout_.setItemLayout(0, -0.2, -0.8, -0.3);
+		layout_.setItemLayout(1, -0.2, -0.8, -0.7);
 	}
 
 	void Update(ValueType const & value)
 	{
-		ValueType::value_type val;
+		value_type val;
 		if (value.LoadIfChanged(val)) {
-			value_->setText(String(val), true);
+			value_->setText(ExtractString(val), true);
 		}
+	}
+
+private:
+	String ExtractString(value_type const & val)
+	{
+		return StringExtractor<value_type>()(val);
 	}
 
 public: // GUI stuff

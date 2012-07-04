@@ -239,6 +239,7 @@
     <ClInclude Include="..\..\Source\Components\InformationWidget.h" />
     <ClInclude Include="..\..\Source\Components\OptionWidget.h" />
     <ClInclude Include="..\..\Source\Components\StatusWidget.h" />
+    <ClInclude Include="..\..\Source\Components\StringExtractor.h" />
     <ClInclude Include="..\..\Source\Components\WidgetHelpers.h" />
     <ClInclude Include="..\..\Source\MidiManipulator.h" />
     <ClInclude Include="..\..\Source\MidiReader.h" />
