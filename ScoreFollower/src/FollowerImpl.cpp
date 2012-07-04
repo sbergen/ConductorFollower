@@ -26,10 +26,10 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 }
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
-	: timeHelper_(*this, samplerate, blockSize)
-	, startRollingTime_(real_time_t::max())
+	: startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
 {
+	timeHelper_.reset(new TimeHelper(*this, samplerate, blockSize));
 	eventProvider_.reset(EventProvider::Create());
 	eventThrottler_.reset(new EventThrottler(*eventProvider_));
 	featureExtractor_.reset(Extractor::Create());
@@ -42,7 +42,7 @@ FollowerImpl::~FollowerImpl()
 void
 FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 {
-	timeHelper_.ReadTempoTrack(scoreReader->TempoTrack());
+	timeHelper_->ReadTempoTrack(scoreReader->TempoTrack());
 	scoreHelper_.CollectData(scoreReader);
 
 	{ // TODO handle state better
@@ -58,8 +58,8 @@ void
 FollowerImpl::StartNewBlock()
 {
 	// Start new RT block
-	timeHelper_.StartNewBlock();
-	auto const & currentBlock = timeHelper_.CurrentRealTimeBlock();
+	timeHelper_->StartNewBlock();
+	auto const & currentBlock = timeHelper_->CurrentRealTimeBlock();
 
 	// Consume events until the start of this block
 	eventThrottler_->ConsumeEventsUntil(
@@ -70,19 +70,19 @@ FollowerImpl::StartNewBlock()
 	if (State() == FollowerState::WaitingForStart && currentBlock.first >= startRollingTime_) {
 		SetState(FollowerState::Rolling);
 		beatConnection_ = featureExtractor_->BeatDetected.connect(
-			boost::bind(&TimeHelper::RegisterBeat, &timeHelper_, _1));
+			boost::bind(&TimeHelper::RegisterBeat, timeHelper_, _1));
 	}
 
 	if (State() != FollowerState::Rolling) { return; }
 
 	// If rolling, fix score range
-	timeHelper_.FixScoreRange();
+	timeHelper_->FixScoreRange();
 }
 
 void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
 {
-	auto scoreRange = timeHelper_.CurrentScoreTimeBlock();
+	auto scoreRange = timeHelper_->CurrentScoreTimeBlock();
 	auto ev = scoreHelper_[track].EventsBetween(scoreRange.first, scoreRange.second);
 
 	events.Clear();
@@ -108,7 +108,7 @@ FollowerImpl::SetState(FollowerState::Value state)
 void
 FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events)  const
 {
-	unsigned frameOffset = timeHelper_.ScoreTimeToFrameOffset(time);
+	unsigned frameOffset = timeHelper_->ScoreTimeToFrameOffset(time);
 	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
 	
 	// TODO fugly const modification, think about this...
@@ -129,7 +129,7 @@ FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & 
 {
 	startGestureConnection_.disconnect();
 
-	timeHelper_.RegisterBeat(beatTime);
+	timeHelper_->RegisterBeat(beatTime);
 	startRollingTime_ = startTime;
 }
 

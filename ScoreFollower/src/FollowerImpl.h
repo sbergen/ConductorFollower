@@ -68,10 +68,12 @@ private:
 
 	// Created via shared_ptr
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
-	boost::scoped_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 
-	TimeHelper timeHelper_;
+	// Can't be constructed in init list
+	boost::scoped_ptr<MotionTracker::EventThrottler> eventThrottler_;
+	boost::shared_ptr<TimeHelper> timeHelper_;
+	
 	ScoreHelper scoreHelper_;
 
 	real_time_t startRollingTime_;
