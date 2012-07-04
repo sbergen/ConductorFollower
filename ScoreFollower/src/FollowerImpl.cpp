@@ -46,7 +46,8 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreHelper_.CollectData(scoreReader);
 
 	{ // TODO handle state better
-		state_ = WaitingForStartGesture;
+		SetState(FollowerState::WaitingForCalibration);
+		//state_ = WaitingForStartGesture;
 		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
 			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
 		assert(eventProvider_->StartProduction());
@@ -61,19 +62,18 @@ FollowerImpl::StartNewBlock()
 	auto const & currentBlock = timeHelper_.CurrentRealTimeBlock();
 
 	// Consume events until the start of this block
-	LOG("Consuming events until: %1%", currentBlock.first);
 	eventThrottler_->ConsumeEventsUntil(
 		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
 		currentBlock.first);
 
 	// Check state
-	if (state_ == WaitingForStartGesture && currentBlock.first >= startRollingTime_) {
-		state_ = Rolling;
+	if (State() == FollowerState::WaitingForStart && currentBlock.first >= startRollingTime_) {
+		SetState(FollowerState::Rolling);
 		beatConnection_ = featureExtractor_->BeatDetected.connect(
 			boost::bind(&TimeHelper::RegisterBeat, &timeHelper_, _1));
 	}
 
-	if (state_ != Rolling) { return; }
+	if (State() != FollowerState::Rolling) { return; }
 
 	// If rolling, fix score range
 	timeHelper_.FixScoreRange();
@@ -86,9 +86,23 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & man
 	auto ev = scoreHelper_[track].EventsBetween(scoreRange.first, scoreRange.second);
 
 	events.Clear();
-	if (state_ != Rolling) { return; }
+	if (State() != FollowerState::Rolling) { return; }
 
 	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
+}
+
+FollowerState
+FollowerImpl::State()
+{
+	FollowerState ret;
+	status_.GetValue<Status::State>(ret);
+	return ret;
+}
+
+void
+FollowerImpl::SetState(FollowerState::Value state)
+{
+	status_.SetValue<Status::State>(state);
 }
 
 void
@@ -122,17 +136,13 @@ FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & 
 void
 FollowerImpl::ConsumeEvent(Event const & e)
 {
-	// TODO clean up!
-
-	LOG("Block start looks like: %1%", timeHelper_.CurrentRealTimeBlock().first);
-
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
-		status_.SetValue<Status::Running>(true);
+		SetState(FollowerState::WaitingForStart);
 		break;
 	case Event::TrackingEnded:
-		status_.SetValue<Status::Running>(false);
+		SetState(FollowerState::Stopped);
 		break;
 	case Event::Position:
 		featureExtractor_->RegisterPosition(e.timestamp(), e.data<Point3D>());

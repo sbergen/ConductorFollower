@@ -89,4 +89,12 @@ class StringStatusItem : public StatusItemBase<Type, Presentation, std::string>
 };
 
 
+// Shorthand for StringEnum types
+template<Status::Type Type, Status::Presentation Presentation, typename TValue, typename TValue::Value DefaultValue>
+class EnumStatusItem : public LimitedStatusItemBase<Type, Presentation, TValue, typename TValue::Value, DefaultValue,
+                                              static_cast<typename TValue::Value> (0), static_cast<typename TValue::Value> (TValue::size)>
+{
+	using LimitedStatusItemBase::operator=;
+};
+
 } // namespace cf

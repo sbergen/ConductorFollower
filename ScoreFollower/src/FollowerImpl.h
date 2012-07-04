@@ -48,6 +48,9 @@ public: // Follower implementation
 	void GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events);
 
 private:
+	FollowerState State();
+	void SetState(FollowerState::Value state);
+
 	void CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events) const;
 	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
 
@@ -56,17 +59,6 @@ private:
 
 	void HandleNewPosition(real_time_t const & timestamp);
 	void UpdateMagnitude(real_time_t const & timestamp);
-
-private:
-	// Temporarily private, until GUI is updated to support enums
-	enum State
-	{
-		WaitingForStartGesture = 0,
-		Rolling,
-		Stopped
-	};
-
-	State state_;
 
 private:
 	GlobalsInitializer globalsInit_;
