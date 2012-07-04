@@ -65,7 +65,7 @@ private:
 
 // Specialization for Files
 template<typename KeyType, typename ValueType>
-class OptionWidget<typename KeyType, typename ValueType, cf::StatusPresentation::File>
+class OptionWidget<typename KeyType, typename ValueType, cf::Status::File>
 	: public Component, public FilenameComponentListener
 {
 	typedef typename ValueType::value_type actual_type;

@@ -7,9 +7,9 @@ namespace cf {
 namespace ScoreFollower {
 namespace Status {
 
-typedef BooleanStatusItem<StatusType::Information, false> BooleanTypeFalse;
-typedef FloatStatusItem<StatusType::Information, StatusPresentation::Bar, 1, 0, 2> SpeedType;
-typedef FloatStatusItem<StatusType::Information, StatusPresentation::Bar, 150, 50, 600> MagnitudeType;
+typedef BooleanStatusItem<cf::Status::Information, false> BooleanTypeFalse;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 1, 0, 2> SpeedType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 150, 50, 600> MagnitudeType;
 
 CF_STATUS_GROUP
 (

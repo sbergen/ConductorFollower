@@ -15,10 +15,10 @@ class StatusWidget
 	: public StatusWidgetSelector<KeyType, ValueType, ValueType::status_type> {};
 
 template<typename KeyType, typename ValueType>
-class StatusWidgetSelector<KeyType, ValueType, cf::StatusType::Information>
+class StatusWidgetSelector<KeyType, ValueType, cf::Status::Information>
 	: public InformationWidget<KeyType, ValueType, ValueType::presentation> {};
 
 
 template<typename KeyType, typename ValueType>
-class StatusWidgetSelector<KeyType, ValueType, cf::StatusType::Setting>
+class StatusWidgetSelector<KeyType, ValueType, cf::Status::Setting>
 	: public OptionWidget<KeyType, ValueType, ValueType::presentation> {};

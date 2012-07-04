@@ -6,7 +6,7 @@ namespace cf {
 namespace ScoreFollower {
 namespace Options {
 
-typedef StringStatusItem<StatusType::Setting, StatusPresentation::File> FileType;
+typedef StringStatusItem<cf::Status::Setting, cf::Status::File> FileType;
 
 CF_STATUS_GROUP
 (

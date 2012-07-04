@@ -48,7 +48,7 @@ private:
 
 // Bar graph specialization
 template<typename KeyType, typename ValueType>
-class InformationWidget<KeyType, ValueType, cf::StatusPresentation::Bar> : public Component
+class InformationWidget<KeyType, ValueType, cf::Status::Bar> : public Component
 {
 	typedef typename ValueType::value_type value_type;
 

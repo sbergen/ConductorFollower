@@ -9,21 +9,25 @@
 
 namespace cf {
 
-BOOST_ENUM(
-StatusType,
-	(Information)
-	(Setting)
-)
+namespace Status
+{
+	enum Type
+	{
+		Information,
+		Setting
+	};
 
-BOOST_ENUM(
-StatusPresentation,
-	(Boolean)
-	(Text)
-	(Bar)
-	(File)
-)
+	enum Presentation
+	{
+		Boolean,
+		Text,
+		Bar,
+		File
+	};
 
-template<StatusType::domain Type, StatusPresentation::domain Presentation>
+} // namespace Status
+
+template<Status::Type Type, Status::Presentation Presentation>
 struct StatusItemTags
 {
 	enum
@@ -33,15 +37,18 @@ struct StatusItemTags
 	};
 };
 
-template<StatusType::domain Type, StatusPresentation::domain Presentation, typename TValue>
+template<Status::Type Type, Status::Presentation Presentation, typename TValue>
 struct StatusItemBase
 	: public ChangeTracked<TValue>
 	, public StatusItemTags<Type, Presentation>
 {
 	using ChangeTracked::operator=;
+
+	// Direct type conversion
+
 };
 
-template<StatusType::domain Type, StatusPresentation::domain Presentation,
+template<Status::Type Type, Status::Presentation Presentation,
 	typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
 struct LimitedStatusItemBase
 	: public ChangeTracked<Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> >
@@ -51,7 +58,7 @@ struct LimitedStatusItemBase
 };
 
 // When TValue == TAssignable
-template<StatusType::domain Type, StatusPresentation::domain Presentation,
+template<Status::Type Type, Status::Presentation Presentation,
 	typename TValue, TValue DefaultValue, TValue MinValue, TValue MaxValue>
 class LimitedStatusItem : public LimitedStatusItemBase<Type, Presentation, TValue, TValue, DefaultValue, MinValue, MaxValue>
 {
@@ -59,14 +66,14 @@ class LimitedStatusItem : public LimitedStatusItemBase<Type, Presentation, TValu
 };
 
 // Shorthand for bool
-template<StatusType::domain Type, bool DefaultValue>
-class BooleanStatusItem : public LimitedStatusItem<Type, StatusPresentation::Boolean, bool, DefaultValue, false, true>
+template<Status::Type Type, bool DefaultValue>
+class BooleanStatusItem : public LimitedStatusItem<Type, Status::Boolean, bool, DefaultValue, false, true>
 {
 	using LimitedStatusItem::operator=;
 };
 
 // Shorthand for double
-template<StatusType::domain Type, StatusPresentation::domain Presentation,
+template<Status::Type Type, Status::Presentation Presentation,
 	int DefaultValue, int MinValue, int MaxValue>
 class FloatStatusItem : public LimitedStatusItemBase<Type, Presentation, double, int, DefaultValue, MinValue, MaxValue>
 {
@@ -74,7 +81,7 @@ class FloatStatusItem : public LimitedStatusItemBase<Type, Presentation, double,
 };
 
 // Shorthand for string
-template<StatusType::domain Type, StatusPresentation::domain Presentation>
+template<Status::Type Type, Status::Presentation Presentation>
 class StringStatusItem : public StatusItemBase<Type, Presentation, std::string>
 {
 	using StatusItemBase::operator=;
