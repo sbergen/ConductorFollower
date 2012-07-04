@@ -123,6 +123,7 @@
     <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />
+    <ClCompile Include="StringEnumTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

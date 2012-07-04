@@ -56,6 +56,9 @@
     <ClInclude Include="cf\StatusGroup.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\StringEnum.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LockfreeThread.cpp">

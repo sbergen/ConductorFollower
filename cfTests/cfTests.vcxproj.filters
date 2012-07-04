@@ -27,5 +27,8 @@
     <ClCompile Include="StatusGroupTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StringEnumTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
