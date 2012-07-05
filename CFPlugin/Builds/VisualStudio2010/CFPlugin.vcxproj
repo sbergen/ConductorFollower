@@ -225,6 +225,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\MidiEvent.cpp" />
     <ClCompile Include="..\..\Source\MidiReader.cpp" />
     <ClCompile Include="..\..\Source\PluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\PluginEditor.cpp" />
@@ -241,7 +242,7 @@
     <ClInclude Include="..\..\Source\Components\StatusWidget.h" />
     <ClInclude Include="..\..\Source\Components\StringExtractor.h" />
     <ClInclude Include="..\..\Source\Components\WidgetHelpers.h" />
-    <ClInclude Include="..\..\Source\MidiManipulator.h" />
+    <ClInclude Include="..\..\Source\MidiEvent.h" />
     <ClInclude Include="..\..\Source\MidiReader.h" />
     <ClInclude Include="..\..\Source\PluginProcessor.h" />
     <ClInclude Include="..\..\Source\PluginEditor.h" />

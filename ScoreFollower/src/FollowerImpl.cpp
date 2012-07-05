@@ -5,8 +5,7 @@
 
 #include "FeatureExtractor/Extractor.h"
 
-#include "ScoreFollower/ScoreEventHandle.h"
-#include "ScoreFollower/ScoreEventManipulator.h"
+#include "ScoreFollower/ScoreEvent.h"
 
 #include "TimeWarper.h"
 #include "TempoFollower.h"
@@ -80,7 +79,7 @@ FollowerImpl::StartNewBlock()
 }
 
 void
-FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events)
+FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 {
 	auto scoreRange = timeHelper_->CurrentScoreTimeBlock();
 	auto ev = scoreHelper_[track].EventsBetween(scoreRange.first, scoreRange.second);
@@ -88,7 +87,7 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & man
 	events.Clear();
 	if (State() != FollowerState::Rolling) { return; }
 
-	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(manipulator), boost::ref(events)));
+	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(events)));
 }
 
 FollowerState
@@ -106,15 +105,13 @@ FollowerImpl::SetState(FollowerState::Value state)
 }
 
 void
-FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events)  const
+FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data, BlockBuffer & events)  const
 {
 	unsigned frameOffset = timeHelper_->ScoreTimeToFrameOffset(time);
-	double velocity = NewVelocityAt(manipulator.GetVelocity(data), time);
+	double velocity = NewVelocityAt(data->GetVelocity(), time);
 	
-	// TODO fugly const modification, think about this...
-	ScoreEventHandle ev(data);
-	manipulator.ApplyVelocity(ev, velocity);
-	events.RegisterEvent(frameOffset, ev);
+	data->ApplyVelocity(velocity);
+	events.RegisterEvent(frameOffset, data);
 }
 
 double

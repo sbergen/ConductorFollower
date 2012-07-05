@@ -17,7 +17,7 @@
 #include "cf/cf.h"
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
-#include "ScoreFollower/ScoreEventHandle.h"
+#include "ScoreFollower/ScoreEvent.h"
 
 // JUCE headers last, as usual...
 #include "../JuceLibraryCode/JuceHeader.h"

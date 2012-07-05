@@ -1,6 +1,8 @@
 #include "MidiReader.h"
 
-#include "common.h"
+#include <boost/make_shared.hpp>
+
+#include "ScoreFollower/ScoreEvent.h"
 
 using namespace cf;
 using namespace cf::ScoreFollower;
@@ -21,7 +23,7 @@ sf::TrackReaderPtr
 MidiReader::Track(int index)
 {
 	assert(index < TrackCount());
-	return TrackReaderPtr(new TrackReaderImpl(*file_.getTrack(index), events_));
+	return TrackReaderPtr(new TrackReaderImpl(*file_.getTrack(index)));
 }
 
 sf::TempoReaderPtr
@@ -55,26 +57,22 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	return current_ < count_;
 }
 
-MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequence, EventContainer & events)
-	: events_(events)
-	, sequence_(sequence)
+MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequence)
+	: sequence_(sequence)
 	, count_(sequence.getNumEvents())
 	, current_(0)
 {}
 
 bool
-MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, sf::ScoreEventHandle & data)
+MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, sf::ScoreEventPtr & data)
 {
 	assert(current_ < count_);
 	
 	seconds_t seconds(sequence_.getEventTime(current_));
 	timestamp = time::duration_cast<score_time_t>(seconds);
 
-	// Make a copy of the event and pass ownership to the ptr_vector
-	// this makes sure the pointer to the event stays valid
 	auto eventPointer = sequence_.getEventPointer(current_);
-	events_.push_back(new MidiMessage(eventPointer->message));
-	data = EventAdapter::Create(events_.back());
+	data = boost::make_shared<MidiEvent>(eventPointer);
 
 	++current_;
 	return current_ < count_;

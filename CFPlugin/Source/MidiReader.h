@@ -1,20 +1,16 @@
 #pragma once
 
-#include <boost/ptr_container/ptr_vector.hpp>
+#include "JuceHeader.h"
 
 #include "ScoreFollower/ScoreReader.h"
 #include "ScoreFollower/TrackReader.h"
-#include "ScoreFollower/ScoreEventHandle.h"
 
-// The juce header has evil macros, so be sure to include it last...
-#include "JuceHeader.h"
+#include "MidiEvent.h"
 
 namespace sf = cf::ScoreFollower;
 
 class MidiReader : public sf::ScoreReader
 {
-	typedef boost::ptr_vector<MidiMessage> EventContainer;
-
 public:
 	MidiReader(String const & filename);
 	~MidiReader();
@@ -41,14 +37,13 @@ private:
 	};
 
 	// Track reader implementation
-	class TrackReaderImpl : public cf::ScoreFollower::TrackReader<sf::ScoreEventHandle>
+	class TrackReaderImpl : public cf::ScoreFollower::TrackReader<sf::ScoreEventPtr>
 	{
 	public:
-		TrackReaderImpl(MidiMessageSequence const & sequence, EventContainer & events);
-		bool NextEvent(sf::score_time_t & timestamp, sf::ScoreEventHandle & data);
+		TrackReaderImpl(MidiMessageSequence const & sequence);
+		bool NextEvent(sf::score_time_t & timestamp, sf::ScoreEventPtr & data);
 	
 	protected:
-		EventContainer & events_;
 		MidiMessageSequence const & sequence_;
 		int count_;
 		int current_;
@@ -57,7 +52,4 @@ private:
 private:
 
 	MidiFile file_;
-
-	// Events need to be stored here, because they are only referenced from handles
-	EventContainer events_;
 };

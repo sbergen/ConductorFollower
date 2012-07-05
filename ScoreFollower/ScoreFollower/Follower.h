@@ -8,11 +8,11 @@
 
 #include "cf/EventBuffer.h"
 
+#include "ScoreFollower/ScoreEvent.h"
+
 namespace cf {
 namespace ScoreFollower {
 
-class ScoreEventHandle;
-class ScoreEventManipulator;
 class ScoreReader;
 
 namespace Status { class FollowerStatus; }
@@ -22,7 +22,7 @@ class Follower : public boost::noncopyable
 {
 public:
 	// Container for fetching events for each block
-	typedef EventBuffer<ScoreEventHandle, unsigned> BlockBuffer;
+	typedef EventBuffer<ScoreEventPtr, unsigned> BlockBuffer;
 
 public:
 	// Implementation is hidde behind the factory function
@@ -39,7 +39,7 @@ public:
 	virtual void StartNewBlock() = 0;
 
 	// Gets events for track in current block, using the given manipulator
-	virtual void GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events) = 0;
+	virtual void GetTrackEventsForBlock(unsigned track, BlockBuffer & events) = 0;
 };
 
 } // namespace ScoreFollower

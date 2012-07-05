@@ -6,8 +6,8 @@
 
 #include "cf/EventBuffer.h"
 
-#include "ScoreFollower/ScoreEventHandle.h"
 #include "ScoreFollower/types.h"
+#include "ScoreFollower/ScoreEvent.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -16,7 +16,7 @@ class ScoreReader;
 
 class ScoreHelper : public boost::noncopyable
 {
-	typedef EventBuffer<ScoreEventHandle, score_time_t, std::vector> TrackBuffer;
+	typedef EventBuffer<ScoreEventPtr, score_time_t, std::vector> TrackBuffer;
 
 public:
 	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);

@@ -14,7 +14,7 @@ ScoreHelper::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 
 	// Read data
 	score_time_t timestamp;
-	ScoreEventHandle data;
+	ScoreEventPtr data;
 	for (int i = 0; i < scoreReader->TrackCount(); ++i) {
 		trackBuffers_.push_back(new TrackBuffer(0));
 		auto reader = scoreReader->Track(i);

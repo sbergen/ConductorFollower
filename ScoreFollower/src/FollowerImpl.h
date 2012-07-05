@@ -45,13 +45,13 @@ public: // Follower implementation
 
 	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);
 	void StartNewBlock();
-	void GetTrackEventsForBlock(unsigned track, ScoreEventManipulator & manipulator, BlockBuffer & events);
+	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
 private:
 	FollowerState State();
 	void SetState(FollowerState::Value state);
 
-	void CopyEventToBuffer(score_time_t const & time, ScoreEventHandle const & data, ScoreEventManipulator & manipulator, BlockBuffer & events) const;
+	void CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data, BlockBuffer & events) const;
 	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
 
 	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);

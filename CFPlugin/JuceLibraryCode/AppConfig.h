@@ -11,6 +11,7 @@
 
 */
 
+#define JUCE_DONT_DEFINE_MACROS 1
 //#define  JUCE_FORCE_DEBUG
 //#define  JUCE_LOG_ASSERTIONS
 //#define  JUCE_ASIO

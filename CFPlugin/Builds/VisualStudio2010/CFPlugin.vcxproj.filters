@@ -42,6 +42,9 @@
     <ClCompile Include="..\..\Source\MidiReader.cpp">
       <Filter>CFPlugin\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\MidiEvent.cpp">
+      <Filter>CFPlugin\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
@@ -71,9 +74,6 @@
     <ClInclude Include="..\..\Source\Components\OptionWidget.h">
       <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\MidiManipulator.h">
-      <Filter>CFPlugin\Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Components\InformationWidget.h">
       <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>
@@ -82,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Components\StringExtractor.h">
       <Filter>CFPlugin\Source\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\MidiEvent.h">
+      <Filter>CFPlugin\Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

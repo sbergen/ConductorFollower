@@ -10,11 +10,9 @@
 
 #include "ScoreFollower/TimeUtils.h"
 
-#include "common.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MidiReader.h"
-#include "MidiManipulator.h"
 
 using namespace cf;
 using namespace cf::ScoreFollower;
@@ -163,15 +161,14 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	// Track 0 is supposed to be the tempo track
 	for (int i = 1; i < trackCount_; ++i) {
-		follower_->GetTrackEventsForBlock(i, ::MidiManipulator(), eventBuffer_);
+		follower_->GetTrackEventsForBlock(i, eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
-		events.ForEach([this, &midiMessages, i](unsigned int sample, ScoreEventHandle const & message)
+		events.ForEach([this, &midiMessages, i](unsigned int sample, ScoreEventPtr message)
 		{
 			assert(sample >= 0);
 			assert(sample < samplesPerBlock_);
 
-			// Make a copy
-			MidiMessage msg = EventAdapter::Adapt(message);
+			MidiMessage msg = midi_event_cast(message)->Message();
 
 			// Prohibit PCs for now 
 			if (msg.isProgramChange()) {

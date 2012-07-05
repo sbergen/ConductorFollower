@@ -60,12 +60,6 @@
     <ClInclude Include="BeatClassifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreFollower\ScoreEventHandle.h">
-      <Filter>ScoreFollower</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreFollower\ScoreEventManipulator.h">
-      <Filter>ScoreFollower</Filter>
-    </ClInclude>
     <ClInclude Include="src\FollowerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,11 +69,11 @@
     <ClInclude Include="src\TimeHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreFollower\ScoreEventAdapter.h">
-      <Filter>ScoreFollower</Filter>
-    </ClInclude>
     <ClInclude Include="src\NoteManipulator.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\ScoreEvent.h">
+      <Filter>ScoreFollower</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
