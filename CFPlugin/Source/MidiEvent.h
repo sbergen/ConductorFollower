@@ -11,17 +11,22 @@ namespace sf = cf::ScoreFollower;
 class MidiEvent : public sf::ScoreEvent
 {
 public:
-	MidiEvent(juce::MidiMessageSequence::MidiEventHolder * event);
+	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
 
 public: // ScoreEvent implementation
-	double GetVelocity();
+	double GetVelocity() { return msg_.getVelocity(); }
+	sf::score_time_t GetNoteLength() { return noteLength_; }
+
 	void ApplyVelocity(double velocity);
+
+	sf::ScoreEventPtr MakeKeyswitch(int note);
 
 public: // Additional functionality
 	juce::MidiMessage const & Message() const { return msg_; }
 
 private:
 	juce::MidiMessage msg_;
+	sf::score_time_t noteLength_;
 };
 
 typedef boost::shared_ptr<MidiEvent> MidiEventPtr;

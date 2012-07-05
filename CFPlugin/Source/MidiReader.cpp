@@ -72,7 +72,15 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	timestamp = time::duration_cast<score_time_t>(seconds);
 
 	auto eventPointer = sequence_.getEventPointer(current_);
-	data = boost::make_shared<MidiEvent>(eventPointer);
+	auto nextEvent = eventPointer->noteOffObject;
+	
+	score_time_t noteLength = score_time_t::zero();
+	if (nextEvent) {
+		seconds_t offSeconds(nextEvent->message.getTimeStamp());
+		noteLength = time::duration_cast<score_time_t>(offSeconds);
+	}
+
+	data = boost::make_shared<MidiEvent>(eventPointer->message, noteLength);
 
 	++current_;
 	return current_ < count_;
