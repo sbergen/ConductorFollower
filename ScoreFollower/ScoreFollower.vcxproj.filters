@@ -75,6 +75,9 @@
     <ClInclude Include="ScoreFollower\ScoreEvent.h">
       <Filter>ScoreFollower</Filter>
     </ClInclude>
+    <ClInclude Include="src\InstrumentPatchSwitcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">
@@ -105,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\NoteManipulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InstrumentPatchSwitcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -126,6 +126,7 @@
     <ClInclude Include="src\AudioBlockTimeManager.h" />
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\globals.h" />
+    <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\NoteManipulator.h" />
     <ClInclude Include="src\ScoreHelper.h" />
     <ClInclude Include="src\TempoFollower.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="src\BeatClassifier.cpp" />
     <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\globals.cpp" />
+    <ClCompile Include="src\InstrumentPatchSwitcher.cpp" />
     <ClCompile Include="src\NoteManipulator.cpp" />
     <ClCompile Include="src\ScoreHelper.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />
