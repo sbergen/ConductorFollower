@@ -15,5 +15,5 @@ void
 MidiEvent::ApplyVelocity(double velocity)
 {
 	if (!msg_.isNoteOn()) { return; }
-	msg_.setVelocity(velocity);
+	msg_.setVelocity(static_cast<float>(velocity));
 }
