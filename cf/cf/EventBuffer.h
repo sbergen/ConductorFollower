@@ -10,6 +10,8 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/utility.hpp>
 
+#include "cf/algorithm.h"
+
 namespace cf {
 
 template<typename TData, typename TTimestamp,
@@ -220,17 +222,7 @@ private: // Private functions
 	// LowerBound is "after or at", this is "before or at"
 	TimestampIterator LowerBoundInclusive(TTimestamp const & time) const
 	{
-		// Sanity check
-		if (timestamps_.empty()) { return timestamps_.end(); }
-
-		TimestampIterator it = std::lower_bound(timestamps_.begin(), timestamps_.end(), time);
-		
-		if (it == timestamps_.end()) { return --it; } // All items are smaller, return last
-
-		// *it >= time at this stage
-		if (*it == time) { return it; } // Equal
-		if (it == timestamps_.begin()) { return timestamps_.end(); } // Greater, but the first one
-		return --it;
+		return cf::lower_bound_inclusive(timestamps_.begin(), timestamps_.end(), time);
 	}
 
 	// Iterator "conversion"
