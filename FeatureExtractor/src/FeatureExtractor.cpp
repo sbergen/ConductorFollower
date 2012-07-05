@@ -1,13 +1,15 @@
 #include "FeatureExtractor.h"
 
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
 
 namespace cf {
 namespace FeatureExtractor {
 
-Extractor * Extractor::Create()
+boost::shared_ptr<Extractor>
+Extractor::Create()
 {
-	return new FeatureExtractor();
+	return boost::make_shared<FeatureExtractor>();
 }
 
 FeatureExtractor::FeatureExtractor()

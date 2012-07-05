@@ -7,6 +7,7 @@
 
 #include <boost/variant.hpp>
 #include <boost/array.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
 #include <boost/utility.hpp>
 
@@ -119,7 +120,7 @@ public:
 		, stream_(filename.c_str(), std::ios_base::out | std::ios_base::trunc)
 	{
 		assert(!stream_.fail());
-		logger_.reset(new Logger(stream_));
+		logger_ = boost::make_shared<Logger>(stream_);
 		butler_.AddCallback(boost::bind(&Logger::Commit, logger_.get()));
 	}
 
@@ -130,7 +131,7 @@ public:
 private:
 	ButlerThread butler_;
 	std::ofstream stream_;
-	boost::scoped_ptr<Logger> logger_;
+	boost::shared_ptr<Logger> logger_;
 };
 
 

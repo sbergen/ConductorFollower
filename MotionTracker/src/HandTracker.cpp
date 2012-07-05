@@ -1,14 +1,17 @@
 #include "HandTracker.h"
 
+#include <boost/make_shared.hpp>
+
 #include "OpenNIHandTracker.h"
 
 namespace cf {
 namespace MotionTracker {
 
-HandTracker* HandTracker::Create()
+boost::shared_ptr<HandTracker>
+HandTracker::Create()
 {
 	// No other implementations ATM
-	return new OpenNIHandTracker();
+	return boost::make_shared<OpenNIHandTracker>();
 }
 
 } // namespace MotionTracker

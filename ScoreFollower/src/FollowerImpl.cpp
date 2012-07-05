@@ -1,5 +1,7 @@
 #include "FollowerImpl.h"
 
+#include <boost/make_shared.hpp>
+
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
 
@@ -21,17 +23,17 @@ namespace ScoreFollower {
 boost::shared_ptr<Follower>
 Follower::Create(unsigned samplerate, unsigned blockSize)
 {
-	return boost::shared_ptr<Follower>(new FollowerImpl(samplerate, blockSize));
+	return boost::make_shared<FollowerImpl>(samplerate, blockSize);
 }
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
 	: startRollingTime_(real_time_t::max())
 	, velocity_(0.5)
 {
-	timeHelper_.reset(new TimeHelper(*this, samplerate, blockSize));
-	eventProvider_.reset(EventProvider::Create());
-	eventThrottler_.reset(new EventThrottler(*eventProvider_));
-	featureExtractor_.reset(Extractor::Create());
+	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
+	eventProvider_= EventProvider::Create();
+	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
+	featureExtractor_ = Extractor::Create();
 }
 
 FollowerImpl::~FollowerImpl()

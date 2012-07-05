@@ -1,11 +1,13 @@
 #include "cf/ButlerThread.h"
 
+#include <boost/make_shared.hpp>
+
 namespace cf {
 
 ButlerThread::ButlerThread(milliseconds_t runInterval)
 	: runInterval_(runInterval)
 {
-	thread_.reset(new boost::thread(boost::bind(&ButlerThread::Loop, this)));
+	thread_= boost::make_shared<boost::thread>(boost::bind(&ButlerThread::Loop, this));
 }
 
 ButlerThread::~ButlerThread()

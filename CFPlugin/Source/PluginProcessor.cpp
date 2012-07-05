@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include <boost/make_shared.hpp>
+
 #include "ScoreFollower/TimeUtils.h"
 
 #include "PluginProcessor.h"
@@ -129,7 +131,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 	follower_ = ScoreFollower::Create(sampleRate, samplesPerBlock);
 
-	boost::shared_ptr<MidiReader> reader(new MidiReader("C:\\sample.mid"));
+	auto reader = boost::make_shared<MidiReader>("C:\\sample.mid");
 	follower_->CollectData(reader);
 	trackCount_ = reader->TrackCount();
 

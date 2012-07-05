@@ -4,6 +4,7 @@
 
 #include <boost/signals2.hpp>
 #include <boost/signals2/mutex.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
 #include "cf/cf.h"
@@ -20,7 +21,7 @@ class Extractor : public boost::noncopyable
 {
 public:
 	// Hide implementation
-	static Extractor * Create();
+	static boost::shared_ptr<Extractor> Create();
 
 public: // types
 	typedef bs2::signal_type<void (timestamp_t const &), bs2::keywords::mutex_type<bs2::dummy_mutex> >::type EventSignal;

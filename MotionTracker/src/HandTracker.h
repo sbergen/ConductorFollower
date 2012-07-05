@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
 #include "Gestures.h"
@@ -13,7 +14,7 @@ class HandTracker : public boost::noncopyable
 {
 public:
 	// Factory function to hide dependencies to implementations
-	static HandTracker * Create();
+	static boost::shared_ptr<HandTracker> Create();
 
 public:
 	virtual ~HandTracker() {}

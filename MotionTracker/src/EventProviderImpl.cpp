@@ -1,23 +1,25 @@
 #include "EventProviderImpl.h"
 
+#include <boost/make_shared.hpp>
+
 #include "MotionTracker/Event.h"
 
 namespace cf {
 namespace MotionTracker {
 
-EventProvider *
+boost::shared_ptr<EventProvider>
 EventProvider::Create()
 {
-	return new EventProviderImpl();
+	return boost::make_shared<EventProviderImpl>();
 }
 
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
 {
-	trackerThread_.reset(new LockfreeThread(
+	trackerThread_ = boost::make_shared<LockfreeThread>(
 		boost::bind(&EventProviderImpl::Init, this),
 		boost::bind(&EventProviderImpl::EventLoop, this),
-		boost::bind(&EventProviderImpl::Cleanup, this)));
+		boost::bind(&EventProviderImpl::Cleanup, this));
 }
 
 EventProviderImpl::~EventProviderImpl()
@@ -62,7 +64,7 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 bool
 EventProviderImpl::Init()
 {
-	tracker_.reset(MotionTracker::HandTracker::Create());
+	tracker_ = MotionTracker::HandTracker::Create();
 
 	if (!tracker_->Init())
 	{

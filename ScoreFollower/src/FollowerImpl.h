@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
 
 #include "cf/Logger.h"
@@ -71,7 +71,7 @@ private:
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 
 	// Can't be constructed in init list
-	boost::scoped_ptr<MotionTracker::EventThrottler> eventThrottler_;
+	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	
 	ScoreHelper scoreHelper_;

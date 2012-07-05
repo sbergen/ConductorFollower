@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
 
 #include "cf/cf.h"
@@ -40,8 +40,8 @@ private: // tracker thread state and event buffer
 	bool EventLoop();
 	void Cleanup();
 
-	boost::scoped_ptr<LockfreeThread> trackerThread_;
-	boost::scoped_ptr<HandTracker> tracker_;
+	boost::shared_ptr<LockfreeThread> trackerThread_;
+	boost::shared_ptr<HandTracker> tracker_;
 	InterThreadEventBuffer eventBuffer_;
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
 namespace cf {
@@ -11,7 +12,7 @@ class EventProvider : public boost::noncopyable
 {
 public:
 	// Hide implementation
-	static EventProvider * Create();
+	static boost::shared_ptr<EventProvider> Create();
 
 public:
 	virtual ~EventProvider() {}

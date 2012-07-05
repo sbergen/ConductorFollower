@@ -3,7 +3,7 @@
 #include <list>
 
 #include <boost/function.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
 
@@ -31,7 +31,7 @@ private:
 	milliseconds_t runInterval_;
 	boost::mutex callbackMutex_;
 	std::list<Callback> callbacks_;
-	boost::scoped_ptr<boost::thread> thread_;
+	boost::shared_ptr<boost::thread> thread_;
 };
 
 } // namespace cf

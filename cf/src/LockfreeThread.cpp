@@ -1,5 +1,7 @@
 #include "cf/LockfreeThread.h"
 
+#include <boost/make_shared.hpp>
+
 namespace cf {
 
 LockfreeThread::LockfreeThread(boost::function<bool()> initFunction,
@@ -12,7 +14,7 @@ LockfreeThread::LockfreeThread(boost::function<bool()> initFunction,
 {
 	// Keep lock until ctor exits, just to be sure...
 	boost::lock_guard<boost::mutex> lock(waitMutex_);
-	thread_.reset(new boost::thread(boost::bind(&LockfreeThread::Run, this)));
+	thread_ = boost::make_shared<boost::thread>(boost::bind(&LockfreeThread::Run, this));
 }
 
 LockfreeThread::~LockfreeThread()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 #include <boost/function.hpp>
@@ -58,7 +58,7 @@ private:
 
 	boost::mutex waitMutex_;
 	boost::condition_variable waitCond_;
-	boost::scoped_ptr<boost::thread>  thread_;
+	boost::shared_ptr<boost::thread>  thread_;
 };
 
 } // namespace cf

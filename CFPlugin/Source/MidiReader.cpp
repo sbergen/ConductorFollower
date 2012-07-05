@@ -23,13 +23,13 @@ sf::TrackReaderPtr
 MidiReader::Track(int index)
 {
 	assert(index < TrackCount());
-	return TrackReaderPtr(new TrackReaderImpl(*file_.getTrack(index)));
+	return boost::make_shared<TrackReaderImpl>(*file_.getTrack(index));
 }
 
 sf::TempoReaderPtr
 MidiReader::TempoTrack()
 {
-	return TempoReaderPtr(new TempoReaderImpl(file_));
+	return boost::make_shared<TempoReaderImpl>(file_);
 }
 
 MidiReader::TempoReaderImpl::TempoReaderImpl(MidiFile const & file)
