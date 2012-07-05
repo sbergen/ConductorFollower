@@ -12,7 +12,6 @@
 #define __PLUGINPROCESSOR_H_C2A1EFF0__
 
 #include <boost/atomic.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include "cf/cf.h"
 #include "ScoreFollower/Follower.h"
