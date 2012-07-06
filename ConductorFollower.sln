@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "Data\Data.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataTests", "DataTests\DataTests.vcxproj", "{F6D90628-ECA2-4AB7-9567-EA054E26E5CE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatchMapper", "PatchMapper\PatchMapper.vcxproj", "{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -118,6 +120,13 @@ Global
 		{F6D90628-ECA2-4AB7-9567-EA054E26E5CE}.Release|Win32.ActiveCfg = Release|Win32
 		{F6D90628-ECA2-4AB7-9567-EA054E26E5CE}.Release|Win32.Build.0 = Release|Win32
 		{F6D90628-ECA2-4AB7-9567-EA054E26E5CE}.Release|x64.ActiveCfg = Release|Win32
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Debug|Win32.Build.0 = Debug|Win32
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Debug|x64.ActiveCfg = Debug|x64
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Debug|x64.Build.0 = Debug|x64
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Release|Win32.ActiveCfg = Release|Win32
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Release|Win32.Build.0 = Release|Win32
+		{AD2D90B2-0DD1-45CE-B538-59E4BD4C02D0}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
