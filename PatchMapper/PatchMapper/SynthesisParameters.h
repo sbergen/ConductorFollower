@@ -1,21 +1,39 @@
 #pragma once 
 
-#include <boost/fusion/container/vector.hpp>
+#include "Data/InstrumentPatch.h"
+
+#include <boost/array.hpp>
 
 namespace cf {
 namespace PatchMapper {
 
-namespace fusion = boost::fusion;
+class SynthesisParameters
+{
+public:
+	typedef boost::array<double, 6> array_type;
 
-typedef fusion::vector6<
-	double, // t_a
-	double, // t_d
-	double, // t_s
-	double, // l_a
-	double, // l_d
-	double  // l_s
-	> SynthesisParameters;
+	SynthesisParameters(Data::InstrumentPatch const & p)
+	{
+		data_[0] = p.envelopeTimes.attack;
+		data_[1] = p.envelopeTimes.decay;
+		data_[2] = p.envelopeTimes.sustain;
+		data_[3] = p.envelopeLevels.attack;
+		data_[4] = p.envelopeLevels.sustain;
+		data_[5] = p.envelopeLevels.decay;
+	}
 
+	SynthesisParameters(array_type const & data)
+		: data_(data)
+	{}
+
+	array_type const & data() const
+	{
+		return data_;
+	}
+
+private:
+	array_type data_;
+};
 
 } // namespace PatchMapper
 } // namespace cf

@@ -1,44 +1,44 @@
 #include "PatchMapper/SynthesisMapping.h"
 
 #include <functional>
+#include <numeric>
 
 #include <boost/bind/apply.hpp>
 #include <boost/bind.hpp>
-#include <boost/fusion/container/vector.hpp>
-#include <boost/fusion/container/generation.hpp>
-#include <boost/fusion/algorithm/transformation.hpp>
-#include <boost/fusion/algorithm/iteration.hpp>
 
 #include "mappers.h"
 
 namespace cf {
 namespace PatchMapper {
 
-namespace fusion = boost::fusion;
-
 SynthesisParameters
 SynthParametersFromContexts(InstrumentContext const & instrumentContext, NoteContext const & noteContext)
 {
-	auto transformation = fusion::make_vector(
+	typedef double (*Transformer)(InstrumentContext const &, NoteContext const &);
+	boost::array<Transformer, 6> transformation = {
 		&map_t_a,
 		&map_t_d,
 		&map_t_s,
 		&map_l_a,
 		&map_l_d,
 		&map_l_s
-		);
+	};
 
+	SynthesisParameters::array_type result;
 	auto transformer = boost::bind(boost::apply<double>(), _1, boost::cref(instrumentContext), boost::cref(noteContext));
-	return fusion::transform(transformation, transformer);
+	std::transform(transformation.begin(), transformation.end(), result.begin(), transformer);
+	return result;
 }
 
-/*
-double comparable_distance(SynthesisParameters const & a, SynthesisParameters const & b)
+double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b)
 {
-	auto diff_squared = fusion::transform(a, b, [](double lhs, double rhs) -> double { return std::pow(2, (lhs - rhs)); });
-	return fusion::fold(diff_squared, double(), std::plus<double>());
+	SynthesisParameters::array_type diffSquared;
+	auto const & aArr = a.data();
+	auto const & bArr = b.data();
+	std::transform(aArr.begin(), aArr.end(), bArr.begin(), diffSquared.begin(),
+		[](double lhs, double rhs) -> double { return std::pow(2, (lhs - rhs)); });
+	return std::accumulate(diffSquared.begin(), diffSquared.end(), 0.0, std::plus<double>());
 }
-*/
 
 } // namespace PatchMapper
 } // namespace cf

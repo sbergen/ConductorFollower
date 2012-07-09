@@ -9,7 +9,7 @@ namespace PatchMapper {
 
 SynthesisParameters SynthParametersFromContexts(InstrumentContext const & instrumentContext, NoteContext const & noteContext);
 
-
+double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b);
 
 } // namespace PatchMapper
 } // namespace cf
