@@ -4,8 +4,6 @@
 
 #include <boost/format.hpp>
 
-#include "cf/cf.h"
-
 #include "CallbackWrappers.h"
 #include "OpenNIUtils.h"
 

@@ -3,9 +3,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
 
-#include "cf/cf.h"
 #include "cf/EventBuffer.h"
 #include "cf/LockfreeThread.h"
+#include "cf/time.h"
+#include "cf/geometry.h"
 
 #include "MotionTracker/EventProvider.h"
 

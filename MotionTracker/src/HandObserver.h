@@ -2,7 +2,7 @@
 
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
+#include "cf/geometry.h"
 
 namespace cf {
 namespace MotionTracker {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cf/cf.h"
 #include "cf/LockfreeThread.h"
 
 #include "FeatureExtractor/Extractor.h"

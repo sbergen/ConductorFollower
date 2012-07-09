@@ -11,8 +11,9 @@
 #include <boost/lockfree/ringbuffer.hpp>
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
 #include "cf/ButlerThread.h"
+#include "cf/geometry.h"
+#include "cf/time.h"
 
 namespace cf {
 

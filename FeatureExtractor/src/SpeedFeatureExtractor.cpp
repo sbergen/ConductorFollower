@@ -3,6 +3,8 @@
 #include <boost/geometry.hpp>
 namespace bg = boost::geometry;
 
+#include "cf/math.h"
+
 namespace cf {
 namespace FeatureExtractor {
 

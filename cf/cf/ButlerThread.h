@@ -7,7 +7,7 @@
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
+#include "cf/time.h"
 
 namespace cf {
 

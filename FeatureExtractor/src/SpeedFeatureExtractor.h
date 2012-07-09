@@ -2,8 +2,6 @@
 
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
-
 #include "types.h"
 
 namespace cf {

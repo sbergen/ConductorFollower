@@ -7,8 +7,9 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
 #include "cf/EventBuffer.h"
+#include "cf/geometry.h"
+#include "cf/time.h"
 
 namespace cf {
 namespace FeatureExtractor {

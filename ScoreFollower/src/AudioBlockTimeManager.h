@@ -4,8 +4,6 @@
 
 #include <boost/utility.hpp>
 
-#include "cf/cf.h"
-
 #include "ScoreFollower/types.h"
 
 namespace cf {

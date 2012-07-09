@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cf/cf.h"
+#include "cf/time.h"
 
 namespace cf {
 namespace ScoreFollower {
