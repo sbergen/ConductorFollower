@@ -25,4 +25,30 @@ ForwardIterator lower_bound_inclusive(ForwardIterator first, ForwardIterator las
 		std::less<typename std::iterator_traits<ForwardIterator>::value_type>());
 }
 
+// linear nearest neighbour search
+
+template<typename ForwardIterator, typename T, typename Distance>
+typename std::iterator_traits<ForwardIterator>::reference
+nearest_neighbour_linear(ForwardIterator first, ForwardIterator last, T const & value, Distance distance)
+{
+	// sanity checks
+	if (first == last) { throw std::runtime_error("empty range given to nearest_neighbour_linear"); }
+
+	// Init
+	ForwardIterator it = first;
+	auto leastDistance = distance(*it, value);
+	ForwardIterator best = it;
+
+	// Go through rest
+	while (++it != last) {
+		auto dist = distance(*it, value);
+		if (dist < leastDistance) {
+			best = it;
+			leastDistance = dist;
+		}
+	}
+
+	return *best;
+}
+
 } // namespace cf
