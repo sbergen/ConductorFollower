@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "JuceHeader.h"
 
 #include "ScoreFollower/ScoreReader.h"
@@ -12,10 +14,11 @@ namespace sf = cf::ScoreFollower;
 class MidiReader : public sf::ScoreReader
 {
 public:
-	MidiReader(String const & filename);
+	MidiReader();
 	~MidiReader();
 
 public: // ScoreReader implementation
+	void OpenFile(std::string const & filename);
 	int TrackCount() const { return file_.getNumTracks(); }
 	sf::TrackReaderPtr Track(int index);
 	sf::TempoReaderPtr TempoTrack();

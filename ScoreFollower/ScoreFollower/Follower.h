@@ -26,7 +26,7 @@ public:
 
 public:
 	// Implementation is hidde behind the factory function
-	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize);
+	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
 	virtual ~Follower() {}
 
 	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
@@ -35,11 +35,9 @@ public:
 	virtual StatusRCU & status() = 0;
 	virtual OptionsRCU & options() = 0;
 
-	// Collect data from scoreReader and keep it in scope as long as the data is used.
-	virtual void CollectData(boost::shared_ptr<ScoreReader> scoreReader) = 0;
-
 	// Start new audio block (blocksize defined in ctor)
-	virtual void StartNewBlock() = 0;
+	// returns number of tracks that should be read
+	virtual unsigned StartNewBlock() = 0;
 
 	// Gets events for track in current block, using the given manipulator
 	virtual void GetTrackEventsForBlock(unsigned track, BlockBuffer & events) = 0;

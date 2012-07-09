@@ -25,7 +25,6 @@ CfpluginAudioProcessor::CfpluginAudioProcessor()
 	: shouldRun(false)
 	, running_(false)
 	, eventBuffer_(100)
-	, trackCount_(0)
 {
 }
 
@@ -129,11 +128,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
 	samplesPerBlock_ = samplesPerBlock;
 
-	follower_ = ScoreFollower::Create(sampleRate, samplesPerBlock);
-
-	auto reader = boost::make_shared<MidiReader>("C:\\sample.mid");
-	follower_->CollectData(reader);
-	trackCount_ = reader->TrackCount();
+	follower_ = ScoreFollower::Create(sampleRate, samplesPerBlock, boost::make_shared<MidiReader>());
 
 	// Lets see...
 	shouldRun.store(true);
@@ -159,10 +154,10 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	/************************************************************************************/
 
-	follower_->StartNewBlock();
+	unsigned trackCount = follower_->StartNewBlock();
 
 	// Track 0 is supposed to be the tempo track
-	for (int i = 1; i < trackCount_; ++i) {
+	for (unsigned i = 1; i < trackCount; ++i) {
 		follower_->GetTrackEventsForBlock(i, eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
 		events.ForEach([this, &midiMessages, i](unsigned int sample, ScoreEventPtr message)

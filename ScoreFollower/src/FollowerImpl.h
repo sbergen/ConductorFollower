@@ -36,7 +36,7 @@ namespace ScoreFollower {
 class FollowerImpl : public Follower
 {
 public:
-	FollowerImpl(unsigned samplerate, unsigned blockSize);
+	FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
 	~FollowerImpl();
 
 public: // Follower implementation
@@ -44,7 +44,7 @@ public: // Follower implementation
 	OptionsRCU & options() { return options_; }
 
 	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);
-	void StartNewBlock();
+	unsigned StartNewBlock();
 	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
 private:
@@ -65,6 +65,7 @@ private:
 	FollowerState state_;
 
 	// Created via shared_ptr
+	boost::shared_ptr<ScoreReader> scoreReader_;
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 

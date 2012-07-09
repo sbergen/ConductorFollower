@@ -20,6 +20,7 @@ class ScoreReader : public boost::noncopyable
 public:
 	virtual ~ScoreReader()  {}
 
+	virtual void OpenFile(std::string const & filename) = 0;
 	virtual int TrackCount() const = 0;
 	virtual TrackReaderPtr Track(int index) = 0;
 	virtual TempoReaderPtr TempoTrack() = 0;

@@ -21,14 +21,15 @@ namespace cf {
 namespace ScoreFollower {
 
 boost::shared_ptr<Follower>
-Follower::Create(unsigned samplerate, unsigned blockSize)
+Follower::Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader)
 {
-	return boost::make_shared<FollowerImpl>(samplerate, blockSize);
+	return boost::make_shared<FollowerImpl>(samplerate, blockSize, scoreReader);
 }
 
-FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
+FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader)
 	: status_(boost::make_shared<Status::FollowerStatus>())
 	, options_(boost::make_shared<Options::FollowerOptions>())
+	, scoreReader_(scoreReader)
 	, startRollingTime_(real_time_t::max())
 {
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
@@ -56,7 +57,7 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 	}
 }
 
-void
+unsigned
 FollowerImpl::StartNewBlock()
 {
 	// Start new RT block
@@ -75,10 +76,12 @@ FollowerImpl::StartNewBlock()
 			boost::bind(&TimeHelper::RegisterBeat, timeHelper_, _1));
 	}
 
-	if (State() != FollowerState::Rolling) { return; }
+	if (State() != FollowerState::Rolling) { return 0; }
 
 	// If rolling, fix score range
 	timeHelper_->FixScoreRange();
+
+	return scoreReader_->TrackCount();
 }
 
 void

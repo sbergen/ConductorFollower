@@ -7,16 +7,21 @@
 using namespace cf;
 using namespace cf::ScoreFollower;
 
-MidiReader::MidiReader(String const & filename)
+MidiReader::MidiReader()
 {
-	File file(filename);
-	FileInputStream stream(file);
-	file_.readFrom(stream);
-	file_.convertTimestampTicksToSeconds();
 }
 
 MidiReader::~MidiReader()
 {
+}
+
+void
+MidiReader::OpenFile(std::string const & filename)
+{
+	File file(String(filename.c_str()));
+	FileInputStream stream(file);
+	file_.readFrom(stream);
+	file_.convertTimestampTicksToSeconds();
 }
 
 sf::TrackReaderPtr
