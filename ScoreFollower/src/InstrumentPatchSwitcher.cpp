@@ -30,6 +30,15 @@ InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instru
 void
 InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position)
 {
+	if (data->IsNoteOn()) {
+		SwitchPathIfNecessary(events, data, position);
+	}
+	events.RegisterEvent(position, data);
+}
+
+void
+InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position)
+{
 	PatchMapper::NoteContext noteContext(data->GetNoteLength(), data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext);
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());
@@ -38,8 +47,6 @@ InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuff
 		currentPatch_ = best.second;
 		events.RegisterEvent(position, data->MakeKeyswitch(currentPatch_));
 	}
-
-	events.RegisterEvent(position, data);
 }
 
 } // namespace ScoreFollower

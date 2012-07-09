@@ -16,6 +16,7 @@ public:
 public: // ScoreEvent implementation
 	double GetVelocity() { return msg_.getVelocity(); }
 	sf::score_time_t GetNoteLength() { return noteLength_; }
+	bool IsNoteOn() { return msg_.isNoteOn(); }
 
 	void ApplyVelocity(double velocity);
 

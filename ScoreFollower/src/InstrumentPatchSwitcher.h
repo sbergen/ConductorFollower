@@ -21,6 +21,9 @@ public:
 	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position);
 
 private:
+	void SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position);
+
+private:
 	typedef std::pair<PatchMapper::SynthesisParameters, int> PatchKeyswitchPair;
 	class PatchDistance;
 

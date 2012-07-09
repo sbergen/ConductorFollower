@@ -13,7 +13,6 @@
 
 #include <boost/atomic.hpp>
 
-#include "cf/cf.h"
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/ScoreEvent.h"
