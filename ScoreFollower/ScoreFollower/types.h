@@ -5,11 +5,11 @@
 namespace cf {
 namespace ScoreFollower {
 
-typedef boost::chrono::microseconds score_time_t;
-typedef cf::timestamp_t real_time_t;
+typedef microseconds_t score_time_t;
+typedef timestamp_t real_time_t;
 
 // Tempo is microseconds per quarter note 
-typedef boost::chrono::microseconds tempo_t;
+typedef microseconds_t tempo_t;
 
 // Speed is relative speed (i.e. 1.0 == normal speed)
 typedef double speed_t;

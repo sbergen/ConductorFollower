@@ -1,13 +1,18 @@
 #pragma once 
 
-#include "cf/cf.h"
+#include "cf/time.h"
 
 namespace cf {
 namespace PatchMapper {
 
 struct NoteContext
 {
-	milliseconds_t length;
+	NoteContext(microseconds_t length, double velocity)
+		: length(length)
+		, velocity(velocity)
+	{}
+
+	microseconds_t length;
 	double         velocity;
 };
 

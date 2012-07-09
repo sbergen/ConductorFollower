@@ -7,6 +7,7 @@ namespace cf {
 typedef boost::chrono::steady_clock::time_point timestamp_t;
 typedef boost::chrono::steady_clock::duration duration_t;
 typedef boost::chrono::milliseconds milliseconds_t;
+typedef boost::chrono::microseconds microseconds_t;
 typedef boost::chrono::duration<double> seconds_t;
 
 namespace time {

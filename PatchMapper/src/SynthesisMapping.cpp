@@ -33,9 +33,7 @@ SynthParametersFromContexts(InstrumentContext const & instrumentContext, NoteCon
 double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b)
 {
 	SynthesisParameters::array_type diffSquared;
-	auto const & aArr = a.data();
-	auto const & bArr = b.data();
-	std::transform(aArr.begin(), aArr.end(), bArr.begin(), diffSquared.begin(),
+	std::transform(a.data().begin(), a.data().end(), b.data().begin(), diffSquared.begin(),
 		[](double lhs, double rhs) -> double { return std::pow(2, (lhs - rhs)); });
 	return std::accumulate(diffSquared.begin(), diffSquared.end(), 0.0, std::plus<double>());
 }

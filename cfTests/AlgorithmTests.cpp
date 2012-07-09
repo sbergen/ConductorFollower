@@ -54,4 +54,31 @@ BOOST_AUTO_TEST_CASE(TestNearestNeighbourNonMatching)
 	BOOST_CHECK_EQUAL(best, 3);
 }
 
+struct CustomStruct
+{
+	CustomStruct(int f) : foo(f) {}
+	int foo;
+};
+
+struct CustomOp
+{
+	int operator() (CustomStruct const & s, int i)
+	{
+		return d(s.foo, i);
+	}
+
+	distance<int> d;
+};
+
+BOOST_AUTO_TEST_CASE(TestNearestNeighbourCustomOp)
+{
+	std::vector<CustomStruct> v;
+	v.push_back(1);
+	v.push_back(2);
+	v.push_back(3);
+	v.push_back(4);
+	CustomStruct best = nearest_neighbour_linear(v.begin(), v.end(), 3, CustomOp());
+	BOOST_CHECK_EQUAL(best.foo, 3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

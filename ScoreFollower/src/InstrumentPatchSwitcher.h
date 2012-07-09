@@ -1,9 +1,13 @@
 #pragma once
 
+#include <utility>
+#include <vector>
+
 #include <boost/utility.hpp>
 
 #include "Data/Instrument.h"
-
+#include "PatchMapper/InstrumentContext.h"
+#include "PatchMapper/SynthesisParameters.h"
 #include "ScoreFollower/Follower.h"
 
 namespace cf {
@@ -17,7 +21,14 @@ public:
 	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position);
 
 private:
+	typedef std::pair<PatchMapper::SynthesisParameters, int> PatchKeyswitchPair;
+	class PatchDistance;
+
+private:
+	PatchMapper::InstrumentContext instrumentContext_;
+
 	int currentPatch_;
+	std::vector<PatchKeyswitchPair> patches_;
 };
 
 } // namespace ScoreFollower
