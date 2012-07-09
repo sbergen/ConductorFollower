@@ -51,9 +51,6 @@ private:
 	FollowerState State();
 	void SetState(FollowerState::Value state);
 
-	void CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data, BlockBuffer & events) const;
-	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
-
 	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);
 	void ConsumeEvent(MotionTracker::Event const & e);
 
@@ -74,10 +71,9 @@ private:
 	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	
-	ScoreHelper scoreHelper_;
+	boost::shared_ptr<ScoreHelper> scoreHelper_;
 
 	real_time_t startRollingTime_;
-	double velocity_;
 
 	typedef boost::signals2::connection SignalConnection;
 

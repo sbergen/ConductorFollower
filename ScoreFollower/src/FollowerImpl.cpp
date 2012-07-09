@@ -28,12 +28,12 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
 	: startRollingTime_(real_time_t::max())
-	, velocity_(0.5)
 {
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
 	eventProvider_= EventProvider::Create();
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
 	featureExtractor_ = Extractor::Create();
+	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_);
 }
 
 FollowerImpl::~FollowerImpl()
@@ -44,7 +44,7 @@ void
 FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 {
 	timeHelper_->ReadTempoTrack(scoreReader->TempoTrack());
-	scoreHelper_.CollectData(scoreReader);
+	scoreHelper_->LearnScore(scoreReader);
 
 	{ // TODO handle state better
 		SetState(FollowerState::WaitingForCalibration);
@@ -83,13 +83,10 @@ FollowerImpl::StartNewBlock()
 void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 {
-	auto scoreRange = timeHelper_->CurrentScoreTimeBlock();
-	auto ev = scoreHelper_[track].EventsBetween(scoreRange.first, scoreRange.second);
-
 	events.Clear();
 	if (State() != FollowerState::Rolling) { return; }
 
-	ev.ForEach(boost::bind(&FollowerImpl::CopyEventToBuffer, this, _1, _2, boost::ref(events)));
+	scoreHelper_->GetTrackEventsForBlock(track, events);
 }
 
 FollowerState
@@ -106,22 +103,6 @@ FollowerImpl::SetState(FollowerState::Value state)
 	status_.SetValue<Status::State>(state);
 }
 
-void
-FollowerImpl::CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data, BlockBuffer & events)  const
-{
-	unsigned frameOffset = timeHelper_->ScoreTimeToFrameOffset(time);
-	double velocity = NewVelocityAt(data->GetVelocity(), time);
-	
-	data->ApplyVelocity(velocity);
-	events.RegisterEvent(frameOffset, data);
-}
-
-double
-FollowerImpl::NewVelocityAt(double oldVelocity, score_time_t const & time) const
-{
-	// TODO use time and something fancier :)
-	return (oldVelocity + (velocity_ - 0.5));
-}
 
 void
 FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime)
@@ -163,7 +144,7 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
 	coord_t magnitude = geometry::abs(distance);
 	status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
-	velocity_ = magnitude / 600;
+	scoreHelper_->SetVelocityFromMotion(magnitude / 600);
 }
 
 } // namespace ScoreFollower
