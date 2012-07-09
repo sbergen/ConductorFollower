@@ -74,7 +74,7 @@ public: // Range class
 
 		// Call func for each (timestamp, data) pair
 		template<typename Func>
-		void ForEach(Func & func) const
+		void ForEach(Func func) const
 		{
 			ForEachWhile([&func] (TTimestamp const & ts, TData const & data) -> bool
 				{ func(ts, data); return true; });
@@ -82,7 +82,7 @@ public: // Range class
 
 		// Call func for each (timestamp, data) pair, until it returns a value that converts to false
 		template<typename Func>
-		void ForEachWhile(Func & func) const
+		void ForEachWhile(Func func) const
 		{
 			ForEachWhile(func, timestampRange_.begin(), timestampRange_.end(), dataRange_.begin());
 		}
