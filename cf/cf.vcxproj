@@ -120,6 +120,7 @@
     <ClInclude Include="cf\LockfreeThread.h" />
     <ClInclude Include="cf\Logger.h" />
     <ClInclude Include="cf\math.h" />
+    <ClInclude Include="cf\rcu.h" />
     <ClInclude Include="cf\StatusGroup.h" />
     <ClInclude Include="cf\StatusItem.h" />
     <ClInclude Include="cf\StringEnum.h" />

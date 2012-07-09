@@ -6,6 +6,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "cf/EventBuffer.h"
+#include "cf/rcu.h"
 
 #include "ScoreFollower/ScoreEvent.h"
 
@@ -28,8 +29,11 @@ public:
 	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize);
 	virtual ~Follower() {}
 
-	virtual Status::FollowerStatus & status() = 0;
-	virtual Options::FollowerOptions & options() = 0;
+	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
+	typedef cf::RTReadRCU<Options::FollowerOptions> OptionsRCU;
+
+	virtual StatusRCU & status() = 0;
+	virtual OptionsRCU & options() = 0;
 
 	// Collect data from scoreReader and keep it in scope as long as the data is used.
 	virtual void CollectData(boost::shared_ptr<ScoreReader> scoreReader) = 0;

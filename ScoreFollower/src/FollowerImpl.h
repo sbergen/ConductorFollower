@@ -40,8 +40,8 @@ public:
 	~FollowerImpl();
 
 public: // Follower implementation
-	Status::FollowerStatus & status() { return status_; }
-	Options::FollowerOptions & options() { return options_; }
+	StatusRCU & status() { return status_; }
+	OptionsRCU & options() { return options_; }
 
 	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);
 	void StartNewBlock();
@@ -60,8 +60,9 @@ private:
 private:
 	GlobalsInitializer globalsInit_;
 
-	Status::FollowerStatus status_;
-	Options::FollowerOptions options_;
+	StatusRCU status_;
+	OptionsRCU options_;
+	FollowerState state_;
 
 	// Created via shared_ptr
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;

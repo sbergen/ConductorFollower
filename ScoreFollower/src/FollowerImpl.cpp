@@ -27,7 +27,9 @@ Follower::Create(unsigned samplerate, unsigned blockSize)
 }
 
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize)
-	: startRollingTime_(real_time_t::max())
+	: status_(boost::make_shared<Status::FollowerStatus>())
+	, options_(boost::make_shared<Options::FollowerOptions>())
+	, startRollingTime_(real_time_t::max())
 {
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
 	eventProvider_= EventProvider::Create();
@@ -48,7 +50,6 @@ FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
 
 	{ // TODO handle state better
 		SetState(FollowerState::WaitingForCalibration);
-		//state_ = WaitingForStartGesture;
 		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
 			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
 		assert(eventProvider_->StartProduction());
@@ -92,15 +93,14 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 FollowerState
 FollowerImpl::State()
 {
-	FollowerState ret;
-	status_.GetValue<Status::State>(ret);
-	return ret;
+	return state_;
 }
 
 void
 FollowerImpl::SetState(FollowerState::Value state)
 {
-	status_.SetValue<Status::State>(state);
+	state_ = state;
+	status_.write()->SetValue<Status::State>(state);
 }
 
 
@@ -143,7 +143,7 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 	// Make better
 	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
 	coord_t magnitude = geometry::abs(distance);
-	status_.SetValue<Status::MagnitudeOfMovement>(magnitude);
+	status_.write()->SetValue<Status::MagnitudeOfMovement>(magnitude);
 	scoreHelper_->SetVelocityFromMotion(magnitude / 600);
 }
 

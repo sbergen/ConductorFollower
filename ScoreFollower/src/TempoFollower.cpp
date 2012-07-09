@@ -75,9 +75,9 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	}
 	*/
 
-	auto & status = parent_.status();
-	status.SetValue<Status::SpeedFromTempo>(tempoSpeed);
-	status.SetValue<Status::SpeedFromPhase>(phaseSpeed);
+	auto status = parent_.status().write();
+	status->SetValue<Status::SpeedFromTempo>(tempoSpeed);
+	status->SetValue<Status::SpeedFromPhase>(phaseSpeed);
 
 	return speed_;
 }

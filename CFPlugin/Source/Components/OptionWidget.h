@@ -24,9 +24,8 @@ public:
 		deleteAllChildren();
 	}
 
-	void Initialize(ValueType & value)
+	void Initialize(ValueType const & value)
 	{
-		value_ = &value;
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
 		auto val = static_cast<ValueType::value_type>(value);
@@ -60,7 +59,6 @@ private:
 	StretchableLayoutManager layout_;
 	Label * description_;
 	Slider * slider_;
-	ValueType * value_;
 };
 
 // Specialization for Files
@@ -73,9 +71,9 @@ class OptionWidget<typename KeyType, typename ValueType, cf::Status::File>
 
 public:
 	OptionWidget()
-		: description_(nullptr)
+		: changed_(false)
+		, description_(nullptr)
 		, fileChooser_(nullptr)
-		, value_(nullptr)
 	{}
 
 	~OptionWidget()
@@ -83,9 +81,8 @@ public:
 		deleteAllChildren();
 	}
 
-	void Initialize(ValueType & value)
+	void Initialize(ValueType const & value)
 	{
-		value_ = &value;
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
 		String val(static_cast<std::string>(value).c_str());
@@ -98,17 +95,25 @@ public:
 		layout_.setItemLayout(1, -0.2, -0.8, -0.5);
 	}
 
-public: // FilenameComponentListener implementation
-	void filenameComponentChanged(FilenameComponent *fileComponent)
+	void Update(ValueType & value)
 	{
-		File file = fileComponent->getCurrentFile();
+		if (!changed_) { return; }
+		changed_ = false;
+
+		File file = fileChooser_->getCurrentFile();
 		if (!file.exists()) {
-			*value_ = "";
+			value = "";
 		} else {
 			std::ostringstream oss;
 			oss << file.getFullPathName();
-			*value_ = oss.str();
+			value = oss.str();
 		}
+	}
+
+public: // FilenameComponentListener implementation
+	void filenameComponentChanged(FilenameComponent *fileComponent)
+	{
+		changed_ = true;
 	}
 
 public: // GUI stuff
@@ -121,8 +126,8 @@ public: // GUI stuff
     }
 
 private:
+	bool changed_;
 	StretchableLayoutManager layout_;
 	Label * description_;
 	FilenameComponent * fileChooser_;
-	ValueType * value_;
 };

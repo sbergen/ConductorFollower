@@ -27,9 +27,9 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	/**************************/
 	{
 		using namespace cf::ScoreFollower::Status;
-		FollowerStatus & status = ownerFilter->followerStatus();
+		auto status = ownerFilter->followerStatus().read_copy();
 		WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
-		boost::fusion::for_each(status.map(), initializer);
+		boost::fusion::for_each(status->map(), initializer);
 
 		std::vector<Component *> components;
 		WidgetCollector<std::vector<Component *> > collector(components);
@@ -47,9 +47,9 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	/**************************/
 	{
 		using namespace cf::ScoreFollower::Options;
-		FollowerOptions & options = ownerFilter->followerOptions();
+		auto options = ownerFilter->followerOptions().read();
 		WidgetInitializer<FollowerOptionWidgets> initializer(optionWidgets);
-		boost::fusion::for_each(options.map(), initializer);
+		boost::fusion::for_each(options->map(), initializer);
 
 		std::vector<Component *> components;
 		WidgetCollector<std::vector<Component *> > collector(components);
@@ -112,9 +112,17 @@ CfpluginAudioProcessorEditor::buttonStateChanged(Button * button)
 void
 CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
-	using namespace cf::ScoreFollower::Status;
-	FollowerStatus & status = ownerFilter->followerStatus();
-	WidgetUpdater<FollowerStatusWidgets> updater(statusWidgets);
-	boost::fusion::for_each(status.map(), updater);
+	{
+		auto status = ownerFilter->followerStatus().read_copy();
+		WidgetUpdater<FollowerStatusWidgets> updater(statusWidgets);
+		boost::fusion::for_each(status->map(), updater);
+	}
+
+	{
+		auto options = ownerFilter->followerOptions().writer();
+		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
+		boost::fusion::for_each(options->map(), updater);
+	}
+
 }
 

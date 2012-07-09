@@ -77,12 +77,12 @@ public: // Own stuff...
 
 	ChangeBroadcaster changeBroadcaster;
 
-	cf::ScoreFollower::Status::FollowerStatus & followerStatus()
+	cf::ScoreFollower::Follower::StatusRCU & followerStatus()
 	{
-		return follower_->status();			
+		return follower_->status();
 	}
 
-	cf::ScoreFollower::Options::FollowerOptions & followerOptions()
+	cf::ScoreFollower::Follower::OptionsRCU & followerOptions()
 	{
 		return follower_->options();			
 	}

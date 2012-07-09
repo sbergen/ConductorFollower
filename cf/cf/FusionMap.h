@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/fusion/include/map.hpp>
-#include <boost/utility.hpp>
 
 #include "cf/FusionMapMacros.h"
 
@@ -14,7 +13,7 @@
 namespace cf {
 
 template<typename MapType>
-class FusionMapBase : public boost::noncopyable
+class FusionMapBase
 {
 public:
 	// Calls F::operator(string, ValueType) for each option

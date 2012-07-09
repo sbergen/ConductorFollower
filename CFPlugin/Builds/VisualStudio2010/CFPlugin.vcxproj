@@ -260,6 +260,9 @@
     <ProjectReference Include="..\..\..\MotionTracker\MotionTracker.vcxproj">
       <Project>{567bba55-f7d3-4a9f-80b3-7f8c5c739c59}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\PatchMapper\PatchMapper.vcxproj">
+      <Project>{ad2d90b2-0dd1-45ce-b538-59e4bd4c02d0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ScoreFollower\ScoreFollower.vcxproj">
       <Project>{262368e6-b5c0-4a0c-94db-e0baf6357069}</Project>
     </ProjectReference>

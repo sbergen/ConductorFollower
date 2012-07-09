@@ -33,7 +33,7 @@ TimeHelper::FixScoreRange()
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
 	if (speed != previousSpeed_) {
-		parent_.status().SetValue<Status::Speed>(speed);
+		parent_.status().write()->SetValue<Status::Speed>(speed);
 		previousSpeed_ = speed;
 		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange.first, speed);
 	}
