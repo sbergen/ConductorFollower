@@ -43,8 +43,11 @@ InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, S
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext);
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());
 
-	if (best.second != currentPatch_) {
-		currentPatch_ = best.second;
+	assert(best != patches_.end());
+	int patch = best->second;
+
+	if (patch != currentPatch_) {
+		currentPatch_ = patch;
 		events.RegisterEvent(position, data->MakeKeyswitch(currentPatch_));
 	}
 }

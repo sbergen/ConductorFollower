@@ -53,6 +53,7 @@ void
 ScoreHelper::GetTrackEventsForBlock(unsigned track, Follower::BlockBuffer & events)
 {
 	assert(track < trackBuffers_.size());
+	assert(track < trackInstruments_.size());
 
 	auto scoreRange = timeHelper_->CurrentScoreTimeBlock();
 	auto ev = trackBuffers_[track].EventsBetween(scoreRange.first, scoreRange.second);

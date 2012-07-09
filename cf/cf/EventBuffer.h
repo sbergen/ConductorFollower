@@ -229,6 +229,7 @@ private: // Private functions
 
 	DataIterator ToDataIterator(TimestampIterator const & it) const
 	{
+		if (it == timestamps_.end()) { return data_.end(); }
 		typename TimestampBuffer::difference_type diff = it - timestamps_.begin();
 		return data_.begin() + diff;
 	}

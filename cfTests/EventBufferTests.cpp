@@ -180,6 +180,14 @@ BOOST_AUTO_TEST_CASE(EventsBetweenLower)
 	BOOST_CHECK_EQUAL(events.Size(), 0);
 }
 
+BOOST_AUTO_TEST_CASE(EventsBetweenInclusiveNoData)
+{
+	EventBuffer<int, double> buffer(3);
+
+	auto events = buffer.EventsBetweenInclusive(0.0, 0.0);
+	BOOST_CHECK_EQUAL(events.Size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE(EventsBetweenInclusiveEmpty)
 {
 	EventBuffer<int, double> buffer(3);

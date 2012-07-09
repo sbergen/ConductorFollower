@@ -21,15 +21,16 @@ struct distance
 BOOST_AUTO_TEST_CASE(TestNearestNeighbourEmpty)
 {
 	std::vector<int> v;
-	BOOST_CHECK_THROW(nearest_neighbour_linear(v.begin(), v.end(), 0, distance<int>()), std::runtime_error);
+	auto best = nearest_neighbour_linear(v.begin(), v.end(), 0, distance<int>());
+	BOOST_CHECK(best == v.end());
 }
 
 BOOST_AUTO_TEST_CASE(TestNearestNeighbourSingular)
 {
 	std::vector<int> v;
 	v.push_back(1);
-	int best = nearest_neighbour_linear(v.begin(), v.end(), 0, distance<int>());
-	BOOST_CHECK_EQUAL(best, 1);
+	auto best = nearest_neighbour_linear(v.begin(), v.end(), 0, distance<int>());
+	BOOST_CHECK_EQUAL(*best, 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestNearestNeighbourMatching)
@@ -39,8 +40,8 @@ BOOST_AUTO_TEST_CASE(TestNearestNeighbourMatching)
 	v.push_back(2);
 	v.push_back(30);
 	v.push_back(40);
-	int best = nearest_neighbour_linear(v.begin(), v.end(), 5, distance<int>());
-	BOOST_CHECK_EQUAL(best, 2);
+	auto best = nearest_neighbour_linear(v.begin(), v.end(), 5, distance<int>());
+	BOOST_CHECK_EQUAL(*best, 2);
 }
 
 BOOST_AUTO_TEST_CASE(TestNearestNeighbourNonMatching)
@@ -50,8 +51,8 @@ BOOST_AUTO_TEST_CASE(TestNearestNeighbourNonMatching)
 	v.push_back(2);
 	v.push_back(3);
 	v.push_back(4);
-	int best = nearest_neighbour_linear(v.begin(), v.end(), 2.8, distance<double>());
-	BOOST_CHECK_EQUAL(best, 3);
+	auto best = nearest_neighbour_linear(v.begin(), v.end(), 2.8, distance<double>());
+	BOOST_CHECK_EQUAL(*best, 3);
 }
 
 struct CustomStruct
@@ -77,8 +78,8 @@ BOOST_AUTO_TEST_CASE(TestNearestNeighbourCustomOp)
 	v.push_back(2);
 	v.push_back(3);
 	v.push_back(4);
-	CustomStruct best = nearest_neighbour_linear(v.begin(), v.end(), 3, CustomOp());
-	BOOST_CHECK_EQUAL(best.foo, 3);
+	auto best = nearest_neighbour_linear(v.begin(), v.end(), 3, CustomOp());
+	BOOST_CHECK_EQUAL(best->foo, 3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -11,6 +11,8 @@ namespace cf {
 template<typename ForwardIterator, typename T, typename Compare>
 ForwardIterator lower_bound_inclusive(ForwardIterator first, ForwardIterator last, T const & value, Compare compare)
 {
+	if (first == last) { return last; }
+
 	ForwardIterator it = std::lower_bound(first, last, value, compare);
 	
 	if (it == last) { return --it; } // All items are smaller, return last valid one
@@ -30,11 +32,9 @@ ForwardIterator lower_bound_inclusive(ForwardIterator first, ForwardIterator las
 // linear nearest neighbour search
 
 template<typename ForwardIterator, typename T, typename Distance>
-typename std::iterator_traits<ForwardIterator>::reference
-nearest_neighbour_linear(ForwardIterator first, ForwardIterator last, T const & value, Distance distance)
+ForwardIterator nearest_neighbour_linear(ForwardIterator first, ForwardIterator last, T const & value, Distance distance)
 {
-	// sanity checks
-	if (first == last) { throw std::runtime_error("empty range given to nearest_neighbour_linear"); }
+	if (first == last) { return last; }
 
 	// Init
 	ForwardIterator it = first;
@@ -50,7 +50,7 @@ nearest_neighbour_linear(ForwardIterator first, ForwardIterator last, T const & 
 		}
 	}
 
-	return *best;
+	return best;
 }
 
 } // namespace cf
