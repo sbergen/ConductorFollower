@@ -116,6 +116,7 @@
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
     <ClInclude Include="cf\geometry.h" />
+    <ClInclude Include="cf\globals.h" />
     <ClInclude Include="cf\Limited.h" />
     <ClInclude Include="cf\LockfreeThread.h" />
     <ClInclude Include="cf\Logger.h" />
@@ -129,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ButlerThread.cpp" />
+    <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\LockfreeThread.cpp" />
     <ClCompile Include="src\Logger.cpp" />
   </ItemGroup>

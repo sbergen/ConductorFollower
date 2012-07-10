@@ -4,7 +4,7 @@ namespace cf {
 namespace ScoreFollower {
 
 boost::atomic<int> Globals::refCount_(0);
-FileLogger * Globals::logger_(0);
+FileLogger * Globals::logger_(nullptr);
 
 void Globals::Ref()
 {
