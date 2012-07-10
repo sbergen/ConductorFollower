@@ -20,6 +20,7 @@ private:
 	class CallbackRef;
 
 	typedef std::list<Callback> CallbackList;
+	typedef CallbackList::const_iterator CallbackIterator;
 	typedef boost::unique_lock<boost::mutex> unique_lock;
 
 public:
@@ -31,7 +32,7 @@ public:
 
 	private:
 		friend class ButlerThread;
-		CallbackHandle(ButlerThread & parent, CallbackList::iterator & callback);
+		CallbackHandle(ButlerThread & parent, CallbackIterator const & callback);
 		boost::shared_ptr<CallbackRef> ref_;
 	};
 
@@ -42,7 +43,7 @@ public:
 	CallbackHandle AddCallback(Callback const & callback);
 
 private:
-	void RemoveCallback(CallbackList::iterator & callback);
+	void RemoveCallback(CallbackIterator const & callback);
 	void Loop();
 
 private:

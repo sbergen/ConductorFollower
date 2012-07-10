@@ -115,7 +115,12 @@ public:
 			boost::bind(&Logger::Commit, logger_));
 	}
 
-	~FileLogger() { logger_->Commit(); }
+	~FileLogger()
+	{
+		// Ensure proper destruction order
+		logger_->Commit();
+		callbackHandle_.Cancel();
+	}
 
 	void Log(LogItem const & item) { logger_->Log(item); }
 

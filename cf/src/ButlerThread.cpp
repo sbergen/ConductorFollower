@@ -8,17 +8,17 @@ class ButlerThread::CallbackRef
 {
 public:
 	~CallbackRef() { parent_.RemoveCallback(callbackIt_); }
-	CallbackRef(ButlerThread & parent, ButlerThread::CallbackList::iterator & callback)
+	CallbackRef(ButlerThread & parent, ButlerThread::CallbackIterator const & callback)
 		: parent_(parent)
 		, callbackIt_(callback)
 	{}
 
 private:
 	ButlerThread & parent_;
-	ButlerThread::CallbackList::iterator & callbackIt_;
+	ButlerThread::CallbackIterator const callbackIt_;
 };
 
-ButlerThread::CallbackHandle::CallbackHandle(ButlerThread & parent, CallbackList::iterator & callback)
+ButlerThread::CallbackHandle::CallbackHandle(ButlerThread & parent, CallbackIterator const & callback)
 	: ref_(boost::make_shared<CallbackRef>(parent, callback))
 {}
 
@@ -43,7 +43,7 @@ ButlerThread::AddCallback(Callback const & callback)
 }
 
 void
-ButlerThread::RemoveCallback(CallbackList::iterator & callback)
+ButlerThread::RemoveCallback(CallbackIterator const & callback)
 {
 	unique_lock lock(callbackMutex_);
 	callbacks_.erase(callback);

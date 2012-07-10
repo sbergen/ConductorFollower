@@ -21,7 +21,6 @@ void Globals::Unref()
 {
 	if (refCount_.fetch_sub(1) > 1) { return; }
 
-	LOG("Deinitializing!");
 	logger_.reset();
 	butler_.reset();
 }

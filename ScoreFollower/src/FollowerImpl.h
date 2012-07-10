@@ -37,6 +37,9 @@ namespace ScoreFollower {
 
 class FollowerImpl : public Follower
 {
+private: // Keep this at the very top to ensure it's destructed last
+	GlobalsRef globalsRef_;
+
 public:
 	FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
 	~FollowerImpl();
@@ -73,8 +76,6 @@ private:
 	typedef boost::unique_lock<boost::mutex> Lock;
 
 private:
-	GlobalsRef globalsRef_;
-
 	StatusRCU status_;
 	OptionsRCU options_;
 	FollowerState state_;
