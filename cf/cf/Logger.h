@@ -35,8 +35,7 @@ public:
 		args_[0] = Arg();
 	}
 
-	template<typename T>
-	LogItem(T const & fmt)
+	LogItem(char const * fmt)
 		: argIndex_(0)
 	{
 		for (int i = 0; i < MaxFmtLen; ++i) {
@@ -48,16 +47,6 @@ public:
 		}
 
 		throw std::invalid_argument("Too long format string given to Logger");
-	}
-
-	LogItem(std::string const & fmt)
-		: argIndex_(0)
-	{
-		assert (fmt.length() < MaxFmtLen);
-		for (int i = 0; i < fmt.length(); ++i) {
-			format_[i] = fmt[i];
-		}
-		format_[fmt.length()] = '\0';
 	}
 	
 	// The Boost.Format convention
