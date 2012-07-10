@@ -52,12 +52,17 @@ ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::Tra
 void
 ScoreHelper::GetTrackEventsForBlock(unsigned track, Follower::BlockBuffer & events)
 {
+	int instrument = track - 1;
+
 	assert(track < trackBuffers_.size());
-	assert(track < trackInstruments_.size());
+	assert(instrument >= 0);
+
+	// If this channel is not mapped, ignore it...
+	if (instrument >= trackInstruments_.size()) { return; }
 
 	auto scoreRange = timeHelper_->CurrentScoreTimeBlock();
 	auto ev = trackBuffers_[track].EventsBetween(scoreRange.first, scoreRange.second);
-	auto & switcher = trackInstruments_[track];
+	auto & switcher = trackInstruments_[instrument];
 
 	ev.ForEach(boost::bind(&ScoreHelper::CopyEventToBuffer, this, _1, _2, boost::ref(events), boost::ref(switcher)));
 }

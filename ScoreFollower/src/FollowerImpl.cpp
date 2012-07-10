@@ -158,42 +158,40 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 void
 FollowerImpl::CheckForConfigChange()
 {
-	static std::string midiFile;
 	static std::string instrumentFile;
 	static std::string scoreFile;
 
 	auto options = options_.read();
-	bool somethingChanged = options->LoadIfChanged<Options::MidiFile>(midiFile) |
-		options->LoadIfChanged<Options::InstrumentDefinitions>(instrumentFile) |
+	bool somethingChanged = options->LoadIfChanged<Options::InstrumentDefinitions>(instrumentFile) |
 		options->LoadIfChanged<Options::ScoreDefinition>(scoreFile);
 
-	if (somethingChanged && midiFile != "" && instrumentFile != "" && scoreFile != "")
+	if (somethingChanged && instrumentFile != "" && scoreFile != "")
 	{
-		CollectData(midiFile, instrumentFile, scoreFile);
+		CollectData(instrumentFile, scoreFile);
 	}
 }
 
 void
-FollowerImpl::CollectData(std::string const & midiFile,
-                          std::string const & instrumentFile,
-    				      std::string const & scoreFile)
+FollowerImpl::CollectData(std::string const & instrumentFile, std::string const & scoreFile)
 {
 	// TODO error handling
 
-	Lock lock(configMutex_);
-
-	// Score
-	scoreReader_->OpenFile(midiFile);
-	timeHelper_->ReadTempoTrack(scoreReader_->TempoTrack());
-	scoreHelper_->LearnScore(scoreReader_);
-	
-	// Instrument mappings
+	// Parse
 	Data::InstrumentParser instrumentParser;
 	instrumentParser.parse(instrumentFile);
 
 	Data::ScoreParser scoreParser;
 	scoreParser.parse(scoreFile);
+
+	// lock
+	Lock lock(configMutex_);
+
+	// Score
+	scoreReader_->OpenFile(scoreParser.data().midiFile);
+	timeHelper_->ReadTempoTrack(scoreReader_->TempoTrack());
+	scoreHelper_->LearnScore(scoreReader_);
 	
+	// Instrument mappings
 	scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
 
 	// Start listening to gestures

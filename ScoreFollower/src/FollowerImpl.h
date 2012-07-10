@@ -67,9 +67,7 @@ private:
 
 private: // Stuff related to butler thread
 	void CheckForConfigChange();
-	void CollectData(std::string const & midiFile,
-	                 std::string const & instrumentFile,
-					 std::string const & scoreFile);
+	void CollectData(std::string const & instrumentFile, std::string const & scoreFile);
 
 	ButlerThread::CallbackHandle configCallbackHandle_;
 
