@@ -3,6 +3,8 @@
 #include <boost/make_shared.hpp>
 
 #include "cf/globals.h"
+#include "Data/InstrumentParser.h"
+#include "Data/ScoreParser.h"
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
 #include "FeatureExtractor/Extractor.h"
@@ -170,19 +172,29 @@ FollowerImpl::CollectData(std::string const & midiFile,
                           std::string const & instrumentFile,
     				      std::string const & scoreFile)
 {
+	// TODO error handling
+
 	Lock lock(configMutex_);
 
+	// Score
 	scoreReader_->OpenFile(midiFile);
-
 	timeHelper_->ReadTempoTrack(scoreReader_->TempoTrack());
 	scoreHelper_->LearnScore(scoreReader_);
+	
+	// Instrument mappings
+	Data::InstrumentParser instrumentParser;
+	instrumentParser.parse(instrumentFile);
 
-	{
-		SetState(FollowerState::WaitingForCalibration);
-		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
-			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
-		assert(eventProvider_->StartProduction());
-	}
+	Data::ScoreParser scoreParser;
+	scoreParser.parse(scoreFile);
+	
+	scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
+
+	// Start listening to gestures
+	SetState(FollowerState::WaitingForCalibration);
+	startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
+		boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
+	assert(eventProvider_->StartProduction());
 }
 
 } // namespace ScoreFollower
