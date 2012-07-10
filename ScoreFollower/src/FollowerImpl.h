@@ -65,7 +65,7 @@ private:
 	typedef boost::unique_lock<boost::mutex> Lock;
 
 private:
-	GlobalsInitializer globalsInit_;
+	GlobalsRef globalsRef_;
 
 	StatusRCU status_;
 	OptionsRCU options_;

@@ -3,28 +3,29 @@
 namespace cf {
 namespace ScoreFollower {
 
-bool Globals::initialized_ = false;
-FileLogger * Globals::logger_ = 0;
+boost::atomic<int> Globals::refCount_(0);
+FileLogger * Globals::logger_(0);
 
-void Globals::Initialize()
+void Globals::Ref()
 {
-	if (initialized_) { return; }
-	logger_ = new FileLogger("ScoreFollower.log");
-	initialized_ = true;
+	if (refCount_.fetch_add(1) > 0) { return; }
 
+	logger_ = new FileLogger("ScoreFollower.log");
 	LOG("Initialized!");
 }
 
-void Globals::CleanUp()
+void Globals::Unref()
 {
-	if (!initialized_) { return; }
-	initialized_ = false;
+	if (refCount_.fetch_sub(1) > 1) { return; }
+
+	LOG("Deinitializing!");
 	delete logger_;
+	logger_ = nullptr;
 }
 
 FileLogger & Globals::Logger()
 {
-	assert(initialized_);
+	assert(logger_ != nullptr);
 	return *logger_;
 }
 

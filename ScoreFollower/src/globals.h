@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/atomic.hpp>
+
 #include "cf/Logger.h"
 
 #ifdef NDEBUG
@@ -14,24 +16,24 @@ namespace ScoreFollower {
 class Globals
 {
 private:
-	friend class GlobalsInitializer;
+	friend class GlobalsRef;
 
-	static void Initialize();
-	static void CleanUp();
+	static void Ref();
+	static void Unref();
 
 public:
 	static FileLogger & Logger();
 
 private:
-	static bool initialized_;
+	static boost::atomic<int> refCount_;
 	static FileLogger * logger_;
 };
 
-class GlobalsInitializer
+class GlobalsRef
 {
 public:
-	GlobalsInitializer() { Globals::Initialize(); }
-	~GlobalsInitializer() { Globals::CleanUp(); }
+	GlobalsRef() { Globals::Ref(); }
+	~GlobalsRef() { Globals::Unref(); }
 };
 
 } // namespace ScoreFollower
