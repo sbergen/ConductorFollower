@@ -101,27 +101,29 @@ private:
 	Buffer buffer_;
 };
 
-// A logger that logs to a file and owns its own butler thread
+// A logger that logs to a file, needs a butler thread
 class FileLogger
 {
 public:
-	FileLogger(std::string const & filename)
-		: butler_(milliseconds_t(100))
+	FileLogger(std::string const & filename, boost::shared_ptr<ButlerThread> butler)
+		: butler_(butler)
 		, stream_(filename.c_str(), std::ios_base::out | std::ios_base::trunc)
 	{
 		assert(!stream_.fail());
 		logger_ = boost::make_shared<Logger>(stream_);
-		butler_.AddCallback(boost::bind(&Logger::Commit, logger_.get()));
+		callbackHandle_ = butler_->AddCallback(
+			boost::bind(&Logger::Commit, logger_));
 	}
 
-	~FileLogger() {  }
+	~FileLogger() { logger_->Commit(); }
 
 	void Log(LogItem const & item) { logger_->Log(item); }
 
 private:
-	ButlerThread butler_;
+	boost::shared_ptr<ButlerThread> butler_;
 	std::ofstream stream_;
 	boost::shared_ptr<Logger> logger_;
+	ButlerThread::CallbackHandle callbackHandle_;
 };
 
 

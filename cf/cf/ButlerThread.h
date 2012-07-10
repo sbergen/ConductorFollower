@@ -16,21 +16,39 @@ class ButlerThread : public boost::noncopyable
 public:
 	typedef boost::function<void()> Callback;
 
+private:
+	class CallbackRef;
+
+	typedef std::list<Callback> CallbackList;
+	typedef boost::unique_lock<boost::mutex> unique_lock;
+
+public:
+	class CallbackHandle
+	{
+	public:
+		CallbackHandle() {}
+		void Cancel() { ref_.reset(); }
+
+	private:
+		friend class ButlerThread;
+		CallbackHandle(ButlerThread & parent, CallbackList::iterator & callback);
+		boost::shared_ptr<CallbackRef> ref_;
+	};
+
 public:
 	ButlerThread(milliseconds_t runInterval);
 	~ButlerThread();
 
-	void AddCallback(Callback const & callback);
+	CallbackHandle AddCallback(Callback const & callback);
 
 private:
+	void RemoveCallback(CallbackList::iterator & callback);
 	void Loop();
 
 private:
-	typedef boost::unique_lock<boost::mutex> unique_lock;
-
 	milliseconds_t runInterval_;
 	boost::mutex callbackMutex_;
-	std::list<Callback> callbacks_;
+	CallbackList callbacks_;
 	boost::shared_ptr<boost::thread> thread_;
 };
 

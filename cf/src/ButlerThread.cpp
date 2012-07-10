@@ -4,6 +4,24 @@
 
 namespace cf {
 
+class ButlerThread::CallbackRef
+{
+public:
+	~CallbackRef() { parent_.RemoveCallback(callbackIt_); }
+	CallbackRef(ButlerThread & parent, ButlerThread::CallbackList::iterator & callback)
+		: parent_(parent)
+		, callbackIt_(callback)
+	{}
+
+private:
+	ButlerThread & parent_;
+	ButlerThread::CallbackList::iterator & callbackIt_;
+};
+
+ButlerThread::CallbackHandle::CallbackHandle(ButlerThread & parent, CallbackList::iterator & callback)
+	: ref_(boost::make_shared<CallbackRef>(parent, callback))
+{}
+
 ButlerThread::ButlerThread(milliseconds_t runInterval)
 	: runInterval_(runInterval)
 {
@@ -16,10 +34,19 @@ ButlerThread::~ButlerThread()
 	thread_->join();
 }
 
-void
+ButlerThread::CallbackHandle
 ButlerThread::AddCallback(Callback const & callback)
 {
-	callbacks_.push_back(callback);
+	unique_lock lock(callbackMutex_);
+	auto it = callbacks_.insert(callbacks_.end(), callback);
+	return CallbackHandle(*this, it);
+}
+
+void
+ButlerThread::RemoveCallback(CallbackList::iterator & callback)
+{
+	unique_lock lock(callbackMutex_);
+	callbacks_.erase(callback);
 }
 
 void
