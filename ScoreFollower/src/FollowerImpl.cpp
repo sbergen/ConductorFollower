@@ -29,8 +29,8 @@ Follower::Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<Scor
 FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader)
 	: status_(boost::make_shared<Status::FollowerStatus>())
 	, options_(boost::make_shared<Options::FollowerOptions>())
-	, scoreReader_(scoreReader)
 	, startRollingTime_(real_time_t::max())
+	, scoreReader_(scoreReader)
 {
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
 	eventProvider_= EventProvider::Create();
@@ -69,6 +69,10 @@ FollowerImpl::StartNewBlock()
 		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
 		currentBlock.first);
 
+	// Lock config before using timeHelper
+	TryLock lock(configMutex_);
+	if (!lock.owns_lock()) { return 0; }
+
 	// Check state
 	if (State() == FollowerState::WaitingForStart && currentBlock.first >= startRollingTime_) {
 		SetState(FollowerState::Rolling);
@@ -80,7 +84,6 @@ FollowerImpl::StartNewBlock()
 
 	// If rolling, fix score range
 	timeHelper_->FixScoreRange();
-
 	return scoreReader_->TrackCount();
 }
 
@@ -88,8 +91,12 @@ void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 {
 	events.Clear();
+	
 	if (State() != FollowerState::Rolling) { return; }
 
+	// Lock config and get data
+	TryLock lock(configMutex_);
+	if (!lock.owns_lock()) { return; }
 	scoreHelper_->GetTrackEventsForBlock(track, events);
 }
 

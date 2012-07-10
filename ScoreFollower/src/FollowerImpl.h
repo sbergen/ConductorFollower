@@ -4,6 +4,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/locks.hpp>
 
 #include "cf/Logger.h"
 
@@ -58,26 +60,26 @@ private:
 	void UpdateMagnitude(real_time_t const & timestamp);
 
 private:
+	typedef boost::signals2::connection      SignalConnection;
+	typedef boost::mutex::scoped_try_lock    TryLock;
+	typedef boost::unique_lock<boost::mutex> Lock;
+
+private:
 	GlobalsInitializer globalsInit_;
 
 	StatusRCU status_;
 	OptionsRCU options_;
 	FollowerState state_;
 
-	// Created via shared_ptr
+	boost::mutex configMutex_;
+	real_time_t startRollingTime_;
+
 	boost::shared_ptr<ScoreReader> scoreReader_;
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
 	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
-
-	// Can't be constructed in init list
 	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
-	
-	boost::shared_ptr<ScoreHelper> scoreHelper_;
-
-	real_time_t startRollingTime_;
-
-	typedef boost::signals2::connection SignalConnection;
+	boost::shared_ptr<ScoreHelper> scoreHelper_;	
 
 	SignalConnection startGestureConnection_;
 	SignalConnection beatConnection_;

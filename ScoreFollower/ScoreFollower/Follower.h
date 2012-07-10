@@ -24,16 +24,19 @@ public:
 	// Container for fetching events for each block
 	typedef EventBuffer<ScoreEventPtr, unsigned> BlockBuffer;
 
-public:
+	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
+	typedef cf::RTReadRCU<Options::FollowerOptions> OptionsRCU;
+
+public: // Not real time safe functions
+
 	// Implementation is hidde behind the factory function
 	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
 	virtual ~Follower() {}
 
-	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
-	typedef cf::RTReadRCU<Options::FollowerOptions> OptionsRCU;
-
 	virtual StatusRCU & status() = 0;
 	virtual OptionsRCU & options() = 0;
+
+public: // Real time safe functions
 
 	// Start new audio block (blocksize defined in ctor)
 	// returns number of tracks that should be read
