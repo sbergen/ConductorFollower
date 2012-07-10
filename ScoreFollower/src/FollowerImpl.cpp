@@ -158,30 +158,29 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 void
 FollowerImpl::CheckForConfigChange()
 {
-	static std::string instrumentFile;
 	static std::string scoreFile;
 
 	auto options = options_.read();
-	bool somethingChanged = options->LoadIfChanged<Options::InstrumentDefinitions>(instrumentFile) |
-		options->LoadIfChanged<Options::ScoreDefinition>(scoreFile);
+	bool somethingChanged = options->LoadIfChanged<Options::ScoreDefinition>(scoreFile);
 
-	if (somethingChanged && instrumentFile != "" && scoreFile != "")
+	if (somethingChanged && scoreFile != "")
 	{
-		CollectData(instrumentFile, scoreFile);
+		CollectData(scoreFile);
 	}
 }
 
 void
-FollowerImpl::CollectData(std::string const & instrumentFile, std::string const & scoreFile)
+FollowerImpl::CollectData(std::string const & scoreFile)
 {
 	// TODO error handling
 
-	// Parse
-	Data::InstrumentParser instrumentParser;
-	instrumentParser.parse(instrumentFile);
-
+	// Parse score
 	Data::ScoreParser scoreParser;
 	scoreParser.parse(scoreFile);
+
+	// Parse instruments
+	Data::InstrumentParser instrumentParser;
+	instrumentParser.parse(scoreParser.data().instrumentFile);
 
 	// lock
 	Lock lock(configMutex_);

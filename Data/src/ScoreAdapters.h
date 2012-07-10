@@ -14,5 +14,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Score,
     (std::string, name)
 	(std::string, midiFile)
+	(std::string, instrumentFile)
 	(cf::Data::TrackList, tracks)
 )

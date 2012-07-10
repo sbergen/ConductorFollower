@@ -12,7 +12,6 @@ CF_STATUS_GROUP
 (
 FollowerOptions,
 	((ScoreDefinition, "Score definition file", FileType))
-	((InstrumentDefinitions, "Instrument definitions file", FileType))
 )
 
 } // namespace Options

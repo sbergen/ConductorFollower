@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 		<< "score { "
 			<< "name: \"Never gonna give you up\","
 			<< "midi_file: \"/home/user/nggyu.mid\","
+			<< "instrument_file: \"/home/user/instr.def\","
 			<< "tracks: ["
 				<< "track {"
 					<< "name: \"piano\","
@@ -42,6 +43,7 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	// Score
 	BOOST_CHECK_EQUAL(score.name, "Never gonna give you up");
 	BOOST_CHECK_EQUAL(score.midiFile, "/home/user/nggyu.mid");
+	BOOST_CHECK_EQUAL(score.instrumentFile, "/home/user/instr.def");
 	
 	// Track
 	BOOST_REQUIRE_GT(score.tracks.size(), 0);
