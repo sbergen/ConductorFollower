@@ -8,23 +8,29 @@ using namespace cf::MotionTracker;
 
 BOOST_AUTO_TEST_CASE(Stati)
 {
-	BOOST_CHECK(CheckXnStatus(XN_STATUS_OK, "Should not fail"));
-	BOOST_CHECK(!CheckXnStatus(XN_STATUS_ERROR, "Failing on purpose"));
+	std::ostream nullStream(nullptr);
+	OpenNIUtils utils(nullStream);
+
+	BOOST_CHECK(CheckXnStatus(utils, XN_STATUS_OK, "Should not fail"));
+	BOOST_CHECK(!CheckXnStatus(utils, XN_STATUS_ERROR, "Failing on purpose"));
 }
 
 BOOST_AUTO_TEST_CASE(ErrorCatching)
 {
-	OpenNIUtils::ResetErrors();
-	BOOST_CHECK(!OpenNIUtils::ErrorsOccurred());
+	std::ostream nullStream(nullptr);
+	OpenNIUtils utils(nullStream);
 
-	CheckXnStatus(XN_STATUS_ERROR, "Setting error state on purpose");
-	BOOST_CHECK(OpenNIUtils::ErrorsOccurred());
+	utils.ResetErrors();
+	BOOST_CHECK(!utils.ErrorsOccurred());
 
-	CheckXnStatus(XN_STATUS_OK, "ok status");
-	BOOST_CHECK(OpenNIUtils::ErrorsOccurred());
+	CheckXnStatus(utils, XN_STATUS_ERROR, "Setting error state on purpose");
+	BOOST_CHECK(utils.ErrorsOccurred());
 
-	OpenNIUtils::ResetErrors();
-	BOOST_CHECK(!OpenNIUtils::ErrorsOccurred());
+	CheckXnStatus(utils, XN_STATUS_OK, "ok status");
+	BOOST_CHECK(utils.ErrorsOccurred());
+
+	utils.ResetErrors();
+	BOOST_CHECK(!utils.ErrorsOccurred());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

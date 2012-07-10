@@ -9,6 +9,7 @@
 #include "Gestures.h"
 #include "HandTracker.h"
 #include "HandObserver.h"
+#include "OpenNIUtils.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -93,6 +94,8 @@ private: // Hand request stuff
 	bool ProcessNextHandRequest();
 
 private: // OpenNI stuff
+
+	OpenNIUtils utils_;
 
 	xn::Context context_;
 

@@ -5,12 +5,12 @@
 #include <boost/format.hpp>
 
 #include "CallbackWrappers.h"
-#include "OpenNIUtils.h"
 
 namespace cf {
 namespace MotionTracker {
 
 OpenNIHandTracker::OpenNIHandTracker()
+	: utils_(std::cerr)
 {
 }
 
@@ -24,18 +24,18 @@ OpenNIHandTracker::~OpenNIHandTracker()
 bool
 OpenNIHandTracker::Init()
 {
-	OpenNIUtils::ResetErrors();
+	utils_.ResetErrors();
 
 	XnStatus s = context_.Init();
-	CheckXnStatus(s, "Context init");
+	CheckXnStatus(utils_, s, "Context init");
 
 	InitNodes();
 	InitCallbacks();
 
 	s = context_.StartGeneratingAll();
-	CheckXnStatus(s, "Start generating");
+	CheckXnStatus(utils_, s, "Start generating");
 
-	return !OpenNIUtils::ErrorsOccurred();
+	return !utils_.ErrorsOccurred();
 }
 
 bool
@@ -56,17 +56,17 @@ bool
 OpenNIHandTracker::WaitForData()
 {
 	XnStatus s = context_.WaitAndUpdateAll();
-	return CheckXnStatus(s, "WaitAndUpdateAll");
+	return CheckXnStatus(utils_, s, "WaitAndUpdateAll");
 }
 
 void
 OpenNIHandTracker::InitNodes()
 {
 	XnStatus s = gestureGenerator_.Create(context_);
-	CheckXnStatus(s, "Create gesture generator");
+	CheckXnStatus(utils_, s, "Create gesture generator");
 
 	s = handsGenerator_.Create(context_);
-	CheckXnStatus(s, "Create hands generator");
+	CheckXnStatus(utils_, s, "Create hands generator");
 }
 
 void
@@ -76,14 +76,14 @@ OpenNIHandTracker::InitCallbacks()
 		&CallbackWrapper<xn::GestureGenerator&, const XnChar*, const XnPoint3D*, const XnPoint3D*, OpenNIHandTracker, &OpenNIHandTracker::GestureRecognizedCallback>,
 		&CallbackWrapper<xn::GestureGenerator&, const XnChar*, const XnPoint3D*, XnFloat, OpenNIHandTracker, &OpenNIHandTracker::GestureProcessCallback>,
 		this, gestureCallbackHandle_);
-	CheckXnStatus(s, "Register gesture callbacks");
+	CheckXnStatus(utils_, s, "Register gesture callbacks");
 
 	s = handsGenerator_.RegisterHandCallbacks(
 		&CallbackWrapper<xn::HandsGenerator&, XnUserID, const XnPoint3D*, XnFloat, OpenNIHandTracker, &OpenNIHandTracker::HandCreateCallback>,
 		&CallbackWrapper<xn::HandsGenerator&, XnUserID, const XnPoint3D*, XnFloat, OpenNIHandTracker, &OpenNIHandTracker::HandUpdateCallback>,
 		&CallbackWrapper<xn::HandsGenerator&, XnUserID, XnFloat, OpenNIHandTracker, &OpenNIHandTracker::HandDestroyCallback>,
 		this, handsCallbackHandle_);
-	CheckXnStatus(s, "Register hand callbacks");
+	CheckXnStatus(utils_, s, "Register hand callbacks");
 }
 
 void
@@ -96,10 +96,10 @@ OpenNIHandTracker::GestureRecognizedCallback(
 	OpenNIHandRequest & request = handRequestQueue_.front();
 
 	XnStatus s = gestureGenerator_.RemoveGesture(request.gestureName);
-	CheckXnStatus(s, "Remove gesture tracking");
+	CheckXnStatus(utils_, s, "Remove gesture tracking");
 
 	s = handsGenerator_.StartTracking(*endPosition);
-	CheckXnStatus(s, "Start hand tracking");
+	CheckXnStatus(utils_, s, "Start hand tracking");
 }
 
 void
@@ -178,7 +178,7 @@ OpenNIHandTracker::ProcessNextHandRequest()
 		
 	request.isPending = true;
 	XnStatus s = gestureGenerator_.AddGesture(request.gestureName, 0);
-	return CheckXnStatus(s, "Start tracking gesture");
+	return CheckXnStatus(utils_, s, "Start tracking gesture");
 }
 
 } // namespace MotionTracker

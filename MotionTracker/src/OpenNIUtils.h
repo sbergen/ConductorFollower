@@ -12,26 +12,22 @@
 namespace cf {
 namespace MotionTracker {
 
-#define CheckXnStatus(status, desc) OpenNIUtils::CheckStatus(status, desc, __FILE__, __LINE__)
+#define CheckXnStatus(obj, status, desc) obj.CheckStatus(status, desc, __FILE__, __LINE__)
 
 class OpenNIUtils : public boost::noncopyable
 {
 public:
-	static bool CheckStatus(XnStatus status, std::string const & taskDescription, std::string const & file, int line);
+	OpenNIUtils(std::ostream & errorStream) : errorStream_(errorStream) {}
 
-	static void SetErrorStream(std::ostream & stream) { ErrorStream().store(&stream); }
+	bool CheckStatus(XnStatus status, std::string const & taskDescription, std::string const & file, int line);
 
-	static void ResetErrors() { errorsOccurred_ = false; }
-	static bool ErrorsOccurred() { return errorsOccurred_; }
+	void ResetErrors() { errorsOccurred_ = false; }
+	bool ErrorsOccurred() { return errorsOccurred_; }
 
 private:
-	static boost::atomic<std::ostream*> & ErrorStream()
-	{
-		static boost::atomic<std::ostream*> stream(&std::cerr);
-		return stream;
-	}
 
-	static bool errorsOccurred_;
+	std::ostream & errorStream_;
+	bool errorsOccurred_;
 };
 
 } // namespace MotionTacker
