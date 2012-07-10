@@ -20,7 +20,7 @@ namespace Status {
 typedef BooleanStatusItem<cf::Status::Information, false> BooleanTypeFalse;
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 1, 0, 2> SpeedType;
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 150, 50, 600> MagnitudeType;
-typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, FollowerState, FollowerState::WaitingForCalibration> StateType;
+typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, FollowerState, FollowerState::Stopped> StateType;
 
 CF_STATUS_GROUP
 (

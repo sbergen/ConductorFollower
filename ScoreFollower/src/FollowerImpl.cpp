@@ -31,29 +31,20 @@ FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize, boost::share
 	, startRollingTime_(real_time_t::max())
 	, scoreReader_(scoreReader)
 {
+	// Construct memebers
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
 	eventProvider_= EventProvider::Create();
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
 	featureExtractor_ = Extractor::Create();
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_);
+
+	// Hook up to butler thread
+	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
+		boost::bind(&FollowerImpl::CheckForConfigChange, this));
 }
 
 FollowerImpl::~FollowerImpl()
 {
-}
-
-void
-FollowerImpl::CollectData(boost::shared_ptr<ScoreReader> scoreReader)
-{
-	timeHelper_->ReadTempoTrack(scoreReader->TempoTrack());
-	scoreHelper_->LearnScore(scoreReader);
-
-	{ // TODO handle state better
-		SetState(FollowerState::WaitingForCalibration);
-		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
-			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
-		assert(eventProvider_->StartProduction());
-	}
 }
 
 unsigned
@@ -154,6 +145,44 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 	coord_t magnitude = geometry::abs(distance);
 	status_.write()->SetValue<Status::MagnitudeOfMovement>(magnitude);
 	scoreHelper_->SetVelocityFromMotion(magnitude / 600);
+}
+
+void
+FollowerImpl::CheckForConfigChange()
+{
+	static std::string midiFile;
+	static std::string instrumentFile;
+	static std::string scoreFile;
+
+	auto options = options_.read();
+	bool somethingChanged = options->LoadIfChanged<Options::MidiFile>(midiFile) |
+		options->LoadIfChanged<Options::InstrumentDefinitions>(instrumentFile) |
+		options->LoadIfChanged<Options::ScoreDefinition>(scoreFile);
+
+	if (somethingChanged && midiFile != "" && instrumentFile != "" && scoreFile != "")
+	{
+		CollectData(midiFile, instrumentFile, scoreFile);
+	}
+}
+
+void
+FollowerImpl::CollectData(std::string const & midiFile,
+                          std::string const & instrumentFile,
+    				      std::string const & scoreFile)
+{
+	Lock lock(configMutex_);
+
+	scoreReader_->OpenFile(midiFile);
+
+	timeHelper_->ReadTempoTrack(scoreReader_->TempoTrack());
+	scoreHelper_->LearnScore(scoreReader_);
+
+	{
+		SetState(FollowerState::WaitingForCalibration);
+		startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
+			boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
+		assert(eventProvider_->StartProduction());
+	}
 }
 
 } // namespace ScoreFollower

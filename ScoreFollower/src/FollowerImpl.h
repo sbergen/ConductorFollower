@@ -8,6 +8,7 @@
 #include <boost/thread/locks.hpp>
 
 #include "cf/globals.h"
+#include "cf/ButlerThread.h"
 
 #include "MotionTracker/Event.h"
 #include "FeatureExtractor/Extractor.h"
@@ -44,7 +45,7 @@ public: // Follower implementation
 	StatusRCU & status() { return status_; }
 	OptionsRCU & options() { return options_; }
 
-	void CollectData(boost::shared_ptr<ScoreReader> scoreReader);
+	// These are called from RT context
 	unsigned StartNewBlock();
 	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
@@ -57,6 +58,14 @@ private:
 
 	void HandleNewPosition(real_time_t const & timestamp);
 	void UpdateMagnitude(real_time_t const & timestamp);
+
+private: // Stuff related to butler thread
+	void CheckForConfigChange();
+	void CollectData(std::string const & midiFile,
+	                 std::string const & instrumentFile,
+					 std::string const & scoreFile);
+
+	ButlerThread::CallbackHandle configCallbackHandle_;
 
 private:
 	typedef boost::signals2::connection      SignalConnection;
