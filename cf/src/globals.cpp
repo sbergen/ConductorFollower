@@ -1,7 +1,6 @@
-#include "globals.h"
+#include "cf/globals.h"
 
 namespace cf {
-namespace ScoreFollower {
 
 boost::atomic<int> Globals::refCount_(0);
 FileLogger * Globals::logger_(nullptr);
@@ -29,5 +28,4 @@ FileLogger & Globals::Logger()
 	return *logger_;
 }
 
-} // namespace ScoreFollower
 } // namespace cf

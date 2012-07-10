@@ -1,8 +1,8 @@
 #include "BeatClassifier.h"
 
-#include "globals.h"
-
 #include <boost/math/distributions/normal.hpp>
+
+#include "cf/globals.h"
 
 namespace cf {
 namespace ScoreFollower {

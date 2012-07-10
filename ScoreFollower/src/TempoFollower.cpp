@@ -1,10 +1,11 @@
 #include "TempoFollower.h"
 
+#include "cf/globals.h"
+
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
 
 #include "BeatClassifier.h"
-#include "globals.h"
 #include "TimeWarper.h"
 
 namespace cf {

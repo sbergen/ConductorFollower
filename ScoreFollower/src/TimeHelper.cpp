@@ -1,9 +1,9 @@
 #include "TimeHelper.h"
 
+#include "cf/globals.h"
+
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
-
-#include "globals.h"
 
 namespace cf {
 namespace ScoreFollower {

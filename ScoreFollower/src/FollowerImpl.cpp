@@ -2,9 +2,9 @@
 
 #include <boost/make_shared.hpp>
 
+#include "cf/globals.h"
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
-
 #include "FeatureExtractor/Extractor.h"
 
 #include "ScoreFollower/ScoreEvent.h"
@@ -12,7 +12,6 @@
 #include "TimeWarper.h"
 #include "TempoFollower.h"
 #include "AudioBlockTimeManager.h"
-#include "globals.h"
 
 using namespace cf::FeatureExtractor;
 using namespace cf::MotionTracker;

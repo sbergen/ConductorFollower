@@ -1,8 +1,8 @@
 #include "TempoMap.h"
 
-#include "ScoreFollower/TrackReader.h"
+#include "cf/globals.h"
 
-#include "globals.h"
+#include "ScoreFollower/TrackReader.h"
 
 namespace cf {
 namespace ScoreFollower {

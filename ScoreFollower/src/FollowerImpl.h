@@ -7,7 +7,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>
 
-#include "cf/Logger.h"
+#include "cf/globals.h"
 
 #include "MotionTracker/Event.h"
 #include "FeatureExtractor/Extractor.h"
@@ -20,7 +20,6 @@
 #include "ScoreFollower/ScoreReader.h"
 
 #include "AudioBlockTimeManager.h"
-#include "globals.h"
 #include "ScoreHelper.h"
 #include "TimeHelper.h"
 #include "TimeWarper.h"

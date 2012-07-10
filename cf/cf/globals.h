@@ -11,7 +11,6 @@
 #endif
 
 namespace cf {
-namespace ScoreFollower {
 
 class Globals
 {
@@ -36,5 +35,4 @@ public:
 	~GlobalsRef() { Globals::Unref(); }
 };
 
-} // namespace ScoreFollower
 } // namespace cf
