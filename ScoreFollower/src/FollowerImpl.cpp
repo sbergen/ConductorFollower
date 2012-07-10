@@ -22,19 +22,19 @@ namespace cf {
 namespace ScoreFollower {
 
 boost::shared_ptr<Follower>
-Follower::Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader)
+Follower::Create(boost::shared_ptr<ScoreReader> scoreReader)
 {
-	return boost::make_shared<FollowerImpl>(samplerate, blockSize, scoreReader);
+	return boost::make_shared<FollowerImpl>(scoreReader);
 }
 
-FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader)
+FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	: status_(boost::make_shared<Status::FollowerStatus>())
 	, options_(boost::make_shared<Options::FollowerOptions>())
 	, startRollingTime_(real_time_t::max())
 	, scoreReader_(scoreReader)
 {
 	// Construct memebers
-	timeHelper_ = boost::make_shared<TimeHelper>(*this, samplerate, blockSize);
+	timeHelper_ = boost::make_shared<TimeHelper>(*this);
 	eventProvider_= EventProvider::Create();
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
 	featureExtractor_ = Extractor::Create();
@@ -47,6 +47,12 @@ FollowerImpl::FollowerImpl(unsigned samplerate, unsigned blockSize, boost::share
 
 FollowerImpl::~FollowerImpl()
 {
+}
+
+void
+FollowerImpl::SetBlockParameters(unsigned samplerate, unsigned blockSize)
+{
+	timeHelper_->SetBlockParameters(samplerate, blockSize);
 }
 
 unsigned

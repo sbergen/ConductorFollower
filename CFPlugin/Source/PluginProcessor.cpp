@@ -8,8 +8,14 @@
   ==============================================================================
 */
 
-#include <boost/make_shared.hpp>
+#include <sstream>
 
+#include <boost/make_shared.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+
+#include "cf/serialization.h"
 #include "ScoreFollower/TimeUtils.h"
 
 #include "PluginProcessor.h"
@@ -26,6 +32,7 @@ CfpluginAudioProcessor::CfpluginAudioProcessor()
 	, running_(false)
 	, eventBuffer_(100)
 {
+	follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
 }
 
 CfpluginAudioProcessor::~CfpluginAudioProcessor()
@@ -128,7 +135,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
 	samplesPerBlock_ = samplesPerBlock;
 
-	follower_ = ScoreFollower::Create(sampleRate, samplesPerBlock, boost::make_shared<MidiReader>());
+	follower_->SetBlockParameters(sampleRate, samplesPerBlock);
 
 	// Lets see...
 	shouldRun.store(true);
@@ -210,15 +217,24 @@ AudioProcessorEditor* CfpluginAudioProcessor::createEditor()
 //==============================================================================
 void CfpluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	auto options = follower_->options().read();
+
+	std::ostringstream ss;
+    boost::archive::text_oarchive oa(ss);
+	oa << *options;
+
+	std::string str = ss.str();
+	destData.append(str.data(), str.length());
 }
 
 void CfpluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::string str(static_cast<const char *>(data), sizeInBytes);
+	std::istringstream ss(str);
+	boost::archive::text_iarchive ia(ss);
+
+	auto writer = follower_->options().writer();
+	ia >> *writer;
 }
 
 //==============================================================================

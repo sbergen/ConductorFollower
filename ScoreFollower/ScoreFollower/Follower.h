@@ -30,11 +30,13 @@ public:
 public: // Not real time safe functions
 
 	// Implementation is hidde behind the factory function
-	static boost::shared_ptr<Follower> Create(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
+	static boost::shared_ptr<Follower> Create(boost::shared_ptr<ScoreReader> scoreReader);
 	virtual ~Follower() {}
 
 	virtual StatusRCU & status() = 0;
 	virtual OptionsRCU & options() = 0;
+
+	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 
 public: // Real time safe functions
 

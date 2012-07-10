@@ -66,6 +66,7 @@ public:
 			: writer_(boost::make_shared<ScopedRCUWriter>(parent, data)) {}
 
 		T * operator->() const { return writer_->data_.get(); }
+		T & operator* () const { return *writer_->data_; }
 
 	private:
 		boost::shared_ptr<ScopedRCUWriter> writer_;

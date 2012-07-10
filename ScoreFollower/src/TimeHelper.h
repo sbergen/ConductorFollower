@@ -21,8 +21,9 @@ public:
 	typedef std::pair<real_time_t, real_time_t> RealTimeBlock;
 
 public:
-	TimeHelper(Follower & parent, unsigned samplerate, unsigned blockSize);
+	TimeHelper(Follower & parent);
 	
+	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 	void ReadTempoTrack(TempoReaderPtr reader) { tempoFollower_.ReadTempoTrack(reader); }
 
 	// These need to be clled in this order!
@@ -39,7 +40,7 @@ public:
 private:
 	Follower & parent_;
 
-	AudioBlockTimeManager timeManager_;
+	boost::shared_ptr<AudioBlockTimeManager> timeManager_;
 	TimeWarper timeWarper_;
 	TempoFollower tempoFollower_;
 

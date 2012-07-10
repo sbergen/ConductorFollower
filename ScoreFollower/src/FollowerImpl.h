@@ -41,12 +41,15 @@ private: // Keep this at the very top to ensure it's destructed last
 	GlobalsRef globalsRef_;
 
 public:
-	FollowerImpl(unsigned samplerate, unsigned blockSize, boost::shared_ptr<ScoreReader> scoreReader);
+	FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader);
 	~FollowerImpl();
 
 public: // Follower implementation
 	StatusRCU & status() { return status_; }
 	OptionsRCU & options() { return options_; }
+
+	// Called from non-rt context
+	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 
 	// These are called from RT context
 	unsigned StartNewBlock();

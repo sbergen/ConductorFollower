@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/serialization/access.hpp>
+
 namespace cf {
 
 template<typename ValueType>
@@ -38,6 +40,18 @@ public:
 private:
 	mutable bool changed_;
 	ValueType value_;
+
+private: // Serialization
+	friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /*version*/)
+    {
+        ar & value_;
+		if (Archive::is_loading::value) {
+			changed_ = true;
+		}
+    }
 };
 
 } // namespace cf

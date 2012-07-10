@@ -8,18 +8,22 @@
 namespace cf {
 namespace ScoreFollower {
 
-TimeHelper::TimeHelper(Follower & parent, unsigned samplerate, unsigned blockSize)
+TimeHelper::TimeHelper(Follower & parent)
 	: parent_(parent)
-	, timeManager_(samplerate, blockSize)
 	, tempoFollower_(timeWarper_, parent) 
 {
+}
 
+void
+TimeHelper::SetBlockParameters(unsigned samplerate, unsigned blockSize)
+{
+	timeManager_ = boost::make_shared<AudioBlockTimeManager>(samplerate, blockSize);
 }
 
 void
 TimeHelper::StartNewBlock()
 {
-	rtRange_ = timeManager_.GetRangeForNow();
+	rtRange_ = timeManager_->GetRangeForNow();
 }
 
 void
@@ -50,23 +54,23 @@ TimeHelper::FixScoreRange()
 void
 TimeHelper::RegisterBeat(real_time_t const & time)
 {
-	assert(time < timeManager_.CurrentBlockStart());
+	assert(time < timeManager_->CurrentBlockStart());
 	tempoFollower_.RegisterBeat(time);
 }
 
 unsigned
 TimeHelper::ScoreTimeToFrameOffset(score_time_t const & time) const
 {
-	real_time_t const & ref = timeManager_.CurrentBlockStart();
+	real_time_t const & ref = timeManager_->CurrentBlockStart();
 	real_time_t realTime = timeWarper_.InverseWarpTimestamp(time, ref);
 
 	// There are rounding errors sometimes, so allow 10us of "jitter" here
 	// This is perfectly acceptable :)
 	time::limitRange(realTime,
-		timeManager_.CurrentBlockStart(), timeManager_.CurrentBlockEnd(),
+		timeManager_->CurrentBlockStart(), timeManager_->CurrentBlockEnd(),
 		boost::chrono::microseconds(10));
 
-	return timeManager_.ToSampleOffset(realTime);
+	return timeManager_->ToSampleOffset(realTime);
 }
 
 } // namespace ScoreFollower

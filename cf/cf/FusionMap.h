@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/fusion/include/map.hpp>
+#include <boost/serialization/access.hpp>
 
 #include "cf/FusionMapMacros.h"
 
@@ -11,6 +12,8 @@
 	{ CF_FUSION_MAP_transformed(_seq) };
 
 namespace cf {
+
+template<typename T> class PairArchiver;
 
 template<typename MapType>
 class FusionMapBase
@@ -43,6 +46,15 @@ protected:
 
 private:
 	MapType map_;
+
+private: // Serialization
+	friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /*version*/)
+    {
+        boost::fusion::for_each(map_, PairArchiver<Archive>(ar));
+    }
 };
 
 } // namespace cf

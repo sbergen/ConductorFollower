@@ -65,6 +65,9 @@
     <ClInclude Include="cf\globals.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\serialization.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LockfreeThread.cpp">
