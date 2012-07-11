@@ -62,6 +62,9 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.5);
 
 	speed_ = phaseSpeed;
+
+	// TODO limit better
+	if (speed_ > 2.0) { speed_ = 2.0; }
 	
 	/*
 	auto & options = parent_.options();
