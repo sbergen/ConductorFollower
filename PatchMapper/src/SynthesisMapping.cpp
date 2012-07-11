@@ -32,7 +32,10 @@ SynthParametersFromContexts(InstrumentContext const & instrumentContext, NoteCon
 
 double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b)
 {
-	return std::pow((a.length() - b.length()), 2.0);
+	SynthesisParameters::array_type diffSquared;
+	std::transform(a.data().begin(), a.data().end(), b.data().begin(), diffSquared.begin(),
+		[](double lhs, double rhs) -> double { return std::pow((lhs - rhs), 2.0); });
+	return std::accumulate(diffSquared.begin(), diffSquared.end(), 0.0, std::plus<double>());
 }
 
 } // namespace PatchMapper
