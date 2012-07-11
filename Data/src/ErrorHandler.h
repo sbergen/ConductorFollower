@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "foo.h" // LOG()
+#include "cf/globals.h"
 
 namespace cf {
 namespace Data {
@@ -19,8 +19,7 @@ struct error_handler_impl
 			<< what
 			<< " here "
 			<< std::string(whereBegin, whereEnd);
-		//LOG(ss.str());
-		std::cout << ss.str() << std::endl;
+		LOG(ss.str().c_str());
 	}
 };
 
