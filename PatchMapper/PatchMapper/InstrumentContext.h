@@ -3,9 +3,9 @@
 namespace cf {
 namespace PatchMapper {
 
-class InstrumentContext
+struct InstrumentContext
 {
-	// To be implemented
+	InstrumentContext() {}
 };
 
 } // namespace PatchMapper

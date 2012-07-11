@@ -5,7 +5,7 @@ namespace PatchMapper {
 
 double map_l_d(InstrumentContext const & instrumentContext, NoteContext const & noteContext)
 {
-	return 0.0;
+	return 0.5;
 }
 
 } // namespace PatchMapper

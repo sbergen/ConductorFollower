@@ -1,6 +1,8 @@
 #include "InstrumentPatchSwitcher.h"
 
 #include "cf/algorithm.h"
+#include "cf/globals.h"
+
 #include "PatchMapper/SynthesisMapping.h"
 
 namespace cf {
@@ -28,18 +30,18 @@ InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instru
 }
 
 void
-InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position)
+InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed)
 {
 	if (data->IsNoteOn()) {
-		SwitchPathIfNecessary(events, data, position);
+		SwitchPathIfNecessary(events, data, position, currentSpeed);
 	}
 	events.RegisterEvent(position, data);
 }
 
 void
-InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position)
+InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed)
 {
-	PatchMapper::NoteContext noteContext(data->GetNoteLength(), data->GetVelocity());
+	PatchMapper::NoteContext noteContext(data->GetNoteLength(), currentSpeed, data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext);
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());
 
@@ -47,6 +49,7 @@ InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, S
 	int patch = best->second;
 
 	if (patch != currentPatch_) {
+		LOG("Switching to patch: %1%", patch);
 		currentPatch_ = patch;
 		events.RegisterEvent(position, data->MakeKeyswitch(currentPatch_));
 	}

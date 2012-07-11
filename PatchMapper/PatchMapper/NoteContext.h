@@ -7,12 +7,14 @@ namespace PatchMapper {
 
 struct NoteContext
 {
-	NoteContext(microseconds_t length, double velocity)
+	NoteContext(microseconds_t length, double tempo, double velocity)
 		: length(length)
+		, tempo(tempo)
 		, velocity(velocity)
 	{}
 
 	microseconds_t length;
+	double         tempo;
 	double         velocity;
 };
 

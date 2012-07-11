@@ -34,6 +34,7 @@ public:
 
 	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
 
+	speed_t CurrentSpeed() const { return previousSpeed_; }
 	RealTimeBlock const & CurrentRealTimeBlock() { return rtRange_; }
 	ScoreTimeBlock const & CurrentScoreTimeBlock() { return scoreRange_; }
 

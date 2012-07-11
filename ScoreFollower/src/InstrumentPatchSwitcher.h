@@ -18,10 +18,10 @@ class InstrumentPatchSwitcher : public boost::noncopyable
 public:
 	InstrumentPatchSwitcher(Data::Instrument const & instrument);
 
-	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position);
+	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed);
 
 private:
-	void SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position);
+	void SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed);
 
 private:
 	typedef std::pair<PatchMapper::SynthesisParameters, int> PatchKeyswitchPair;

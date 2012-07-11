@@ -75,7 +75,7 @@ ScoreHelper::CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data,
 	double velocity = NewVelocityAt(data->GetVelocity(), time);
 	
 	data->ApplyVelocity(velocity);
-	patchSwitcher.InsertEventAndPatchSwitchesToBuffer(events, data, frameOffset);
+	patchSwitcher.InsertEventAndPatchSwitchesToBuffer(events, data, frameOffset, timeHelper_->CurrentSpeed());
 }
 
 double
