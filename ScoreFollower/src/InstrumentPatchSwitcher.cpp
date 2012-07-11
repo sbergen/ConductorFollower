@@ -18,7 +18,7 @@ public:
 };
 
 InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instrument)
-	: instrumentContext_()
+	: instrumentContext_(instrument)
 	, currentPatch_(-1)
 {
 	auto const & patches = instrument.patches;
@@ -49,7 +49,6 @@ InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, S
 	int patch = best->second;
 
 	if (patch != currentPatch_) {
-		LOG("Switching to patch: %1%", patch);
 		currentPatch_ = patch;
 		events.RegisterEvent(position, data->MakeKeyswitch(currentPatch_));
 	}

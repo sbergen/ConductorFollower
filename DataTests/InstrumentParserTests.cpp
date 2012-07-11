@@ -19,6 +19,8 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 		<< "["
 			<< "instrument { "
 				<< "name: \"piano\","
+				<< "shortest_note_threshold: 0.05,"
+				<< "longest_note_threshold: 0.6,"
 				<< "patches: ["
 					<< "patch {"
 						<< "name: \"regular\""
@@ -49,6 +51,8 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	BOOST_CHECK_EQUAL(instruments.size(), 2);
 	auto instrument = instruments["piano"];
 	BOOST_CHECK_EQUAL(instrument.name, "piano"); // Check that it was really found
+	BOOST_CHECK_EQUAL(instrument.shortest_note_threshold, 0.05);
+	BOOST_CHECK_EQUAL(instrument.longest_note_threshold, 0.6);
 
 	// Patch
 	BOOST_REQUIRE_GT(instrument.patches.size(), 0);

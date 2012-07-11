@@ -16,5 +16,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Instrument,
 	(std::string, name)
+	(double, shortest_note_threshold)
+	(double, longest_note_threshold)
 	(std::vector<cf::Data::InstrumentPatch>, patches)
 )
