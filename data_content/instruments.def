@@ -1,0 +1,169 @@
+[
+	// Special "keyword" for ignoring a track
+	instrument { name: "ignore" },
+	
+	instrument {
+		name: "clarinet Bb",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: C1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "staccato"
+				keyswitch: C#1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "portato"
+				keyswitch: D1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: D#1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: F1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "sustain"
+				keyswitch: F#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: G1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: G#1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+		]
+	},
+	
+	instrument {
+		name: "piano",
+		patches: [
+			patch {
+				name: "regular"
+				keyswitch: C0
+				length: 0.5,
+				attack: 0.5,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
+		name: "chamber viola",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.8,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "detache"
+				keyswitch: C#1
+				length: 0.3,
+				attack: 0.4,
+				weight: 0.7
+			},
+			patch {
+				name: "sustain"
+				keyswitch: D1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "detache short"
+				keyswitch: F1
+				length: 0.25,
+				attack: 0.4,
+				weight: 0.75
+			},
+			/* agh, didn't realize what portamento is :D
+			patch {
+				name: "portamento"
+				keyswitch: F#1
+				length: 0.9,
+				attack: 0.6,
+				weight: 0.6
+			},*/
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.6,
+				attack: 0.5,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: G#1
+				length: 0.5,
+				attack: 0.4,
+				weight: 0.4
+			},
+			patch {
+				name: "perf-rep spicato"
+				keyswitch: A1
+				length: 0.08,
+				attack: 0.7,
+				weight: 0.5
+			}
+		]
+	}
+]
