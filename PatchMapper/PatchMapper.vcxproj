@@ -123,14 +123,12 @@
     <ClInclude Include="PatchMapper\SynthesisMapping.h" />
     <ClInclude Include="PatchMapper\SynthesisParameters.h" />
     <ClInclude Include="src\mappers.h" />
+    <ClInclude Include="src\MappingContext.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\map_l_a.cpp" />
-    <ClCompile Include="src\map_l_d.cpp" />
-    <ClCompile Include="src\map_l_s.cpp" />
-    <ClCompile Include="src\map_t_a.cpp" />
-    <ClCompile Include="src\map_t_d.cpp" />
-    <ClCompile Include="src\map_t_s.cpp" />
+    <ClCompile Include="src\map_attack.cpp" />
+    <ClCompile Include="src\map_length.cpp" />
+    <ClCompile Include="src\map_weight.cpp" />
     <ClCompile Include="src\SynthesisMapping.cpp" />
   </ItemGroup>
   <ItemGroup>

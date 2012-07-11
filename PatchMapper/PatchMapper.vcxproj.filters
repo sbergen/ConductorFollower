@@ -33,27 +33,21 @@
     <ClInclude Include="src\mappers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\MappingContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SynthesisMapping.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\map_t_a.cpp">
+    <ClCompile Include="src\map_length.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\map_l_a.cpp">
+    <ClCompile Include="src\map_attack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\map_l_d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\map_l_s.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\map_t_d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\map_t_s.cpp">
+    <ClCompile Include="src\map_weight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

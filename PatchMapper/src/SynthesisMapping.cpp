@@ -7,6 +7,7 @@
 #include <boost/bind.hpp>
 
 #include "mappers.h"
+#include "MappingContext.h"
 
 namespace cf {
 namespace PatchMapper {
@@ -14,31 +15,24 @@ namespace PatchMapper {
 SynthesisParameters
 SynthParametersFromContexts(InstrumentContext const & instrumentContext, NoteContext const & noteContext)
 {
-	typedef double (*Transformer)(InstrumentContext const &, NoteContext const &);
-	boost::array<Transformer, 6> transformation = {
-		&map_t_a,
-		&map_t_d,
-		&map_t_s,
-		&map_l_a,
-		&map_l_d,
-		&map_l_s
+	MappingContext context(instrumentContext, noteContext);
+
+	typedef double (*Transformer)(MappingContext const &);
+	boost::array<Transformer, 3> transformation = {
+		&map_length,
+		&map_attack,
+		&map_weight
 	};
 
 	SynthesisParameters::array_type result;
-	auto transformer = boost::bind(boost::apply<double>(), _1, boost::cref(instrumentContext), boost::cref(noteContext));
+	auto transformer = boost::bind(boost::apply<double>(), _1, boost::cref(context));
 	std::transform(transformation.begin(), transformation.end(), result.begin(), transformer);
 	return result;
 }
 
 double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b)
 {
-	return std::pow((a.data()[2] - b.data()[2]), 2.0);
-	/*
-	SynthesisParameters::array_type diffSquared;
-	std::transform(a.data().begin(), a.data().end(), b.data().begin(), diffSquared.begin(),
-		[](double lhs, double rhs) -> double { return std::pow((lhs - rhs), 2.0); });
-	return std::accumulate(diffSquared.begin(), diffSquared.end(), 0.0, std::plus<double>());
-	*/
+	return std::pow((a.length() - b.length()), 2.0);
 }
 
 } // namespace PatchMapper

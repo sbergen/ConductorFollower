@@ -44,14 +44,12 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 		elem_separator = -lit(',');
 		name = lit("name") > ':' > quoted_string >> elem_separator;
 
-		// Patch helpers
-		auto double_triple = '[' > double_ >> elem_separator >> double_ >> elem_separator >> double_ > ']';
-
 		// Patch
 		keyswitch = lit("keyswitch") > ':' > (keyswitch_str | int_) >> elem_separator;
-		t_ads = lit("t_ads") > ':' > double_triple >> elem_separator;
-		l_ads = lit("l_ads") > ':' > double_triple >> elem_separator;
-		patch_body = name ^ keyswitch ^ t_ads ^ l_ads;
+		length = lit("length") > ':' > double_ >> elem_separator;
+		attack = lit("attack") > ':' > double_ >> elem_separator;
+		weight = lit("weight") > ':' > double_ >> elem_separator;
+		patch_body = name ^ keyswitch ^ length ^ attack ^ weight;
 		patch = lit("patch") > '{' > -patch_body > '}';
 
 		// Instrument
@@ -86,8 +84,9 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 	qi::rule<Iterator, InstrumentPatch(), SkipperType> patch_body;
 	keyswitch::grammar<Iterator, SkipperType> keyswitch_str;
 	qi::rule<Iterator, int(), SkipperType> keyswitch;
-	qi::rule<Iterator, EnvelopeTimes(), SkipperType> t_ads;
-	qi::rule<Iterator, EnvelopeLevels(), SkipperType> l_ads;
+	qi::rule<Iterator, double(), SkipperType> length;
+	qi::rule<Iterator, double(), SkipperType> attack;
+	qi::rule<Iterator, double(), SkipperType> weight;
 
 	qi::rule<Iterator, InstrumentMap(), SkipperType> start;
 };
