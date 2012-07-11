@@ -14,7 +14,7 @@ public:
 	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
 
 public: // ScoreEvent implementation
-	double GetVelocity() { return msg_.getVelocity(); }
+	double GetVelocity() { return msg_.getFloatVelocity(); }
 	sf::score_time_t GetNoteLength() { return noteLength_; }
 	bool IsNoteOn() { return msg_.isNoteOn(); }
 
