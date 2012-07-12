@@ -17,13 +17,13 @@ public:
 public:
 	virtual ~EventProvider() {}
 
-	// Start producing data in separate thread
-	// returns false if production is already started
-	virtual bool StartProduction() = 0;
+	// Will eventually start producing data in separate thread
+	// If previously stopped, a restart is not quaranteed.
+	virtual void StartProduction() = 0;
 
 	// Will eventually stop producing data
-	// returns false if production is not running
-	virtual bool StopProduction() = 0;
+	// If started again soon, a stop is not guaranteed
+	virtual void StopProduction() = 0;
 
 	// Lock free getter for events
 	// Returns false if there's no data available

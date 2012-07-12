@@ -197,7 +197,7 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 	SetState(FollowerState::WaitingForCalibration);
 	startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
 		boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
-	assert(eventProvider_->StartProduction());
+	eventProvider_->StartProduction();
 }
 
 } // namespace ScoreFollower

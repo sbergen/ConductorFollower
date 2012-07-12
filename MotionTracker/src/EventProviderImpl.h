@@ -7,6 +7,7 @@
 #include "cf/LockfreeThread.h"
 #include "cf/time.h"
 #include "cf/geometry.h"
+#include "cf/globals.h"
 
 #include "MotionTracker/EventProvider.h"
 
@@ -27,8 +28,8 @@ public:
 	~EventProviderImpl();
 
 public: // EventProvider implementation
-	bool StartProduction();
-	bool StopProduction();
+	void StartProduction();
+	void StopProduction();
 	bool DequeueEvent(Event & result);
 
 public: // HandObserver implementation, called from tracker thread
@@ -37,12 +38,10 @@ public: // HandObserver implementation, called from tracker thread
 	void NewHandPosition(float time, Point3D const & pos);
 
 private: // tracker thread state and event buffer
-	bool Init();
-	bool EventLoop();
-	void Cleanup();
+	GlobalsRef globalsRef_;
+	class TrackerThread;
 
-	boost::shared_ptr<LockfreeThread> trackerThread_;
-	boost::shared_ptr<HandTracker> tracker_;
+	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
 	InterThreadEventBuffer eventBuffer_;
 };
 

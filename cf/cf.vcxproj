@@ -132,7 +132,6 @@
   <ItemGroup>
     <ClCompile Include="src\ButlerThread.cpp" />
     <ClCompile Include="src\globals.cpp" />
-    <ClCompile Include="src\LockfreeThread.cpp" />
     <ClCompile Include="src\Logger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

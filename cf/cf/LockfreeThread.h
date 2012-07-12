@@ -1,64 +1,91 @@
 #pragma once
 
+#include "cf/ButlerThread.h"
+
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
-#include <boost/function.hpp>
 #include <boost/utility.hpp>
 
 namespace cf {
 
 
 // Class for starting and stopping a thread in a lock free way
-// The threads lifetime matches the lifetime of the LockfreeThread,
-// but the thread will be blocked unless requested to start.
-//
-// Once started, the thread executes an initialization function.
-// If the init function returns true, it then enters a while loop
-// which executes a loop function until it returns false
-// or a stop is requested.
-// The thread execution is also lock free, until stopped.
+// The thread will be started and stopped from the butler thread.
 
+// hint: use boost::bind and boost::make_shared for RunnableFactory
+
+// The type runnable should initialize stuff in it's constructor.
+// After this operator() will be called until the thead is stopped,
+// or it returns false.
+// After this the destructor is called.
+// Runnable needs to be default-constructible
+
+template<typename Runnable>
 class LockfreeThread : public boost::noncopyable
 {
 public:
-	LockfreeThread(
-		boost::function<bool()> initFunction,
-		boost::function<bool()> loopFunction,
-		boost::function<void()> cleanupFunction);
-	~LockfreeThread();
+	typedef boost::function<boost::shared_ptr<Runnable>()> RunnableFactory;
 
-	bool RequestStart();
-	bool RequestStop();
+	LockfreeThread(RunnableFactory factory, ButlerThread & butler)
+		: runnableFactory_(factory)
+		, shouldRun_(false)
+		
+	{
+		butlerCallbackHandle_ = butler.AddCallback(boost::bind(
+			&LockfreeThread<Runnable>::CheckState, this));
+	}
 
-	inline bool IsRunning() { return state_ == Running; }
+	~LockfreeThread()
+	{
+		thread_->interrupt();
+		thread_->join();
+	}
+
+	void RequestStart() { shouldRun_.store(true); }
+	void RequestStop() { shouldRun_.store(false); }
+	bool IsRunning() { return thread_ && thread_->joinable(); }
 
 private:
-	typedef boost::unique_lock<boost::mutex> unique_lock;
-
-	// These functions are all called from thread_
-	void Run();
-	bool WaitForRunOrInterrupt(unique_lock & lock);
-	void RunLoop();
-
-	enum State
+	
+	struct Runner
 	{
-		NotRunning,
-		Running,
-		RunRequested,
-		StopRequested,
+		Runner(RunnableFactory & runnableFactory)
+			: runnableFactory_(runnableFactory)
+		{}
+
+		void operator() ()
+		{
+			auto r = runnableFactory_();
+			while ((*r)()) {
+				boost::this_thread::interruption_point();
+			}
+		}
+
+		RunnableFactory runnableFactory_;
 	};
 
-	boost::atomic<State> state_;
+private:
+	// Called from butler
+	void CheckState()
+	{
+		if (shouldRun_.load())
+		{
+			if (!IsRunning()) {
+				thread_ = boost::make_shared<boost::thread>(Runner(runnableFactory_));
+			}
+		} else {
+			if (IsRunning()) {
+				thread_->interrupt();
+			}
+		}
+	}
 
-	// Initialized in ctor, not changed aftwewards
-	boost::function<bool ()> const init_;
-	boost::function<bool ()> const loop_;
-	boost::function<void ()> const cleanup_;
-
-	boost::mutex waitMutex_;
-	boost::condition_variable waitCond_;
+	RunnableFactory runnableFactory_;
+	boost::atomic<bool> shouldRun_;
 	boost::shared_ptr<boost::thread>  thread_;
+	ButlerThread::CallbackHandle butlerCallbackHandle_;
 };
 
 } // namespace cf

@@ -7,19 +7,49 @@
 namespace cf {
 namespace MotionTracker {
 
+// factory function
 boost::shared_ptr<EventProvider>
 EventProvider::Create()
 {
 	return boost::make_shared<EventProviderImpl>();
 }
 
+
+class EventProviderImpl::TrackerThread
+{
+public:
+	TrackerThread(EventProviderImpl & parent)
+		: parent_(parent)
+	{
+		tracker_ = MotionTracker::HandTracker::Create();
+
+		if (!tracker_->Init())
+		{
+			std::cout << "Failed to init!" << std::endl;
+			tracker_.reset();
+			return;
+		}
+
+		tracker_->StartTrackingHand(MotionTracker::GestureWave, parent);
+	}
+
+	bool operator() ()
+	{
+		return tracker_->WaitForData();
+	}
+
+private:
+	EventProviderImpl & parent_;
+	boost::shared_ptr<HandTracker> tracker_;
+};
+
+
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
 {
-	trackerThread_ = boost::make_shared<LockfreeThread>(
-		boost::bind(&EventProviderImpl::Init, this),
-		boost::bind(&EventProviderImpl::EventLoop, this),
-		boost::bind(&EventProviderImpl::Cleanup, this));
+	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
+	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
+		factory, *globalsRef_.Butler());
 }
 
 EventProviderImpl::~EventProviderImpl()
@@ -28,14 +58,14 @@ EventProviderImpl::~EventProviderImpl()
 	trackerThread_.reset();
 }
 
-bool EventProviderImpl::StartProduction()
+void EventProviderImpl::StartProduction()
 {
-	return trackerThread_->RequestStart();
+	trackerThread_->RequestStart();
 }
 
-bool EventProviderImpl::StopProduction()
+void EventProviderImpl::StopProduction()
 {
-	return trackerThread_->RequestStop();
+	trackerThread_->RequestStop();
 }
 
 bool EventProviderImpl::DequeueEvent(Event & result)
@@ -59,32 +89,6 @@ void
 EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 {
 	eventBuffer_.enqueue(Event(time::now(), Event::Position, pos));
-}
-
-bool
-EventProviderImpl::Init()
-{
-	tracker_ = MotionTracker::HandTracker::Create();
-
-	if (!tracker_->Init())
-	{
-		std::cout << "Failed to init!" << std::endl;
-		return false;
-	}
-
-	return tracker_->StartTrackingHand(MotionTracker::GestureWave, *this);
-}
-
-bool
-EventProviderImpl::EventLoop()
-{
-	return tracker_->WaitForData();
-}
-
-void
-EventProviderImpl::Cleanup()
-{
-	tracker_.reset();
 }
 
 } // namespace MotionTracker
