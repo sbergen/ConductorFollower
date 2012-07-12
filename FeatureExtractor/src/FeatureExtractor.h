@@ -19,7 +19,8 @@ public:
 
 public: // Extractor implementation
 	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
-	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
+	Point3D MagnitudeOfMovementSince(timestamp_t const & time) { return dimExtractor_.MagnitudeSince(time); }
+	Point3D AverageVelocityOfMovementSince(timestamp_t const & time) { return speedExtractor_.AverageVelocitySince(time); }
 
 private:
 	void UpdateLatestBeat(timestamp_t const & time);

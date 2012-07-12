@@ -18,6 +18,7 @@ public:
 	void Update();
 	void BeatsSince(timestamp_t const & time, GestureBuffer & beats);
 	void ApexesSince(timestamp_t const & time, GestureBuffer & apexes);
+	Point3D AverageVelocitySince(timestamp_t const & time);
 
 private:
 	void UpdateSpeedBuffer();

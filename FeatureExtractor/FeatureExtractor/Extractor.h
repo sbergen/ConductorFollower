@@ -36,6 +36,7 @@ public:
 
 	virtual void RegisterPosition(timestamp_t const & time, Point3D const & pos) = 0;
 	virtual Point3D MagnitudeOfMovementSince(timestamp_t const & time) = 0;
+	virtual Point3D AverageVelocityOfMovementSince(timestamp_t const & time) = 0;
 
 	EventSignal BeatDetected;
 	EventSignal ApexDetected;

@@ -40,12 +40,6 @@ FeatureExtractor::RegisterPosition(timestamp_t const & time, Point3D const & pos
 	DetectStartGesture();
 }
 
-Point3D
-FeatureExtractor::MagnitudeOfMovementSince(timestamp_t const & time)
-{
-	return dimExtractor_.MagnitudeSince(time);
-}
-
 void
 FeatureExtractor::UpdateLatestBeat(timestamp_t const & time)
 {

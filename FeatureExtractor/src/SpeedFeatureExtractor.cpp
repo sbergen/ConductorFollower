@@ -35,7 +35,6 @@ SpeedFeatureExtractor::Update()
 
 	Point3D centroid;
 	bg::centroid(data, centroid);
-	//std::cout << "Average speed (directional): " << boost::geometry::dsv(centroid) << std::endl;
 
 	coord_t absSpeedSum = std::accumulate(data.begin(), data.end(), 0.0,
 		[&zero](coord_t const & sum, Point3D const & speed)
@@ -45,6 +44,7 @@ SpeedFeatureExtractor::Update()
 	coord_t absSpeed = absSpeedSum / data.size();
 	//std::cout << "Average speed (absolute): " << absSpeed << std::endl;
 
+	/*
 	auto minMaxPair = std::minmax_element(data.begin(), data.end(),
 		[&zero](Point3D const & lhs, Point3D const & rhs) -> bool
 		{
@@ -83,6 +83,16 @@ void
 SpeedFeatureExtractor::ApexesSince(timestamp_t const & time, GestureBuffer & apexes)
 {
 	apexes = apexBuffer_.EventsSince(time);
+}
+
+Point3D
+SpeedFeatureExtractor::AverageVelocitySince(timestamp_t const & time)
+{
+	auto eventsSince = speedBuffer_.EventsSince(time);
+	auto data = eventsSince.DataAs<IteratorLinestring>();
+	Point3D centroid;
+	bg::centroid(data, centroid);
+	return centroid;
 }
 
 void
