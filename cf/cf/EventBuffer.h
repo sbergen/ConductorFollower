@@ -129,6 +129,8 @@ public: // Range class
 
 public: // Main interface
 
+	EventBuffer() {}
+
 	EventBuffer(size_t size)
 		: data_(size)
 		, timestamps_(size)
