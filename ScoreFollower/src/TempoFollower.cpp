@@ -5,7 +5,6 @@
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
 
-#include "BeatClassifier.h"
 #include "TimeWarper.h"
 
 namespace cf {
@@ -100,7 +99,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
 	
 	beat_pos_t rawOffset = tempoPoint.position() - prevTempoPoint.position();
-	auto classification = BeatClassifier::ClassifyBeat(rawOffset);
+	auto classification = beatClassifier_.ClassifyBeat(rawOffset);
 	beat_pos_t offset = rawOffset - (static_cast<beat_pos_t>(classification.eightsSincePrevious) / 2);
 
 	// Remove beats that happen "too soon"

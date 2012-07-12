@@ -8,6 +8,7 @@
 #include "ScoreFollower/ScoreReader.h"
 
 #include "TempoMap.h"
+#include "BeatClassifier.h"
 
 #include <boost/utility.hpp>
 
@@ -51,6 +52,8 @@ private:
 private:
 	TimeWarper const & timeWarper_;
 	Follower & parent_;
+
+	BeatClassifier beatClassifier_;
 
 	TempoMap tempoMap_;
 	BeatHistoryBuffer beatHistory_;

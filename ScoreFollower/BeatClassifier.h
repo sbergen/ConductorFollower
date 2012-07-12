@@ -23,10 +23,10 @@ public:
 		double probability;
 	};
 
-	static Result ClassifyBeat(double quartersSincePreviousBeat);
+	Result ClassifyBeat(double quartersSincePreviousBeat);
 
 private:
-	static double ProbabilityAt(double position, int meanAsEights, double deviation, double & normalizedProb);
+	double ProbabilityAt(double position, int meanAsEights, double deviation, double & normalizedProb);
 };
 
 } // namespace ScoreFollower
