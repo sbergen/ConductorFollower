@@ -187,7 +187,7 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 
 	// Score
 	scoreReader_->OpenFile(scoreParser.data().midiFile);
-	timeHelper_->ReadTempoTrack(scoreReader_->TempoTrack());
+	timeHelper_->ReadScore(*scoreReader_);
 	scoreHelper_->LearnScore(scoreReader_);
 	
 	// Instrument mappings

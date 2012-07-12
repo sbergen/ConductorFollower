@@ -120,7 +120,7 @@
     <ClInclude Include="ScoreFollower\FollowerStatus.h" />
     <ClInclude Include="ScoreFollower\ScoreEvent.h" />
     <ClInclude Include="ScoreFollower\ScoreReader.h" />
-    <ClInclude Include="ScoreFollower\TimeUtils.h" />
+    <ClInclude Include="ScoreFollower\TimeSignature.h" />
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />

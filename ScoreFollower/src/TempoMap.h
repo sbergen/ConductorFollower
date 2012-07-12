@@ -14,16 +14,21 @@
 namespace cf {
 namespace ScoreFollower {
 
+class TimeSignature;
+
 class TempoMap : public boost::noncopyable
 {
 public:
 	TempoMap();
 
-	void Read(TempoReaderPtr reader);
+	void ReadScore(ScoreReader & reader);
 
 	TempoPoint GetTempoAt(score_time_t const & time) const;
+	TimeSignature GetMeterAt(score_time_t const & time) const;
 
 private:
+	void ReadTempo(TempoReaderPtr reader);
+	void ReadMeter(MeterReaderPtr reader);
 	void EnsureChangesNotEmpty();
 
 private:
@@ -40,7 +45,10 @@ private:
 	};
 
 	typedef EventBuffer<TempoChange, score_time_t, std::vector> ChangeMap;
+	typedef EventBuffer<TimeSignature, score_time_t, std::vector> MeterMap;
+
 	ChangeMap changes_;
+	MeterMap  meters_;
 };
 
 } // namespace ScoreFollower

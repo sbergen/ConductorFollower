@@ -33,9 +33,6 @@
     <ClInclude Include="src\TimeWarper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreFollower\TimeUtils.h">
-      <Filter>ScoreFollower</Filter>
-    </ClInclude>
     <ClInclude Include="src\AudioBlockTimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -70,6 +67,9 @@
       <Filter>ScoreFollower</Filter>
     </ClInclude>
     <ClInclude Include="src\InstrumentPatchSwitcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\TimeSignature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

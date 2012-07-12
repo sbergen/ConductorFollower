@@ -3,17 +3,40 @@
 #include "cf/globals.h"
 
 #include "ScoreFollower/TrackReader.h"
+#include "ScoreFollower/TimeSignature.h"
 
 namespace cf {
 namespace ScoreFollower {
 
 TempoMap::TempoMap()
-	: changes_(0)
 {
 }
 
 void
-TempoMap::Read(TempoReaderPtr reader)
+TempoMap::ReadScore(ScoreReader & reader)
+{
+	ReadTempo(reader.TempoTrack());
+	ReadMeter(reader.MeterTrack());	
+}
+
+TempoPoint
+TempoMap::GetTempoAt(score_time_t const & time) const
+{
+	auto range = changes_.EventsSinceInclusive(time);
+	assert(!range.Empty());
+	return range[0].data.GetTempoAt(time);
+}
+
+TimeSignature
+TempoMap::GetMeterAt(score_time_t const & time) const
+{
+	auto range = meters_.EventsSinceInclusive(time);
+	assert(!range.Empty());
+	return range[0].data;
+}
+
+void
+TempoMap::ReadTempo(TempoReaderPtr reader)
 {
 	bool first = true;
 	TempoChange previousChange;
@@ -40,12 +63,16 @@ TempoMap::Read(TempoReaderPtr reader)
 	EnsureChangesNotEmpty();
 }
 
-TempoPoint
-TempoMap::GetTempoAt(score_time_t const & time) const
+void
+TempoMap::ReadMeter(MeterReaderPtr reader)
 {
-	auto range = changes_.EventsSinceInclusive(time);
-	assert(!range.Empty());
-	return range[0].data.GetTempoAt(time);
+	score_time_t timestamp;
+	TimeSignature signature;
+
+	while (reader->NextEvent(timestamp, signature)) {
+		LOG("Meter change, timestamp: %1%, %2%/%3%", timestamp, signature.count(), signature.division());
+		meters_.RegisterEvent(timestamp, signature);
+	}
 }
 
 void

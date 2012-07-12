@@ -22,6 +22,7 @@ public: // ScoreReader implementation
 	int TrackCount() const { return file_.getNumTracks(); }
 	sf::TrackReaderPtr Track(int index);
 	sf::TempoReaderPtr TempoTrack();
+	sf::MeterReaderPtr MeterTrack();
 
 private:
 
@@ -35,6 +36,19 @@ private:
 	protected:
 		MidiMessageSequence sequence_;
 		short timeFormat_;
+		int count_;
+		int current_;
+	};
+
+	// Meter reader implementation
+	class MeterReaderImpl : public sf::TrackReader<sf::TimeSignature>
+	{
+	public:
+		MeterReaderImpl(MidiFile const & file);
+		bool NextEvent(sf::score_time_t & timestamp, sf::TimeSignature & data);
+
+	protected:
+		MidiMessageSequence sequence_;
 		int count_;
 		int current_;
 	};

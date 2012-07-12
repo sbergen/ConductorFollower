@@ -24,7 +24,7 @@ public:
 	TimeHelper(Follower & parent);
 	
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
-	void ReadTempoTrack(TempoReaderPtr reader) { tempoFollower_.ReadTempoTrack(reader); }
+	void ReadScore(ScoreReader & reader) { tempoFollower_.ReadScore(reader); }
 
 	// These need to be clled in this order!
 	void StartNewBlock();

@@ -22,7 +22,7 @@ class TempoFollower : public boost::noncopyable
 public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
-	void ReadTempoTrack(TempoReaderPtr & reader) { tempoMap_.Read(reader); }
+	void ReadScore(ScoreReader & reader) { tempoMap_.ReadScore(reader); }
 	void RegisterBeat(real_time_t const & beatTime);
 
 	speed_t SpeedEstimateAt(real_time_t const & time);

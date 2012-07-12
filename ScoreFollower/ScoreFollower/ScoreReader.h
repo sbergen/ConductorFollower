@@ -4,6 +4,7 @@
 #include <boost/utility.hpp>
 
 #include "ScoreFollower/types.h"
+#include "ScoreFollower/TimeSignature.h"
 #include "ScoreFollower/ScoreEvent.h"
 
 namespace cf {
@@ -13,6 +14,7 @@ template<typename TData> class TrackReader;
 
 typedef boost::shared_ptr<TrackReader<ScoreEventPtr> > TrackReaderPtr;
 typedef boost::shared_ptr<TrackReader<tempo_t> > TempoReaderPtr;
+typedef boost::shared_ptr<TrackReader<TimeSignature> > MeterReaderPtr;
 
 // Abstraction of reading a score (e.g. midi)
 class ScoreReader : public boost::noncopyable
@@ -24,7 +26,7 @@ public:
 	virtual int TrackCount() const = 0;
 	virtual TrackReaderPtr Track(int index) = 0;
 	virtual TempoReaderPtr TempoTrack() = 0;
-	
+	virtual MeterReaderPtr MeterTrack() = 0;
 };
 
 } // namespace ScoreFollower

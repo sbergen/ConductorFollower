@@ -37,6 +37,14 @@ MidiReader::TempoTrack()
 	return boost::make_shared<TempoReaderImpl>(file_);
 }
 
+sf::MeterReaderPtr
+MidiReader::MeterTrack()
+{
+	return boost::make_shared<MeterReaderImpl>(file_);
+}
+
+// Tempo reader
+
 MidiReader::TempoReaderImpl::TempoReaderImpl(MidiFile const & file)
 	: timeFormat_(file.getTimeFormat())
 	, current_(0)
@@ -61,6 +69,35 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	++current_;
 	return current_ < count_;
 }
+
+// Meter reader
+
+MidiReader::MeterReaderImpl::MeterReaderImpl(MidiFile const & file)
+	: current_(0)
+{
+	file.findAllTimeSigEvents(sequence_);
+	count_ = sequence_.getNumEvents();
+}
+
+bool
+MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, sf::TimeSignature & data)
+{
+	assert(current_ < count_);
+	
+	seconds_t seconds(sequence_.getEventTime(current_));
+	timestamp = time::duration_cast<score_time_t>(seconds);
+	
+	auto ePtr = sequence_.getEventPointer(current_);
+	int numerator = 0, denominator = 0;
+	ePtr->message.getTimeSignatureInfo(numerator, denominator);
+	assert(numerator > 0 && denominator > 0);
+	data = TimeSignature(numerator, denominator);
+
+	++current_;
+	return current_ < count_;
+}
+
+// Track reader
 
 MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequence)
 	: sequence_(sequence)
