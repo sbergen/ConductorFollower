@@ -35,7 +35,7 @@ DimensionFeatureExtractor::Update()
 	bg::centroid(range, centroid);
 	//std::cout << "Centroid of movement: " << boost::geometry::dsv(centroid) << std::endl;
 
-	coord_t length = bg::length(range);
+	auto length = coord_t::from_value(bg::length(range));
 	//std::cout << "Length of movement: " << length << std::endl;
 }
 

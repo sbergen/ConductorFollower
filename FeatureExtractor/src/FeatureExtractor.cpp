@@ -6,6 +6,8 @@
 namespace cf {
 namespace FeatureExtractor {
 
+namespace si = boost::units::si;
+
 boost::shared_ptr<Extractor>
 Extractor::Create()
 {
@@ -62,7 +64,7 @@ FeatureExtractor::DetectStartGesture()
 
 	// Check y-movement magnitude
 	auto magnitude = MagnitudeOfMovementSince(previousBeat_);
-	if (magnitude.get<1>() < 200) { return; }
+	if (magnitude.get_y() < coord_t(20 * si::centi * si::meters)) { return; }
 
 	// Check duration
 	duration_t gestureLength = apexes[0].timestamp - previousBeat_;

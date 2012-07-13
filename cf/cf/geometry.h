@@ -2,18 +2,27 @@
 
 #include <cmath>
 
-#include <boost/geometry/core/coordinate_system.hpp>
-#include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/units/systems/si/prefixes.hpp> // include for convenience
+#include <boost/units/pow.hpp>
+#include <boost/units/cmath.hpp>
+
+#include "cf/Vector.h"
+
+#define REGISTER_VECTOR_AS_POINT(type) \
+	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, raw_x, raw_y, raw_z, set_raw_x, set_raw_y, set_raw_z)
+
+REGISTER_VECTOR_AS_POINT(cf::Point3D);
+REGISTER_VECTOR_AS_POINT(cf::Velocity3D);
 
 namespace cf {
 
-typedef double coord_t;
+typedef Point3D::quantity coord_t;
+typedef Velocity3D::quantity velocity_t;
 
-typedef boost::geometry::model::point<coord_t, 3, boost::geometry::cs::cartesian> Point3D;
 typedef boost::geometry::model::box<Point3D> Box3D;
 typedef boost::geometry::model::linestring<Point3D> Linestring3D;
 
@@ -31,11 +40,13 @@ namespace geometry
 		return result;
 	}
 
-	inline coord_t abs(Point3D const & point)
+	template<typename T>
+	inline coord_t abs(T const & point)
 	{
-		return std::sqrt(std::pow(point.get<0>(), 2) +
-		                 std::pow(point.get<1>(), 2) +
-						 std::pow(point.get<2>(), 2));
+		return boost::units::sqrt(
+			boost::units::pow<2>(point.get_x()) +
+			boost::units::pow<2>(point.get_y()) +
+			boost::units::pow<2>(point.get_z()));
 	}
 
 } // namespace geometry

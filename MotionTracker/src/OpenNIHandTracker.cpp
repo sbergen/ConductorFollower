@@ -2,12 +2,14 @@
 
 #include <iostream>
 
-#include <boost/format.hpp>
+#include <boost/units/systems/si/prefixes.hpp>
 
 #include "CallbackWrappers.h"
 
 namespace cf {
 namespace MotionTracker {
+
+namespace bus = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
@@ -140,7 +142,11 @@ OpenNIHandTracker::HandUpdateCallback(
 	auto it = hands_.find(id);
 	if (it != hands_.end())
 	{
-		it->second.observer.NewHandPosition(time, Point3D(position->X, position->Y, position->Z));
+		coord_t x(position->X * bus::milli * bus::meter);
+		coord_t y(position->Y * bus::milli * bus::meter);
+		coord_t z(position->Z * bus::milli * bus::meter);
+
+		it->second.observer.NewHandPosition(time, Point3D(x, y, z));
 	}
 	else
 	{

@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <boost/format.hpp>
+#include <boost/units/io.hpp>
 
 namespace cf {
 namespace MotionTracker {
@@ -30,9 +31,9 @@ DebugHandObserver::NewHandPosition(float time, Point3D const & pos)
 	std::cout
 		<< boost::format("%1% at %2%, %3%, %4%")
 		% name_
-		% pos.get<0>()
-		% pos.get<1>()
-		% pos.get<2>()
+		% pos.get_x()
+		% pos.get_y()
+		% pos.get_z()
 		<< std::endl;
 }
 

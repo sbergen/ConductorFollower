@@ -128,6 +128,7 @@
     <ClInclude Include="cf\StringEnum.h" />
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
+    <ClInclude Include="cf\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ButlerThread.cpp" />

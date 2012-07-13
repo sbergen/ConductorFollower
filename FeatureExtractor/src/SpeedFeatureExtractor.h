@@ -21,11 +21,11 @@ public:
 	Point3D AverageVelocitySince(timestamp_t const & time);
 
 private:
-	void UpdateSpeedBuffer();
+	void UpdateVelocityBuffer();
 
 private:
 	PositionBuffer const & positionBuffer_;
-	SpeedBuffer speedBuffer_;
+	VelocityBuffer speedBuffer_;
 	
 	GestureBuffer beatBuffer_;
 	GestureBuffer apexBuffer_;
