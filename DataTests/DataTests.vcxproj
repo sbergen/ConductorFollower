@@ -77,7 +77,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../Data";"../Data/src";"../cf"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../Data";"../Data/src";"../cf";"../boost_lockfree"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,6 +126,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Data\Data.vcxproj">
       <Project>{16e65668-30a6-4b73-837b-3dbff006d628}</Project>
     </ProjectReference>
