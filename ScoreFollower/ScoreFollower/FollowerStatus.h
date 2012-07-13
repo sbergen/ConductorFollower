@@ -27,7 +27,6 @@ CF_STATUS_GROUP
 FollowerStatus,
 	((State, "State", StateType))
 	((Speed, "Speed", SpeedType))
-	((SpeedFromTempo, "Speed from tempo", SpeedType))
 	((SpeedFromPhase, "Speed from phase", SpeedType))
 	((MagnitudeOfMovement, "Magnitude of movement", MagnitudeType))
 )

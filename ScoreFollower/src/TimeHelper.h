@@ -32,6 +32,7 @@ public:
 
 	void RegisterBeat(real_time_t const & time);
 
+	// frame offset in current audio block
 	unsigned ScoreTimeToFrameOffset(score_time_t const & time) const;
 
 	speed_t CurrentSpeed() const { return previousSpeed_; }

@@ -23,12 +23,15 @@ public:
 	score_time_t WarpTimestamp(real_time_t const & time) const;
 
 	// Returns the real time at which the score time should "occur"
-	// The reference parameter must be before or at the resulting real time,
-	// but the closer it is, the more effective this is
-	real_time_t InverseWarpTimestamp(score_time_t const & time, real_time_t const & reference) const;
+	// The hint parameter should be before or at the resulting real time,
+	// but the closer it is, the more effective this is.
+	// If the hint is invalid, a full search is made
+	real_time_t InverseWarpTimestamp(score_time_t const & time, real_time_t const & hint) const;
 
 	// Unoptimized version of the above, has to iterate through the whole warp history
 	real_time_t InverseWarpTimestamp(score_time_t const & time) const;
+
+	speed_t SpeedAt(real_time_t const & time) const;
 
 private:
 	// class for storing warping history
@@ -42,6 +45,7 @@ private:
 
 		real_time_t realTime() const { return realTime_; }
 		score_time_t scoreTime() const { return scoreTime_; }
+		speed_t speed() const { return speed_; }
 
 	private:
 		// These are non-const so the class is assignable

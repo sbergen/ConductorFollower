@@ -57,30 +57,13 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	speed_t tempoSpeed = SpeedFromConductedTempo(tempoNow, time);
-	speed_t phaseSpeed = SpeedFromBeatCatchup(tempoNow, 1.5);
-
-	speed_ = phaseSpeed;
+	speed_ = SpeedFromBeatCatchup(tempoNow, 1.5);
 
 	// TODO limit better
 	if (speed_ > 2.0) { speed_ = 2.0; }
-	
-	/*
-	auto & options = parent_.options();
-	double phaseThresh;
-	options.GetValue<Options::TempoFromPhaseThresh>(phaseThresh);
-	double tempoDiff = std::abs((phaseSpeed / tempoSpeed) - 1.0) * 100;
-	
-	if (tempoDiff < phaseThresh) {
-		speed_ = phaseSpeed;	
-	} else {
-		speed_ = tempoSpeed;
-	}
-	*/
 
 	auto status = parent_.status().write();
-	status->SetValue<Status::SpeedFromTempo>(tempoSpeed);
-	status->SetValue<Status::SpeedFromPhase>(phaseSpeed);
+	status->SetValue<Status::SpeedFromPhase>(speed_);
 
 	return speed_;
 }
@@ -111,12 +94,6 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 	return BeatClassification(offset, classification.probability);
 }
 
-speed_t
-TempoFollower::SpeedFromConductedTempo(TempoPoint const & tempoNow, real_time_t const & now) const
-{
-	tempo_t conductedTempo = BeatLengthEstimate();
-	return static_cast<speed_t>(tempoNow.tempo().count()) / conductedTempo.count();
-}
 
 speed_t
 TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
@@ -150,30 +127,6 @@ TempoFollower::BeatOffsetEstimate() const
 
 	double estimate = weightedSum / normalizationTerm;
 	return estimate;
-}
-
-tempo_t
-TempoFollower::BeatLengthEstimate() const
-{
-	// TODO implement if needed!
-/*	boost::array<double, 4> weights = { 0.5, 0.25, 0.15, 0.1 };
-
-	auto beats = beatHistory_.AllEvents().timestampRange() | boost::adaptors::reversed;
-	assert(beats.size() > 4);
-
-	duration_t weightedSum = duration_t::zero();
-	auto bIt = beats.begin();
-	real_time_t laterBeat = *bIt;
-	++bIt;
-	for(auto wIt = weights.begin(); wIt != weights.end(); ++wIt, ++bIt) {
-		weightedSum += time::multiply(laterBeat - *bIt, *wIt);
-		laterBeat = *bIt;
-	}
-
-	// Cast down to whole units (micro, nano, whatever, don't care about rounding...)
-	return time::duration_cast<tempo_t>(weightedSum);
-	*/
-	return tempo_t(10000);
 }
 
 } // namespace ScoreFollower

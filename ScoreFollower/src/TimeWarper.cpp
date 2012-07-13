@@ -61,10 +61,14 @@ TimeWarper::WarpTimestamp(real_time_t const & time) const
 }
 
 real_time_t
-TimeWarper::InverseWarpTimestamp(score_time_t const & time, real_time_t const & reference) const
+TimeWarper::InverseWarpTimestamp(score_time_t const & time, real_time_t const & hint) const
 {
-	auto history = warpHistory_.EventsSinceInclusive(reference);
-	return InverseWarpTimestamp(time, history);
+	auto history = warpHistory_.EventsSinceInclusive(hint);
+	if(time >= history[0].data.scoreTime()) {
+		return InverseWarpTimestamp(time);
+	} else {
+		return InverseWarpTimestamp(time, history);
+	}
 }
 
 real_time_t
@@ -72,6 +76,14 @@ TimeWarper::InverseWarpTimestamp(score_time_t const & time) const
 {
 	auto history = warpHistory_.AllEvents();
 	return InverseWarpTimestamp(time, history);
+}
+
+speed_t
+TimeWarper::SpeedAt(real_time_t const & time) const
+{
+	auto events = warpHistory_.EventsSinceInclusive(time);
+	if (events.Empty()) { return speed_t(1.0); }
+	return events[0].data.speed();
 }
 
 real_time_t
