@@ -17,7 +17,6 @@ public:
 
 public: // ctors
 	Vector3D() : x_(), y_(), z_() {}
-	Vector3D(raw_type x, raw_type y, raw_type z) : x_(x), y_(y), z_(z) {}
 	Vector3D(quantity x, quantity y, quantity z) : x_(x.value()), y_(y.value()), z_(z.value()) {}
 
 public:
@@ -41,25 +40,10 @@ public:
 	void set_raw_y(raw_type const & val) { y_ = val; }
 	void set_raw_z(raw_type const & val) { z_ = val; }
 
-protected:
+private:
 	raw_type x_;
 	raw_type y_;
 	raw_type z_;
-};
-
-struct Point3D : public Vector3D<boost::units::si::length>
-{
-	Point3D() {}
-	Point3D(raw_type x, raw_type y, raw_type z) : Vector3D(x, y, z) {}
-	Point3D(quantity x, quantity y, quantity z) : Vector3D(x, y, z) {}
-};
-
-
-struct Velocity3D : public Vector3D<boost::units::si::velocity>
-{
-	Velocity3D() {}
-	Velocity3D(raw_type x, raw_type y, raw_type z) : Vector3D(x, y, z) {}
-	Velocity3D(quantity x, quantity y, quantity z) : Vector3D(x, y, z) {}
 };
 
 } // namespace cf

@@ -12,7 +12,6 @@
 #include <boost/utility.hpp>
 
 #include "cf/ButlerThread.h"
-#include "cf/geometry.h"
 #include "cf/time.h"
 
 namespace cf {

@@ -12,13 +12,10 @@
 
 #include "cf/Vector.h"
 
-#define REGISTER_VECTOR_AS_POINT(type) \
-	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, raw_x, raw_y, raw_z, set_raw_x, set_raw_y, set_raw_z)
-
-REGISTER_VECTOR_AS_POINT(cf::Point3D);
-REGISTER_VECTOR_AS_POINT(cf::Velocity3D);
-
 namespace cf {
+
+typedef Vector3D<boost::units::si::length> Point3D;
+typedef Vector3D<boost::units::si::velocity> Velocity3D;
 
 typedef Point3D::quantity coord_t;
 typedef Velocity3D::quantity velocity_t;
@@ -52,5 +49,11 @@ namespace geometry
 } // namespace geometry
 	
 } // namespace cf
+
+#define REGISTER_VECTOR_AS_POINT(type) \
+	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, raw_x, raw_y, raw_z, set_raw_x, set_raw_y, set_raw_z)
+
+REGISTER_VECTOR_AS_POINT(cf::Point3D);
+REGISTER_VECTOR_AS_POINT(cf::Velocity3D);
 
 BOOST_GEOMETRY_REGISTER_LINESTRING_TEMPLATED(cf::IteratorLinestring)

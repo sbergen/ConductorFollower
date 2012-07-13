@@ -153,8 +153,9 @@ FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 	// Make better
 	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
 	coord_t magnitude = geometry::abs(distance);
-	status_.write()->SetValue<Status::MagnitudeOfMovement>(magnitude.value() * 10); // TODO
-	scoreHelper_->SetVelocityFromMotion(magnitude / coord_t(60 * si::centi * si::meters));
+	double velocity = magnitude / coord_t(60 * si::centi * si::meters);
+	status_.write()->SetValue<Status::MagnitudeOfMovement>(velocity);
+	scoreHelper_->SetVelocityFromMotion(velocity);
 }
 
 void
