@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/chrono.hpp>
+#include <boost/units/systems/si.hpp>
 
 namespace cf {
 
@@ -10,11 +11,15 @@ typedef boost::chrono::milliseconds milliseconds_t;
 typedef boost::chrono::microseconds microseconds_t;
 typedef boost::chrono::duration<double> seconds_t;
 
+typedef boost::units::quantity<boost::units::si::time> time_quantity;
+
 namespace time {
 
 inline timestamp_t now() { return boost::chrono::steady_clock::now(); }
 
 template<typename T, typename Y> T duration_cast(Y y) { return boost::chrono::duration_cast<T>(y); }
+
+template<typename T, typename Y> T quantity_cast(Y y) { return T(duration_cast<seconds_t>(y).count() * boost::units::si::seconds); }
 
 template<typename TTime, typename TMultiplier>
 TTime multiply(TTime const & time, TMultiplier const & multiplier)

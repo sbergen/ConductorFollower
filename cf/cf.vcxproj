@@ -115,6 +115,7 @@
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
+    <ClInclude Include="cf\physics.h" />
     <ClInclude Include="cf\serialization.h" />
     <ClInclude Include="cf\geometry.h" />
     <ClInclude Include="cf\globals.h" />

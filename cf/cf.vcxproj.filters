@@ -71,6 +71,9 @@
     <ClInclude Include="cf\Vector.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\physics.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

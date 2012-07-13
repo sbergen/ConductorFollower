@@ -3,6 +3,7 @@
 #include <boost/geometry.hpp>
 
 #include "cf/math.h"
+#include "cf/physics.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -71,13 +72,9 @@ SpeedFeatureExtractor::AverageVelocitySince(timestamp_t const & time)
 	auto last = positionsSince.Back();
 
 	auto movement = geometry::distance_vector(first.data, last.data);
-	bu::quantity<si::time> duration = seconds_t(last.timestamp - first.timestamp).count() * si::seconds;
+	auto duration = time::quantity_cast<time_quantity>(last.timestamp - first.timestamp);
 	
-	velocity_t v_x(movement.get_x() / duration);
-	velocity_t v_y(movement.get_y() / duration);
-	velocity_t v_z(movement.get_z() / duration);
-
-	return Velocity3D(v_x, v_y, v_z);
+	return movement / duration;
 }
 
 void
@@ -98,13 +95,9 @@ SpeedFeatureExtractor::UpdateVelocityBuffer()
 		}
 
 		Point3D posDiff = geometry::distance_vector(prev.data, curr.data);
-		bu::quantity<si::time> timeDiff = seconds_t(tDiff).count() * si::seconds;
+		auto timeDiff = time::quantity_cast<time_quantity>(tDiff);
 
-		velocity_t v_x = posDiff.get_x() / timeDiff;
-		velocity_t v_y = posDiff.get_y() / timeDiff;
-		velocity_t v_z = posDiff.get_z() / timeDiff;
-
-		speedBuffer_.RegisterEvent(curr.timestamp, Velocity3D(v_x, v_y, v_z));
+		speedBuffer_.RegisterEvent(curr.timestamp, posDiff / timeDiff);
 	}
 }
 

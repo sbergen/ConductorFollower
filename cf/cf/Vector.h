@@ -40,6 +40,14 @@ public:
 	void set_raw_y(raw_type const & val) { y_ = val; }
 	void set_raw_z(raw_type const & val) { z_ = val; }
 
+public: // Transform
+
+	template<typename T, typename F>
+	T transform(F f) const
+	{
+		return T(f(get_x()), f(get_y()), f(get_z()));
+	}
+
 private:
 	raw_type x_;
 	raw_type y_;
