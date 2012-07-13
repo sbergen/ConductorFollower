@@ -16,7 +16,7 @@ SpeedFeatureExtractor::SpeedFeatureExtractor(PositionBuffer const & eventBuffer)
 	, speedBuffer_(128)
 	, beatBuffer_(128)
 	, apexBuffer_(128)
-	, prevAvgSeed_(bg::make_zero<Point3D>())
+	, prevAvgSeed_(bg::make_zero<Velocity3D>())
 {
 
 }
@@ -24,59 +24,29 @@ SpeedFeatureExtractor::SpeedFeatureExtractor(PositionBuffer const & eventBuffer)
 void
 SpeedFeatureExtractor::Update()
 {
-	UpdateVelocityBuffer();
+	//UpdateVelocityBuffer();
 
-	timestamp_t since = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
-	auto eventsSince = speedBuffer_.EventsSince(since);
-	auto data = eventsSince.DataAs<IteratorLinestring>();
-	
-	// First time around, for one position, we can't calculate the speed...
-	if (data.size() == 0) { return; }
+	// Short time analysis
+	timestamp_t since = positionBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
+	Velocity3D v_avg = AverageVelocitySince(since);
+	Velocity3D::quantity v_abs = geometry::abs(v_avg); 
+	Velocity3D::quantity v_thresh(10.0 * si::centi * si::meter / si::second);
 
-	// Common data
-	auto zero = bg::make_zero<Velocity3D>();
-
-	Point3D centroid;
-	bg::centroid(data, centroid);
-
-	velocity_t absSpeedSum = std::accumulate(data.begin(), data.end(), velocity_t(),
-		[&zero](velocity_t const & sum, Velocity3D const & speed) -> velocity_t
-		{
-			Velocity3D::raw_type distance = bg::distance(zero, speed);
-			return velocity_t(sum + velocity_t::from_value(distance));
-		});
-	velocity_t absSpeed = absSpeedSum / static_cast<double>(data.size());
-	//std::cout << "Average speed (absolute): " << absSpeed << std::endl;
-
-	/*
-	auto minMaxPair = std::minmax_element(data.begin(), data.end(),
-		[&zero](Point3D const & lhs, Point3D const & rhs) -> bool
-		{
-			return bg::comparable_distance(zero, lhs) < bg::comparable_distance(zero, rhs);
-		});
-	//std::cout
-	//	<< "Min speed: " << boost::geometry::dsv(*minMaxPair.first)
-	//	<< ", max speed: " << boost::geometry::dsv(*minMaxPair.second) << std::endl;
-
-	/*************************/
-
-	velocity_t v_thresh(10.0 * si::centi * si::meter / si::second);
-
-	if (sgn(prevAvgSeed_.get_y()) == -1 && sgn(centroid.get_y()) == 1 && absSpeed > v_thresh)
+	if (sgn(prevAvgSeed_.get_y()) == -1 && sgn(v_avg.get_y()) == 1 && v_abs > v_thresh)
 	{
-		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
+		timestamp_t timestamp = since + milliseconds_t(50);
 		beatBuffer_.RegisterEvent(timestamp, 1.0);
 		BeatDetected(timestamp);
 	}
 
-	if (sgn(prevAvgSeed_.get_y()) == 1 && sgn(centroid.get_y()) == -1 && absSpeed > v_thresh)
+	if (sgn(prevAvgSeed_.get_y()) == 1 && sgn(v_avg.get_y()) == -1 && v_abs > v_thresh)
 	{
-		timestamp_t timestamp = speedBuffer_.AllEvents().LastTimestamp() - milliseconds_t(50);
+		timestamp_t timestamp = since + milliseconds_t(50);
 		apexBuffer_.RegisterEvent(timestamp, 1.0);
 		ApexDetected(timestamp);
 	}
 
-	prevAvgSeed_ = centroid;
+	prevAvgSeed_ = v_avg;
 }
 
 void
@@ -91,14 +61,23 @@ SpeedFeatureExtractor::ApexesSince(timestamp_t const & time, GestureBuffer & ape
 	apexes = apexBuffer_.EventsSince(time);
 }
 
-Point3D
+Velocity3D
 SpeedFeatureExtractor::AverageVelocitySince(timestamp_t const & time)
 {
-	auto eventsSince = speedBuffer_.EventsSince(time);
-	auto data = eventsSince.DataAs<IteratorLinestring>();
-	Point3D centroid;
-	bg::centroid(data, centroid);
-	return centroid;
+	auto positionsSince = positionBuffer_.EventsSince(time);
+	if (positionsSince.Size() < 2) { return Velocity3D(); }
+
+	auto first = positionsSince.Front();
+	auto last = positionsSince.Back();
+
+	auto movement = geometry::distance_vector(first.data, last.data);
+	bu::quantity<si::time> duration = seconds_t(last.timestamp - first.timestamp).count() * si::seconds;
+	
+	velocity_t v_x(movement.get_x() / duration);
+	velocity_t v_y(movement.get_y() / duration);
+	velocity_t v_z(movement.get_z() / duration);
+
+	return Velocity3D(v_x, v_y, v_z);
 }
 
 void

@@ -38,7 +38,7 @@ namespace geometry
 	}
 
 	template<typename T>
-	inline coord_t abs(T const & point)
+	inline typename T::quantity abs(T const & point)
 	{
 		return boost::units::sqrt(
 			boost::units::pow<2>(point.get_x()) +

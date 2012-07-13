@@ -70,6 +70,16 @@ public: // Range class
 			return DataPair(timestampRange_[i], dataRange_[i]);
 		}
 
+		DataPair Front()
+		{
+			return DataPair(timestampRange_.front(), dataRange_.front());
+		}
+
+		DataPair Back()
+		{
+			return DataPair(timestampRange_.back(), dataRange_.back());
+		}
+
 		// Traversal
 
 		// Call func for each (timestamp, data) pair
