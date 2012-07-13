@@ -62,6 +62,12 @@ SpeedFeatureExtractor::ApexesSince(timestamp_t const & time, GestureBuffer & ape
 	apexes = apexBuffer_.EventsSince(time);
 }
 
+void
+SpeedFeatureExtractor::AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timestamp_t> const & times)
+{
+	// TODO
+}
+
 Velocity3D
 SpeedFeatureExtractor::AverageVelocitySince(timestamp_t const & time)
 {

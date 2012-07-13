@@ -51,6 +51,26 @@ DimensionFeatureExtractor::MagnitudeSince(timestamp_t const & time)
 	return geometry::distance_vector(envelope.min_corner(), envelope.max_corner());
 }
 
+void
+DimensionFeatureExtractor::EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timestamp_t> const & times)
+{
+	segments.clear();
+	total = bg::make_zero<Box3D>();
+
+	if (times.size() < 2) { return; }
+
+	for(int i = 1; i < times.size(); ++i) {
+		auto const & first = times[i - 1];
+		auto const & second = times[i];
+		segments.push_back(Box3D());
+
+		auto events = positionBuffer_.EventsBetween(first, second);
+		auto linestring = events.DataAs<IteratorLinestring>();
+		bg::envelope(linestring, segments.back());
+		bg::expand(total, segments.back());
+	}
+}
+
 
 } // namespace FeatureExtractor
 } // namespace cf

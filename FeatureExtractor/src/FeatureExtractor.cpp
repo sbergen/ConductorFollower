@@ -15,7 +15,7 @@ Extractor::Create()
 }
 
 FeatureExtractor::FeatureExtractor()
-	: positionBuffer_(128)
+	: positionBuffer_(512)
 	, gestureBuffer_(128)
 
 	, previousBeat_(timestamp_t::min())

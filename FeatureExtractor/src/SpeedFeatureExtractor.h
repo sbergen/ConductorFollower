@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <boost/utility.hpp>
 
 #include "types.h"
@@ -18,6 +20,9 @@ public:
 	void Update();
 	void BeatsSince(timestamp_t const & time, GestureBuffer & beats);
 	void ApexesSince(timestamp_t const & time, GestureBuffer & apexes);
+
+	void AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timestamp_t> const & times);
+
 	Velocity3D AverageVelocitySince(timestamp_t const & time);
 
 private:

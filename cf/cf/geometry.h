@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-#include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -21,7 +20,6 @@ typedef Point3D::quantity coord_t;
 typedef Velocity3D::quantity velocity_t;
 
 typedef boost::geometry::model::box<Point3D> Box3D;
-typedef boost::geometry::model::linestring<Point3D> Linestring3D;
 
 template<typename T>
 struct IteratorLinestring : public boost::iterator_range<T>
