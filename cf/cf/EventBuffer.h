@@ -54,9 +54,9 @@ public: // Range class
 	public:
 		// Checks
 
-		typename DataBuffer::size_type Size() { return  dataRange_.size(); }
+		typename DataBuffer::size_type Size() const { return  dataRange_.size(); }
 		
-		bool Empty() { return dataRange_.empty(); }
+		bool Empty() const { return dataRange_.empty(); }
 
 		TTimestamp LastTimestamp() const
 		{
@@ -65,17 +65,17 @@ public: // Range class
 		}
 
 		// Data access
-		DataPair operator[](size_t i)
+		DataPair operator[](size_t i) const 
 		{
 			return DataPair(timestampRange_[i], dataRange_[i]);
 		}
 
-		DataPair Front()
+		DataPair Front() const 
 		{
 			return DataPair(timestampRange_.front(), dataRange_.front());
 		}
 
-		DataPair Back()
+		DataPair Back() const 
 		{
 			return DataPair(timestampRange_.back(), dataRange_.back());
 		}

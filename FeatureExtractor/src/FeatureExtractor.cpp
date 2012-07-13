@@ -61,34 +61,40 @@ FeatureExtractor::AverageVelocitySince(timestamp_t const & time)
 {
 	auto positionsSince = positionBuffer_.EventsSince(time);
 	if (positionsSince.Size() < 2) { return Velocity3D(); }
-
-	auto first = positionsSince.Front();
-	auto last = positionsSince.Back();
-
-	auto movement = geometry::distance_vector(first.data, last.data);
-	auto duration = time::quantity_cast<time_quantity>(last.timestamp - first.timestamp);
-	
-	return movement / duration;
+	return VelocityFromRange(positionsSince);
 }
 
 void
-FeatureExtractor::EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timestamp_t> const & times)
+FeatureExtractor::EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timespan_t> const & times)
 {
 	segments.clear();
 	total = bg::make_zero<Box3D>();
 
-	if (times.size() < 2) { return; }
+	if (times.empty()) { return; }
 
-	for(int i = 1; i < times.size(); ++i) {
-		auto const & first = times[i - 1];
-		auto const & second = times[i];
-		segments.push_back(Box3D());
-
-		auto events = positionBuffer_.EventsBetween(first, second);
+	for(int i = 0; i < times.size(); ++i) {
+		auto events = positionBuffer_.EventsBetween(times[i].first, times[i].second);
 		auto linestring = events.DataAs<IteratorLinestring>();
 		bg::envelope(linestring, segments.back());
 		bg::expand(total, segments.back());
 	}
+}
+
+void
+FeatureExtractor::AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timespan_t> const & times)
+{
+	segments.clear();
+	total = bg::make_zero<Velocity3D>();
+
+	if (times.empty()) { return; }
+
+	for(int i = 0; i < times.size(); ++i) {
+		auto events = positionBuffer_.EventsBetween(times[i].first, times[i].second);
+		segments.push_back(VelocityFromRange(events));
+		bg::add_point(total, segments.back());
+	}
+
+	bg::divide_value(total, segments.size());
 }
 
 void
@@ -143,6 +149,17 @@ FeatureExtractor::DetectStartGesture()
 	// Done!
 	timestamp_t estimate = apexes[0].timestamp + gestureLength;
 	StartGestureDetected(previousBeat, estimate);
+}
+
+Velocity3D
+FeatureExtractor::VelocityFromRange(PositionBuffer::Range const & range)
+{
+	auto first = range.Front();
+	auto last = range.Back();
+
+	auto movement = geometry::distance_vector(first.data, last.data);
+	auto duration = time::quantity_cast<time_quantity>(last.timestamp - first.timestamp);
+	return movement / duration;
 }
 
 } // namespace FeatureExtractor

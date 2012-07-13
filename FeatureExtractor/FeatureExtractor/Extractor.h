@@ -38,6 +38,9 @@ public:
 	virtual Point3D MagnitudeOfMovementSince(timestamp_t const & time) = 0;
 	virtual Velocity3D AverageVelocitySince(timestamp_t const & time) = 0;
 
+	virtual void EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timespan_t> const & times) = 0;
+	virtual void AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timespan_t> const & times) = 0;
+
 	EventSignal BeatDetected;
 	EventSignal ApexDetected;
 	StartGestureSignal StartGestureDetected;

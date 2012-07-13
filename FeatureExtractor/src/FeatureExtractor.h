@@ -22,12 +22,14 @@ public: // Extractor implementation
 	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
 	Velocity3D AverageVelocitySince(timestamp_t const & time);
 
-	void EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timestamp_t> const & times);
-	void AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timestamp_t> const & times);
+	void EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timespan_t> const & times);
+	void AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timespan_t> const & times);
 
 private:
 	void DoShortTimeAnalysis();
 	void DetectStartGesture();
+
+	Velocity3D VelocityFromRange(PositionBuffer::Range const & range);
 
 private: // Buffers
 	PositionBuffer positionBuffer_;

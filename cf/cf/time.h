@@ -11,6 +11,8 @@ typedef boost::chrono::milliseconds milliseconds_t;
 typedef boost::chrono::microseconds microseconds_t;
 typedef boost::chrono::duration<double> seconds_t;
 
+typedef std::pair<timestamp_t, timestamp_t> timespan_t;
+
 typedef boost::units::quantity<boost::units::si::time> time_quantity;
 
 namespace time {
