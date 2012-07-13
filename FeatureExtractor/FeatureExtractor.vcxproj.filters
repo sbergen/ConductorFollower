@@ -14,13 +14,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\DimensionFeatureExtractor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\FeatureExtractor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpeedFeatureExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\types.h">
@@ -31,13 +25,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\DimensionFeatureExtrator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\FeatureExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SpeedFeatureExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

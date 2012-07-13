@@ -1,12 +1,12 @@
 #pragma once
 
+#include <vector>
+
 #include "cf/LockfreeThread.h"
 
 #include "FeatureExtractor/Extractor.h"
 
 #include "types.h"
-#include "DimensionFeatureExtractor.h"
-#include "SpeedFeatureExtractor.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -19,23 +19,23 @@ public:
 
 public: // Extractor implementation
 	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
-	Point3D MagnitudeOfMovementSince(timestamp_t const & time) { return dimExtractor_.MagnitudeSince(time); }
-	Velocity3D AverageVelocityOfMovementSince(timestamp_t const & time) { return speedExtractor_.AverageVelocitySince(time); }
+	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
+	Velocity3D AverageVelocitySince(timestamp_t const & time);
+
+	void EnvelopesForTimespans(Box3D & total, std::vector<Box3D> & segments, std::vector<timestamp_t> const & times);
+	void AverageVelocityForTimespans(Velocity3D & total, std::vector<Velocity3D> & segments, std::vector<timestamp_t> const & times);
 
 private:
-	void UpdateLatestBeat(timestamp_t const & time);
+	void DoShortTimeAnalysis();
 	void DetectStartGesture();
 
 private: // Buffers
 	PositionBuffer positionBuffer_;
-	GestureBuffer gestureBuffer_;
+	GestureBuffer beatBuffer_;
+	GestureBuffer apexBuffer_;
 
 private: // Other data
-	timestamp_t previousBeat_;
-
-private: // slave extractors
-	DimensionFeatureExtractor dimExtractor_;
-	SpeedFeatureExtractor speedExtractor_;
+	Velocity3D prevAvgSeed_;
 };
 
 } // namespace FeatureExtractor
