@@ -57,7 +57,7 @@ BOOST_UNITS_STATIC_CONSTANT(seconds, physical_time);
 typedef bu::unit<tempo_dimension, system> tempo;
 BOOST_UNITS_STATIC_CONSTANT(beats_per_second, tempo);
 
-// Beat divisions
+// scaled units
 
 typedef bu::make_scaled_unit<musical_time, bu::scale<2, bu::static_rational<2> > >::type full_note_duration;
 BOOST_UNITS_STATIC_CONSTANT(full_note, full_note_duration);
@@ -75,6 +75,8 @@ typedef bu::make_scaled_unit<musical_time, bu::scale<2, bu::static_rational<-2> 
 BOOST_UNITS_STATIC_CONSTANT(sixteenth_note, sixteenth_note_duration);
 BOOST_UNITS_STATIC_CONSTANT(sixteenth_notes, sixteenth_note_duration);
 
+typedef bu::make_scaled_unit<tempo, bu::scale<60, bu::static_rational<-1> > >::type beats_per_minute_tempo;
+BOOST_UNITS_STATIC_CONSTANT(beats_per_minute, beats_per_minute_tempo);
 
 } // namespace score
 } // namespace cf

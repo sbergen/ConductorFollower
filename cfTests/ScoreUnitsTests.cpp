@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
+#include <boost/units/systems/si/prefixes.hpp>
+
 #include "cf/score_units.h"
 
 BOOST_AUTO_TEST_SUITE(ScoreUnitsTests)
@@ -50,6 +52,14 @@ BOOST_AUTO_TEST_CASE(TestDivisions)
 	dur = beat_duration(1.0 * score::half_note);
 	dur2 = beat_duration(8.0 * score::sixteenth_note);
 	BOOST_CHECK_CLOSE(dur.value(), dur2.value(), 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(TestTempoConversions)
+{
+	tempo_t midi_tempo((1.0 * score::quarter_note) / (500000 * bu::si::micro * bu::si::seconds));
+	tempo_t regular_tempo(120.0 * score::beats_per_minute);
+
+	BOOST_CHECK_CLOSE(midi_tempo.value(), regular_tempo.value(), 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
