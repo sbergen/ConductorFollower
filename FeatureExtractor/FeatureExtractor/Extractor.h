@@ -25,11 +25,13 @@ public:
 	static boost::shared_ptr<Extractor> Create();
 
 public: // types
-	typedef bs2::signal_type<void (timestamp_t const &), bs2::keywords::mutex_type<bs2::dummy_mutex> >::type EventSignal;
+	typedef bs2::keywords::mutex_type<bs2::dummy_mutex> DummyMutex;
+
+	typedef bs2::signal_type<void (timestamp_t const &), DummyMutex>::type EventSignal;
 
 	typedef bs2::signal_type<void (timestamp_t const & /* down beat time */,
 	                               timestamp_t const & /* estimated start time */),
-	                         bs2::keywords::mutex_type<bs2::dummy_mutex> >::type StartGestureSignal;
+	                         DummyMutex>::type StartGestureSignal;
 
 public:
 	virtual ~Extractor() {}
