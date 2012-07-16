@@ -123,6 +123,7 @@
     <ClCompile Include="EventBufferTests.cpp" />
     <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ScoreUnitsTests.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />
     <ClCompile Include="StringEnumTests.cpp" />
   </ItemGroup>
