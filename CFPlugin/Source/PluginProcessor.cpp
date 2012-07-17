@@ -16,6 +16,7 @@
 #include <boost/archive/text_oarchive.hpp>
 
 #include "cf/serialization.h"
+#include "cf/globals.h"
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -132,6 +133,7 @@ void CfpluginAudioProcessor::changeProgramName (int index, const String& newName
 //==============================================================================
 void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+	samplerate_ = sampleRate;
 	samplesPerBlock_ = samplesPerBlock;
 
 	follower_->SetBlockParameters(sampleRate, samplesPerBlock);
@@ -148,6 +150,8 @@ void CfpluginAudioProcessor::releaseResources()
 
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+	auto timeAtStartOfBlock = time::now();
+
 	/************************************************************************************/
 
 	if (!shouldRun.load()) {
@@ -201,6 +205,12 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
+
+	time_quantity elapsedTime = time::quantity_cast<time_quantity>(time::now() - timeAtStartOfBlock);
+	time_quantity blockSize((samplesPerBlock_ * score::samples) / (samplerate_ * score::samples_per_second));
+	if (elapsedTime > (0.3 * blockSize)) {
+		LOG("Possible xrun! Process callback took %1% (max: %2%)", elapsedTime, blockSize);
+	}
 }
 
 //==============================================================================

@@ -90,6 +90,7 @@ public: // Own stuff...
 private:
 
 	bool running_;
+	double samplerate_;
 	unsigned samplesPerBlock_;
 
 	typedef cf::ScoreFollower::Follower ScoreFollower;
