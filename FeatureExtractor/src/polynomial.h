@@ -46,7 +46,7 @@ bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
 	return true;
 }
 
-namespace {
+namespace detail {
 
 template<unsigned deg>
 unsigned d_coef(unsigned exponent)
@@ -60,7 +60,7 @@ unsigned d_coef<1>(unsigned exponent)
         return exponent;
 }
 
-} // anon namespace
+} // namespace detail
  
 template<unsigned n>
 Vector derivative(Vector const & coefs)
@@ -68,7 +68,7 @@ Vector derivative(Vector const & coefs)
 	const Vector::size_type size = coefs.size() - n;
     Vector r(size);
     for(Vector::size_type i = 0; i < size; ++i) {
-            r(i) = d_coef<n>(i + n) * coefs(i + n);
+            r(i) = detail::d_coef<n>(i + n) * coefs(i + n);
     }
     return r;
 }
