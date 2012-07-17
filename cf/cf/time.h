@@ -19,32 +19,18 @@ namespace time {
 
 inline timestamp_t now() { return boost::chrono::steady_clock::now(); }
 
-template<typename T, typename Y> T duration_cast(Y y) { return boost::chrono::duration_cast<T>(y); }
-
-template<typename T, typename Y> T quantity_cast(Y y) { return T(duration_cast<seconds_t>(y).count() * boost::units::si::seconds); }
-
-template<typename TTime, typename TMultiplier>
-TTime multiply(TTime const & time, TMultiplier const & multiplier)
-{
-	TMultiplier result = multiplier * time.count();
-	return TTime(static_cast<TTime::rep>(result));
-}
-
-template<typename TTime, typename TDivisor>
-TTime divide(TTime const & time, TDivisor const & divisor)
-{
-	TDivisor result = time.count() / divisor;
-	return TTime(static_cast<TTime::rep>(result));
-}
+// cast between Boost.Chrono and Boost.Units representations
+template<typename T, typename Y> T duration_cast(Y y) { return boost::chrono::duration_cast<T>(seconds_t(y.value())); }
+template<typename T, typename Y> T quantity_cast(Y y) { return T(boost::chrono::duration_cast<seconds_t>(y).count() * boost::units::si::seconds); }
 
 template<typename TTime, typename TDuration>
 void limitRange(TTime & time, TTime const & min, TTime const & max, TDuration assertThreshold = TDuration::zero())
 {
 	if (time < min) {
-		assert(duration_cast<TDuration>(min - time) < assertThreshold);
+		assert(boost::chrono::duration_cast<TDuration>(min - time) < assertThreshold);
 		time = min;
 	} else if (time > max) {
-		assert(duration_cast<TDuration>(time - max) < assertThreshold);
+		assert(boost::chrono::duration_cast<TDuration>(time - max) < assertThreshold);
 		time = max;
 	}
 }

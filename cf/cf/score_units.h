@@ -19,10 +19,12 @@ namespace bu = boost::units;
 
 // Base dimensions
 struct beat_base_dimension : public bu::base_dimension<beat_base_dimension, 1> {};
+struct sample_base_dimension : public bu::base_dimension<sample_base_dimension, 2> {};
 typedef bu::time_base_dimension time_base_dimension;
 
 // Direct dimensions
 typedef beat_base_dimension::dimension_type beat_dimension;
+typedef sample_base_dimension::dimension_type sample_dimension;
 typedef bu::time_dimension time_dimension;
 
 // Derived dimensions (these have no base dimension or unit)
@@ -30,14 +32,30 @@ typedef bu::derived_dimension<
 	beat_base_dimension, 1,
 	time_base_dimension, -1>::type tempo_dimension;
 
+typedef bu::derived_dimension<
+	sample_base_dimension, 1,
+	time_base_dimension, -1>::type samplerate_dimension;
+
 // Base units
-struct beat_base_unit : public bu::base_unit<beat_base_unit, beat_dimension, 1> {};
-//struct second_base_unit : public bu::base_unit<second_base_unit, time_dimension, 2> {};
+
+struct beat_base_unit : public bu::base_unit<beat_base_unit, beat_dimension, 1>
+{
+    static std::string name()   { return "beat"; }
+    static std::string symbol() { return "b"; }
+};
+
+struct sample_base_unit : public bu::base_unit<sample_base_unit, sample_dimension, 2>
+{
+    static std::string name()   { return "sample"; }
+    static std::string symbol() { return "1"; }
+};
+
 typedef bu::si::second_base_unit second_base_unit;
 
 // system
 typedef bu::make_system<
     beat_base_unit,
+	sample_base_unit,
 	second_base_unit>::type system;
 
 // Units
@@ -49,6 +67,14 @@ BOOST_UNITS_STATIC_CONSTANT(beat, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(beats, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(quarter_note, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(quarter_notes, musical_time);
+
+typedef bu::unit<sample_dimension, system> sample_count;
+BOOST_UNITS_STATIC_CONSTANT(sample, sample_count);
+BOOST_UNITS_STATIC_CONSTANT(samples, sample_count);
+
+typedef bu::unit<samplerate_dimension, system> samplerate;
+BOOST_UNITS_STATIC_CONSTANT(samples_per_second, samplerate);
+BOOST_UNITS_STATIC_CONSTANT(Hz, samplerate);
 
 typedef bu::unit<time_dimension, system> physical_time;
 BOOST_UNITS_STATIC_CONSTANT(second, physical_time);

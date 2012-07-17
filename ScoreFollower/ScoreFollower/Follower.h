@@ -22,7 +22,7 @@ class Follower : public boost::noncopyable
 {
 public:
 	// Container for fetching events for each block
-	typedef EventBuffer<ScoreEventPtr, unsigned> BlockBuffer;
+	typedef EventBuffer<ScoreEventPtr, samples_t> BlockBuffer;
 
 	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
 	typedef cf::RTReadRCU<Options::FollowerOptions> OptionsRCU;

@@ -71,7 +71,7 @@ void
 ScoreHelper::CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data,
 	Follower::BlockBuffer & events, InstrumentPatchSwitcher & patchSwitcher) const
 {
-	unsigned frameOffset = timeHelper_->ScoreTimeToFrameOffset(time);
+	samples_t frameOffset = timeHelper_->ScoreTimeToFrameOffset(time);
 	double velocity = NewVelocityAt(data->GetVelocity(), time);
 	
 	data->ApplyVelocity(velocity);

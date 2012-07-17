@@ -2,6 +2,8 @@
 
 #include <boost/utility.hpp>
 
+#include "ScoreFollower/types.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -11,22 +13,22 @@ public:
 
 	struct Result
 	{
-		Result() : eightsSincePrevious(-1), probability(0.0) {}
-		Result(int eights, double p) : eightsSincePrevious(eights), probability(p) {}
+		Result() : beatsSincePrevious(-1 * score::beats), probability(0.0) {}
+		Result(beats_t beats, double p) : beatsSincePrevious(beats), probability(p) {}
 
-		bool valid() { return eightsSincePrevious >= 1; }
+		bool valid() { return beatsSincePrevious > (0 * score::beats); }
 
-		int eightsSincePrevious;
+		beats_t beatsSincePrevious;
 
 		// This is a probablitiy normalized to the maximum of the "winning" PDF,
 		// not a real naive bayesian probablitiy!
 		double probability;
 	};
 
-	Result ClassifyBeat(double quartersSincePreviousBeat);
+	Result ClassifyBeat(beats_t beatsSincePreviousBeat);
 
 private:
-	double ProbabilityAt(double position, int meanAsEights, double deviation, double & normalizedProb);
+	double ProbabilityAt(beats_t position, int meanAsEights, double deviation, double & normalizedProb);
 };
 
 } // namespace ScoreFollower

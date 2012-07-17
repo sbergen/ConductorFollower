@@ -15,8 +15,11 @@ public:
 	beat_pos_t const & position() const { return position_; }
 	tempo_t const & tempo() const { return tempo_; }
 
-	// whole beat portion of time at this tempo
-	score_time_t::rep wholeBeats(score_time_t time) const { return (time - reference_) / tempo_; }
+	beats_t BeatsTo(score_time_t time) const { return (time - reference_) * tempo_; }
+
+	/*
+	// whole beat portion of time at this tempo, TODO FIX!!!
+	beats_t wholeBeats(score_time_t time) const { return beats_t((time - reference_) / tempo_); }
 		
 	// remainder (not including whole beats) of time at this tempo
 	score_time_t remainder(score_time_t time) const { return (time - reference_) % tempo_; }
@@ -26,6 +29,7 @@ public:
 	{
 		return static_cast<beat_pos_t>(remainder(time).count()) / tempo_.count();
 	}
+	*/
 
 private:
 	score_time_t reference_;

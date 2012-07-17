@@ -30,7 +30,7 @@ InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instru
 }
 
 void
-InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed)
+InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed)
 {
 	if (data->IsNoteOn()) {
 		SwitchPathIfNecessary(events, data, position, currentSpeed);
@@ -39,7 +39,7 @@ InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuff
 }
 
 void
-InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, unsigned position, double currentSpeed)
+InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed)
 {
 	PatchMapper::NoteContext noteContext(data->GetNoteLength(), currentSpeed, data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext);

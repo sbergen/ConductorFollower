@@ -12,6 +12,8 @@ namespace bu = boost::units;
 typedef bu::quantity<score::musical_time> beat_duration;
 typedef bu::quantity<score::physical_time> time_duration;
 typedef bu::quantity<score::tempo> tempo_t;
+typedef bu::quantity<score::samplerate> samplerate_t;
+typedef bu::quantity<score::sample_count> block_size_t;
 
 BOOST_AUTO_TEST_CASE(TestBasics)
 {
@@ -60,6 +62,16 @@ BOOST_AUTO_TEST_CASE(TestTempoConversions)
 	tempo_t regular_tempo(120.0 * score::beats_per_minute);
 
 	BOOST_CHECK_CLOSE(midi_tempo.value(), regular_tempo.value(), 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(BasicSamplerateTest)
+{
+	samplerate_t fs = 44100 * score::samples_per_second;
+	block_size_t blockSize = 128 * score::samples;
+	time_duration blockDuration(blockSize / fs);
+
+	double manualDuration = 128.0 / 44100.0;
+	BOOST_CHECK_CLOSE(blockDuration.value(), manualDuration, 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

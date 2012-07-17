@@ -19,5 +19,5 @@ sf::ScoreEventPtr
 MidiEvent::MakeKeyswitch(int note)
 {
 	auto msg = MidiMessage::noteOn(msg_.getChannel(), note, 1.0f);
-	return boost::make_shared<MidiEvent>(msg, sf::score_time_t::zero());
+	return boost::make_shared<MidiEvent>(msg, 0.0 * cf::score::seconds);
 }

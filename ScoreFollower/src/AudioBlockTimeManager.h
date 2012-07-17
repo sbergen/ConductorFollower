@@ -12,10 +12,10 @@ namespace ScoreFollower {
 class AudioBlockTimeManager : public boost::noncopyable
 {
 public:
-	AudioBlockTimeManager(unsigned samplerate, unsigned blockSize);
+	AudioBlockTimeManager(samplerate_t samplerate, samples_t blockSize);
 	
 	std::pair<real_time_t, real_time_t> GetRangeForNow();
-	unsigned ToSampleOffset(real_time_t const & time) const;
+	samples_t ToSampleOffset(real_time_t const & time) const;
 
 	real_time_t const & CurrentBlockStart() const { return currentBlockStart_; }
 	real_time_t const & CurrentBlockEnd() const { return currentBlockEnd_; }
@@ -25,14 +25,14 @@ private:
 	std::pair<real_time_t, real_time_t> EstimateBlock();
 	void UpdateStretchFactor();
 
-	unsigned const samplerate_;
-	unsigned const blockSize_;
+	samplerate_t const samplerate_;
+	samples_t const blockSize_;
 
-	seconds_t const theoreticalBlockDuration_;
+	time_quantity const theoreticalBlockDuration_;
 
 	real_time_t currentBlockStart_;
 	real_time_t currentBlockEnd_;
-	seconds_t::rep currentBlockStretch_;
+	double currentBlockStretch_;
 };
 
 } // namespace ScoreFollower

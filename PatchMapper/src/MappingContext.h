@@ -12,15 +12,13 @@ public:
 	MappingContext(InstrumentContext const & instrumentContext, NoteContext const & noteContext)
 		: instrumentContext(instrumentContext)
 		, noteContext(noteContext)
-	{
-		auto const actualLength = time::multiply(noteContext.length, noteContext.tempo);
-		noteLength = time::duration_cast<seconds_t>(actualLength);
-	}
+		, noteLength(noteContext.length * noteContext.tempo)
+	{}
 
 	InstrumentContext const & instrumentContext;
 	NoteContext const & noteContext;
 
-	seconds_t noteLength;
+	time_quantity const noteLength;
 };
 
 } // namespace PatchMapper

@@ -4,12 +4,12 @@
 namespace cf {
 namespace ScoreFollower {
 
-AudioBlockTimeManager::AudioBlockTimeManager(unsigned samplerate, unsigned blockSize)
+AudioBlockTimeManager::AudioBlockTimeManager(samplerate_t samplerate, samples_t blockSize)
 	: samplerate_(samplerate)
 	, blockSize_(blockSize)
 	, currentBlockStart_(real_time_t::min())
 	, currentBlockEnd_(real_time_t::min())
-	, theoreticalBlockDuration_(static_cast<seconds_t::rep>(blockSize_) / samplerate_)
+	, theoreticalBlockDuration_(blockSize_ / samplerate_)
 {
 }
 	
@@ -31,19 +31,16 @@ AudioBlockTimeManager::GetRangeForNow()
 	return std::make_pair(currentBlockStart_, currentBlockEnd_);
 }
 
-unsigned
+samples_t
 AudioBlockTimeManager::ToSampleOffset(real_time_t const & time) const
 {
 	assert(time >= currentBlockStart_);
 	assert(time <= currentBlockEnd_);
 
-	real_time_t::duration offset = time - currentBlockStart_;
-	seconds_t offsetInSeconds = time::duration_cast<seconds_t>(offset);
-	offsetInSeconds *= currentBlockStretch_;
+	time_quantity offset = time::quantity_cast<time_quantity>(time - currentBlockStart_);
+	offset *= currentBlockStretch_;
 
-	// TODO change rounding policy?
-	// The timing difference is so small it shouldn't matter...
-	return static_cast<unsigned>(offsetInSeconds.count() * blockSize_);
+	return offset * samplerate_;
 }
 
 std::pair<real_time_t, real_time_t>
@@ -57,9 +54,9 @@ AudioBlockTimeManager::EstimateBlock()
 void
 AudioBlockTimeManager::UpdateStretchFactor()
 {
-	seconds_t duration = time::duration_cast<seconds_t>(currentBlockEnd_ - currentBlockStart_);
+	time_quantity duration = time::quantity_cast<time_quantity>(currentBlockEnd_ - currentBlockStart_);
 	// Stretch or squeeze the duration to fit into the theoretical length
-	currentBlockStretch_ =  theoreticalBlockDuration_.count() * duration.count();
+	currentBlockStretch_ =  duration / theoreticalBlockDuration_;
 }
 
 } // namespace ScoreFollower

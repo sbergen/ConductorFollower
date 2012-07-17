@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
+#include <boost/units/io.hpp>
+
 #include "TimeWarper.h"
 
 BOOST_AUTO_TEST_SUITE(TimeWarperTests)
@@ -10,7 +12,7 @@ using namespace cf::ScoreFollower;
 BOOST_AUTO_TEST_CASE(TestLinearWarp)
 {
 	real_time_t referenceRealTime = time::now();
-	score_time_t referenceScoreTime = score_time_t::zero();
+	score_time_t referenceScoreTime = 0.0 * score::seconds;
 
 	speed_t linearSpeed = 2.0;
 
@@ -19,8 +21,8 @@ BOOST_AUTO_TEST_CASE(TestLinearWarp)
 	warper.FixTimeMapping(referenceRealTime, referenceScoreTime, linearSpeed);
 
 	// Take a reference point and do a manual warp
-	score_time_t originalScoreTime = score_time_t(100);
-	score_time_t expectedScoreTime = time::multiply(originalScoreTime, linearSpeed);
+	score_time_t originalScoreTime = 0.1 * score::seconds;
+	score_time_t expectedScoreTime = originalScoreTime * linearSpeed;
 
 	// Calculate the respective real time
 	real_time_t realTime = referenceRealTime + time::duration_cast<duration_t>(originalScoreTime);
@@ -32,7 +34,7 @@ BOOST_AUTO_TEST_CASE(TestLinearWarp)
 BOOST_AUTO_TEST_CASE(TestWarpAtSpeedChange)
 {
 	real_time_t referenceRealTime = time::now();
-	score_time_t referenceScoreTime = score_time_t::zero();
+	score_time_t referenceScoreTime = 0.0 * score::seconds;
 
 	speed_t linearSpeed = 2.0;
 
@@ -41,8 +43,8 @@ BOOST_AUTO_TEST_CASE(TestWarpAtSpeedChange)
 	warper.FixTimeMapping(referenceRealTime, referenceScoreTime, linearSpeed);
 
 	// Take a reference point and do a manual warp
-	score_time_t originalScoreTime = score_time_t(100);
-	score_time_t expectedScoreTime = time::multiply(originalScoreTime, linearSpeed);
+	score_time_t originalScoreTime = 0.1 * score::seconds;
+	score_time_t expectedScoreTime = originalScoreTime * linearSpeed;
 
 	// Calculate the respective real time
 	real_time_t realTime = referenceRealTime + time::duration_cast<duration_t>(originalScoreTime);
@@ -57,7 +59,7 @@ BOOST_AUTO_TEST_CASE(TestWarpAtSpeedChange)
 BOOST_AUTO_TEST_CASE(TestMoreComplexWarp)
 {
 	real_time_t referenceRealTime = time::now();
-	score_time_t referenceScoreTime = score_time_t::zero();
+	score_time_t referenceScoreTime = 0.0 * score::seconds;
 
 	speed_t speed1 = 2.0;
 	speed_t speed2 = 3.5;
@@ -67,7 +69,7 @@ BOOST_AUTO_TEST_CASE(TestMoreComplexWarp)
 	warper.FixTimeMapping(referenceRealTime, referenceScoreTime, speed1);
 
 	// Create a second warp point
-	score_time_t warpPointSt = score_time_t(1000000000);
+	score_time_t warpPointSt = score_time_t(1000000000 * score::seconds);
 	real_time_t warpPointRt = warper.InverseWarpTimestamp(warpPointSt);
 	warper.FixTimeMapping(warpPointRt, warpPointSt, speed2);
 
@@ -77,9 +79,9 @@ BOOST_AUTO_TEST_CASE(TestMoreComplexWarp)
 	score_time_t afterWarped = warper.WarpTimestamp(warpPointRt + interval);
 
 	// Manual warp
-	score_time_t intervalSt = time::duration_cast<score_time_t>(interval);
-	score_time_t beforeExpected = warpPointSt - time::multiply(intervalSt, speed1);
-	score_time_t afterExpected = warpPointSt + time::multiply(intervalSt, speed2);
+	score_time_t intervalSt = time::quantity_cast<score_time_t>(interval);
+	score_time_t beforeExpected = warpPointSt - intervalSt * speed1;
+	score_time_t afterExpected = warpPointSt + intervalSt * speed2;
 
 	// Check
 	BOOST_CHECK_EQUAL(beforeWarped, beforeExpected);

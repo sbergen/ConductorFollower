@@ -166,10 +166,10 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	for (unsigned i = 1; i < trackCount; ++i) {
 		follower_->GetTrackEventsForBlock(i, eventBuffer_);
 		auto events = eventBuffer_.AllEvents();
-		events.ForEach([this, &midiMessages, i](unsigned int sample, ScoreEventPtr message)
+		events.ForEach([this, &midiMessages, i](samples_t sample, ScoreEventPtr message)
 		{
-			assert(sample >= 0);
-			assert(sample < samplesPerBlock_);
+			assert(sample.value() >= 0);
+			assert(sample.value() < samplesPerBlock_);
 
 			MidiMessage msg = midi_event_cast(message)->Message();
 
@@ -180,7 +180,8 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 			}
 
 			msg.setChannel(i);
-			midiMessages.addEvent(msg, sample);
+			// truncating is probably the right thing to do...
+			midiMessages.addEvent(msg, static_cast<unsigned>(sample.value()));
 		});
 	}
 

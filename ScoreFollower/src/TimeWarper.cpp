@@ -1,5 +1,7 @@
 #include "TimeWarper.h"
 
+#include "cf/globals.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -17,9 +19,7 @@ TimeWarper::WarpPoint::Warp(real_time_t const & time) const
 	assert(time >= realTime_);
 
 	duration_t diff = time - realTime_;
-	duration_t warpedDuration(static_cast<duration_t::rep>(diff.count() * speed_));
-
-	score_time_t progress = boost::chrono::duration_cast<score_time_t>(warpedDuration);
+	score_time_t progress = time::quantity_cast<score_time_t>(diff) * speed_;
 	return scoreTime_ + progress;
 }
 
@@ -30,11 +30,12 @@ TimeWarper::WarpPoint::InverseWarp(score_time_t const & time) const
 	// Only allow warping after the fixed point
 	assert(time >= scoreTime_);
 
-	duration_t diff = time - scoreTime_;
-	duration_t warpedDuration(static_cast<duration_t::rep>(diff.count() * (1.0 / speed_)));
+	score_time_t diff = time - scoreTime_;
+	score_time_t progress = diff / speed_;
 
-	score_time_t progress = boost::chrono::duration_cast<score_time_t>(warpedDuration);
-	return realTime_ + progress;
+	real_time_t result = realTime_ + time::duration_cast<duration_t>(progress);
+
+	return result;
 }
 
 TimeWarper::TimeWarper()
@@ -54,7 +55,7 @@ TimeWarper::WarpTimestamp(real_time_t const & time) const
 {
 	auto history = warpHistory_.EventsSinceInclusive(time);
 	if (history.Empty()) {
-		return score_time_t::zero();
+		return 0.0 * score::seconds;
 	} else {
 		return history[0].data.Warp(time);
 	}
@@ -95,7 +96,7 @@ TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::R
 	WarpPoint const * point = &searchRange[0].data;
 	searchRange.ForEachWhile([&time, &point](real_time_t const &, WarpPoint const & p) -> bool
 	{
-		if (time >= p.scoreTime()) { return false; }
+		if (p.scoreTime() > time) { return false; }
 		point = &p;
 		return true;
 	});

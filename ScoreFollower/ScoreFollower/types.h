@@ -1,21 +1,29 @@
 #pragma once
 
 #include "cf/time.h"
+#include "cf/score_units.h"
 
 namespace cf {
 namespace ScoreFollower {
 
-typedef microseconds_t score_time_t;
+namespace bu = boost::units;
+
+// Wall time uses Boost.Chrono
 typedef timestamp_t real_time_t;
 
-// Tempo is microseconds per quarter note 
-typedef microseconds_t tempo_t;
+// Score time, beats and tempo in Boost.Units
+typedef bu::quantity<score::physical_time> score_time_t;
+typedef bu::quantity<score::tempo> tempo_t;
+typedef bu::quantity<score::musical_time> beat_pos_t;
+typedef beat_pos_t beats_t;
 
 // Speed is relative speed (i.e. 1.0 == normal speed)
+// i.e. dimensionless in Boost.Units
 typedef double speed_t;
 
-// Beat position is plain beats, including fraction
-typedef double beat_pos_t;
+// Sample related stuff
+typedef bu::quantity<score::samplerate> samplerate_t;
+typedef bu::quantity<score::sample_count> samples_t;
 
 } // namespace ScoreFollower
 } // namespace cf

@@ -33,14 +33,15 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime)
 
 	// Beginning (TODO, clean up)
 	if (beatHistory_.AllEvents().Size() == 2) {
-		tempo_t tempo = tempoMap_.GetTempoAt(score_time_t::zero()).tempo();
+		tempo_t tempo = tempoMap_.GetTempoAt(0.0 * score::seconds).tempo();
 		auto beats = beatHistory_.AllEvents();
 		real_time_t firstBeat = beats[0].timestamp;
 		real_time_t secondBeat = beats[1].timestamp;
-		tempo_t cTempo = time::duration_cast<tempo_t>(secondBeat - firstBeat);
-		speed_ = static_cast<speed_t>(tempo.count()) / cTempo.count();
+		time_quantity beatDiff = time::quantity_cast<time_quantity>(secondBeat - firstBeat);
+		tempo_t conductedTempo(1.0 * score::beat / beatDiff);
+		speed_ = conductedTempo / tempo;
 
-		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", cTempo, speed_, secondBeat, firstBeat);
+		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", conductedTempo, speed_, secondBeat, firstBeat);
 	}
 }
 
@@ -57,7 +58,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	speed_ = SpeedFromBeatCatchup(tempoNow, 1.5);
+	speed_ = SpeedFromBeatCatchup(tempoNow, 1.5 * score::beats);
 
 	// TODO limit better
 	if (speed_ > 2.0) { speed_ = 2.0; }
@@ -72,8 +73,8 @@ TempoFollower::BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time)
 {
 	// Special case for the first two beats
-	if (beatHistory_.AllEvents().Size() == 0) { return BeatClassification(-1, 1.0); }
-	if (beatHistory_.AllEvents().Size() == 1) { return BeatClassification(2, 1.0); }
+	if (beatHistory_.AllEvents().Size() == 0) { return BeatClassification(-1 * score::beats, 1.0); }
+	if (beatHistory_.AllEvents().Size() == 1) { return BeatClassification(2 * score::beats, 1.0); }
 
 	score_time_t prevBeatScoreTime = timeWarper_.WarpTimestamp(beatHistory_.AllEvents().LastTimestamp());
 	TempoPoint prevTempoPoint = tempoMap_.GetTempoAt(prevBeatScoreTime);
@@ -83,10 +84,12 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 	
 	beat_pos_t rawOffset = tempoPoint.position() - prevTempoPoint.position();
 	auto classification = beatClassifier_.ClassifyBeat(rawOffset);
-	beat_pos_t offset = rawOffset - (static_cast<beat_pos_t>(classification.eightsSincePrevious) / 2);
+	beat_pos_t offset = rawOffset - classification.beatsSincePrevious;
 
 	// Remove beats that happen "too soon"
-	if (classification.eightsSincePrevious == 1 && classification.probability < 0.1) {
+	if ((classification.beatsSincePrevious < beats_t(1.0  * score::eight_note)) &&
+		classification.probability < 0.1)
+	{
 		LOG("Dropping beat at %1%, prob: %2%", time, classification.probability);
 		classification.probability = 0.0;
 	}
@@ -98,10 +101,16 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 speed_t
 TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
 {
-	tempo_t actualTempo = time::divide(tempoNow.tempo(), speed_);
-	score_time_t catchup = time::multiply(actualTempo, BeatOffsetEstimate());
-	tempo_t newTempo = actualTempo + time::divide(catchup, catchupTime);
-	speed_t speed = static_cast<speed_t>(tempoNow.tempo().count()) / newTempo.count();
+	beats_t stretchedLength = catchupTime + BeatOffsetEstimate();
+	speed_t speed = stretchedLength / catchupTime;
+
+	/*
+	tempo_t actualTempo = tempoNow.tempo() * speed_;
+	score_time_t catchup(BeatOffsetEstimate() / actualTempo);
+	score_time_t lengthOfTimespan = (catchupTime / actualTempo) + catchup;
+	tempo_t newTempo(catchupTime / lengthOfTimespan);
+	speed_t speed = newTempo / tempoNow.tempo();
+	*/
 
 	assert(speed >= 0.0);
 	return speed;
@@ -111,7 +120,7 @@ beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
 	boost::array<double, 4> weights = { 10.0, 6.0, 2.0, 1.0 };
-	beat_pos_t weightedSum = 0.0;
+	beat_pos_t weightedSum = 0.0 * score::beats;
 	double normalizationTerm = 0.0;
 
 	auto wIt = weights.begin();
@@ -125,7 +134,7 @@ TempoFollower::BeatOffsetEstimate() const
 		return ++wIt == wEnd;
 	});
 
-	double estimate = weightedSum / normalizationTerm;
+	beat_pos_t estimate = weightedSum / normalizationTerm;
 	return estimate;
 }
 

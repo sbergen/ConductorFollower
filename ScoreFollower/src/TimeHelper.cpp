@@ -17,7 +17,9 @@ TimeHelper::TimeHelper(Follower & parent)
 void
 TimeHelper::SetBlockParameters(unsigned samplerate, unsigned blockSize)
 {
-	timeManager_ = boost::make_shared<AudioBlockTimeManager>(samplerate, blockSize);
+	timeManager_ = boost::make_shared<AudioBlockTimeManager>(
+		samplerate * score::samples_per_second,
+		blockSize * score::samples);
 }
 
 void
@@ -45,7 +47,7 @@ TimeHelper::FixScoreRange()
 	// Now use the new estimate for this block
 	scoreRange.second = timeWarper_.WarpTimestamp(rtRange_.second);
 
-	if (scoreRange.first != score_time_t::zero()) {
+	if (scoreRange.first != 0.0 * score::seconds) {
 		assert(scoreRange_.second == scoreRange.first);
 	}
 	scoreRange_ = scoreRange;
@@ -58,7 +60,7 @@ TimeHelper::RegisterBeat(real_time_t const & time)
 	tempoFollower_.RegisterBeat(time);
 }
 
-unsigned
+samples_t
 TimeHelper::ScoreTimeToFrameOffset(score_time_t const & time) const
 {
 	real_time_t const & ref = timeManager_->CurrentBlockStart();

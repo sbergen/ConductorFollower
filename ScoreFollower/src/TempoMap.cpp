@@ -45,14 +45,14 @@ TempoMap::ReadTempo(TempoReaderPtr reader)
 
 	while (reader->NextEvent(timestamp, tempo)) {
 		// If the first tempo change is not at zero, insert default tempo at beginning
-		if (first && timestamp > score_time_t::zero()) {
+		if (first && timestamp > 0.0 * score::seconds) {
 			EnsureChangesNotEmpty();
 			previousChange = changes_.AllEvents()[0].data;
 			first = false;
 		}
 
 		// Then continue normally...
-		beat_pos_t pos = first ? 0.0 : previousChange.GetTempoAt(timestamp).position();
+		beat_pos_t pos = first ? (0.0 * score::beats) : previousChange.GetTempoAt(timestamp).position();
 		first = false;
 
 		LOG("Tempo change, timestamp: %1%, pos: %2%, tempo: %3%", timestamp, pos, tempo);
@@ -79,9 +79,9 @@ void
 TempoMap::EnsureChangesNotEmpty()
 {
 	if (changes_.AllEvents().Empty()) {
-		seconds_t qDuration(60.0/*s*/ / 120 /*bpm*/);
-		TempoPoint tp(score_time_t::zero(), 0.0, time::duration_cast<tempo_t>(qDuration));
-		changes_.RegisterEvent(score_time_t::zero(), TempoChange(score_time_t::zero(), tp));
+		tempo_t tempo(120.0 * score::beats_per_minute);
+		TempoPoint tp(0.0 * score::seconds, 0.0 * score::beats, tempo);
+		changes_.RegisterEvent(0.0 * score::seconds, TempoChange(0.0 * score::seconds, tp));
 	}
 }
 
@@ -96,7 +96,7 @@ TempoMap::TempoChange::TempoChange(score_time_t const & timestamp, TempoPoint co
 TempoPoint
 TempoMap::TempoChange::GetTempoAt(score_time_t const & time) const
 {
-	beat_pos_t position = tempo_.position() + tempo_.wholeBeats(time) + tempo_.fraction(time);
+	beat_pos_t position = tempo_.position() + tempo_.BeatsTo(time);
 	return TempoPoint(time, position, tempo_.tempo());
 }
 

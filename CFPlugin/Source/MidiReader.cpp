@@ -58,14 +58,13 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 {
 	assert(current_ < count_);
 	
-	seconds_t seconds(sequence_.getEventTime(current_));
-	timestamp = time::duration_cast<score_time_t>(seconds);
+	timestamp = sequence_.getEventTime(current_) * score::seconds;
 	
 	auto ePtr = sequence_.getEventPointer(current_);
-	double dqDuration = ePtr->message.getTempoSecondsPerQuarterNote();
-	seconds_t qDuration(dqDuration);
-	data = time::duration_cast<tempo_t>(qDuration);
-
+	auto rawTempo = (ePtr->message.getTempoSecondsPerQuarterNote() * score::seconds) / (1.0 * score::quarter_note);
+	// The two tempo representations are each others inverses
+	data = tempo_t(1.0 / rawTempo);
+	
 	++current_;
 	return current_ < count_;
 }
@@ -84,8 +83,7 @@ MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, sf::TimeSig
 {
 	assert(current_ < count_);
 	
-	seconds_t seconds(sequence_.getEventTime(current_));
-	timestamp = time::duration_cast<score_time_t>(seconds);
+	timestamp = sequence_.getEventTime(current_) * score::seconds;
 	
 	auto ePtr = sequence_.getEventPointer(current_);
 	int numerator = 0, denominator = 0;
@@ -110,14 +108,12 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 {
 	assert(current_ < count_);
 	
-	seconds_t seconds(sequence_.getEventTime(current_));
-	timestamp = time::duration_cast<score_time_t>(seconds);
+	timestamp = sequence_.getEventTime(current_) * score::seconds;
 
-	seconds_t offSeconds(sequence_.getTimeOfMatchingKeyUp(current_));
-	auto offTimestamp = time::duration_cast<score_time_t>(offSeconds);
+	auto offTimestamp = sequence_.getTimeOfMatchingKeyUp(current_) * score::seconds;
 	
-	score_time_t noteLength = score_time_t::zero();
-	if (offTimestamp > score_time_t::zero()) {
+	score_time_t noteLength = 0.0 * score::seconds;
+	if (offTimestamp > 0.0 * score::seconds) {
 		noteLength = offTimestamp - timestamp;
 	}
 

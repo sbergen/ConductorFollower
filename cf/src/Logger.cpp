@@ -1,6 +1,7 @@
 #include "cf/Logger.h"
 
 #include <boost/format.hpp>
+#include <boost/units/io.hpp>
 
 namespace cf {
 
@@ -22,7 +23,7 @@ Logger::CommitOne(LogItem const & item) const
 		char ch = item.format_[i];
 		if (ch == '\0') { break; }
 		str += ch;
-	}	
+	}
 	boost::format fmt(str);
 
 	for (int i = 0; i < LogItem::MaxArgs; ++i) {

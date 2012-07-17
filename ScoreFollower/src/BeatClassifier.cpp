@@ -8,7 +8,7 @@ namespace cf {
 namespace ScoreFollower {
 
 BeatClassifier::Result
-BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
+BeatClassifier::ClassifyBeat(beats_t beatsSincePreviousBeat)
 {
 	double const eightDeviation = 1.0 / 16;
 	double const quarterDeviation = 1.0 / 6;
@@ -21,12 +21,12 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 
 	// First check if this is an eight
 	bestPos = 1;
-	bestProb = ProbabilityAt(quartersSincePreviousBeat, bestPos, eightDeviation, bestProbNormalized);
+	bestProb = ProbabilityAt(beatsSincePreviousBeat, bestPos, eightDeviation, bestProbNormalized);
 
 	// Now check quarters
 	for (int pos = 2; pos < 128; pos += 2) {
 		double probNormalized = -1.0;
-		double prob = ProbabilityAt(quartersSincePreviousBeat, pos, quarterDeviation, probNormalized);
+		double prob = ProbabilityAt(beatsSincePreviousBeat, pos, quarterDeviation, probNormalized);
 
 		if (prob > bestProb) {
 			bestPos = pos;
@@ -36,7 +36,7 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 			// The condition is here because if there is a long pause in conducting,
 			// the rounding errors will prevail, and we will not get the
 			// growing probablility we would expect in a "normal" case.
-			return Result(bestPos, bestProbNormalized);
+			return Result(beats_t(bestPos * score::eight_notes), bestProbNormalized);
 		}
 	}
 
@@ -45,11 +45,11 @@ BeatClassifier::ClassifyBeat(double quartersSincePreviousBeat)
 }
 
 double
-BeatClassifier::ProbabilityAt(double position, int meanAsEights, double deviation, double & normalizedProb)
+BeatClassifier::ProbabilityAt(beats_t position, int meanAsEights, double deviation, double & normalizedProb)
 {
 	double mean = static_cast<double>(meanAsEights) / 2;
 	boost::math::normal dist(mean, deviation);
-	double prob = boost::math::pdf(dist, position);
+	double prob = boost::math::pdf(dist, position / (1.0 * score::quarter_note));
 	normalizedProb = prob / boost::math::pdf(dist, mean);
 	return prob;
 }

@@ -7,15 +7,17 @@
 namespace cf {
 namespace PatchMapper {
 
+namespace si = boost::units::si;
+
 struct InstrumentContext
 {
 	InstrumentContext(Data::Instrument const & instrument)
-		: shortestNoteThreshold(instrument.shortest_note_threshold)
-		, longestNoteThreshold(instrument.longest_note_threshold)
+		: shortestNoteThreshold(instrument.shortest_note_threshold * si::seconds)
+		, longestNoteThreshold(instrument.longest_note_threshold * si::seconds)
 	{}
 
-	seconds_t shortestNoteThreshold;
-	seconds_t longestNoteThreshold;
+	time_quantity shortestNoteThreshold;
+	time_quantity longestNoteThreshold;
 };
 
 } // namespace PatchMapper

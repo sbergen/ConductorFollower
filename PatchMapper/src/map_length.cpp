@@ -5,8 +5,8 @@ namespace PatchMapper {
 
 double map_length(MappingContext const & context)
 {
-	seconds_t const fullScale = context.instrumentContext.longestNoteThreshold - 
-	                            context.instrumentContext.shortestNoteThreshold;
+	time_quantity const fullScale = context.instrumentContext.longestNoteThreshold - 
+									context.instrumentContext.shortestNoteThreshold;
 	double factor = (context.noteLength - context.instrumentContext.shortestNoteThreshold) / fullScale;
 
 	// TODO use boost 1.50.0

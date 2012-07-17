@@ -13,19 +13,22 @@
 
 #include "cf/ButlerThread.h"
 #include "cf/time.h"
+#include "cf/score_units.h"
 
 namespace cf {
+
+namespace bu = boost::units;
 
 class LogItem
 {
 private:
 	typedef boost::variant<
 		boost::blank,
-		int, unsigned, long,
 		float, double, 
+		int, unsigned, long,
 		char const *,
-		timestamp_t, duration_t, milliseconds_t, seconds_t,
-		boost::chrono::microseconds> Arg;
+		timestamp_t, duration_t, milliseconds_t, seconds_t, boost::chrono::microseconds,
+		bu::quantity<score::musical_time>, bu::quantity<score::physical_time>, bu::quantity<score::tempo> > Arg;
 
 public:
 	LogItem()
