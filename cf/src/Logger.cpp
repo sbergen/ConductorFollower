@@ -6,7 +6,7 @@
 namespace cf {
 
 void
-Logger::Commit()
+LogBuffer::Commit()
 {
 	LogItem item;
 	while (buffer_.dequeue(item)) {
@@ -14,8 +14,21 @@ Logger::Commit()
 	}
 }
 
+LogBuffer::LogBuffer(std::ostream & stream)
+	: buffer_(256)
+	, stream_(stream)
+{
+}
+
 void
-Logger::CommitOne(LogItem const & item) const
+LogBuffer::RegisterToButler(boost::shared_ptr<ButlerThread> butler)
+{
+	butler_ = butler;
+	callbackHandle_ = butler_->AddCallback(boost::bind(&LogBuffer::Commit, this));
+}
+
+void
+LogBuffer::CommitOne(LogItem const & item) const
 {
 	std::string str;
 	for(int i = 0; i < LogItem::MaxFmtLen; ++i)

@@ -77,6 +77,9 @@
     <ClInclude Include="cf\score_units.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\LogItem.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

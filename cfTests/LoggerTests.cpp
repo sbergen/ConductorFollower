@@ -9,13 +9,13 @@
 
 using namespace cf;
 
-BOOST_AUTO_TEST_SUITE(LoggerTests)
+BOOST_AUTO_TEST_SUITE(LogBufferTests)
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {
 	std::ostringstream log;
 	std::ostringstream expected;
-	Logger l(log);
+	LogBuffer l(log);
 
 	// Via logging interface
 	LOG("plain")
