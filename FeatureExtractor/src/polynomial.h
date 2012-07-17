@@ -1,20 +1,11 @@
 #pragma once
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
-
-//#include "types.h"
 #include "inverse_matrix.h"
+#include "fe_math.h"
 
 namespace cf {
 namespace FeatureExtractor {
 namespace math {
-
-namespace ublas = boost::numeric::ublas;
-
-typedef double float_type;
-typedef ublas::vector<float_type> Vector;
-typedef ublas::matrix<float_type> Matrix;
 
 float_type evaluate_polynomial(Vector const & coefs, float_type x)
 {
@@ -54,6 +45,34 @@ bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
 	coefs = prod(prod(XtXi, Xt), y);
 	return true;
 }
+
+namespace {
+
+template<unsigned deg>
+unsigned d_coef(unsigned exponent)
+{
+        return exponent * d_coef<deg - 1>(exponent - 1);
+}
+ 
+template<>
+unsigned d_coef<1>(unsigned exponent)
+{
+        return exponent;
+}
+
+} // anon namespace
+ 
+template<unsigned n>
+Vector derivative(Vector const & coefs)
+{
+	const Vector::size_type size = coefs.size() - n;
+    Vector r(size);
+    for(Vector::size_type i = 0; i < size; ++i) {
+            r(i) = d_coef<n>(i + n) * coefs(i + n);
+    }
+    return r;
+}
+
 	
 } // namespace math
 } // namespace FeatureExtractor
