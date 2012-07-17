@@ -1,10 +1,7 @@
 #pragma once
 
-#include <boost/geometry/geometries/register/point.hpp>
-#include <boost/geometry/core/coordinate_system.hpp>
-
+#include <boost/array.hpp>
 #include <boost/units/quantity.hpp>
-#include <boost/units/systems/si.hpp>
 
 namespace cf {
 
@@ -16,29 +13,34 @@ public:
 	typedef boost::units::quantity<Unit, Rep> quantity;
 
 public: // ctors
-	Vector3D() : x_(), y_(), z_() {}
-	Vector3D(quantity x, quantity y, quantity z) : x_(x.value()), y_(y.value()), z_(z.value()) {}
+	Vector3D() { data_.assign(raw_type()); }
+	Vector3D(quantity x, quantity y, quantity z)
+	{
+		set_x(x);
+		set_y(y);
+		set_z(z);
+	}
 
 public:
 	// To quantity
-	quantity get_x() const { return quantity::from_value(x_); }
-	quantity get_y() const { return quantity::from_value(y_); }
-	quantity get_z() const { return quantity::from_value(z_); }
+	quantity get_x() const { return quantity::from_value(raw_x()); }
+	quantity get_y() const { return quantity::from_value(raw_y()); }
+	quantity get_z() const { return quantity::from_value(raw_z()); }
 
 	// quantity setters
-	void set_x(quantity const & val) { x_ = val.value(); }
-	void set_y(quantity const & val) { y_ = val.value(); }
-	void set_z(quantity const & val) { z_ = val.value(); }
+	void set_x(quantity const & val) { set_raw_x(val.value()); }
+	void set_y(quantity const & val) { set_raw_y(val.value()); }
+	void set_z(quantity const & val) { set_raw_z(val.value()); }
 
 	// raw getters
-	raw_type raw_x() const { return x_; }
-	raw_type raw_y() const { return y_; }
-	raw_type raw_z() const { return z_; }
+	raw_type raw_x() const { return data_[0]; }
+	raw_type raw_y() const { return data_[1]; }
+	raw_type raw_z() const { return data_[2]; }
 
 	// raw setters
-	void set_raw_x(raw_type const & val) { x_ = val; }
-	void set_raw_y(raw_type const & val) { y_ = val; }
-	void set_raw_z(raw_type const & val) { z_ = val; }
+	void set_raw_x(raw_type const & val) { data_[0] = val; }
+	void set_raw_y(raw_type const & val) { data_[1] = val; }
+	void set_raw_z(raw_type const & val) { data_[2] = val; }
 
 public: // Transform
 
@@ -49,9 +51,7 @@ public: // Transform
 	}
 
 private:
-	raw_type x_;
-	raw_type y_;
-	raw_type z_;
+	boost::array<raw_type, 3> data_;
 };
 
 } // namespace cf
