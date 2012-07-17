@@ -11,15 +11,20 @@ class Vector3D
 public:
 	typedef Rep raw_type;
 	typedef boost::units::quantity<Unit, Rep> quantity;
+	typedef boost::array<raw_type, 3> data_type;
 
 public: // ctors
 	Vector3D() { data_.assign(raw_type()); }
+
 	Vector3D(quantity x, quantity y, quantity z)
 	{
 		set_x(x);
 		set_y(y);
 		set_z(z);
 	}
+
+	Vector3D(data_type const & data)
+		: data_(data) {}
 
 public:
 	// To quantity
@@ -42,6 +47,10 @@ public:
 	void set_raw_y(raw_type const & val) { data_[1] = val; }
 	void set_raw_z(raw_type const & val) { data_[2] = val; }
 
+public: // Access to iteratable data
+	data_type const & data() const { return data_; }
+	data_type & data() { return data_; }
+
 public: // Transform
 
 	template<typename T, typename F>
@@ -51,7 +60,7 @@ public: // Transform
 	}
 
 private:
-	boost::array<raw_type, 3> data_;
+	data_type data_;
 };
 
 } // namespace cf
