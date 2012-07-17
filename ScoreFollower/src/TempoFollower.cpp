@@ -101,16 +101,17 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time)
 speed_t
 TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
 {
+	/*
 	beats_t stretchedLength = catchupTime + BeatOffsetEstimate();
 	speed_t speed = stretchedLength / catchupTime;
-
-	/*
+	*/
+	
 	tempo_t actualTempo = tempoNow.tempo() * speed_;
 	score_time_t catchup(BeatOffsetEstimate() / actualTempo);
 	score_time_t lengthOfTimespan = (catchupTime / actualTempo) + catchup;
 	tempo_t newTempo(catchupTime / lengthOfTimespan);
 	speed_t speed = newTempo / tempoNow.tempo();
-	*/
+	
 
 	assert(speed >= 0.0);
 	return speed;
