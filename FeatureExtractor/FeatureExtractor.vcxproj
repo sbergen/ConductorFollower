@@ -116,6 +116,8 @@
   <ItemGroup>
     <ClInclude Include="FeatureExtractor\Extractor.h" />
     <ClInclude Include="src\FeatureExtractor.h" />
+    <ClInclude Include="src\inverse_matrix.h" />
+    <ClInclude Include="src\polynomial.h" />
     <ClInclude Include="src\types.h" />
   </ItemGroup>
   <ItemGroup>

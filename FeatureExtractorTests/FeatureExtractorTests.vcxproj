@@ -80,7 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\FeatureExtractor";"..\FeatureExtractor\src"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"..\FeatureExtractor";"..\FeatureExtractor\src";"../cf"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -120,8 +120,12 @@
   <ItemGroup>
     <ClCompile Include="DimensionFeatureExtractorTests.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PolynomialTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FeatureExtractor\FeatureExtractor.vcxproj">
       <Project>{60400649-f0b8-4318-9e3f-60aa79d9a654}</Project>
     </ProjectReference>

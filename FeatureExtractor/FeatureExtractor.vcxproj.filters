@@ -23,6 +23,12 @@
     <ClInclude Include="FeatureExtractor\Extractor.h">
       <Filter>FeatureExtractor</Filter>
     </ClInclude>
+    <ClInclude Include="src\polynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\inverse_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FeatureExtractor.cpp">
