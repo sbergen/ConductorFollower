@@ -1,6 +1,5 @@
 #include "AudioBlockTimeManager.h"
 
-
 namespace cf {
 namespace ScoreFollower {
 
@@ -56,7 +55,9 @@ AudioBlockTimeManager::UpdateStretchFactor()
 {
 	time_quantity duration = time::quantity_cast<time_quantity>(currentBlockEnd_ - currentBlockStart_);
 	// Stretch or squeeze the duration to fit into the theoretical length
-	currentBlockStretch_ =  duration / theoreticalBlockDuration_;
+	// The calculation seems counter-intuitive, but with a longer duration,
+	// we need to "squeeze time" to make the events fit
+	currentBlockStretch_ =  theoreticalBlockDuration_ / duration;
 }
 
 } // namespace ScoreFollower
