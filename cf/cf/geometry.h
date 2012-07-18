@@ -12,7 +12,7 @@
 #include <boost/units/pow.hpp>
 #include <boost/units/cmath.hpp>
 
-#include "cf/Vector.h"
+#include "cf/Vector3D.h"
 
 namespace cf {
 

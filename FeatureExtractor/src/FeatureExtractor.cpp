@@ -105,14 +105,14 @@ FeatureExtractor::DoShortTimeAnalysis()
 	Velocity3D::quantity v_abs = geometry::abs(v_avg); 
 	Velocity3D::quantity v_thresh(10.0 * si::centi * si::meter / si::second);
 
-	if (sgn(prevAvgSeed_.get_y()) == -1 && sgn(v_avg.get_y()) == 1 && v_abs > v_thresh)
+	if (math::sgn(prevAvgSeed_.get_y()) == -1 && math::sgn(v_avg.get_y()) == 1 && v_abs > v_thresh)
 	{
 		timestamp_t timestamp = since + milliseconds_t(50);
 		beatBuffer_.RegisterEvent(timestamp, 1.0);
 		BeatDetected(timestamp);
 	}
 
-	if (sgn(prevAvgSeed_.get_y()) == 1 && sgn(v_avg.get_y()) == -1 && v_abs > v_thresh)
+	if (math::sgn(prevAvgSeed_.get_y()) == 1 && math::sgn(v_avg.get_y()) == -1 && v_abs > v_thresh)
 	{
 		timestamp_t timestamp = since + milliseconds_t(50);
 		apexBuffer_.RegisterEvent(timestamp, 1.0);
