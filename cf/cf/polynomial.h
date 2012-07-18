@@ -51,11 +51,11 @@ template<unsigned n>
 Vector derivative(Vector const & coefs)
 {
 	const Vector::size_type size = coefs.size() - n;
-    Vector r(size);
-    for(Vector::size_type i = 0; i < size; ++i) {
-            r(i) = detail::d_coef<n>(i + n) * coefs(i + n);
-    }
-    return r;
+	Vector r(size);
+	for(Vector::size_type i = 0; i < size; ++i) {
+		r(i) = detail::d_coef<n>(i + n) * coefs(i + n);
+	}
+	return r;
 }
 
 	
