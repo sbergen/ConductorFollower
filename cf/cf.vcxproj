@@ -116,7 +116,10 @@
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
+    <ClInclude Include="cf\inverse_matrix.h" />
     <ClInclude Include="cf\LogItem.h" />
+    <ClInclude Include="cf\polynomial.h" />
+    <ClInclude Include="cf\polynomial_detail.h" />
     <ClInclude Include="cf\score_units.h" />
     <ClInclude Include="cf\physics.h" />
     <ClInclude Include="cf\serialization.h" />
@@ -132,12 +135,17 @@
     <ClInclude Include="cf\StringEnum.h" />
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
+    <ClInclude Include="cf\TlsfAllocator.h" />
     <ClInclude Include="cf\Vector.h" />
+    <ClInclude Include="tlsf\tlsf.h" />
+    <ClInclude Include="tlsf\tlsfbits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ButlerThread.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\TlsfAllocator.cpp" />
+    <ClCompile Include="tlsf\tlsf.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

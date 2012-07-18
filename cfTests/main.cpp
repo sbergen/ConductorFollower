@@ -1,4 +1,6 @@
 #define BOOST_TEST_MODULE cf
 #include <boost/test/unit_test.hpp>
 
-/* Only contains the module definition and automatic entrypoint */
+#include "cf/globals.h"
+using cf::GlobalsRef;
+BOOST_GLOBAL_FIXTURE(GlobalsRef);

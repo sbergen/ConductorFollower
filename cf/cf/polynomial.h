@@ -1,10 +1,9 @@
 #pragma once
 
-#include "fe_math.h"
-#include "polynomial_detail.h"
+#include "cf/math.h"
+#include "cf/polynomial_detail.h"
 
 namespace cf {
-namespace FeatureExtractor {
 namespace math {
 
 float_type evaluate_polynomial(Vector const & coefs, float_type x)
@@ -60,5 +59,4 @@ Vector derivative(Vector const & coefs)
 
 	
 } // namespace math
-} // namespace FeatureExtractor
 } // namespace cf

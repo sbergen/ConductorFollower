@@ -12,6 +12,9 @@
     <Filter Include="cf">
       <UniqueIdentifier>{5007e23f-d6a0-454a-8a97-d66cf661fcea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tlsf">
+      <UniqueIdentifier>{0269328e-6c00-40ac-8b24-85504a91a467}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cf\time.h">
@@ -83,6 +86,24 @@
     <ClInclude Include="cf\dummy_mutex.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\inverse_matrix.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\polynomial.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\polynomial_detail.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="tlsf\tlsf.h">
+      <Filter>tlsf</Filter>
+    </ClInclude>
+    <ClInclude Include="tlsf\tlsfbits.h">
+      <Filter>tlsf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\TlsfAllocator.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
@@ -92,6 +113,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tlsf\tlsf.c">
+      <Filter>tlsf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TlsfAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

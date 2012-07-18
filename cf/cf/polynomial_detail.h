@@ -1,10 +1,9 @@
 #pragma once
 
-#include "inverse_matrix.h"
-#include "fe_math.h"
+#include "cf/math.h"
+#include "cf/inverse_matrix.h"
 
 namespace cf {
-namespace FeatureExtractor {
 namespace math {
 namespace detail {
 
@@ -49,5 +48,4 @@ bool make_polynomial_fit_matrix(Vector const & x, math::uint_type order, Matrix 
 
 } // namespace detail
 } // namespace math
-} // namespace FeatureExtractor
 } // namespace cf

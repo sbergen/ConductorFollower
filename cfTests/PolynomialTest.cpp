@@ -1,10 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
-#include "polynomial.h"
+#include "cf/polynomial.h"
 
 BOOST_AUTO_TEST_SUITE(PolynomialTest)
 
-using namespace cf::FeatureExtractor::math;
+using namespace cf::math;
 
 // Manual version of the polynomials being tested
 double f(double x) { return 2.0 * (x * x) - 5.0 * x + 3.0; }

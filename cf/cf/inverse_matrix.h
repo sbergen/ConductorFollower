@@ -7,7 +7,7 @@
 #include <boost/numeric/ublas/lu.hpp>
 
 namespace cf {
-namespace FeatureExtractor {
+namespace math {
 
 namespace ublas = boost::numeric::ublas;
 
@@ -32,5 +32,5 @@ bool inverse_matrix(M const & input, M & inverse)
 	return true;
 }
 
-} // namespace FeatureExtractor
+} // namespace math
 } // namespace cf

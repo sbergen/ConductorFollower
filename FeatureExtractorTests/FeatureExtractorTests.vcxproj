@@ -120,7 +120,6 @@
   <ItemGroup>
     <ClCompile Include="DimensionFeatureExtractorTests.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PolynomialTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">
