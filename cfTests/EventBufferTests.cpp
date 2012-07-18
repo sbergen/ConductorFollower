@@ -405,4 +405,36 @@ BOOST_AUTO_TEST_CASE(ReverseForEachWhile)
 	BOOST_CHECK_EQUAL(dataSum, 5);
 }
 
+BOOST_AUTO_TEST_CASE(Pop)
+{
+	EventBuffer<int, int> buffer(3);
+	buffer.RegisterEvent(0, 1);
+	buffer.RegisterEvent(1, 2);
+	buffer.RegisterEvent(2, 3);
+
+	auto all = buffer.AllEvents();
+	BOOST_CHECK_EQUAL(all.Size(), 3);
+	
+	{
+		auto f = all.PopFront();
+		BOOST_CHECK_EQUAL(all.Size(), 2);
+		BOOST_CHECK_EQUAL(f.timestamp, 0);
+		BOOST_CHECK_EQUAL(f.data, 1);
+	}
+
+	{
+		auto b = all.PopBack();
+		BOOST_CHECK_EQUAL(all.Size(), 1);
+		BOOST_CHECK_EQUAL(b.timestamp, 2);
+		BOOST_CHECK_EQUAL(b.data, 3);
+	}
+
+	{
+		auto f2 = all.PopFront();
+		BOOST_CHECK_EQUAL(all.Size(), 0);
+		BOOST_CHECK_EQUAL(f2.timestamp, 1);
+		BOOST_CHECK_EQUAL(f2.data, 2);
+	}
+}
+
 BOOST_AUTO_TEST_SUITE_END()

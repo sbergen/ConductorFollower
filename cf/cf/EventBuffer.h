@@ -42,7 +42,7 @@ public: // Range class
 		{}
 
 	public:
-		struct DataPair : public boost::noncopyable
+		struct DataPair
 		{
 			DataPair(TTimestamp const & timestamp, TData const & data)
 				: timestamp(timestamp), data(data) {}
@@ -51,8 +51,7 @@ public: // Range class
 			TData const & data;
 		};
 
-	public:
-		// Checks
+	public: // Checks
 
 		typename DataBuffer::size_type Size() const { return  dataRange_.size(); }
 		
@@ -64,7 +63,8 @@ public: // Range class
 			return timestampRange_.back();
 		}
 
-		// Data access
+	public: // Data access
+
 		DataPair operator[](size_t i) const 
 		{
 			return DataPair(timestampRange_[i], dataRange_[i]);
@@ -80,7 +80,25 @@ public: // Range class
 			return DataPair(timestampRange_.back(), dataRange_.back());
 		}
 
-		// Traversal
+	public: // Modifiers
+
+		DataPair PopFront()
+		{
+			DataPair ret = Front();
+			timestampRange_.advance_begin(1);
+			dataRange_.advance_begin(1);
+			return ret;
+		}
+
+		DataPair PopBack()
+		{
+			DataPair ret = Back();
+			timestampRange_.advance_end(-1);
+			dataRange_.advance_end(-1);
+			return ret;
+		}
+
+	public: // Traversal
 
 		// Call func for each (timestamp, data) pair
 		template<typename Func>
