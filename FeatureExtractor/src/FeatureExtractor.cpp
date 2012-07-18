@@ -5,8 +5,11 @@
 #include <boost/geometry.hpp>
 #include <boost/range/numeric.hpp>
 
+#include "cf/globals.h"
 #include "cf/math.h"
 #include "cf/physics.h"
+
+#include "polynomial_analysis.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -42,6 +45,11 @@ FeatureExtractor::RegisterPosition(timestamp_t const & time, Point3D const & pos
 	positionBuffer_.RegisterEvent(time, pos);
 	DoShortTimeAnalysis();
 	DetectStartGesture();
+
+	auto polyResult = polynomial_analysis(positionBuffer_);
+	if (polyResult) {
+		// TODO
+	}
 }
 
 Point3D

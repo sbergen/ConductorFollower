@@ -6,19 +6,20 @@
 namespace cf {
 namespace math {
 
-float_type evaluate_polynomial(Vector const & coefs, float_type x)
+inline float_type evaluate_polynomial(Vector const & coefs, float_type x)
 {
 	if (coefs.size() == 0) { return 0.0; }
 	float_type result = coefs(0);
 	for (int i = 1; i < coefs.size(); ++i) {
 		result += coefs(i) * std::pow(x, i);
 	}
+	return result;
 }
 
 // Least squares polynomial regression, fits
 // y_i = coefs[0] + coefs[1] * x_i + ... + coefs[n] * x_i^(n-1)
 // to given x and y data. Number of coefficients (n) is derived from size of coefs.
-bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
+inline bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
 {
 	unsigned const order = coefs.size() - 1;
 
