@@ -1,7 +1,7 @@
 #pragma once
 
-#include "inverse_matrix.h"
 #include "fe_math.h"
+#include "polynomial_detail.h"
 
 namespace cf {
 namespace FeatureExtractor {
@@ -22,46 +22,31 @@ float_type evaluate_polynomial(Vector const & coefs, float_type x)
 bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
 {
 	unsigned const order = coefs.size() - 1;
-	unsigned const n = std::min(x.size(), y.size());
 
-	// Make matrix
-	Matrix X(n, order + 1);
-	for (int i = 0; i < n; ++i) {
-		X(i, 0) = 1;
-		for (int j = 1; j < order + 1; ++j) {
-			X(i, j) = std::pow(x[i], j);
-		}
-	}
+	Matrix M;
+	if (!detail::make_polynomial_fit_matrix(x, order, M)) { return false; }
 
-	using ublas::prod;
-	using ublas::trans;
-
-	auto Xt = trans(X);
-	Matrix XtX = prod(Xt, X);
-	Matrix XtXi(XtX.size1(), XtX.size2());
-	if (!inverse_matrix(XtX, XtXi)) { return false; }
-
-	// coefs = (Xt X)^-1 Xt y
-	coefs = prod(prod(XtXi, Xt), y);
+	coefs = prod(M, y);
 	return true;
 }
 
-namespace detail {
-
-template<unsigned deg>
-unsigned d_coef(unsigned exponent)
+// Optimized version for doing several calculations from the same x values
+// C1 and C2 must be containers of vectors
+template<typename C1, typename C2>
+bool fit_polynomials(unsigned order, Vector const & x, C1 const & yValues, C2 & coefs)
 {
-        return exponent * d_coef<deg - 1>(exponent - 1);
-}
+	Matrix M;
+	if (!detail::make_polynomial_fit_matrix(x, order, M)) { return false; }
+
+	std::transform(std::begin(yValues), std::end(yValues), std::begin(coefs),
+		[&M](Vector const & y)
+		{
+			return prod(M, y);
+		});
  
-template<>
-unsigned d_coef<1>(unsigned exponent)
-{
-        return exponent;
+	return true;
 }
 
-} // namespace detail
- 
 template<unsigned n>
 Vector derivative(Vector const & coefs)
 {

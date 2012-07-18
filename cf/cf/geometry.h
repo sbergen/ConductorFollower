@@ -4,7 +4,10 @@
 
 #include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
+#include <boost/geometry/geometries/register/point.hpp>
+#include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/units/systems/si.hpp>
 #include <boost/units/systems/si/prefixes.hpp> // include for convenience
 #include <boost/units/pow.hpp>
 #include <boost/units/cmath.hpp>
@@ -15,6 +18,7 @@ namespace cf {
 
 typedef Vector3D<boost::units::si::length> Point3D;
 typedef Vector3D<boost::units::si::velocity> Velocity3D;
+typedef Vector3D<boost::units::si::acceleration> Acceleration3D;
 
 typedef Point3D::quantity coord_t;
 typedef Velocity3D::quantity velocity_t;
