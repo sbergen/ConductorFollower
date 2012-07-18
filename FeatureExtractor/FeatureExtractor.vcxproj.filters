@@ -29,9 +29,6 @@
     <ClInclude Include="src\inverse_matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\polynomial_analysis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\fe_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -41,9 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FeatureExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\polynomial_analysis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

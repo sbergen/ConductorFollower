@@ -21,16 +21,16 @@ unsigned d_coef<1>(unsigned exponent)
 }
 
 // Makes the (Xt X)^-1 Xt part of solving a polynomial fitting problem
-bool make_polynomial_fit_matrix(Vector const & x, unsigned order, Matrix & result)
+bool make_polynomial_fit_matrix(Vector const & x, math::uint_type order, Matrix & result)
 {
-	unsigned const n = x.size();
+	math::uint_type const n = x.size();
 
 	// Make matrix
 	Matrix X(n, order + 1);
-	for (int i = 0; i < n; ++i) {
+	for (math::uint_type i = 0; i < n; ++i) {
 		X(i, 0) = 1;
-		for (int j = 1; j < order + 1; ++j) {
-			X(i, j) = std::pow(x[i], j);
+		for (math::uint_type j = 1; j < order + 1; ++j) {
+			X(i, j) = std::pow(x[i], static_cast<int>(j));
 		}
 	}
 

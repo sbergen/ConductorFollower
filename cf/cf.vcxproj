@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="cf\algorithm.h" />
     <ClInclude Include="cf\ButlerThread.h" />
+    <ClInclude Include="cf\dummy_mutex.h" />
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
