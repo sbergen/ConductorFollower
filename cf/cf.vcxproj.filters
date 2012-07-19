@@ -71,9 +71,6 @@
     <ClInclude Include="cf\serialization.h">
       <Filter>cf</Filter>
     </ClInclude>
-    <ClInclude Include="cf\Vector.h">
-      <Filter>cf</Filter>
-    </ClInclude>
     <ClInclude Include="cf\physics.h">
       <Filter>cf</Filter>
     </ClInclude>
@@ -102,6 +99,12 @@
       <Filter>tlsf</Filter>
     </ClInclude>
     <ClInclude Include="cf\TlsfAllocator.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\vector_helpers.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\VectorND.h">
       <Filter>cf</Filter>
     </ClInclude>
   </ItemGroup>

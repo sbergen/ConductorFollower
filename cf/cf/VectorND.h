@@ -1,62 +1,81 @@
 #pragma once
 
-#include <boost/array.hpp>
 #include <boost/units/quantity.hpp>
+#include <boost/numeric/ublas/storage.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+
+#include "vector_helpers.h"
 
 namespace cf {
 
-template<typename Unit, typename Rep = double>
-class Vector3D
+namespace ublas = boost::numeric::ublas;
+namespace mpl = boost::mpl;
+
+// N-dimensional vector
+template<unsigned Dim, typename Unit, typename Rep = double>
+class VectorND
 {
 public:
+	enum { dimension = Dim };
 	typedef Rep raw_type;
 	typedef boost::units::quantity<Unit, Rep> quantity;
-	typedef boost::array<raw_type, 3> data_type;
+	typedef ublas::vector<raw_type, ublas::bounded_array<raw_type, Dim> > data_type;
+
+	template<typename T>
+	struct transformed
+	{
+		typedef VectorND<Dim, T, Rep> type;
+	};
 
 public: // ctors
-	Vector3D() { data_.assign(raw_type()); }
+	VectorND() : data_(3) { }
 
-	Vector3D(quantity x, quantity y, quantity z)
+	// Shorthand for 3D
+	VectorND(quantity x, quantity y, quantity z)
+		 : data_(3)
 	{
-		set_x(x);
-		set_y(y);
-		set_z(z);
+		set<0>(x);
+		set<1>(y);
+		set<2>(z);
 	}
 
-	Vector3D(data_type const & data)
+	VectorND(data_type const & data)
 		: data_(data) {}
 
 public:
-	// To quantity
-	quantity get_x() const { return quantity::from_value(raw_x()); }
-	quantity get_y() const { return quantity::from_value(raw_y()); }
-	quantity get_z() const { return quantity::from_value(raw_z()); }
+	// Quantity
+	template<unsigned N>
+	quantity get() const { return quantity::from_value(get_raw<N>()); }
 
-	// quantity setters
-	void set_x(quantity const & val) { set_raw_x(val.value()); }
-	void set_y(quantity const & val) { set_raw_y(val.value()); }
-	void set_z(quantity const & val) { set_raw_z(val.value()); }
+	template<unsigned N>
+	void set(quantity const & val) { set_raw<N>(val.value()); }
 
-	// raw getters
-	raw_type raw_x() const { return data_[0]; }
-	raw_type raw_y() const { return data_[1]; }
-	raw_type raw_z() const { return data_[2]; }
+	// Raw
+	template<unsigned N>
+	raw_type get_raw() const { return data_(N); }
 
-	// raw setters
-	void set_raw_x(raw_type const & val) { data_[0] = val; }
-	void set_raw_y(raw_type const & val) { data_[1] = val; }
-	void set_raw_z(raw_type const & val) { data_[2] = val; }
+	template<unsigned N>
+	void set_raw(raw_type const & val) { data_(N) = val; }
 
 public: // Access to iteratable data
 	data_type const & data() const { return data_; }
 	data_type & data() { return data_; }
 
-public: // Transform
+public: // Dimensionally safe transforms and other operations
 
 	template<typename T, typename F>
-	T transform(F f) const
+	void transform(T & result, F f) const
 	{
-		return T(f(get_x()), f(get_y()), f(get_z()));
+		mpl::for_each<mpl::range_c<unsigned, 0, Dim> , detail::indexer<mpl::_1> >
+			(detail::transformer<VectorND, T, F>(*this, result, f));
+	}
+
+	quantity accumulate(quantity initial = quantity()) const
+	{
+		quantity result(initial);
+		mpl::for_each<mpl::range_c<unsigned, 0, Dim> , detail::indexer<mpl::_1> >
+			(detail::accumulator<VectorND, quantity>(*this, result));
+		return result;
 	}
 
 private:

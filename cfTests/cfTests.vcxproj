@@ -121,8 +121,10 @@
   <ItemGroup>
     <ClCompile Include="AlgorithmTests.cpp" />
     <ClCompile Include="EventBufferTests.cpp" />
+    <ClCompile Include="GeometryTests.cpp" />
     <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsTests.cpp" />
     <ClCompile Include="PolynomialTest.cpp" />
     <ClCompile Include="ScoreUnitsTests.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />

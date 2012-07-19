@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <numeric>
 #include <cmath>
 
 #include <boost/geometry/geometries/box.hpp>
@@ -12,13 +14,13 @@
 #include <boost/units/pow.hpp>
 #include <boost/units/cmath.hpp>
 
-#include "cf/Vector3D.h"
+#include "cf/VectorND.h"
 
 namespace cf {
 
-typedef Vector3D<boost::units::si::length> Point3D;
-typedef Vector3D<boost::units::si::velocity> Velocity3D;
-typedef Vector3D<boost::units::si::acceleration> Acceleration3D;
+typedef VectorND<3, boost::units::si::length> Point3D;
+typedef VectorND<3, boost::units::si::velocity> Velocity3D;
+typedef VectorND<3, boost::units::si::acceleration> Acceleration3D;
 
 typedef Point3D::quantity coord_t;
 typedef Velocity3D::quantity velocity_t;
@@ -42,10 +44,15 @@ namespace geometry
 	template<typename T>
 	inline typename T::quantity abs(T const & point)
 	{
-		return boost::units::sqrt(
-			boost::units::pow<2>(point.get_x()) +
-			boost::units::pow<2>(point.get_y()) +
-			boost::units::pow<2>(point.get_z()));
+		// Skip dimensional analysis here...
+		typename T::data_type temp(T::dimension);
+		auto const & data = point.data();
+
+		// Binding to pow doesn't work because of overloads...
+		std::transform(std::begin(data), std::end(data), std::begin(temp),
+			[](typename T::raw_type const & v) { return std::pow(v, 2); });
+		auto val = std::sqrt(std::accumulate(std::begin(temp), std::end(temp), T::raw_type()));
+		return T::quantity::from_value(val);
 	}
 
 } // namespace geometry
@@ -53,7 +60,9 @@ namespace geometry
 } // namespace cf
 
 #define REGISTER_VECTOR_AS_POINT(type) \
-	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, raw_x, raw_y, raw_z, set_raw_x, set_raw_y, set_raw_z)
+	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, \
+	get_raw<0>, get_raw<1>, get_raw<2>, \
+	set_raw<0>, set_raw<1>, set_raw<2>)
 
 REGISTER_VECTOR_AS_POINT(cf::Point3D);
 REGISTER_VECTOR_AS_POINT(cf::Velocity3D);

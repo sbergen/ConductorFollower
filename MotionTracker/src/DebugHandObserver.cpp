@@ -31,9 +31,9 @@ DebugHandObserver::NewHandPosition(float time, Point3D const & pos)
 	std::cout
 		<< boost::format("%1% at %2%, %3%, %4%")
 		% name_
-		% pos.get_x()
-		% pos.get_y()
-		% pos.get_z()
+		% pos.get<0>()
+		% pos.get<1>()
+		% pos.get<2>()
 		<< std::endl;
 }
 

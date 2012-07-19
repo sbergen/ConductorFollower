@@ -113,14 +113,14 @@ FeatureExtractor::DoShortTimeAnalysis()
 	Velocity3D::quantity v_abs = geometry::abs(v_avg); 
 	Velocity3D::quantity v_thresh(10.0 * si::centi * si::meter / si::second);
 
-	if (math::sgn(prevAvgSeed_.get_y()) == -1 && math::sgn(v_avg.get_y()) == 1 && v_abs > v_thresh)
+	if (math::sgn(prevAvgSeed_.get<1>()) == -1 && math::sgn(v_avg.get<1>()) == 1 && v_abs > v_thresh)
 	{
 		timestamp_t timestamp = since + milliseconds_t(50);
 		beatBuffer_.RegisterEvent(timestamp, 1.0);
 		BeatDetected(timestamp);
 	}
 
-	if (math::sgn(prevAvgSeed_.get_y()) == 1 && math::sgn(v_avg.get_y()) == -1 && v_abs > v_thresh)
+	if (math::sgn(prevAvgSeed_.get<1>()) == 1 && math::sgn(v_avg.get<1>()) == -1 && v_abs > v_thresh)
 	{
 		timestamp_t timestamp = since + milliseconds_t(50);
 		apexBuffer_.RegisterEvent(timestamp, 1.0);
@@ -146,7 +146,7 @@ FeatureExtractor::DetectStartGesture()
 
 	// Check y-movement magnitude
 	auto magnitude = MagnitudeOfMovementSince(previousBeat);
-	if (magnitude.get_y() < coord_t(20 * si::centi * si::meters)) { return; }
+	if (magnitude.get<1>() < coord_t(20 * si::centi * si::meters)) { return; }
 
 	// Check duration
 	duration_t gestureLength = apexes[0].timestamp - previousBeat;

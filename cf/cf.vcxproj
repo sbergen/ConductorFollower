@@ -136,7 +136,8 @@
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
     <ClInclude Include="cf\TlsfAllocator.h" />
-    <ClInclude Include="cf\Vector.h" />
+    <ClInclude Include="cf\VectorND.h" />
+    <ClInclude Include="cf\vector_helpers.h" />
     <ClInclude Include="tlsf\tlsf.h" />
     <ClInclude Include="tlsf\tlsfbits.h" />
   </ItemGroup>
