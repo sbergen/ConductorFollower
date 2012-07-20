@@ -11,6 +11,8 @@ namespace cf {
 template<unsigned Length, unsigned Order, unsigned Dim>
 class SavitzkyGolay
 {
+	BOOST_STATIC_ASSERT(Length > Order);
+
 public:
 	typedef boost::array<math::Vector, Dim> vector_array;
 
@@ -33,7 +35,6 @@ protected:
 template<unsigned Length, unsigned Order, unsigned Dim>
 class SmoothingSavitzkyGolay : public SavitzkyGolay<Length, Order, Dim>
 {
-	BOOST_STATIC_ASSERT(Length > Order);
 	BOOST_STATIC_ASSERT((Length % 2) == 1);
 
 public:
@@ -72,6 +73,5 @@ public:
 		}
 	}
 };
-
 
 } // namespace cf

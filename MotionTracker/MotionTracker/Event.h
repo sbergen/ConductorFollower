@@ -3,7 +3,7 @@
 #include <boost/variant.hpp>
 
 #include "cf/time.h"
-#include "cf/geometry.h"
+#include "cf/physics.h"
 
 namespace cf {
 namespace MotionTracker {

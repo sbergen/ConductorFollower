@@ -8,7 +8,7 @@
 #include <boost/utility.hpp>
 
 #include "cf/EventBuffer.h"
-#include "cf/geometry.h"
+#include "cf/physics.h"
 #include "cf/time.h"
 
 namespace cf {
