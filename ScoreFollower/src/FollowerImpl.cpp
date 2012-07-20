@@ -134,8 +134,8 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::TrackingEnded:
 		SetState(FollowerState::Stopped);
 		break;
-	case Event::Position:
-		featureExtractor_->RegisterPosition(e.timestamp(), e.data<Point3D>());
+	case Event::MotionStateUpdate:
+		featureExtractor_->RegisterPosition(e.timestamp(), e.data<MotionState>().position);
 		HandleNewPosition(e.timestamp());
 		break;
 	}

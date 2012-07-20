@@ -20,33 +20,24 @@ MotionFilter::NewPosition(timestamp_t const & time, Point3D const & pos)
 	filter_.AppendValue(pos.data());
 	if (positionBuffer_.AllEvents().Size() < FrameRateDependent::filter_size) { return; }
 
-	RunFilter(time);
+	RunFilter();
+	eventBuffer_.enqueue(Event(time, Event::MotionStateUpdate, motionState_));
 }
 
 void
-MotionFilter::RunFilter(timestamp_t const & time)
+MotionFilter::RunFilter()
 {
 	filter_.RunFromValues();
 	EvaluateCoefs();
-	CommitEvents(time);
 }
 
 void
 MotionFilter::EvaluateCoefs()
 {
-	filter_.EvaluateDerivative<0>(position_.data());
-	filter_.EvaluateDerivative<1>(velocity_.data());
-	filter_.EvaluateDerivative<2>(acceleration_.data());
-	//filter_.EvaluateDerivative<3>(jerk_.data());
-}
-
-void
-MotionFilter::CommitEvents(timestamp_t const & time)
-{
-	eventBuffer_.enqueue(Event(time, Event::Position, position_));
-	eventBuffer_.enqueue(Event(time, Event::Velocity, velocity_));
-	eventBuffer_.enqueue(Event(time, Event::Acceleration, acceleration_));
-	//eventBuffer_.enqueue(Event(time, Event::Jerk, jerk_));
+	filter_.EvaluateDerivative<0>(motionState_.position.data());
+	filter_.EvaluateDerivative<1>(motionState_.velocity.data());
+	filter_.EvaluateDerivative<2>(motionState_.acceleration.data());
+	filter_.EvaluateDerivative<3>(motionState_.jerk.data());
 }
 
 } // namespace MotionTracker

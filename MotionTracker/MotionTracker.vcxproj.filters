@@ -59,6 +59,9 @@
     <ClInclude Include="src\common_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MotionTracker\MotionState.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">

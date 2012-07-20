@@ -3,7 +3,8 @@
 #include <boost/variant.hpp>
 
 #include "cf/time.h"
-#include "cf/physics.h"
+
+#include "MotionTracker/MotionState.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -17,18 +18,12 @@ public:
 		Invalid = -1,
 		TrackingStarted,
 		TrackingEnded,
-		Position,
-		Velocity,
-		Acceleration,
-		Jerk
+		MotionStateUpdate
 	};
 
 	// Data
 	typedef boost::variant<
-		Point3D,
-		Velocity3D,
-		Acceleration3D
-		//, Jerk3D
+		MotionState
 		> Data;
 
 	// Ctors
@@ -39,7 +34,7 @@ public:
 		, type_(type)
 	{
 		// Assert that a position event is not constructed without data
-		assert(type != Position);
+		assert(type != MotionStateUpdate);
 	}
 
 	template<typename TData>

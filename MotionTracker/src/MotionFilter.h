@@ -3,10 +3,12 @@
 #include <boost/array.hpp>
 
 #include "cf/EventBuffer.h"
-#include "cf/geometry.h"
+#include "cf/physics.h"
 #include "cf/time.h"
 #include "cf/math.h"
 #include "cf/SavitzkyGolay.h"
+
+#include "MotionTracker/MotionState.h"
 
 #include "common_types.h"
 #include "FrameRateDependent.h"
@@ -27,12 +29,8 @@ public:
 
 private:
 	// Run filter from eventBuffer_ and commit events
-	void RunFilter(timestamp_t const & time);
-
-
-	// Helpers for RunFilter()
+	void RunFilter();
 	void EvaluateCoefs();
-	void CommitEvents(timestamp_t const & time);
 
 private:
 	// "global" state
@@ -41,10 +39,7 @@ private:
 
 	Filter filter_;
 
-	Point3D position_;
-	Velocity3D velocity_;
-	Acceleration3D acceleration_;
-	//Jerk3D jerk_;
+	MotionState motionState_;
 };
 
 
