@@ -135,8 +135,12 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		SetState(FollowerState::Stopped);
 		break;
 	case Event::MotionStateUpdate:
-		featureExtractor_->RegisterPosition(e.timestamp(), e.data<MotionState>().position);
+		{
+		auto const & state = e.data<MotionState>();
+		featureExtractor_->RegisterPosition(e.timestamp(),
+			state.position, state.velocity, state.acceleration, state.jerk);
 		HandleNewPosition(e.timestamp());
+		}
 		break;
 	}
 }

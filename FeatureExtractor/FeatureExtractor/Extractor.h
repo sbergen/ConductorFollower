@@ -36,7 +36,8 @@ public: // types
 public:
 	virtual ~Extractor() {}
 
-	virtual void RegisterPosition(timestamp_t const & time, Point3D const & pos) = 0;
+	virtual void RegisterPosition(timestamp_t const & time,
+		Point3D const & pos, Velocity3D const & vel, Acceleration3D const & acc, Jerk3D const & jerk) = 0;
 	virtual Point3D MagnitudeOfMovementSince(timestamp_t const & time) = 0;
 	virtual Velocity3D AverageVelocitySince(timestamp_t const & time) = 0;
 

@@ -18,7 +18,8 @@ public:
 	~FeatureExtractor();
 
 public: // Extractor implementation
-	void RegisterPosition(timestamp_t const & time, Point3D const & pos);
+	void RegisterPosition(timestamp_t const & time,
+		Point3D const & pos, Velocity3D const & vel, Acceleration3D const & acc, Jerk3D const & jerk);
 	Point3D MagnitudeOfMovementSince(timestamp_t const & time);
 	Velocity3D AverageVelocitySince(timestamp_t const & time);
 
@@ -33,6 +34,10 @@ private:
 
 private: // Buffers
 	PositionBuffer positionBuffer_;
+	VelocityBuffer velocityBuffer_;
+	AccelerationBuffer accelerationBuffer_;
+	JerkBuffer jerkBuffer_;
+
 	GestureBuffer beatBuffer_;
 	GestureBuffer apexBuffer_;
 

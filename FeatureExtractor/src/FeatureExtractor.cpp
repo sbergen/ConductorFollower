@@ -23,14 +23,13 @@ Extractor::Create()
 
 FeatureExtractor::FeatureExtractor()
 	: positionBuffer_(512)
+	, velocityBuffer_(512)
+	, accelerationBuffer_(512)
+	, jerkBuffer_(512)
 	, beatBuffer_(128)
 	, apexBuffer_(128)
 	, prevAvgSeed_(bg::make_zero<Velocity3D>())
 {
-
-	//speedExtractor_.BeatDetected.connect(BeatDetected);
-	//speedExtractor_.BeatDetected.connect(boost::bind(&FeatureExtractor::UpdateLatestBeat, this, _1));
-
 }
 
 FeatureExtractor::~FeatureExtractor()
@@ -38,16 +37,14 @@ FeatureExtractor::~FeatureExtractor()
 }
 
 void
-FeatureExtractor::RegisterPosition(timestamp_t const & time, Point3D const & pos)
+FeatureExtractor::RegisterPosition(timestamp_t const & time,
+	Point3D const & pos, Velocity3D const & vel, Acceleration3D const & acc, Jerk3D const & jerk)
 {
-	if (!positionBuffer_.AllEvents().Empty())
-	{
-		auto diff = time - positionBuffer_.AllEvents().LastTimestamp();
-		auto time = time::quantity_cast<time_quantity>(diff);
-		LOG("frame rate: %1% fps", 1.0 / time.value());
-	}
-
 	positionBuffer_.RegisterEvent(time, pos);
+	velocityBuffer_.RegisterEvent(time, vel);
+	accelerationBuffer_.RegisterEvent(time, acc);
+	jerkBuffer_.RegisterEvent(time, jerk);
+
 	DoShortTimeAnalysis();
 	DetectStartGesture();
 }
@@ -108,23 +105,21 @@ FeatureExtractor::AverageVelocityForTimespans(Velocity3D & total, std::vector<Ve
 void
 FeatureExtractor::DoShortTimeAnalysis()
 {
-	timestamp_t since = positionBuffer_.AllEvents().LastTimestamp() - milliseconds_t(100);
-	Velocity3D v_avg = AverageVelocitySince(since);
+	auto vEvent = velocityBuffer_.AllEvents().Back();
+	Velocity3D v_avg = vEvent.data;
 	Velocity3D::quantity v_abs = geometry::abs(v_avg); 
 	Velocity3D::quantity v_thresh(10.0 * si::centi * si::meter / si::second);
 
 	if (math::sgn(prevAvgSeed_.get<1>()) == -1 && math::sgn(v_avg.get<1>()) == 1 && v_abs > v_thresh)
 	{
-		timestamp_t timestamp = since + milliseconds_t(50);
-		beatBuffer_.RegisterEvent(timestamp, 1.0);
-		BeatDetected(timestamp);
+		beatBuffer_.RegisterEvent(vEvent.timestamp, 1.0);
+		BeatDetected(vEvent.timestamp);
 	}
 
 	if (math::sgn(prevAvgSeed_.get<1>()) == 1 && math::sgn(v_avg.get<1>()) == -1 && v_abs > v_thresh)
 	{
-		timestamp_t timestamp = since + milliseconds_t(50);
-		apexBuffer_.RegisterEvent(timestamp, 1.0);
-		ApexDetected(timestamp);
+		apexBuffer_.RegisterEvent(vEvent.timestamp, 1.0);
+		ApexDetected(vEvent.timestamp);
 	}
 
 	prevAvgSeed_ = v_avg;

@@ -32,9 +32,6 @@
     <ClInclude Include="src\HandObserver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\HandObserverSplitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\HandTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
