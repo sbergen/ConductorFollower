@@ -119,7 +119,7 @@
     <ClInclude Include="cf\inverse_matrix.h" />
     <ClInclude Include="cf\LogItem.h" />
     <ClInclude Include="cf\polynomial.h" />
-    <ClInclude Include="cf\polynomial_detail.h" />
+    <ClInclude Include="cf\SavitzkyGolay.h" />
     <ClInclude Include="cf\score_units.h" />
     <ClInclude Include="cf\physics.h" />
     <ClInclude Include="cf\serialization.h" />

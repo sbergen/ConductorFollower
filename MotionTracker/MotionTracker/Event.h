@@ -17,11 +17,19 @@ public:
 		Invalid = -1,
 		TrackingStarted,
 		TrackingEnded,
-		Position
+		Position,
+		Velocity,
+		Acceleration,
+		Jerk
 	};
 
 	// Data
-	typedef boost::variant<Point3D> Data;
+	typedef boost::variant<
+		Point3D,
+		Velocity3D,
+		Acceleration3D
+		//, Jerk3D
+		> Data;
 
 	// Ctors
 	Event() : type_(Invalid) {}

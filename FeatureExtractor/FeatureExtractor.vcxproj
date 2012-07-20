@@ -116,12 +116,10 @@
   <ItemGroup>
     <ClInclude Include="FeatureExtractor\Extractor.h" />
     <ClInclude Include="src\FeatureExtractor.h" />
-    <ClInclude Include="src\polynomial_analysis.h" />
     <ClInclude Include="src\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FeatureExtractor.cpp" />
-    <ClCompile Include="src\polynomial_analysis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

@@ -118,12 +118,15 @@
     <ClInclude Include="MotionTracker\EventProvider.h" />
     <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
+    <ClInclude Include="src\common_types.h" />
     <ClInclude Include="src\DebugHandObserver.h" />
     <ClInclude Include="src\EventProviderImpl.h" />
+    <ClInclude Include="src\FrameRateDependent.h" />
     <ClInclude Include="src\Gestures.h" />
     <ClInclude Include="src\HandObserver.h" />
     <ClInclude Include="src\HandObserverSplitter.h" />
     <ClInclude Include="src\HandTracker.h" />
+    <ClInclude Include="src\MotionFilter.h" />
     <ClInclude Include="src\OpenNIHandTracker.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
   </ItemGroup>
@@ -132,6 +135,7 @@
     <ClCompile Include="src\EventProviderImpl.cpp" />
     <ClCompile Include="src\EventThrottler.cpp" />
     <ClCompile Include="src\HandTracker.cpp" />
+    <ClCompile Include="src\MotionFilter.cpp" />
     <ClCompile Include="src\OpenNIHandTracker.cpp" />
     <ClCompile Include="src\OpenNIUtils.cpp" />
   </ItemGroup>

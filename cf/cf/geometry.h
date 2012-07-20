@@ -24,6 +24,7 @@ typedef VectorND<3, boost::units::si::acceleration> Acceleration3D;
 
 typedef Point3D::quantity coord_t;
 typedef Velocity3D::quantity velocity_t;
+typedef Acceleration3D::quantity acceleration_t;
 
 typedef boost::geometry::model::box<Point3D> Box3D;
 

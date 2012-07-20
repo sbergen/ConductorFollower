@@ -89,9 +89,6 @@
     <ClInclude Include="cf\polynomial.h">
       <Filter>cf</Filter>
     </ClInclude>
-    <ClInclude Include="cf\polynomial_detail.h">
-      <Filter>cf</Filter>
-    </ClInclude>
     <ClInclude Include="tlsf\tlsf.h">
       <Filter>tlsf</Filter>
     </ClInclude>
@@ -105,6 +102,9 @@
       <Filter>cf</Filter>
     </ClInclude>
     <ClInclude Include="cf\VectorND.h">
+      <Filter>cf</Filter>
+    </ClInclude>
+    <ClInclude Include="cf\SavitzkyGolay.h">
       <Filter>cf</Filter>
     </ClInclude>
   </ItemGroup>

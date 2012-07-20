@@ -46,6 +46,7 @@ private:
 
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
+	, motionFilter_(eventBuffer_)
 {
 	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
 	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
@@ -88,7 +89,7 @@ EventProviderImpl::HandLost()
 void
 EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 {
-	eventBuffer_.enqueue(Event(time::now(), Event::Position, pos));
+	motionFilter_.NewPosition(time::now(), pos);
 }
 
 } // namespace MotionTracker

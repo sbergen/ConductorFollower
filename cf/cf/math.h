@@ -43,6 +43,20 @@ inline float_type & center_element(Vector & v)
 	return v((size / 2) + 1);
 }
 
+// Shift vector
+template<int N>
+inline void shift_vector(Vector & v)
+{
+	if (N == 0) { return; }
+
+	auto & data = v.data();
+	if (N < 0) {
+		std::copy(data.begin() - N, data.end(), data.begin());
+	} else {
+		std::copy_backward(data.begin(), data.end() - N, data.end());
+	}
+}
+
 // Generic random access container wchich uses rt safe allocator
 // should be a template alias...
 template<typename T>

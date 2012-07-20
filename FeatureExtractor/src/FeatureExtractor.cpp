@@ -9,8 +9,6 @@
 #include "cf/math.h"
 #include "cf/physics.h"
 
-#include "polynomial_analysis.h"
-
 namespace cf {
 namespace FeatureExtractor {
 
@@ -42,14 +40,16 @@ FeatureExtractor::~FeatureExtractor()
 void
 FeatureExtractor::RegisterPosition(timestamp_t const & time, Point3D const & pos)
 {
+	if (!positionBuffer_.AllEvents().Empty())
+	{
+		auto diff = time - positionBuffer_.AllEvents().LastTimestamp();
+		auto time = time::quantity_cast<time_quantity>(diff);
+		LOG("frame rate: %1% fps", 1.0 / time.value());
+	}
+
 	positionBuffer_.RegisterEvent(time, pos);
 	DoShortTimeAnalysis();
 	DetectStartGesture();
-
-	auto polyResult = polynomial_analysis(positionBuffer_);
-	if (polyResult) {
-		// TODO
-	}
 }
 
 Point3D

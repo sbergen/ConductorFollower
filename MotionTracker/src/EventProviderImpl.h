@@ -3,7 +3,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
 
-#include "cf/EventBuffer.h"
 #include "cf/LockfreeThread.h"
 #include "cf/time.h"
 #include "cf/geometry.h"
@@ -11,16 +10,17 @@
 
 #include "MotionTracker/EventProvider.h"
 
+#include "common_types.h"
 #include "HandObserver.h"
 #include "HandTracker.h"
+#include "MotionFilter.h"
 
 namespace cf {
 namespace MotionTracker {
 
 class EventProviderImpl : public EventProvider, public HandObserver
 {
-private:
-	typedef EventBuffer<Point3D, timestamp_t> PositionBuffer;
+public:
 	typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
 
 public:
@@ -43,6 +43,7 @@ private: // tracker thread state and event buffer
 
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
 	InterThreadEventBuffer eventBuffer_;
+	MotionFilter motionFilter_;
 };
 
 } // namespace MotionTracker

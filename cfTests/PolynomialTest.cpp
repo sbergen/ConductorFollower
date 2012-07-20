@@ -24,11 +24,17 @@ BOOST_AUTO_TEST_CASE(TestEvaluation)
 
 BOOST_AUTO_TEST_CASE(TestDerivativeCoefs)
 {
-	BOOST_CHECK_EQUAL(detail::d_coef<2>(1), 0);
-	BOOST_CHECK_EQUAL(detail::d_coef<2>(2), 2);
-	BOOST_CHECK_EQUAL(detail::d_coef<2>(3), 6);
-	BOOST_CHECK_EQUAL(detail::d_coef<2>(4), 12);
-	BOOST_CHECK_EQUAL(detail::d_coef<2>(5), 20);
+	BOOST_CHECK_EQUAL(derivative_coef<2>(1), 0);
+	BOOST_CHECK_EQUAL(derivative_coef<2>(2), 2);
+	BOOST_CHECK_EQUAL(derivative_coef<2>(3), 6);
+	BOOST_CHECK_EQUAL(derivative_coef<2>(4), 12);
+	BOOST_CHECK_EQUAL(derivative_coef<2>(5), 20);
+
+	BOOST_CHECK_EQUAL((derivative_coef_c<2, 1>::value), 0);
+	BOOST_CHECK_EQUAL((derivative_coef_c<2, 2>::value), 2);
+	BOOST_CHECK_EQUAL((derivative_coef_c<2, 3>::value), 6);
+	BOOST_CHECK_EQUAL((derivative_coef_c<2, 4>::value), 12);
+	BOOST_CHECK_EQUAL((derivative_coef_c<2, 5>::value), 20);
 }
 
 BOOST_AUTO_TEST_CASE(TestDerivative)
