@@ -6,6 +6,7 @@
 namespace cf {
 namespace math {
 
+// coefs are from 0th to Nth degree
 inline float_type evaluate_polynomial(Vector const & coefs, float_type x)
 {
 	if (coefs.size() == 0) { return 0.0; }

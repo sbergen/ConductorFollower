@@ -39,11 +39,12 @@ class SmoothingSavitzkyGolay : public SavitzkyGolay<Length, Order, Dim>
 public:
 	SmoothingSavitzkyGolay(math::float_type xStep)
 	{
-		// Center item is 0, so we can optimize calculations later
-		unsigned const centerIndex_ = Length / 2 +1;
+		// Value of center item is 0, so we can optimize calculations later
+		int const centerIndex_ = Length / 2;
 		math::Vector x(Length);
-		for (unsigned i = 0; i < Length; ++i) {
-			x(i) = (i + 1 - centerIndex_) * xStep;
+		for (int i = 0; i < static_cast<int>(Length); ++i) {
+			// To get a positive definite matrix, we need to invert the values here
+			x(i) = (centerIndex_ - i) * xStep;
 		}
 		math::make_polynomial_fit_matrix(x, Order, filterMatrix_);
 	}
@@ -51,9 +52,10 @@ public:
 	template<typename VecType>
 	void AppendValue(VecType const & value)
 	{
+		// Append to beginning (inverted, see above for reason)
 		for (std::size_t dim = 0; dim < Dim; ++dim) {
-			math::shift_vector<-1>(values_[dim]);
-			values_[dim](Length - 1) = value[dim];
+			math::shift_vector<1>(values_[dim]);
+			values_[dim](0) = value[dim];
 		}
 	}
 

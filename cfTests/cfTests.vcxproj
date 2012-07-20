@@ -127,6 +127,7 @@
     <ClCompile Include="MathTests.cpp" />
     <ClCompile Include="PhysicsTests.cpp" />
     <ClCompile Include="PolynomialTest.cpp" />
+    <ClCompile Include="SavitzkyGolayTests.cpp" />
     <ClCompile Include="ScoreUnitsTests.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />
     <ClCompile Include="StringEnumTests.cpp" />
