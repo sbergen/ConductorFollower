@@ -51,7 +51,7 @@ BeatClassifier::ProbabilityAt(beats_t position, int meanAsEights, double deviati
 	boost::math::normal dist(mean, deviation);
 	double prob = boost::math::pdf(dist, position / (1.0 * score::quarter_note));
 	normalizedProb = prob / boost::math::pdf(dist, mean);
-	return prob;
+	return prob * ((1.0 * score::quarter_notes) / (2.0 * position));
 }
 
 
