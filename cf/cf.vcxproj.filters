@@ -107,6 +107,9 @@
     <ClInclude Include="cf\SavitzkyGolay.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\Fir.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
@@ -124,8 +127,5 @@
     <ClCompile Include="src\TlsfAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

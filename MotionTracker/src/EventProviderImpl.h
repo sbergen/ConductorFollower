@@ -14,6 +14,7 @@
 #include "HandObserver.h"
 #include "HandTracker.h"
 #include "MotionFilter.h"
+#include "BeatDetector.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -44,6 +45,7 @@ private: // tracker thread state and event buffer
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
 	InterThreadEventBuffer eventBuffer_;
 	MotionFilter motionFilter_;
+	BeatDetector beatDetector_;
 };
 
 } // namespace MotionTracker

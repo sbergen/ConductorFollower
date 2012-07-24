@@ -4,6 +4,7 @@
 #include <boost/static_assert.hpp>
 
 #include "cf/math.h"
+#include "cf/polynomial.h"
 
 namespace cf {
 
@@ -72,6 +73,56 @@ public:
 			result[dim] = math::derivative_coef_c<N, N>::value * coefs_[dim](N);
 		}
 	}
+};
+
+template<unsigned Length, unsigned Order>
+class SavitzkyGolayPeakDetector : private SmoothingSavitzkyGolay<Length, Order, 1>
+{
+public:
+	enum PeakType
+	{
+		None,
+		Min,
+		Max
+	};
+
+	SavitzkyGolayPeakDetector(int suppressionTime = 0)
+		: SmoothingSavitzkyGolay(1.0) // We don't care about time here...
+		, suppressionTime_(suppressionTime)
+		, suppressionTimer_(0)
+		, prevDirection_(0)
+	{}
+
+	PeakType Run(math::float_type value)
+	{
+		AppendValue(&value);
+
+		if (--suppressionTimer_ > 0) { return None; }
+
+		RunFromValues();
+
+		math::float_type der[1];
+		EvaluateDerivative<1>(der);
+		int direction = math::sgn(der[0]);
+
+		int prev = prevDirection_;
+		prevDirection_ = direction;
+
+		if (prev == -1 && direction == 1) {
+			suppressionTimer_ = suppressionTime_;
+			return Min;
+		} else if (prev == 1 && direction == -1) {
+			suppressionTimer_ = suppressionTime_;
+			return Max;
+		}
+
+		return None;
+	}
+
+private:
+	int const suppressionTime_;
+	int suppressionTimer_;
+	int prevDirection_;
 };
 
 } // namespace cf

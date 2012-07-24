@@ -23,9 +23,10 @@ private:
 	typedef SmoothingSavitzkyGolay<FrameRateDependent::filter_size, FrameRateDependent::filter_order, 3> Filter;
 
 public:
-	MotionFilter(InterThreadEventBuffer & eventBuffer);
+	MotionFilter();
 
 	void NewPosition(timestamp_t const & time, Point3D const & pos);
+	MotionState const & State() const { return motionState_; }
 
 private:
 	// Run filter from eventBuffer_ and commit events
@@ -33,12 +34,8 @@ private:
 	void EvaluateCoefs();
 
 private:
-	// "global" state
-	InterThreadEventBuffer & eventBuffer_;
 	PositionBuffer positionBuffer_;
-
 	Filter filter_;
-
 	MotionState motionState_;
 };
 

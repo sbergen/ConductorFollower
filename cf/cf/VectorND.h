@@ -11,6 +11,17 @@ namespace cf {
 namespace ublas = boost::numeric::ublas;
 namespace mpl = boost::mpl;
 
+namespace coord
+{
+	enum
+	{
+		X = 0,
+		Y = 1,
+		Z = 2
+	};
+
+} // namespace coord
+
 // N-dimensional vector
 template<unsigned Dim, typename Unit, typename Rep = double>
 class VectorND
@@ -34,9 +45,9 @@ public: // ctors
 	VectorND(quantity x, quantity y, quantity z)
 		 : data_(3)
 	{
-		set<0>(x);
-		set<1>(y);
-		set<2>(z);
+		set<coord::X>(x);
+		set<coord::Y>(y);
+		set<coord::Z>(z);
 	}
 
 	VectorND(data_type const & data)

@@ -14,7 +14,6 @@ EventProvider::Create()
 	return boost::make_shared<EventProviderImpl>();
 }
 
-
 class EventProviderImpl::TrackerThread
 {
 public:
@@ -46,7 +45,6 @@ private:
 
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
-	, motionFilter_(eventBuffer_)
 {
 	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
 	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
@@ -89,7 +87,21 @@ EventProviderImpl::HandLost()
 void
 EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 {
-	motionFilter_.NewPosition(time::now(), pos);
+	auto realTime = time::now();
+
+	motionFilter_.NewPosition(realTime, pos);
+	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
+
+	/*timestamp_t beatTime;
+	if (beatDetector_.NewState(realTime, motionFilter_.State(), beatTime))
+	{
+		eventBuffer_.enqueue(Event(beatTime, Event::Beat));
+	}*/
+	auto beatVal = beatDetector_.ValFromState(motionFilter_.State());
+	eventBuffer_.enqueue(Event(realTime, Event::BeatProb, beatVal));
+	if (beatVal > 0.0) {
+		eventBuffer_.enqueue(Event(realTime, Event::Beat));
+	}
 }
 
 } // namespace MotionTracker

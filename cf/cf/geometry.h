@@ -17,7 +17,8 @@ namespace cf {
 
 typedef VectorND<3, boost::units::si::length> Point3D;
 
-typedef Point3D::quantity coord_t;
+typedef Point3D::quantity distance_t;
+typedef distance_t coord_t;
 
 typedef boost::geometry::model::box<Point3D> Box3D;
 
@@ -50,13 +51,13 @@ namespace geometry
 	}
 
 } // namespace geometry
-	
+
 } // namespace cf
 
 #define REGISTER_VECTOR_AS_POINT(type) \
 	BOOST_GEOMETRY_REGISTER_POINT_3D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, \
-	get_raw<0>, get_raw<1>, get_raw<2>, \
-	set_raw<0>, set_raw<1>, set_raw<2>)
+	get_raw<cf::coord::X>, get_raw<cf::coord::Y>, get_raw<cf::coord::Z>, \
+	set_raw<cf::coord::X>, set_raw<cf::coord::Y>, set_raw<cf::coord::Z>)
 
 REGISTER_VECTOR_AS_POINT(cf::Point3D);
 

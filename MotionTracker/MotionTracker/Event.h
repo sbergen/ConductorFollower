@@ -18,11 +18,15 @@ public:
 		Invalid = -1,
 		TrackingStarted,
 		TrackingEnded,
-		MotionStateUpdate
+		MotionStateUpdate,
+		Beat,
+		BeatProb
 	};
 
 	// Data
 	typedef boost::variant<
+		boost::blank,
+		double,
 		MotionState
 		> Data;
 

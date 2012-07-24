@@ -114,6 +114,7 @@
     <ClInclude Include="cf\ButlerThread.h" />
     <ClInclude Include="cf\dummy_mutex.h" />
     <ClInclude Include="cf\EventBuffer.h" />
+    <ClInclude Include="cf\Fir.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
     <ClInclude Include="cf\inverse_matrix.h" />
@@ -147,9 +148,6 @@
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\TlsfAllocator.cpp" />
     <ClCompile Include="tlsf\tlsf.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

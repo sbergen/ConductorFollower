@@ -22,6 +22,8 @@ typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 1, 0, 2> Speed
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 1> MagnitudeType;
 typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, FollowerState, FollowerState::Stopped> StateType;
 
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, -10, 10> BeatType;
+
 CF_STATUS_GROUP
 (
 FollowerStatus,
@@ -29,6 +31,7 @@ FollowerStatus,
 	((Speed, "Speed", SpeedType))
 	((SpeedFromPhase, "Speed from phase", SpeedType))
 	((MagnitudeOfMovement, "Magnitude of movement", MagnitudeType))
+	((Beat, "Beat Probability", BeatType))
 )
 
 } // namespace Status

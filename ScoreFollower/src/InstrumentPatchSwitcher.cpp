@@ -41,6 +41,8 @@ InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuff
 void
 InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed)
 {
+	if (patches_.empty()) { return; }
+
 	PatchMapper::NoteContext noteContext(data->GetNoteLength(), currentSpeed, data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext);
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());

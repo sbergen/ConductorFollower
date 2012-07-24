@@ -6,9 +6,8 @@ namespace cf {
 namespace MotionTracker {
 
 
-MotionFilter::MotionFilter(InterThreadEventBuffer & eventBuffer)
-	: eventBuffer_(eventBuffer)
-	, positionBuffer_(FrameRateDependent::filter_size)
+MotionFilter::MotionFilter()
+	: positionBuffer_(FrameRateDependent::filter_size)
 	, filter_(1.0 / FrameRateDependent::frame_rate)
 {
 }
@@ -16,12 +15,11 @@ MotionFilter::MotionFilter(InterThreadEventBuffer & eventBuffer)
 void
 MotionFilter::NewPosition(timestamp_t const & time, Point3D const & pos)
 {
-	positionBuffer_.RegisterEvent(time::now(), pos);
+	positionBuffer_.RegisterEvent(time, pos);
 	filter_.AppendValue(pos.data());
 	if (positionBuffer_.AllEvents().Size() < FrameRateDependent::filter_size) { return; }
 
 	RunFilter();
-	eventBuffer_.enqueue(Event(time, Event::MotionStateUpdate, motionState_));
 }
 
 void

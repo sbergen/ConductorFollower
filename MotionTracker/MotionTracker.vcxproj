@@ -118,6 +118,7 @@
     <ClInclude Include="MotionTracker\EventProvider.h" />
     <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="MotionTracker\MotionState.h" />
+    <ClInclude Include="src\BeatDetector.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
     <ClInclude Include="src\common_types.h" />
     <ClInclude Include="src\DebugHandObserver.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="src\OpenNIUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BeatDetector.cpp" />
     <ClCompile Include="src\DebugHandObserver.cpp" />
     <ClCompile Include="src\EventProviderImpl.cpp" />
     <ClCompile Include="src\EventThrottler.cpp" />

@@ -69,8 +69,6 @@ private: // Stuff related to butler thread
 	void CheckForConfigChange();
 	void CollectData(std::string const & scoreFile);
 
-	ButlerThread::CallbackHandle configCallbackHandle_;
-
 private:
 	typedef boost::signals2::connection      SignalConnection;
 	typedef boost::mutex::scoped_try_lock    TryLock;
@@ -91,8 +89,10 @@ private:
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	boost::shared_ptr<ScoreHelper> scoreHelper_;	
 
+	// Destroy these very first
 	SignalConnection startGestureConnection_;
 	SignalConnection beatConnection_;
+	ButlerThread::CallbackHandle configCallbackHandle_;
 };
 
 } // namespace ScoreFollower
