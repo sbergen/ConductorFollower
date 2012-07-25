@@ -24,7 +24,7 @@ public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
 	void ReadScore(ScoreReader & reader) { tempoMap_.ReadScore(reader); }
-	void RegisterBeat(real_time_t const & beatTime);
+	void RegisterBeat(real_time_t const & beatTime, double prob);
 
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
@@ -42,7 +42,7 @@ private:
 	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
 
 private:
-	BeatClassification ClassifyBeatAt(real_time_t const & time);
+	BeatClassification ClassifyBeatAt(real_time_t const & time, double prob);
 	
 	beat_pos_t BeatOffsetEstimate() const;
 	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat) const;

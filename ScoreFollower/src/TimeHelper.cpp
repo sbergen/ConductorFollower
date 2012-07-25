@@ -54,10 +54,10 @@ TimeHelper::FixScoreRange()
 }
 
 void
-TimeHelper::RegisterBeat(real_time_t const & time)
+TimeHelper::RegisterBeat(real_time_t const & time, double prob)
 {
 	assert(time < timeManager_->CurrentBlockStart());
-	tempoFollower_.RegisterBeat(time);
+	tempoFollower_.RegisterBeat(time, prob);
 }
 
 samples_t

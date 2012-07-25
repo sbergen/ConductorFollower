@@ -120,7 +120,7 @@ FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & 
 {
 	startGestureConnection_.disconnect();
 
-	timeHelper_->RegisterBeat(beatTime);
+	timeHelper_->RegisterBeat(beatTime, 1.0);
 	startRollingTime_ = startTime;
 }
 
@@ -146,7 +146,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::Beat:
 		{
 		SetState(FollowerState::Rolling);
-		timeHelper_->RegisterBeat(e.timestamp());
+		timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
 		static int foo = 0;
 		status_.write()->SetValue<Status::Beat>(foo);
 		foo = !foo;
