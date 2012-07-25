@@ -43,7 +43,11 @@ private:
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time);
+	
 	beat_pos_t BeatOffsetEstimate() const;
+	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat) const;
+	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat,
+		BeatHistoryBuffer::Range const & otherBeats) const;
 
 	speed_t SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const;
 
