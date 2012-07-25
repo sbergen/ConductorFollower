@@ -15,7 +15,7 @@ class BeatDetector
 public:
 	BeatDetector();
 
-	double ValFromState(MotionState const & state);
+	bool ValFromState(MotionState const & state, double & strength);
 
 private:
 

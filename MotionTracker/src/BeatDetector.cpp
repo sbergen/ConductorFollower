@@ -19,21 +19,21 @@ BeatDetector::BeatDetector()
 	vyFir_[5] = 3.0;
 }
 
-double
-BeatDetector::ValFromState(MotionState const & state)
+bool
+BeatDetector::ValFromState(MotionState const & state, double & strength)
 {
 	// Calculate a_t
 	//auto prod = ublas::inner_prod(state.acceleration.data(), state.velocity.data());
 	//auto a_t = acceleration_t::from_value(prod / geometry::abs(state.velocity).value());
 
 	double vy = state.velocity.get_raw<coord::Y>();
-	double val = vyFir_.Run(vy);
-	if (peakDetector_.Run(val) == PeakDetector::Max &&
-		val > 0.7) {
-		return val;
+	strength = vyFir_.Run(vy);
+	if (peakDetector_.Run(strength) == PeakDetector::Max &&
+		strength > 0.7) {
+		return true;
 	}
 
-	return 0.0;
+	return false;
 }
 
 } // namespace MotionTracker

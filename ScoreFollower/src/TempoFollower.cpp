@@ -50,19 +50,38 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 speed_t
 TempoFollower::SpeedEstimateAt(real_time_t const & time)
 {
-	if (!newBeats_) { return speed_; }
-	newBeats_ = false;
-
-	// The first few beats are not useful
-	if (beatHistory_.AllEvents().Size() <= 3) { return speed_; }
-
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
-	TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-	speed_ = SpeedFromBeatCatchup(tempoNow, 1.5 * score::beats);
+	if (newBeats_) {
+		newBeats_ = false;
 
-	// TODO limit better
-	if (speed_ > 2.0) { speed_ = 2.0; }
+		// The first few beats are not useful
+		if (beatHistory_.AllEvents().Size() <= 3) { return speed_; }
+
+		score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
+		TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
+
+		auto catchupTime = 1.5 * score::beats;
+		targetSpeed_ = SpeedFromBeatCatchup(tempoNow, catchupTime);
+		if (targetSpeed_ > 2.0) { targetSpeed_ = 2.0; } // TODO limit better
+
+		score_time_t accelerationTime(catchupTime / tempoNow.tempo());
+		accelerateUntil_ = timeWarper_.InverseWarpTimestamp(scoreTime + accelerationTime);
+		auto accelerationPerTimeUnit = (targetSpeed_ - speed_) / time::quantity_cast<time_quantity>(accelerateUntil_ - time);
+
+		auto speed = speed_;
+		acceleration_ = [speed, accelerationPerTimeUnit, time] (real_time_t const & newTime) ->
+		double
+		{
+			auto timeDiff = time::quantity_cast<time_quantity>(newTime - time);
+			return speed + (timeDiff * accelerationPerTimeUnit);
+		};
+	}
+
+	if (time < accelerateUntil_) {
+		speed_ = acceleration_(time);
+		//LOG("Accelerated to: %1% (%2%), towards: %3% (%4%)", speed_, time, targetSpeed_, accelerateUntil_);
+	}
 
 	auto status = parent_.status().write();
 	status->SetValue<Status::SpeedFromPhase>(speed_);

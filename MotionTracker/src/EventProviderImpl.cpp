@@ -97,9 +97,10 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 	{
 		eventBuffer_.enqueue(Event(beatTime, Event::Beat));
 	}*/
-	auto beatVal = beatDetector_.ValFromState(motionFilter_.State());
+	double beatVal;
+	bool beat = beatDetector_.ValFromState(motionFilter_.State(), beatVal);
 	eventBuffer_.enqueue(Event(realTime, Event::BeatProb, beatVal));
-	if (beatVal > 0.0) {
+	if (beat) {
 		eventBuffer_.enqueue(Event(realTime, Event::Beat, beatVal));
 	}
 }

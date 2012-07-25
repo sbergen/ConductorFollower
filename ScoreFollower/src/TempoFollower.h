@@ -11,6 +11,7 @@
 #include "BeatClassifier.h"
 
 #include <boost/utility.hpp>
+#include <boost/function.hpp>
 
 namespace cf {
 namespace ScoreFollower {
@@ -62,6 +63,13 @@ private:
 
 	bool newBeats_;
 	speed_t speed_;
+
+
+	/* New state */
+	boost::function<double(real_time_t const &)> acceleration_;
+	double targetSpeed_; // TODO units
+	real_time_t accelerateUntil_;
+
 };
 
 } // namespace ScoreFollower
