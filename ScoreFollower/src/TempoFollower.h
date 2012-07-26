@@ -8,6 +8,7 @@
 #include "ScoreFollower/ScoreReader.h"
 
 #include "TempoMap.h"
+#include "BeatClassification.h"
 #include "BeatClassifier.h"
 
 #include <boost/utility.hpp>
@@ -30,21 +31,14 @@ public:
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:
-
-	struct BeatClassification
-	{
-		BeatClassification(beat_pos_t offset, double probability)
-			: offset(offset), probability(probability) {}
-
-		beat_pos_t offset;
-		double probability;
-	};
-
 	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double prob);
 	
+	double ClassificationQuality(BeatClassification const & latestBeat) const;
+	double ClassificationSelector(BeatClassification const & latestBeat, double quality) const;
+
 	beat_pos_t BeatOffsetEstimate() const;
 	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat) const;
 	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat,

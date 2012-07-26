@@ -124,6 +124,7 @@
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />
+    <ClInclude Include="src\BeatClassification.h" />
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />
