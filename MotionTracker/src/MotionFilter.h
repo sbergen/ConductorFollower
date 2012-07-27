@@ -25,7 +25,7 @@ private:
 public:
 	MotionFilter();
 
-	void NewPosition(timestamp_t const & time, Point3D const & pos);
+	bool NewPosition(timestamp_t const & time, Point3D const & pos);
 	MotionState const & State() const { return motionState_; }
 
 private:
@@ -34,7 +34,6 @@ private:
 	void EvaluateCoefs();
 
 private:
-	PositionBuffer positionBuffer_;
 	Filter filter_;
 	MotionState motionState_;
 };

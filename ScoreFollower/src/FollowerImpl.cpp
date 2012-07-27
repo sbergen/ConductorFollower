@@ -140,14 +140,11 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		auto const & state = e.data<MotionState>();
 		featureExtractor_->RegisterPosition(e.timestamp(),
 			state.position, state.velocity, state.acceleration, state.jerk);
-
-		double power = geometry::abs(state.velocity).value() +
-		               geometry::abs(state.jerk).value();
-
-		status_.write()->SetValue<Status::Power>(power);
-
 		HandleNewPosition(e.timestamp());
 		}
+		break;
+	case Event::Power:
+		status_.write()->SetValue<Status::Power>(e.data<double>());
 		break;
 	case Event::Beat:
 		{

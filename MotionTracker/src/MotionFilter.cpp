@@ -7,19 +7,20 @@ namespace MotionTracker {
 
 
 MotionFilter::MotionFilter()
-	: positionBuffer_(FrameRateDependent::filter_size)
-	, filter_(1.0 / FrameRateDependent::frame_rate)
+	: filter_(1.0 / FrameRateDependent::frame_rate)
 {
 }
 
-void
+bool
 MotionFilter::NewPosition(timestamp_t const & time, Point3D const & pos)
 {
-	positionBuffer_.RegisterEvent(time, pos);
+	static int positionsReceived = 0;
+
 	filter_.AppendValue(pos.data());
-	if (positionBuffer_.AllEvents().Size() < FrameRateDependent::filter_size) { return; }
+	if (++positionsReceived <= FrameRateDependent::filter_size) { return false; }
 
 	RunFilter();
+	return true;
 }
 
 void

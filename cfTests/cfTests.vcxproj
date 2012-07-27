@@ -121,6 +121,7 @@
   <ItemGroup>
     <ClCompile Include="AlgorithmTests.cpp" />
     <ClCompile Include="EventBufferTests.cpp" />
+    <ClCompile Include="FirTests.cpp" />
     <ClCompile Include="GeometryTests.cpp" />
     <ClCompile Include="LoggerTests.cpp" />
     <ClCompile Include="main.cpp" />

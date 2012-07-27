@@ -20,7 +20,8 @@ public:
 		TrackingEnded,
 		MotionStateUpdate,
 		Beat,
-		BeatProb
+		BeatProb,
+		Power
 	};
 
 	// Data

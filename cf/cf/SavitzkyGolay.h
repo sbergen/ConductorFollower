@@ -22,9 +22,18 @@ public:
 	{
 		// Init vectors
 		std::for_each(std::begin(values_), std::end(values_),
-			[] (math::Vector & v) -> void { v.resize(Length); });
+			[] (math::Vector & v) -> void
+		{
+			v.resize(Length);
+			std::fill(std::begin(v.data()), std::end(v.data()), math::float_type());
+		});
+
 		std::for_each(std::begin(coefs_), std::end(coefs_),
-			[] (math::Vector & v) -> void { v.resize(Order + 1); });
+			[] (math::Vector & v) -> void
+		{
+			v.resize(Order + 1);
+			std::fill(std::begin(v.data()), std::end(v.data()), math::float_type());
+		});
 	}
 
 protected:

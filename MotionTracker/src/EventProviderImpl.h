@@ -7,6 +7,7 @@
 #include "cf/time.h"
 #include "cf/geometry.h"
 #include "cf/globals.h"
+#include "cf/fir.h"
 
 #include "MotionTracker/EventProvider.h"
 
@@ -46,6 +47,8 @@ private: // tracker thread state and event buffer
 	InterThreadEventBuffer eventBuffer_;
 	MotionFilter motionFilter_;
 	BeatDetector beatDetector_;
+
+	AveragingFir<60> powerFir_;
 };
 
 } // namespace MotionTracker

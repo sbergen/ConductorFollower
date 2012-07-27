@@ -18,6 +18,13 @@ public:
 		coefs_.assign(T());
 	}
 
+	Fir(T const & coefValue)
+		: sampleBuffer_(Order)
+	{
+		sampleBuffer_.assign(Order, T());
+		coefs_.assign(coefValue);
+	}
+
 	T Run(T const & nextValue)
 	{
 		sampleBuffer_.push_back(nextValue);
@@ -32,6 +39,27 @@ public:
 private:
 	boost::circular_buffer<T> sampleBuffer_;
 	boost::array<T, Order> coefs_;
+};
+
+template<int Order, typename T = double>
+class AveragingFir
+{
+public:
+	AveragingFir()
+		: sampleBuffer_(Order)
+	{
+		sampleBuffer_.assign(Order, T());
+	}
+
+	T Run(T const & nextValue)
+	{
+		sampleBuffer_.push_back(nextValue);
+		T sum = std::accumulate(std::begin(sampleBuffer_), std::end(sampleBuffer_), T());
+		return sum / Order;
+	}
+
+private:
+	boost::circular_buffer<T> sampleBuffer_;
 };
 
 } // namespace cf

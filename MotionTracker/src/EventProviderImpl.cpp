@@ -2,6 +2,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include "cf/geometry.h"
+
 #include "MotionTracker/Event.h"
 
 namespace cf {
@@ -89,8 +91,13 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 {
 	auto realTime = time::now();
 
-	motionFilter_.NewPosition(realTime, pos);
+	if (!motionFilter_.NewPosition(realTime, pos)) { return; }
 	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
+
+	double power = geometry::abs(motionFilter_.State().velocity).value() +
+		               geometry::abs(motionFilter_.State().jerk).value();
+	power = powerFir_.Run(power);
+	eventBuffer_.enqueue(Event(realTime, Event::Power, power));
 
 	/*timestamp_t beatTime;
 	if (beatDetector_.NewState(realTime, motionFilter_.State(), beatTime))
