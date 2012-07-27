@@ -210,7 +210,7 @@ TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
 		BeatHistoryBuffer::Range const & otherBeats) const
 {
 	double const firstWeight = 10.0 * latestBeat.clarity();
-	boost::array<double, 4> weights = { 3.0, 2.0, 1.0 };
+	boost::array<double, 3> weights = { 4.0, 1.0, 0.5 };
 	
 	beat_pos_t weightedSum = firstWeight * latestBeat.offset();
 	double normalizationTerm = firstWeight;
