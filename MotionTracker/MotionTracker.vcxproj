@@ -130,6 +130,7 @@
     <ClInclude Include="src\MotionFilter.h" />
     <ClInclude Include="src\OpenNIHandTracker.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
+    <ClInclude Include="src\StartGestureDetector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BeatDetector.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="src\MotionFilter.cpp" />
     <ClCompile Include="src\OpenNIHandTracker.cpp" />
     <ClCompile Include="src\OpenNIUtils.cpp" />
+    <ClCompile Include="src\StartGestureDetector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

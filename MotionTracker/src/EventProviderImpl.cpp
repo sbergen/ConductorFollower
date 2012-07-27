@@ -91,24 +91,28 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 {
 	auto realTime = time::now();
 
+	// Motion filter
 	if (!motionFilter_.NewPosition(realTime, pos)) { return; }
 	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
 
+	// Power
 	double power = geometry::abs(motionFilter_.State().velocity).value() +
 		               geometry::abs(motionFilter_.State().jerk).value();
 	power = powerFir_.Run(power);
 	eventBuffer_.enqueue(Event(realTime, Event::Power, power));
 
-	/*timestamp_t beatTime;
-	if (beatDetector_.NewState(realTime, motionFilter_.State(), beatTime))
-	{
-		eventBuffer_.enqueue(Event(beatTime, Event::Beat));
-	}*/
+	// Beat detection
 	double beatVal;
-	bool beat = beatDetector_.ValFromState(motionFilter_.State(), beatVal);
+	bool beat = beatDetector_.Detect(motionFilter_.State(), beatVal);
 	eventBuffer_.enqueue(Event(realTime, Event::BeatProb, beatVal));
 	if (beat) {
 		eventBuffer_.enqueue(Event(realTime, Event::Beat, beatVal));
+	}
+
+	// Start gesture detection
+	auto startResult = startDetector_.Detect(realTime, motionFilter_.State(), beat);
+	if (startResult) {
+		eventBuffer_.enqueue(Event(realTime, Event::StartGesture, startResult.previousBeatTime));
 	}
 }
 

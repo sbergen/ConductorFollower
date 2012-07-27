@@ -26,8 +26,9 @@ public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
 	void ReadScore(ScoreReader & reader) { tempoMap_.ReadScore(reader); }
-	void RegisterBeat(real_time_t const & beatTime, double prob);
 
+	void RegisterPreparatoryBeat(real_time_t const & time);
+	void RegisterBeat(real_time_t const & beatTime, double prob);
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:

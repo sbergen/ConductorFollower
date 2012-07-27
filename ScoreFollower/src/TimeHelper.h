@@ -30,6 +30,7 @@ public:
 	void StartNewBlock();
 	void FixScoreRange();
 
+	void RegisterPreparatoryBeat(real_time_t const & time);
 	void RegisterBeat(real_time_t const & time, double prob);
 
 	// frame offset in current audio block

@@ -21,6 +21,12 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 }
 
 void
+TempoFollower::RegisterPreparatoryBeat(real_time_t const & time)
+{
+	beatHistory_.RegisterEvent(time, BeatClassification::PreparatoryBeat(time));
+}
+
+void
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 {
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
@@ -42,7 +48,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 		speed_ = conductedTempo / tempo;
 
 		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", conductedTempo, speed_, secondBeat, firstBeat);
-		speed_ = 1.0; // temporary override
+		//speed_ = 1.0; // temporary override
 	}
 }
 

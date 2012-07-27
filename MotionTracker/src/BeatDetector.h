@@ -15,7 +15,7 @@ class BeatDetector
 public:
 	BeatDetector();
 
-	bool ValFromState(MotionState const & state, double & strength);
+	bool Detect(MotionState const & state, double & strength);
 
 private:
 
@@ -24,9 +24,6 @@ private:
 	Fir<6> vyFir_;
 	PeakDetector peakDetector_;
 };
-
-
-
 
 } // namespace MotionTracker
 } // namespace cf

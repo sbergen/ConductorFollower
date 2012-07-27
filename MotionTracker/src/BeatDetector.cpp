@@ -20,7 +20,7 @@ BeatDetector::BeatDetector()
 }
 
 bool
-BeatDetector::ValFromState(MotionState const & state, double & strength)
+BeatDetector::Detect(MotionState const & state, double & strength)
 {
 	// Calculate a_t
 	//auto prod = ublas::inner_prod(state.acceleration.data(), state.velocity.data());

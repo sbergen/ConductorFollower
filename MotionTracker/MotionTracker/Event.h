@@ -21,14 +21,16 @@ public:
 		MotionStateUpdate,
 		Beat,
 		BeatProb,
-		Power
+		Power,
+		StartGesture
 	};
 
 	// Data
 	typedef boost::variant<
 		boost::blank,
 		double,
-		MotionState
+		MotionState,
+		timestamp_t
 		> Data;
 
 	// Ctors

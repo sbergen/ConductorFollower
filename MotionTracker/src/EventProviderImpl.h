@@ -16,6 +16,7 @@
 #include "HandTracker.h"
 #include "MotionFilter.h"
 #include "BeatDetector.h"
+#include "StartGestureDetector.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -47,6 +48,7 @@ private: // tracker thread state and event buffer
 	InterThreadEventBuffer eventBuffer_;
 	MotionFilter motionFilter_;
 	BeatDetector beatDetector_;
+	StartGestureDetector startDetector_;
 
 	AveragingFir<60> powerFir_;
 };

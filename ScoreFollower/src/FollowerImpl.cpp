@@ -32,7 +32,6 @@ Follower::Create(boost::shared_ptr<ScoreReader> scoreReader)
 FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	: status_(boost::make_shared<Status::FollowerStatus>())
 	, options_(boost::make_shared<Options::FollowerOptions>())
-	, startRollingTime_(real_time_t::max())
 	, scoreReader_(scoreReader)
 {
 	// Construct memebers
@@ -73,14 +72,6 @@ FollowerImpl::StartNewBlock()
 	TryLock lock(configMutex_);
 	if (!lock.owns_lock()) { return 0; }
 
-	// Check state
-	if (State() == FollowerState::WaitingForStart && currentBlock.first >= startRollingTime_)
-	{
-		SetState(FollowerState::Rolling);
-		//beatConnection_ = featureExtractor_->BeatDetected.connect(
-		//	boost::bind(&TimeHelper::RegisterBeat, timeHelper_, _1));
-	}
-
 	if (State() != FollowerState::Rolling) { return 0; }
 
 	// If rolling, fix score range
@@ -116,15 +107,6 @@ FollowerImpl::SetState(FollowerState::Value state)
 
 
 void
-FollowerImpl::GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime)
-{
-	startGestureConnection_.disconnect();
-
-	timeHelper_->RegisterBeat(beatTime, 1.0);
-	startRollingTime_ = startTime;
-}
-
-void
 FollowerImpl::ConsumeEvent(Event const & e)
 {
 	switch(e.type())
@@ -148,15 +130,23 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		break;
 	case Event::Beat:
 		{
-		SetState(FollowerState::Rolling);
-		timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
-		static int foo = 0;
-		status_.write()->SetValue<Status::Beat>(foo);
-		foo = !foo;
+		if (State() == FollowerState::GotStart) {
+			SetState(FollowerState::Rolling);
+		}
+
+		if (State() == FollowerState::Rolling) {
+			timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
+		}
 		break;
 		}
 	case Event::BeatProb:
 		status_.write()->SetValue<Status::Beat>(e.data<double>());
+		break;
+	case Event::StartGesture:
+		if (State() == FollowerState::WaitingForStart) {
+			timeHelper_->RegisterPreparatoryBeat(e.data<real_time_t>());
+			SetState(FollowerState::GotStart);
+		}
 		break;
 	}
 }
@@ -219,8 +209,6 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 
 	// Start listening to gestures
 	SetState(FollowerState::WaitingForCalibration);
-	//startGestureConnection_ = featureExtractor_->StartGestureDetected.connect(
-	//	boost::bind(&FollowerImpl::GotStartGesture, this, _1, _2));
 	eventProvider_->StartProduction();
 }
 

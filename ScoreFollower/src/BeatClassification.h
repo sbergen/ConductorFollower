@@ -19,7 +19,27 @@ private:
 	enum { NotesToClassify = 16 };
 
 public:
-	BeatClassification(timestamp_t timestamp, beat_pos_t rawOffset, double clarity)
+
+	static BeatClassification PreparatoryBeat(timestamp_t const & timestamp)
+	{
+		BeatClassification bc(timestamp, 1.0 * score::beats, 10.0);
+
+		bc.Evaluate(
+			[](BeatClassification const & bc) -> double
+			{
+				if (bc.classification() == 1.0 * score::beats) { return 10.0; }
+				return 0.0;
+			},
+			[](BeatClassification const & bc, double quality) -> double
+			{
+				return quality;
+			});
+
+
+		return bc;
+	}
+
+	BeatClassification(timestamp_t const & timestamp, beat_pos_t rawOffset, double clarity)
 		: timestamp_(timestamp)
 		, rawOffset_(rawOffset)
 		, clarity_(clarity)
@@ -52,7 +72,6 @@ public:
 	}
 
 	timestamp_t timestamp() const { return timestamp_; }
-	beat_pos_t rawOffset() const { return rawOffset_; }
 	double clarity() const { return clarity_; }
 
 	beat_pos_t classification() const { return classification_; }

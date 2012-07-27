@@ -55,7 +55,7 @@ public:
 	{
 		sampleBuffer_.push_back(nextValue);
 		T sum = std::accumulate(std::begin(sampleBuffer_), std::end(sampleBuffer_), T());
-		return sum / Order;
+		return sum / T(Order);
 	}
 
 private:

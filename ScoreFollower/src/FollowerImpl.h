@@ -59,7 +59,6 @@ private:
 	FollowerState State();
 	void SetState(FollowerState::Value state);
 
-	void GotStartGesture(real_time_t const & beatTime, real_time_t const & startTime);
 	void ConsumeEvent(MotionTracker::Event const & e);
 
 	void HandleNewPosition(real_time_t const & timestamp);
@@ -80,7 +79,6 @@ private:
 	FollowerState state_;
 
 	boost::mutex configMutex_;
-	real_time_t startRollingTime_;
 
 	boost::shared_ptr<ScoreReader> scoreReader_;
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
@@ -89,9 +87,7 @@ private:
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	boost::shared_ptr<ScoreHelper> scoreHelper_;	
 
-	// Destroy these very first
-	SignalConnection startGestureConnection_;
-	SignalConnection beatConnection_;
+	// Destroy this very first
 	ButlerThread::CallbackHandle configCallbackHandle_;
 };
 
