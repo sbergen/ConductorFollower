@@ -125,30 +125,6 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 	*/
 	
 	return classification;
-
-	/*************************/
-
-	/*
-	score_time_t prevBeatScoreTime = timeWarper_.WarpTimestamp(beatHistory_.AllEvents().LastTimestamp());
-	TempoPoint prevTempoPoint = tempoMap_.GetTempoAt(prevBeatScoreTime);
-
-	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
-	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
-	
-	beat_pos_t rawOffset = tempoPoint.position() - prevTempoPoint.position();
-	auto classification = beatClassifier_.ClassifyBeat(rawOffset);
-	beat_pos_t offset = rawOffset - classification.beatsSincePrevious;
-
-	// Remove beats that happen "too soon"
-	if ((classification.beatsSincePrevious < beats_t(1.0  * score::eight_note)) &&
-		classification.probability < 0.1)
-	{
-		LOG("Dropping beat at %1%, prob: %2%", time, classification.probability);
-		classification.probability = 0.0;
-	}
-
-	return BeatClassification(offset, classification.probability);
-	*/
 }
 
 double
