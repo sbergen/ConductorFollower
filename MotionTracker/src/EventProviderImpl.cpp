@@ -3,6 +3,7 @@
 #include <boost/make_shared.hpp>
 
 #include "cf/geometry.h"
+#include "cf/globals.h"
 
 #include "MotionTracker/Event.h"
 
@@ -96,9 +97,13 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
 
 	// Power
-	double power = geometry::abs(motionFilter_.State().velocity).value() +
-		               geometry::abs(motionFilter_.State().jerk).value();
-	power = powerFir_.Run(power);
+	auto velFirOut = velocityFir_.Run(geometry::abs(motionFilter_.State().velocity).value());
+	auto velocity = 600 * velocityPeakHolder_.Run(velFirOut);
+
+	auto jerkFirOut = jerkFir_.Run(geometry::abs(motionFilter_.State().jerk).value());
+	auto jerk = jerkPeakHolder_.Run(jerkFirOut);
+
+	double power = powerFir_.Run(0.3 * velocity + 0.7 * jerk);
 	eventBuffer_.enqueue(Event(realTime, Event::Power, power));
 
 	// Beat detection

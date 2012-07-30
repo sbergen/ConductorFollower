@@ -130,10 +130,10 @@ double
 TempoFollower::ClassificationQuality(BeatClassification const & latestBeat) const
 {
 	auto offset = BeatOffsetHypothesis(latestBeat);
-	double speedChange = offset / (1.0 * score::quarter_notes);
+	double speedChange = std::abs(offset / (1.0 * score::quarter_notes));
 	double diffFromUnity = std::abs(1.0 - (speed_ + speedChange));
 
-	double quality = 7.0 - 5.0 * std::abs(speedChange) - diffFromUnity;
+	double quality = 7.0 - 5.0 * speedChange - 1.0 * diffFromUnity;
 	return quality;
 }
 
@@ -181,7 +181,7 @@ TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
 		BeatHistoryBuffer::Range const & otherBeats) const
 {
 	double const firstWeight = 10.0 * latestBeat.clarity();
-	boost::array<double, 3> weights = { 3.0, 2.0, 1.0 };
+	boost::array<double, 3> weights = { 5.0, 2.0, 1.0 };
 	
 	beat_pos_t weightedSum = firstWeight * latestBeat.offset();
 	double normalizationTerm = firstWeight;
@@ -189,7 +189,7 @@ TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
 	auto wIt = weights.begin();
 	auto wEnd = weights.end();
 	otherBeats.ReverseForEachWhile(
-		[&weightedSum, &normalizationTerm, &wIt, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
+		[&, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
 	{
 		double weight = *wIt * classification.clarity();
 		weightedSum += weight * classification.offset();

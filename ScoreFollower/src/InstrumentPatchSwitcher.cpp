@@ -46,7 +46,6 @@ InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, S
 
 	PatchMapper::NoteContext noteContext(data->GetNoteLength(), currentSpeed, data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext, conductorContext_);
-	LOG("Target params: len %1%, weight %2%, attack %3%", targetParams.length(), targetParams.weight(), targetParams.attack());
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());
 
 	assert(best != patches_.end());

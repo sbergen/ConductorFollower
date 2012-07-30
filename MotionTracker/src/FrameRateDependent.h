@@ -7,7 +7,7 @@ struct FrameRateDependent
 {
 	enum {
 		frame_rate = 30,
-		filter_size = 5,
+		filter_size = 7,
 		filter_order = 3
 	};
 };

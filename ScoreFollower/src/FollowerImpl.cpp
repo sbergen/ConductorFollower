@@ -126,9 +126,14 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	case Event::Power:
-		conductorContext_.power = e.data<double>() / 1000.0;
-		status_.write()->SetValue<Status::Power>(conductorContext_.power);
+		{
+		double power = e.data<double>() / 1000.0;
+		if (power > 1.0) { power = 1.0; }
+		conductorContext_.power = power;
+		status_.write()->SetValue<Status::Power>(power);
+		scoreHelper_->SetVelocityFromMotion(power);
 		break;
+		}
 	case Event::Beat:
 		{
 		if (State() == FollowerState::GotStart) {
@@ -162,12 +167,13 @@ FollowerImpl::HandleNewPosition(real_time_t const & timestamp)
 void
 FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
 {
-	// Make better
+	/*
 	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
 	coord_t magnitude = geometry::abs(distance);
 	double velocity = magnitude / coord_t(60 * si::centi * si::meters);
 	status_.write()->SetValue<Status::MagnitudeOfMovement>(velocity);
 	scoreHelper_->SetVelocityFromMotion(velocity);
+	*/
 }
 
 void
