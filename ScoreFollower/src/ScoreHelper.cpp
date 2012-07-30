@@ -10,8 +10,9 @@
 namespace cf {
 namespace ScoreFollower {
 
-ScoreHelper::ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper)
+ScoreHelper::ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper, PatchMapper::ConductorContext const & conductorContext)
 	: timeHelper_(timeHelper)
+	, conductorContext_(conductorContext)
 	, velocity_(0.5)
 {}
 
@@ -42,10 +43,10 @@ ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::Tra
 	for(auto it = tracks.begin(); it != tracks.end(); ++it) {
 		auto instrumentIt = instruments.find(it->instrument);
 		if (instrumentIt == instruments.end()) {
-			throw std::runtime_error("Instrument not found!");
+			throw std::runtime_error("Instrument not found!");	
 		}
 
-		trackInstruments_.push_back(new InstrumentPatchSwitcher(instrumentIt->second));
+		trackInstruments_.push_back(new InstrumentPatchSwitcher(instrumentIt->second, conductorContext_));
 	}
 }
 

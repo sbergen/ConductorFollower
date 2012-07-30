@@ -9,6 +9,7 @@
 #include "Data/Score.h"
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/ScoreEvent.h"
+#include "PatchMapper/ConductorContext.h"
 
 #include "InstrumentPatchSwitcher.h"
 
@@ -23,7 +24,7 @@ class ScoreHelper : public boost::noncopyable
 	typedef EventBuffer<ScoreEventPtr, score_time_t, std::vector> TrackBuffer;
 
 public:
-	ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper);
+	ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper, PatchMapper::ConductorContext const & conductorContext);
 
 	void LearnScore(boost::shared_ptr<ScoreReader> scoreReader);
 	void LearnInstruments(Data::InstrumentMap const & instruments, Data::TrackList const & tracks);
@@ -40,6 +41,7 @@ private:
 
 private:
 	boost::shared_ptr<TimeHelper> timeHelper_;
+	PatchMapper::ConductorContext const & conductorContext_;
 	
 	// Keep reference to scoreReader, so that the events are valid
 	boost::shared_ptr<ScoreReader> scoreReader_;

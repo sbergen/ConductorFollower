@@ -33,15 +33,11 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 	auto magnitude = geometry::distance_vector(previousBeatPosition_, state.position);
 	if (magnitude.get<coord::Y>() < coord_t(5 * si::centi * si::meters)) { return Result(); }
 
-	LOG("Got enough movement: %1%", timestamp);
-
 	// Check duration
 	duration_t gestureLength = timestamp - previousBeatTime_;
 	seconds_t minTempo(60.0 / 40 / 2);
 	seconds_t maxTempo(60.0 / 200 / 2);
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return Result(); }
-
-	LOG("Got right duration: %1%", timestamp);
 
 	// Done!
 	return Result(previousBeatTime_);

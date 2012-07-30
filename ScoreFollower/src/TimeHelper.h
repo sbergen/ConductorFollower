@@ -3,6 +3,8 @@
 #include <utility>
 #include <boost/utility.hpp>
 
+#include "PatchMapper/ConductorContext.h"
+
 #include "ScoreFollower/types.h"
 
 #include "AudioBlockTimeManager.h"
@@ -21,7 +23,7 @@ public:
 	typedef std::pair<real_time_t, real_time_t> RealTimeBlock;
 
 public:
-	TimeHelper(Follower & parent);
+	TimeHelper(Follower & parent, PatchMapper::ConductorContext & conductorContext);
 	
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 	void ReadScore(ScoreReader & reader) { tempoFollower_.ReadScore(reader); }
@@ -42,6 +44,7 @@ public:
 
 private:
 	Follower & parent_;
+	PatchMapper::ConductorContext & conductorContext_;
 
 	boost::shared_ptr<AudioBlockTimeManager> timeManager_;
 	TimeWarper timeWarper_;

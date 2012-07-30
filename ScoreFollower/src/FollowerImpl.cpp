@@ -35,11 +35,11 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	, scoreReader_(scoreReader)
 {
 	// Construct memebers
-	timeHelper_ = boost::make_shared<TimeHelper>(*this);
+	timeHelper_ = boost::make_shared<TimeHelper>(*this, conductorContext_);
 	eventProvider_= EventProvider::Create();
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
 	featureExtractor_ = Extractor::Create();
-	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_);
+	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Hook up to butler thread
 	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
@@ -126,7 +126,8 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	case Event::Power:
-		status_.write()->SetValue<Status::Power>(e.data<double>());
+		conductorContext_.power = e.data<double>() / 1000.0;
+		status_.write()->SetValue<Status::Power>(conductorContext_.power);
 		break;
 	case Event::Beat:
 		{

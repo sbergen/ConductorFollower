@@ -8,8 +8,9 @@
 namespace cf {
 namespace ScoreFollower {
 
-TimeHelper::TimeHelper(Follower & parent)
+TimeHelper::TimeHelper(Follower & parent, PatchMapper::ConductorContext & conductorContext)
 	: parent_(parent)
+	, conductorContext_(conductorContext)
 	, tempoFollower_(timeWarper_, parent) 
 {
 }
@@ -39,8 +40,9 @@ TimeHelper::FixScoreRange()
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
 	if (speed != previousSpeed_) {
-		parent_.status().write()->SetValue<Status::Speed>(speed);
 		previousSpeed_ = speed;
+		parent_.status().write()->SetValue<Status::Speed>(speed);
+		conductorContext_.tempo = speed;
 		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange.first, speed);
 	}
 

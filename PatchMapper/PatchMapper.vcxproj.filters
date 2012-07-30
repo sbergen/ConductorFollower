@@ -36,6 +36,9 @@
     <ClInclude Include="src\MappingContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PatchMapper\ConductorContext.h">
+      <Filter>PatchMapper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SynthesisMapping.cpp">

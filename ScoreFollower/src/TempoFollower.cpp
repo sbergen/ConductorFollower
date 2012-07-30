@@ -48,7 +48,6 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 		speed_ = conductedTempo / tempo;
 
 		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", conductedTempo, speed_, secondBeat, firstBeat);
-		//speed_ = 1.0; // temporary override
 	}
 }
 
@@ -85,7 +84,6 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 	if (time < accelerateUntil_) {
 		speed_ = acceleration_(time);
-		//LOG("Accelerated to: %1% (%2%), towards: %3% (%4%)", speed_, time, targetSpeed_, accelerateUntil_);
 	}
 
 	auto status = parent_.status().write();
@@ -124,11 +122,6 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 	classification.Evaluate(
 		boost::bind(&TempoFollower::ClassificationQuality, this, _1),
 		boost::bind(&TempoFollower::ClassificationSelector, this, _1, _2));
-
-	/*
-	assert(bestClassification.probability > 0.0);
-	LOG("Beat classified as: %1%, with prob: %2%", bestClassification.offset.value(), bestClassification.probability);
-	*/
 	
 	return classification;
 }
@@ -141,8 +134,6 @@ TempoFollower::ClassificationQuality(BeatClassification const & latestBeat) cons
 	double diffFromUnity = std::abs(1.0 - (speed_ + speedChange));
 
 	double quality = 7.0 - 5.0 * std::abs(speedChange) - diffFromUnity;
-	LOG("Classification result as %1%: offset: %2%, speedChange: %3%, diffFromUnity: %4%",
-		latestBeat.classification(), offset, speedChange, diffFromUnity);
 	return quality;
 }
 
@@ -157,8 +148,6 @@ TempoFollower::ClassificationSelector(BeatClassification const & latestBeat, dou
 
 	double bonus = std::max(0.0, std::min(quality, bonusFromPrevious));
 	double result = quality + 1.5 * bonus;
-	LOG("Classification quality as %1%: quality: %2% + bonusFromPrev: %3%, result: %4%",
-		latestBeat.classification(), quality, bonusFromPrevious, result);
 	return result;
 }
 

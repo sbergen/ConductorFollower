@@ -12,6 +12,7 @@
 
 #include "MotionTracker/Event.h"
 #include "FeatureExtractor/Extractor.h"
+#include "PatchMapper/ConductorContext.h"
 
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerOptions.h"
@@ -77,8 +78,10 @@ private:
 	StatusRCU status_;
 	OptionsRCU options_;
 	FollowerState state_;
-
+	
 	boost::mutex configMutex_;
+
+	PatchMapper::ConductorContext conductorContext_;
 
 	boost::shared_ptr<ScoreReader> scoreReader_;
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;

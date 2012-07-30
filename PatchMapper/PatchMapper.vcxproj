@@ -118,6 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PatchMapper\ConductorContext.h" />
     <ClInclude Include="PatchMapper\InstrumentContext.h" />
     <ClInclude Include="PatchMapper\NoteContext.h" />
     <ClInclude Include="PatchMapper\SynthesisMapping.h" />
