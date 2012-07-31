@@ -3,6 +3,8 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
+#include <boost/serialization/access.hpp>
+
 namespace cf {
 
 template<typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
@@ -49,6 +51,15 @@ public:
 
 private:
 	TValue value_;
+
+private: // Serialization
+	friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /*version*/)
+    {
+        ar & value_;
+    }
 };
 
 } // namespace cf

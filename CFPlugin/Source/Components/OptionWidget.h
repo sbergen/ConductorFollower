@@ -14,9 +14,9 @@ class OptionWidget : public Component, public Slider::Listener
 
 public:
 	OptionWidget()
-		: description_(nullptr)
+		: changed_(false)
+		, description_(nullptr)
 		, slider_(nullptr)
-		, value_(nullptr)
 	{}
 
 	~OptionWidget()
@@ -40,10 +40,18 @@ public:
 		layout_.setItemLayout(1, -0.2, -0.8, -0.5);
 	}
 
+	void Update(ValueType & value)
+	{
+		if (!changed_) { return; }
+		changed_ = false;
+
+		value = slider_->getValue();
+	}
+
 public: // Slider::Listener implementation
 	void sliderValueChanged (Slider *slider)
 	{
-		*value_ = slider->getValue();
+		changed_ = true;
 	}
 
 public: // GUI stuff
@@ -56,6 +64,7 @@ public: // GUI stuff
     }
 
 private:
+	bool changed_;
 	StretchableLayoutManager layout_;
 	Label * description_;
 	Slider * slider_;
