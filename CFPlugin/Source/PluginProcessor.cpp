@@ -177,9 +177,8 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 			MidiMessage msg = midi_event_cast(message)->Message();
 
-			// Prohibit PCs for now 
-			if (msg.isProgramChange()) {
-				//int const pc = msg.getProgramChangeNumber();
+			// Prohibit all but note on and off for now 
+			if (!msg.isNoteOnOrOff()) { 
 				return;
 			}
 
