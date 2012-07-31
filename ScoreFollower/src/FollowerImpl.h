@@ -11,7 +11,7 @@
 #include "cf/ButlerThread.h"
 
 #include "MotionTracker/Event.h"
-#include "FeatureExtractor/Extractor.h"
+
 #include "PatchMapper/ConductorContext.h"
 
 #include "ScoreFollower/Follower.h"
@@ -62,9 +62,6 @@ private:
 
 	void ConsumeEvent(MotionTracker::Event const & e);
 
-	void HandleNewPosition(real_time_t const & timestamp);
-	void UpdateMagnitude(real_time_t const & timestamp);
-
 private: // Stuff related to butler thread
 	void CheckForConfigChange();
 	void CollectData(std::string const & scoreFile);
@@ -85,7 +82,6 @@ private:
 
 	boost::shared_ptr<ScoreReader> scoreReader_;
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
-	boost::shared_ptr<FeatureExtractor::Extractor> featureExtractor_;
 	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	boost::shared_ptr<ScoreHelper> scoreHelper_;	

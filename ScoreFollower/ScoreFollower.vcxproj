@@ -145,11 +145,6 @@
     <ClCompile Include="src\TimeHelper.cpp" />
     <ClCompile Include="src\TimeWarper.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FeatureExtractor\FeatureExtractor.vcxproj">
-      <Project>{60400649-f0b8-4318-9e3f-60aa79d9a654}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -7,7 +7,6 @@
 #include "Data/ScoreParser.h"
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
-#include "FeatureExtractor/Extractor.h"
 
 #include "ScoreFollower/ScoreEvent.h"
 
@@ -15,7 +14,6 @@
 #include "TempoFollower.h"
 #include "AudioBlockTimeManager.h"
 
-using namespace cf::FeatureExtractor;
 using namespace cf::MotionTracker;
 
 namespace cf {
@@ -38,7 +36,6 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, conductorContext_);
 	eventProvider_= EventProvider::Create();
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
-	featureExtractor_ = Extractor::Create();
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Hook up to butler thread
@@ -118,12 +115,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		SetState(FollowerState::Stopped);
 		break;
 	case Event::MotionStateUpdate:
-		{
-		auto const & state = e.data<MotionState>();
-		featureExtractor_->RegisterPosition(e.timestamp(),
-			state.position, state.velocity, state.acceleration, state.jerk);
-		HandleNewPosition(e.timestamp());
-		}
+		// Do we need these?
 		break;
 	case Event::Power:
 		{
@@ -155,25 +147,6 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	}
-}
-
-void
-FollowerImpl::HandleNewPosition(real_time_t const & timestamp)
-{
-	UpdateMagnitude(timestamp);
-
-}
-
-void
-FollowerImpl::UpdateMagnitude(real_time_t const & timestamp)
-{
-	/*
-	Point3D distance = featureExtractor_->MagnitudeOfMovementSince(timestamp - milliseconds_t(1500));
-	coord_t magnitude = geometry::abs(distance);
-	double velocity = magnitude / coord_t(60 * si::centi * si::meters);
-	status_.write()->SetValue<Status::MagnitudeOfMovement>(velocity);
-	scoreHelper_->SetVelocityFromMotion(velocity);
-	*/
 }
 
 void

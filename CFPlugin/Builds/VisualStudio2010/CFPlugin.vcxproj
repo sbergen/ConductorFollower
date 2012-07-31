@@ -257,9 +257,6 @@
     <ProjectReference Include="..\..\..\Data\Data.vcxproj">
       <Project>{16e65668-30a6-4b73-837b-3dbff006d628}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\FeatureExtractor\FeatureExtractor.vcxproj">
-      <Project>{60400649-f0b8-4318-9e3f-60aa79d9a654}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\MotionTracker\MotionTracker.vcxproj">
       <Project>{567bba55-f7d3-4a9f-80b3-7f8c5c739c59}</Project>
     </ProjectReference>
