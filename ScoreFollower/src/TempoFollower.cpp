@@ -66,7 +66,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 		TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-		auto catchupTime = 1.0 * score::beats;
+		auto catchupTime = 2.0 * score::beats;
 		targetSpeed_ = SpeedFromBeatCatchup(tempoNow, catchupTime);
 		if (targetSpeed_ > 2.0) { targetSpeed_ = 2.0; } // TODO limit better
 
