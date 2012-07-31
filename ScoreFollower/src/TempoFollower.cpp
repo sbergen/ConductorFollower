@@ -1,6 +1,7 @@
 #include "TempoFollower.h"
 
 #include "cf/globals.h"
+#include "cf/math.h"
 
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
@@ -191,8 +192,11 @@ TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
 	otherBeats.ReverseForEachWhile(
 		[&, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
 	{
+		auto offset = classification.offset().value();
+		offset = math::sgn(offset) * 2 * std::pow(offset, 2);
+
 		double weight = *wIt * classification.clarity();
-		weightedSum += weight * classification.offset();
+		weightedSum += weight * beat_pos_t::from_value(offset);
 		normalizationTerm += weight;
 		return ++wIt == wEnd;
 	});
