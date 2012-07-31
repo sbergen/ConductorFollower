@@ -88,6 +88,19 @@
 	},
 	
 	instrument {
+		name: "harpsichord",
+		patches: [
+			patch {
+				name: "regular"
+				keyswitch: C0
+				length: 0.5,
+				attack: 0.5,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
 		name: "chamber viola",
 		shortest_note_threshold: 0.05,
 		longest_note_threshold: 0.8,
@@ -165,5 +178,692 @@
 				weight: 0.5
 			}
 		]
-	}
+	},
+	
+	instrument {
+		/* TODO adjust volumes */
+		name: "flute",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "sustain"
+				keyswitch: C#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: D1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: E1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: F1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+			patch {
+				name: "portato"
+				keyswitch: F#1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: G#1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes */
+		name: "oboe",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "sustain"
+				keyswitch: C#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: D1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: E1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: F1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+			patch {
+				name: "portato"
+				keyswitch: F#1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: G#1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes */
+		name: "bassoon",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "sustain"
+				keyswitch: C#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: D1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: E1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: F1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+			patch {
+				name: "portato"
+				keyswitch: F#1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: G#1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+		]
+	},
+	
+	instrument {
+		/* TODO check again, adjust volumes */
+		name: "horn",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "sustain"
+				keyswitch: C#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: D1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: E1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: F1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+			patch {
+				name: "portato"
+				keyswitch: F#1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: G#1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+		]
+	},
+	
+	instrument {
+		/* TODO check again, adjust volumes */
+		name: "trombone",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.6,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "sustain"
+				keyswitch: C#1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: D1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: E1
+				length: 0.5,
+				attack: 0.2,
+				weight: 0.5
+			},
+			patch {
+				name: "legato-sus"
+				keyswitch: F1
+				length: 1.0,
+				attack: 0.4,
+				weight: 0.6
+			}
+			patch {
+				name: "portato"
+				keyswitch: F#1
+				length: 0.2,
+				attack: 0.4,
+				weight: 0.5
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: G1
+				length: 0.8,
+				attack: 0.4,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep staccato"
+				keyswitch: G#1
+				length: 0.05,
+				attack: 0.7,
+				weight: 0.5
+			},
+		]
+	},
+	
+	instrument {
+		name: "timpani",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.3,
+		
+		patches: [
+			patch {
+				name: "hit"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "secco hit"
+				keyswitch: C1
+				length: 0.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "roll"
+				keyswitch: C1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes in VE */
+		name: "violin",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.8,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "detache"
+				keyswitch: C#1
+				length: 0.3,
+				attack: 0.4,
+				weight: 0.7
+			},
+			patch {
+				name: "sustain"
+				keyswitch: D1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "detache short"
+				keyswitch: F1
+				length: 0.25,
+				attack: 0.4,
+				weight: 0.75
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: F#1
+				length: 0.6,
+				attack: 0.5,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: G1
+				length: 0.5,
+				attack: 0.4,
+				weight: 0.4
+			},
+			patch {
+				name: "perf-rep spicato"
+				keyswitch: G#1
+				length: 0.08,
+				attack: 0.7,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes in VE */
+		name: "viola",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.8,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "detache"
+				keyswitch: C#1
+				length: 0.3,
+				attack: 0.4,
+				weight: 0.7
+			},
+			patch {
+				name: "sustain"
+				keyswitch: D1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "detache short"
+				keyswitch: F1
+				length: 0.25,
+				attack: 0.4,
+				weight: 0.75
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: F#1
+				length: 0.6,
+				attack: 0.5,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: G1
+				length: 0.5,
+				attack: 0.4,
+				weight: 0.4
+			},
+			patch {
+				name: "perf-rep spicato"
+				keyswitch: G#1
+				length: 0.08,
+				attack: 0.7,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes in VE */
+		name: "cello",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.8,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "detache"
+				keyswitch: C#1
+				length: 0.3,
+				attack: 0.4,
+				weight: 0.7
+			},
+			patch {
+				name: "sustain"
+				keyswitch: D1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "detache short"
+				keyswitch: F1
+				length: 0.25,
+				attack: 0.4,
+				weight: 0.75
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: F#1
+				length: 0.6,
+				attack: 0.5,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: G1
+				length: 0.5,
+				attack: 0.4,
+				weight: 0.4
+			},
+			patch {
+				name: "perf-rep spicato"
+				keyswitch: G#1
+				length: 0.08,
+				attack: 0.7,
+				weight: 0.5
+			}
+		]
+	},
+	
+	instrument {
+		/* TODO adjust volumes in VE */
+		name: "bass",
+		shortest_note_threshold: 0.05,
+		longest_note_threshold: 0.8,
+		
+		patches: [
+			patch {
+				name: "staccato"
+				keyswitch: C1
+				length: 0.1,
+				attack: 0.7,
+				weight: 0.5
+			},
+			patch {
+				name: "detache"
+				keyswitch: C#1
+				length: 0.3,
+				attack: 0.4,
+				weight: 0.7
+			},
+			patch {
+				name: "sustain"
+				keyswitch: D1
+				length: 1.0,
+				attack: 0.3,
+				weight: 0.4
+			},
+			patch {
+				name: "legato"
+				keyswitch: D#1
+				length: 1.0,
+				attack: 0.5,
+				weight: 0.5
+			},
+			patch {
+				name: "sfortzato"
+				keyswitch: E1
+				length: 0.8,
+				attack: 0.9,
+				weight: 1.0
+			},
+			patch {
+				name: "detache short"
+				keyswitch: F1
+				length: 0.25,
+				attack: 0.4,
+				weight: 0.75
+			},
+			patch {
+				name: "fortepiano"
+				keyswitch: F#1
+				length: 0.6,
+				attack: 0.5,
+				weight: 1.0
+			},
+			patch {
+				name: "perf-rep legato"
+				keyswitch: G1
+				length: 0.5,
+				attack: 0.4,
+				weight: 0.4
+			},
+			patch {
+				name: "perf-rep spicato"
+				keyswitch: G#1
+				length: 0.08,
+				attack: 0.7,
+				weight: 0.5
+			}
+		]
+	},
 ]
