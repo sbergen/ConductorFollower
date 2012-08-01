@@ -87,7 +87,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		speed_ = acceleration_(time);
 	}
 
-	auto status = parent_.status().write();
+	auto status = parent_.status().writer();
 	status->SetValue<Status::SpeedFromPhase>(speed_);
 
 	return speed_;

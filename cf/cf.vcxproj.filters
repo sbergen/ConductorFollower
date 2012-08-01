@@ -113,6 +113,9 @@
     <ClInclude Include="cf\PeakHolder.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\LockfreeRefCount.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

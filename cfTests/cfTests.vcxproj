@@ -129,6 +129,8 @@
     <ClCompile Include="PeakHolderTests.cpp" />
     <ClCompile Include="PhysicsTests.cpp" />
     <ClCompile Include="PolynomialTest.cpp" />
+    <ClCompile Include="RCUTests.cpp" />
+    <ClCompile Include="RefCountTest.cpp" />
     <ClCompile Include="SavitzkyGolayTests.cpp" />
     <ClCompile Include="ScoreUnitsTests.cpp" />
     <ClCompile Include="StatusGroupTests.cpp" />
