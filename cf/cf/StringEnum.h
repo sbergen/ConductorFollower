@@ -28,8 +28,8 @@
 		_className & operator=(Value val) { value_ = val; return *this; } \
 		operator char const *() const { switch(value_) { CF_STRING_ENUM_conversion_cases(_seq)  } } \
 		operator Value() const { return value_; } \
-		bool operator==(Value value) { return value_ == value; } \
-		bool operator!=(Value value) { return !(*this == value); } \
+		bool operator==(Value value) const { return value_ == value; } \
+		bool operator!=(Value value) const { return value_ != value; } \
 	private: \
 		Value value_; \
 	};

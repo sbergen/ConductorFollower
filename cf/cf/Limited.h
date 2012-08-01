@@ -42,12 +42,15 @@ public:
 		else { value_ = value; }
 		return *this;
 	}
-	
-	template<typename Y>
-	bool operator== (Y const & value) { return value_ == value; }
 
-	template<typename Y>
-	bool operator!= (Y const & value) { return !(*this == value); }
+	Limited & operator= (Limited const & other)
+	{
+		value_ = other.value_;
+		return *this;
+	}
+	
+	bool operator== (TValue const & value) const { return value_ == value; }
+	bool operator!= (TValue const & value) const { return value_ != value; }
 
 private:
 	TValue value_;

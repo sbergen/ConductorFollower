@@ -37,6 +37,13 @@ public:
 		return *this;
 	}
 
+	ChangeTracked & operator= (ChangeTracked const & other)
+	{
+		value_ = other.value_;
+		changed_ = other.changed_;
+		return *this;
+	}
+
 private:
 	mutable bool changed_;
 	ValueType value_;
