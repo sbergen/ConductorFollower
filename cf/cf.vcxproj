@@ -111,6 +111,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cf\algorithm.h" />
+    <ClInclude Include="cf\ButlerDeletable.h" />
+    <ClInclude Include="cf\ButlerDeleter.h" />
     <ClInclude Include="cf\ButlerThread.h" />
     <ClInclude Include="cf\dummy_mutex.h" />
     <ClInclude Include="cf\EventBuffer.h" />

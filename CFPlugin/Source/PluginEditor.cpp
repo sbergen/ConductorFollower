@@ -27,7 +27,7 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	/**************************/
 	{
 		using namespace cf::ScoreFollower::Status;
-		auto status = ownerFilter->followerStatus().read_copy();
+		auto status = ownerFilter->followerStatus().read();
 		WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
 		boost::fusion::for_each(status->map(), initializer);
 
@@ -113,7 +113,7 @@ void
 CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
 	{
-		auto status = ownerFilter->followerStatus().read_copy();
+		auto status = ownerFilter->followerStatus().read();
 		WidgetUpdater<FollowerStatusWidgets> updater(statusWidgets);
 		boost::fusion::for_each(status->map(), updater);
 	}

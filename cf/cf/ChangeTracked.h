@@ -14,6 +14,9 @@ public:
 	ChangeTracked() : changed_(false), value_() {}
 	explicit ChangeTracked(ValueType const & value) : changed_(false), value_(value) {}
 
+	// Prevent the above being used for copy construction
+	ChangeTracked(ChangeTracked const & other) : changed_(other.changed_), value_(other.value_) {}
+
 	template<typename Y>
 	bool LoadIfChanged(Y & value) const
 	{

@@ -4,6 +4,7 @@
 #include <boost/serialization/access.hpp>
 
 #include "cf/FusionMapMacros.h"
+#include "cf/ButlerDeletable.h"
 
 // Main macro for defining the map
 #define CF_FUSION_MAP(_baseClass, _group, _seq) \
@@ -16,7 +17,7 @@ namespace cf {
 template<typename T> class PairArchiver;
 
 template<typename MapType>
-class FusionMapBase
+class FusionMapBase : public ButlerDeletable
 {
 public:
 	// Calls F::operator(string, ValueType) for each option

@@ -11,16 +11,16 @@ BOOST_AUTO_TEST_SUITE(RefCountTests)
 class TestClass : public LockfreeRefCountProvider
 {
 public:
-	typedef LockfreeRefCounted<TestClass> Counted;
+	typedef LockfreeRefCounted<TestClass, bool> Counted;
 
 	TestClass()
 		: LockfreeRefCountProvider()
 		, isReset_(false)
 	{}
 
-	Counted MakeCounted() { return Counted(*this, boost::bind(&TestClass::reset, this)); }
+	Counted MakeCounted() { return Counted(*this, &TestClass::reset, true); }
 
-	void reset() { isReset_ = true; }
+	void reset(bool reset) { isReset_ = reset; }
 	bool isReset() const { return isReset_; }
 
 private:

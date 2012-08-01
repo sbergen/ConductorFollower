@@ -1,100 +1,82 @@
 #include <boost/test/unit_test.hpp>
 
+#include <boost/make_shared.hpp>
+
 #include "cf/rcu.h"
+#include "cf/ButlerThread.h"
+#include "cf/ButlerDeletable.h"
 
 using namespace cf;
 
 BOOST_AUTO_TEST_SUITE(RCUTests)
 
-BOOST_AUTO_TEST_CASE(TestNonRTWrite)
+struct IntWrapper : public ButlerDeletable
 {
-	RTReadRCU<int> rcu(boost::make_shared<int>(0));
+	IntWrapper(int i) : i(i) {}
+	int i;
+};
 
+template<typename RCUType>
+void TestOneWrite(RCUType & rcu, int previousValue, int newValue)
+{
 	auto reader = rcu.read();
-	BOOST_CHECK_EQUAL(*reader, 0);
+	BOOST_CHECK_EQUAL(reader->i, previousValue);
 
 	{
 		// Update via reader
 		auto writer = rcu.writer();
-		*writer = 1;
+		writer->i = newValue;
 
 		// Reader should not see change
-		BOOST_CHECK_EQUAL(*reader, 0);
+		BOOST_CHECK_EQUAL(reader->i, previousValue);
 
-		// Even and updated reader shouldn't yet
+		// Even an updated reader shouldn't yet
 		reader = rcu.read();
-		BOOST_CHECK_EQUAL(*reader, 0);
+		BOOST_CHECK_EQUAL(reader->i, previousValue);
 	}
 
 	// Reader should still not see change
-	BOOST_CHECK_EQUAL(*reader, 0);
+	BOOST_CHECK_EQUAL(reader->i, previousValue);
 
 	// Updated reader now should see it
 	reader = rcu.read();
-	BOOST_CHECK_EQUAL(*reader, 1);
+	BOOST_CHECK_EQUAL(reader->i, newValue);
+}
+
+BOOST_AUTO_TEST_CASE(TestNonRTWrite)
+{
+	auto butler = boost::make_shared<ButlerThread>(milliseconds_t(10));
+	RTReadRCU<IntWrapper> rcu(butler, IntWrapper(0));
+	TestOneWrite(rcu, 0, 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestRTWrite)
 {
-	RTWriteRCU<int> rcu(boost::make_shared<int>(0));
-
-	auto reader = rcu.read();
-	BOOST_CHECK_EQUAL(*reader, 0);
-
-	{
-		// Update via reader
-		auto writer = rcu.writer();
-		*writer = 1;
-
-		// Reader should not see change
-		BOOST_CHECK_EQUAL(*reader, 0);
-
-		// Even and updated reader shouldn't yet
-		reader = rcu.read();
-		BOOST_CHECK_EQUAL(*reader, 0);
-	}
-
-	// Reader should still not see change
-	BOOST_CHECK_EQUAL(*reader, 0);
-
-	// Updated reader now should see it
-	reader = rcu.read();
-	BOOST_CHECK_EQUAL(*reader, 1);
+	auto butler = boost::make_shared<ButlerThread>(milliseconds_t(10));
+	RTWriteRCU<IntWrapper> rcu(butler, IntWrapper(0));
+	TestOneWrite(rcu, 0, 1);
 }
 
-template<typename T>
-class Foo
+BOOST_AUTO_TEST_CASE(TestContinuousRTWrite)
 {
-public:
-        template<typename Y>
-        Foo & operator=(Y const & y)
-        {
-                val = y;
-                std::cout << "template" << std::endl;
-                return *this;
-        }
- 
-        operator T() const { return val; }
- 
-        Foo & operator=(Foo const & other)
-        {
-                val = other.val;
-                std::cout << "non template" << std::endl;
-                return *this;
-        }
- 
- 
-private:
-        T val;
-};
- 
-BOOST_AUTO_TEST_CASE(AssignTest)
+	auto butler = boost::make_shared<ButlerThread>(milliseconds_t(10));
+	RTWriteRCU<IntWrapper> rcu(butler, IntWrapper(0));
+
+	for (int i = 1; i < 10; ++i)
+	{
+		TestOneWrite(rcu, i - 1, i);
+	}
+}
+
+BOOST_AUTO_TEST_CASE(TestContinuousNonRTWrite)
 {
-        Foo<int> f1;
-        Foo<int> f2;
- 
-        f1 = 1;
-        f2 = f1;
+	auto butler = boost::make_shared<ButlerThread>(milliseconds_t(10));
+	RTReadRCU<IntWrapper> rcu(butler, IntWrapper(0));
+
+	for (int i = 1; i < 10; ++i)
+	{
+		TestOneWrite(rcu, i - 1, i);
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()

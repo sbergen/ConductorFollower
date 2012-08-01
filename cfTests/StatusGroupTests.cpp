@@ -50,4 +50,27 @@ BOOST_AUTO_TEST_CASE(TransformTest)
 	boost::fusion::for_each(group.map(), t);
 }
 
+BOOST_AUTO_TEST_CASE(TestCopying)
+{
+	TestStatGroup group;
+	TestStatGroup group2;
+
+	int i;
+	double d;
+
+	// Assignment without changes
+	group2 = group;
+	BOOST_CHECK(!group.LoadIfChanged<Stat1>(i));
+	BOOST_CHECK(!group.LoadIfChanged<Stat2>(d));
+
+	// Changes don't affect copies
+	group.SetValue<Stat1>(37);
+	BOOST_CHECK(!group2.LoadIfChanged<Stat1>(i));
+	BOOST_CHECK(group.LoadIfChanged<Stat1>(i));
+
+	// Assignment of different values should not change the "changed" status
+	group2 = group;
+	BOOST_CHECK(!group2.LoadIfChanged<Stat1>(i));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

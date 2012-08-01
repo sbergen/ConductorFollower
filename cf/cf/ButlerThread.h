@@ -6,10 +6,13 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
+#include <boost/lockfree/ringbuffer.hpp>
 
 #include "cf/time.h"
 
 namespace cf {
+
+class ButlerDeletable;
 
 class ButlerThread : public boost::noncopyable
 {
@@ -41,16 +44,27 @@ public:
 	~ButlerThread();
 
 	CallbackHandle AddCallback(Callback const & callback);
+	
+	void ScheduleDelete(ButlerDeletable * ptr)
+	{
+		bool success = deleteList_.enqueue(ptr);
+		assert(success);
+	}
 
 private:
 	void RemoveCallback(CallbackIterator const & callback);
 	void Loop();
+	void RunDeleteQueue();
+	void RunCallbacks();
 
 private:
+	typedef boost::lockfree::ringbuffer<ButlerDeletable *, 0> DeleteList;
+
 	milliseconds_t runInterval_;
 	boost::mutex callbackMutex_;
 	CallbackList callbacks_;
 	boost::shared_ptr<boost::thread> thread_;
+	DeleteList deleteList_;
 };
 
 } // namespace cf

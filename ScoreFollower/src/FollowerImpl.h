@@ -38,7 +38,8 @@ namespace ScoreFollower {
 
 class FollowerImpl : public Follower
 {
-private: // Keep this at the very top to ensure it's destructed last
+private:
+	// Keep this at the very top to ensure it's constructed first and destructed last
 	GlobalsRef globalsRef_;
 
 public:
