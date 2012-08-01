@@ -22,7 +22,8 @@ namespace Status
 		Boolean,
 		Text,
 		Bar,
-		File
+		File,
+		Bang // as in Max
 	};
 
 } // namespace Status
@@ -69,6 +70,13 @@ class LimitedStatusItem : public LimitedStatusItemBase<Type, Presentation, TValu
 // Shorthand for bool
 template<Status::Type Type, bool DefaultValue>
 class BooleanStatusItem : public LimitedStatusItem<Type, Status::Boolean, bool, DefaultValue, false, true>
+{
+	using LimitedStatusItem::operator=;
+};
+
+// Shorthand for bang
+template<Status::Type Type>
+class BangStatusItem : public LimitedStatusItem<Type, Status::Bang, bool, false, false, true>
 {
 	using LimitedStatusItem::operator=;
 };
