@@ -140,3 +140,50 @@ private:
 	Label * description_;
 	FilenameComponent * fileChooser_;
 };
+
+// Specialization for bangs
+template<typename KeyType, typename ValueType>
+class OptionWidget<typename KeyType, typename ValueType, cf::Status::Bang>
+	: public Component, public Button::Listener
+{
+public:
+	OptionWidget()
+		: clicked_(false)
+		, button_(nullptr)
+	{}
+
+	~OptionWidget()
+	{
+		deleteAllChildren();
+	}
+
+	void Initialize(ValueType const & value)
+	{
+		addAndMakeVisible(button_ = new TextButton("button"));
+		button_->setButtonText(String(KeyType::description().c_str()));
+		button_->addListener(this);
+	}
+
+	void Update(ValueType & value)
+	{
+		if (!clicked_) { return; }
+		clicked_ = false;
+		value = true;
+	}
+
+public: // Button::Listener implementation
+	void buttonClicked (Button* button)
+	{
+		clicked_ = true;
+	}
+
+public: // GUI stuff
+	void resized()
+    {
+		button_->setSize(getWidth(), getHeight());
+    }
+
+private:
+	bool clicked_;
+	TextButton * button_;
+};
