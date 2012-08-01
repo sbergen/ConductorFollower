@@ -29,7 +29,7 @@ public:
 
 public: // Not real time safe functions
 
-	// Implementation is hidde behind the factory function
+	// Implementation is hidden behind the factory function
 	static boost::shared_ptr<Follower> Create(boost::shared_ptr<ScoreReader> scoreReader);
 	virtual ~Follower() {}
 
