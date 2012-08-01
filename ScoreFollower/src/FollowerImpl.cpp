@@ -56,6 +56,12 @@ FollowerImpl::SetBlockParameters(unsigned samplerate, unsigned blockSize)
 unsigned
 FollowerImpl::StartNewBlock()
 {
+	// Reset if necessary
+	bool restart;
+	if (options_.read()->LoadIfChanged<Options::Restart>(restart) && restart) {
+		RestartScore();
+	}
+
 	// Start new RT block
 	timeHelper_->StartNewBlock();
 	auto const & currentBlock = timeHelper_->CurrentRealTimeBlock();
@@ -89,6 +95,19 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 	scoreHelper_->GetTrackEventsForBlock(track, events);
 }
 
+void
+FollowerImpl::RestartScore()
+{
+	// TODO reset score time
+
+	if (State() == FollowerState::Stopped) {
+		SetState(FollowerState::WaitingForCalibration);
+		eventProvider_->StartProduction();
+	} else {
+		SetState(FollowerState::WaitingForStart);
+	}
+}
+
 FollowerState
 FollowerImpl::State()
 {
@@ -99,7 +118,7 @@ void
 FollowerImpl::SetState(FollowerState::Value state)
 {
 	state_ = state;
-	status_.write()->SetValue<Status::State>(state);
+	status_.writer()->SetValue<Status::State>(state);
 }
 
 
@@ -122,7 +141,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		double power = e.data<double>() / 1000.0;
 		if (power > 1.0) { power = 1.0; }
 		conductorContext_.power = power;
-		status_.write()->SetValue<Status::Power>(power);
+		status_.writer()->SetValue<Status::Power>(power);
 		scoreHelper_->SetVelocityFromMotion(power);
 		break;
 		}
@@ -138,7 +157,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		break;
 		}
 	case Event::BeatProb:
-		status_.write()->SetValue<Status::Beat>(e.data<double>());
+		status_.writer()->SetValue<Status::Beat>(e.data<double>());
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {

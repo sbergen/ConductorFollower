@@ -57,6 +57,8 @@ public: // Follower implementation
 	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
 private:
+	void RestartScore();
+
 	FollowerState State();
 	void SetState(FollowerState::Value state);
 
