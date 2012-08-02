@@ -2,6 +2,6 @@
 
 namespace cf {
 
-struct ButlerDeletable { virtual ~ButlerDeletable() {} };
+class ButlerDeletable { public: virtual ~ButlerDeletable() {} };
 
 } // namespace cf
