@@ -3,9 +3,6 @@
 #include <functional>
 #include <numeric>
 
-#include <boost/bind/apply.hpp>
-#include <boost/bind.hpp>
-
 #include "mappers.h"
 #include "MappingContext.h"
 
@@ -28,8 +25,11 @@ SynthParametersFromContexts(
 	};
 
 	SynthesisParameters::array_type result;
-	auto transformer = boost::bind(boost::apply<double>(), _1, boost::cref(context));
-	std::transform(transformation.begin(), transformation.end(), result.begin(), transformer);
+	std::transform(transformation.begin(), transformation.end(), result.begin(),
+		[&](Transformer const & transformer)
+		{
+			return (*transformer)(context);
+		});
 	return result;
 }
 

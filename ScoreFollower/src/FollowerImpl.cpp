@@ -77,9 +77,13 @@ FollowerImpl::StartNewBlock()
 	if (!lock.owns_lock()) { return 0; }
 
 	// Consume events until the start of this block
+	// TODO bind
 	auto writer = status_.writer();
 	eventThrottler_->ConsumeEventsUntil(
-		boost::bind(&FollowerImpl::ConsumeEvent, this, boost::ref(writer), _1),
+		[&, this](Event const & e)
+		{
+			ConsumeEvent(writer, e);
+		},
 		currentBlock.first);
 
 	if (State() != FollowerState::Rolling) { return 0; }

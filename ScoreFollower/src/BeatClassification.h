@@ -46,9 +46,8 @@ public:
 		, classification_(rawOffset)
 	{}
 
-	typedef boost::function<double(BeatClassification const &)> QualityEvaluator;
-	typedef boost::function<double(BeatClassification const &, double quality)> SelectionFunction;
-	void Evaluate(QualityEvaluator evaluator, SelectionFunction selector)
+	template<typename QualityEvaluator, typename SelectionFunction>
+	void Evaluate(QualityEvaluator const & evaluator, SelectionFunction const & selector)
 	{
 		double bestQuality = std::numeric_limits<double>::min();
 		beat_pos_t bestClassification;

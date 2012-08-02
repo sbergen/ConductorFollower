@@ -136,7 +136,6 @@
     <ClCompile Include="src\BeatDetector.cpp" />
     <ClCompile Include="src\DebugHandObserver.cpp" />
     <ClCompile Include="src\EventProviderImpl.cpp" />
-    <ClCompile Include="src\EventThrottler.cpp" />
     <ClCompile Include="src\HandTracker.cpp" />
     <ClCompile Include="src\MotionFilter.cpp" />
     <ClCompile Include="src\OpenNIHandTracker.cpp" />

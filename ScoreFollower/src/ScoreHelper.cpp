@@ -65,7 +65,10 @@ ScoreHelper::GetTrackEventsForBlock(unsigned track, Follower::BlockBuffer & even
 	auto ev = trackBuffers_[track].EventsBetween(scoreRange.first, scoreRange.second);
 	auto & switcher = trackInstruments_[instrument];
 
-	ev.ForEach(boost::bind(&ScoreHelper::CopyEventToBuffer, this, _1, _2, boost::ref(events), boost::ref(switcher)));
+	ev.ForEach([&, this](score_time_t const & time, ScoreEventPtr data)
+		{
+			CopyEventToBuffer(time, data, events, switcher);
+		});
 }
 
 void

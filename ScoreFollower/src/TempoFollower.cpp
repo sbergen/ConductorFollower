@@ -74,6 +74,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		accelerateUntil_ = time + boost::chrono::duration_cast<duration_t>(seconds_t(0.5));
 		auto accelerationPerTimeUnit = (targetSpeed_ - speed_) / time::quantity_cast<time_quantity>(accelerateUntil_ - time);
 
+		// TODO allocates!
 		auto speed = speed_;
 		acceleration_ = [speed, accelerationPerTimeUnit, time] (real_time_t const & newTime) ->
 		double
@@ -121,8 +122,14 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 	LOG("---- Classifying beat at raw offset: %1% -----", rawOffset);
 
 	classification.Evaluate(
-		boost::bind(&TempoFollower::ClassificationQuality, this, _1),
-		boost::bind(&TempoFollower::ClassificationSelector, this, _1, _2));
+		[this](BeatClassification const & latestBeat)
+		{
+			return ClassificationQuality(latestBeat);
+		},
+		[this](BeatClassification const & latestBeat, double quality)
+		{
+			return ClassificationSelector(latestBeat, quality);
+		});
 	
 	return classification;
 }

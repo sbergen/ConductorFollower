@@ -13,10 +13,26 @@ class EventProvider;
 class EventThrottler : public boost::noncopyable
 {
 public:
-	EventThrottler(EventProvider & provider);
+	EventThrottler(EventProvider & provider)
+		: provider_(provider) {}
 
-	typedef boost::function<void (Event const &)> Consumer;
-	void ConsumeEventsUntil(Consumer const & consumer, timestamp_t const & time);
+	template<typename Consumer>
+	void ConsumeEventsUntil(Consumer const & consumer, timestamp_t const & time)
+	{
+		if (queuedEvent_.isQueued) {
+			consumer(queuedEvent_.e);
+			queuedEvent_.isQueued = false;
+		}
+
+		while (provider_.DequeueEvent(queuedEvent_.e)) {
+			if (queuedEvent_.e.timestamp() >= time) {
+				queuedEvent_.isQueued = true;
+				break;
+			}
+			consumer(queuedEvent_.e);
+		}
+	}
+
 
 private:
 	struct QueuedEvent

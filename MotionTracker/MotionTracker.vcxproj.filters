@@ -82,9 +82,6 @@
     <ClCompile Include="src\EventProviderImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventThrottler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MotionFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
