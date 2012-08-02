@@ -60,8 +60,32 @@ private:
 	speed_t speed_;
 
 
-	/* New state */
-	boost::function<double(real_time_t const &)> acceleration_;
+	class SpeedFunction
+	{
+	public:
+		// Change of dimensionless unit over time
+		typedef boost::units::quantity<boost::units::si::frequency> ChangePerTime;
+
+		void SetParameters(speed_t const & reference_speed, real_time_t const & reference_time, ChangePerTime const & changePerTimeUnit)
+		{
+			reference_speed_ = reference_speed;
+			reference_time_ = reference_time;
+			changePerTimeUnit_ = changePerTimeUnit;
+		}
+
+		speed_t NewSpeed(real_time_t const & time)
+		{
+			auto timeDiff = time::quantity_cast<time_quantity>(time - reference_time_);
+			return reference_speed_ + (timeDiff * changePerTimeUnit_);
+		}
+
+	private:
+		speed_t reference_speed_;
+		real_time_t reference_time_;
+		ChangePerTime changePerTimeUnit_;
+	};
+
+	SpeedFunction acceleration_;
 	double targetSpeed_; // TODO units
 	real_time_t accelerateUntil_;
 

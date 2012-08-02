@@ -76,16 +76,11 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 		// TODO allocates!
 		auto speed = speed_;
-		acceleration_ = [speed, accelerationPerTimeUnit, time] (real_time_t const & newTime) ->
-		double
-		{
-			auto timeDiff = time::quantity_cast<time_quantity>(newTime - time);
-			return speed + (timeDiff * accelerationPerTimeUnit);
-		};
+		acceleration_.SetParameters(speed, time, accelerationPerTimeUnit);
 	}
 
 	if (time < accelerateUntil_) {
-		speed_ = acceleration_(time);
+		speed_ = acceleration_.NewSpeed(time);
 	}
 
 	auto status = parent_.status().writer();
