@@ -71,12 +71,6 @@ struct LimitedStatusItemBase
 	{
 		return static_cast<LimitedStatusItemBase &>(Limited::operator=(static_cast<Limited const &>(other)));
 	}
-
-	/*
-	// Type conversion forwarding
-	typedef Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> limited_type;
-	operator TValue() const { return static_cast<limited_type const &>(*this); }
-	*/
 };
 
 // When TValue == TAssignable
