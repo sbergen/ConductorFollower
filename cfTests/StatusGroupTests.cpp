@@ -55,22 +55,24 @@ BOOST_AUTO_TEST_CASE(TestCopying)
 	TestStatGroup group;
 	TestStatGroup group2;
 
-	int i;
-	double d;
+	int i, i2;
 
-	// Assignment without changes
+	group2.SetValue<Stat1>(37);
+
+	group.GetValue<Stat1>(i);
+	group2.GetValue<Stat1>(i2);
+	BOOST_CHECK_EQUAL(i, 42);
+	BOOST_CHECK_EQUAL(i2, 37);
+
+	// Assignment
 	group2 = group;
-	BOOST_CHECK(!group.LoadIfChanged<Stat1>(i));
-	BOOST_CHECK(!group.LoadIfChanged<Stat2>(d));
+	group2.GetValue<Stat1>(i2);
+	BOOST_CHECK_EQUAL(i2, 42);
 
 	// Changes don't affect copies
 	group.SetValue<Stat1>(37);
-	BOOST_CHECK(!group2.LoadIfChanged<Stat1>(i));
-	BOOST_CHECK(group.LoadIfChanged<Stat1>(i));
-
-	// Assignment of different values should not change the "changed" status
-	group2 = group;
-	BOOST_CHECK(!group2.LoadIfChanged<Stat1>(i));
+	group2.GetValue<Stat1>(i2);
+	BOOST_CHECK_EQUAL(i2, 42);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

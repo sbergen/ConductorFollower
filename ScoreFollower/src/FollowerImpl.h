@@ -74,6 +74,10 @@ private:
 	typedef boost::mutex::scoped_try_lock    TryLock;
 	typedef boost::unique_lock<boost::mutex> Lock;
 
+private: // Change tracking
+	int restartVersion_;
+	std::string scoreFile_; // Used from ctor and butler
+
 private:
 	StatusRCU status_;
 	OptionsRCU options_;

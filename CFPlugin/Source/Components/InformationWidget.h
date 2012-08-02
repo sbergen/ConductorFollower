@@ -8,7 +8,7 @@
 template<typename KeyType, typename ValueType, int Presentation>
 class InformationWidget : public Component
 {
-	typedef typename ValueType::value_type value_type;
+	typedef typename ValueType value_type;
 
 public:
 	~InformationWidget()
@@ -20,8 +20,8 @@ public:
 	{
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
-		auto val = static_cast<value_type>(value);
-		addAndMakeVisible(value_ = new Label("val", ExtractString(val)));
+		value_ = static_cast<value_type>(value);
+		addAndMakeVisible(valueLabel_ = new Label("val", ExtractString(value_)));
 
 		layout_.setItemLayout(0, -0.2, -0.8, -0.3);
 		layout_.setItemLayout(1, -0.2, -0.8, -0.7);
@@ -29,9 +29,9 @@ public:
 
 	void Update(ValueType const & value)
 	{
-		value_type val;
-		if (value.LoadIfChanged(val)) {
-			value_->setText(ExtractString(val), true);
+		if (value != value_) {
+			value_ = value;
+			valueLabel_->setText(ExtractString(value), true);
 		}
 	}
 
@@ -44,26 +44,27 @@ private:
 public: // GUI stuff
 	void resized()
     {
-        Component* comps[] = { description_, value_ };
+        Component* comps[] = { description_, valueLabel_ };
         layout_.layOutComponents (comps, 2,
                                     0, 0, getWidth(), getHeight(),
                                     false, true);
     }
 
 private:
+	value_type value_;
 	StretchableLayoutManager layout_;
 	Label * description_;
-	Label * value_;
+	Label * valueLabel_;
 };
 
 // Bar graph specialization
 template<typename KeyType, typename ValueType>
 class InformationWidget<KeyType, ValueType, cf::Status::Bar> : public Component
 {
-	typedef typename ValueType::value_type value_type;
+	typedef typename ValueType value_type;
 
 public:
-	InformationWidget() : value_(nullptr) {}
+	InformationWidget() : value_() {}
 
 	~InformationWidget()
 	{
@@ -72,8 +73,6 @@ public:
 
 	void Initialize(ValueType const & value)
 	{
-		value_ = &value;
-
 		addAndMakeVisible(description_ = new Label("desc", String(KeyType::description().c_str())));
 
 		addAndMakeVisible(valueRect_ = new DrawableRectangle());
@@ -86,17 +85,11 @@ public:
 
 	void Update(ValueType const & value, bool forceUpdate = false)
 	{
-		value_ = &value;
-
-		value_type val;
-		if (forceUpdate) {
-			val = static_cast<value_type>(value);
-		} else {
-			if (!value.LoadIfChanged(val)) { return; }
-		}
+		if (!forceUpdate && value == value_) { return; }
+		value_ = value;
 		
 		int range = value_type::max_value - value_type::min_value;
-		float fraction = (val - value_type::min_value) / range;
+		float fraction = (value_ - value_type::min_value) / range;
 
 		if (fraction < 0.01) {
 			valueRect_->setFill(FillType(Colours::red));
@@ -122,11 +115,11 @@ public: // GUI stuff
                                     0, 0, getWidth(), getHeight(),
                                     true, true);
 
-		if (value_) { Update(*value_, true); }
+		Update(value_, true);
     }
 
 private:
-	ValueType const * value_;
+	ValueType value_;
 	StretchableLayoutManager layout_;
 	Label * description_;
 	DrawableRectangle * valueRect_;

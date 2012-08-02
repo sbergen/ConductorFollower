@@ -4,8 +4,8 @@
 
 #include <boost/enum.hpp>
 
-#include "Limited.h"
-#include "ChangeTracked.h"
+#include "cf/Limited.h"
+#include "cf/ValueWrapper.h"
 
 namespace cf {
 
@@ -40,41 +40,43 @@ struct StatusItemTags
 
 template<Status::Type Type, Status::Presentation Presentation, typename TValue>
 struct StatusItemBase
-	: public ChangeTracked<TValue>
+	: public ValueWrapper<TValue>
 	, public StatusItemTags<Type, Presentation>
 {
 	// Assignment forwarding
 	StatusItemBase & operator= (TValue const & value)
 	{
-		return static_cast<StatusItemBase &>(ChangeTracked::operator=(value));
+		return static_cast<StatusItemBase &>(ValueWrapper::operator=(value));
 	}
 
 	StatusItemBase & operator= (StatusItemBase const & other)
 	{
-		return static_cast<StatusItemBase &>(ChangeTracked::operator=(static_cast<ChangeTracked const &>(other)));
+		return static_cast<StatusItemBase &>(ValueWrapper::operator=(static_cast<ValueWrapper const &>(other)));
 	}
 };
 
 template<Status::Type Type, Status::Presentation Presentation,
 	typename TValue, typename TAssignable, TAssignable DefaultValue, TAssignable MinValue, TAssignable MaxValue>
 struct LimitedStatusItemBase
-	: public ChangeTracked<Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> >
+	: public Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue>
 	, public StatusItemTags<Type, Presentation>
 {
 	// Assignment forwarding
 	LimitedStatusItemBase & operator= (TValue const & value)
 	{
-		return static_cast<LimitedStatusItemBase &>(ChangeTracked::operator=(value));
+		return static_cast<LimitedStatusItemBase &>(Limited::operator=(value));
 	}
 
 	LimitedStatusItemBase & operator= (LimitedStatusItemBase const & other)
 	{
-		return static_cast<LimitedStatusItemBase &>(ChangeTracked::operator=(static_cast<ChangeTracked const &>(other)));
+		return static_cast<LimitedStatusItemBase &>(Limited::operator=(static_cast<Limited const &>(other)));
 	}
 
+	/*
 	// Type conversion forwarding
 	typedef Limited<TValue, TAssignable, DefaultValue, MinValue, MaxValue> limited_type;
 	operator TValue() const { return static_cast<limited_type const &>(*this); }
+	*/
 };
 
 // When TValue == TAssignable
@@ -94,9 +96,9 @@ struct BooleanStatusItem : public LimitedStatusItem<Type, Status::Boolean, bool,
 
 // Shorthand for bang
 template<Status::Type Type>
-struct BangStatusItem : public LimitedStatusItem<Type, Status::Bang, bool, false, false, true>
+struct BangStatusItem : public StatusItemBase<Type, Status::Bang, int>
 {
-	using LimitedStatusItem::operator=;
+	using StatusItemBase::operator=;
 };
 
 // Shorthand for double

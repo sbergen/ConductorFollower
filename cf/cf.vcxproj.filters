@@ -122,6 +122,9 @@
     <ClInclude Include="cf\ButlerDeleter.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\ValueWrapper.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

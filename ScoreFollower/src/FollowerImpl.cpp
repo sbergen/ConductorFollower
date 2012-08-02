@@ -38,6 +38,10 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
+	// Change tracking
+	options_.read()->GetValue<Options::Restart>(restartVersion_);
+	options_.read()->GetValue<Options::ScoreDefinition>(scoreFile_);
+
 	// Hook up to butler thread
 	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
 		boost::bind(&FollowerImpl::CheckForConfigChange, this));
@@ -57,8 +61,10 @@ unsigned
 FollowerImpl::StartNewBlock()
 {
 	// Reset if necessary
-	bool restart;
-	if (options_.read()->LoadIfChanged<Options::Restart>(restart) && restart) {
+	int restart;
+	options_.read()->GetValue<Options::Restart>(restart);
+	if (restart != restartVersion_) {
+		restartVersion_ = restart;
 		RestartScore();
 	}
 
@@ -66,14 +72,14 @@ FollowerImpl::StartNewBlock()
 	timeHelper_->StartNewBlock();
 	auto const & currentBlock = timeHelper_->CurrentRealTimeBlock();
 
+	// Lock config before going further
+	TryLock lock(configMutex_);
+	if (!lock.owns_lock()) { return 0; }
+
 	// Consume events until the start of this block
 	eventThrottler_->ConsumeEventsUntil(
 		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
 		currentBlock.first);
-
-	// Lock config before using timeHelper
-	TryLock lock(configMutex_);
-	if (!lock.owns_lock()) { return 0; }
 
 	if (State() != FollowerState::Rolling) { return 0; }
 
@@ -171,13 +177,12 @@ FollowerImpl::ConsumeEvent(Event const & e)
 void
 FollowerImpl::CheckForConfigChange()
 {
-	static std::string scoreFile;
-
+	std::string scoreFile;
 	auto options = options_.read();
-	bool somethingChanged = options->LoadIfChanged<Options::ScoreDefinition>(scoreFile);
+	options->GetValue<Options::ScoreDefinition>(scoreFile);
 
-	if (somethingChanged && scoreFile != "")
-	{
+	if (scoreFile != scoreFile_ && scoreFile != "") {
+		scoreFile_ = scoreFile;
 		CollectData(scoreFile);
 	}
 }

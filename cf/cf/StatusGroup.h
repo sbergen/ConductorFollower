@@ -34,12 +34,6 @@ public:
 	{
 		result = boost::fusion::at_key<OptionType>(map());
 	}
-
-	template<typename OptionType, typename ValueType>
-	bool LoadIfChanged(ValueType & result) const
-	{
-		return boost::fusion::at_key<OptionType>(map()).LoadIfChanged(result);
-	}
 };
 
 } // namespace cf
