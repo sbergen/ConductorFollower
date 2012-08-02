@@ -62,8 +62,9 @@ private:
 
 	FollowerState State();
 	void SetState(FollowerState::Value state);
+	void SetState(StatusRCU::WriterHandle & writer, FollowerState::Value state);
 
-	void ConsumeEvent(MotionTracker::Event const & e);
+	void ConsumeEvent(StatusRCU::WriterHandle & writer, MotionTracker::Event const & e);
 
 private: // Stuff related to butler thread
 	void CheckForConfigChange();

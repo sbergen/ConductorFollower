@@ -77,8 +77,9 @@ FollowerImpl::StartNewBlock()
 	if (!lock.owns_lock()) { return 0; }
 
 	// Consume events until the start of this block
+	auto writer = status_.writer();
 	eventThrottler_->ConsumeEventsUntil(
-		boost::bind(&FollowerImpl::ConsumeEvent, this, _1),
+		boost::bind(&FollowerImpl::ConsumeEvent, this, boost::ref(writer), _1),
 		currentBlock.first);
 
 	if (State() != FollowerState::Rolling) { return 0; }
@@ -123,21 +124,26 @@ FollowerImpl::State()
 void
 FollowerImpl::SetState(FollowerState::Value state)
 {
-	state_ = state;
-	status_.writer()->SetValue<Status::State>(state);
+	SetState(status_.writer(), state);
 }
 
+void
+FollowerImpl::SetState(StatusRCU::WriterHandle & writer, FollowerState::Value state)
+{
+	state_ = state;
+	writer->SetValue<Status::State>(state);
+}
 
 void
-FollowerImpl::ConsumeEvent(Event const & e)
+FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 {
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
-		SetState(FollowerState::WaitingForStart);
+		SetState(writer, FollowerState::WaitingForStart);
 		break;
 	case Event::TrackingEnded:
-		SetState(FollowerState::Stopped);
+		SetState(writer, FollowerState::Stopped);
 		break;
 	case Event::MotionStateUpdate:
 		// Do we need these?
@@ -147,14 +153,14 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		double power = e.data<double>() / 1000.0;
 		if (power > 1.0) { power = 1.0; }
 		conductorContext_.power = power;
-		status_.writer()->SetValue<Status::Power>(power);
+		writer->SetValue<Status::Power>(power);
 		scoreHelper_->SetVelocityFromMotion(power);
 		break;
 		}
 	case Event::Beat:
 		{
 		if (State() == FollowerState::GotStart) {
-			SetState(FollowerState::Rolling);
+			SetState(writer, FollowerState::Rolling);
 		}
 
 		if (State() == FollowerState::Rolling) {
@@ -163,12 +169,12 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		break;
 		}
 	case Event::BeatProb:
-		status_.writer()->SetValue<Status::Beat>(e.data<double>());
+		writer->SetValue<Status::Beat>(e.data<double>());
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
 			timeHelper_->RegisterPreparatoryBeat(e.data<real_time_t>());
-			SetState(FollowerState::GotStart);
+			SetState(writer, FollowerState::GotStart);
 		}
 		break;
 	}
