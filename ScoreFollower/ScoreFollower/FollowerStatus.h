@@ -31,7 +31,6 @@ CF_STATUS_GROUP
 FollowerStatus,
 	((State, "State", StateType))
 	((Speed, "Speed", SpeedType))
-	((SpeedFromPhase, "Speed from phase", SpeedType))
 	((MagnitudeOfMovement, "Magnitude of movement", MagnitudeType))
 	((Beat, "Beat Probability", BeatType))
 	((Power, "Power (speed + jerk)", PowerType))
