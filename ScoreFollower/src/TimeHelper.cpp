@@ -30,7 +30,7 @@ TimeHelper::StartNewBlock()
 }
 
 void
-TimeHelper::FixScoreRange()
+TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 {
 	std::pair<score_time_t, score_time_t> scoreRange;
 
@@ -41,7 +41,7 @@ TimeHelper::FixScoreRange()
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
 	if (speed != previousSpeed_) {
 		previousSpeed_ = speed;
-		parent_.status().writer()->SetValue<Status::Speed>(speed);
+		statusWriter->SetValue<Status::Speed>(speed);
 		conductorContext_.tempo = speed;
 		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange.first, speed);
 	}

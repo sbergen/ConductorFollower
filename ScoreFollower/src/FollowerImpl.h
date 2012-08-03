@@ -22,9 +22,6 @@
 #include "ScoreFollower/ScoreReader.h"
 
 #include "AudioBlockTimeManager.h"
-#include "ScoreHelper.h"
-#include "TimeHelper.h"
-#include "TimeWarper.h"
 #include "TempoFollower.h"
 
 namespace cf {
@@ -35,6 +32,9 @@ namespace MotionTracker {
 } // namespace MotionTracker 
 
 namespace ScoreFollower {
+
+class ScoreHelper;
+class TimeHelper;
 
 class FollowerImpl : public Follower
 {

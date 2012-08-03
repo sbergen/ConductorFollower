@@ -10,7 +10,9 @@
 
 #include "ScoreFollower/ScoreEvent.h"
 
+#include "ScoreHelper.h"
 #include "TimeWarper.h"
+#include "TimeHelper.h"
 #include "TempoFollower.h"
 #include "AudioBlockTimeManager.h"
 
@@ -89,7 +91,7 @@ FollowerImpl::StartNewBlock()
 	if (State() != FollowerState::Rolling) { return 0; }
 
 	// If rolling, fix score range
-	timeHelper_->FixScoreRange();
+	timeHelper_->FixScoreRange(writer);
 	return scoreReader_->TrackCount();
 }
 

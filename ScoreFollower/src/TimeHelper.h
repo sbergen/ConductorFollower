@@ -6,6 +6,7 @@
 #include "PatchMapper/ConductorContext.h"
 
 #include "ScoreFollower/types.h"
+#include "ScoreFollower/Follower.h"
 
 #include "AudioBlockTimeManager.h"
 #include "TimeWarper.h"
@@ -13,8 +14,6 @@
 
 namespace cf {
 namespace ScoreFollower {
-
-class Follower;
 
 class TimeHelper : public boost::noncopyable
 {
@@ -30,7 +29,7 @@ public:
 
 	// These need to be clled in this order!
 	void StartNewBlock();
-	void FixScoreRange();
+	void FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter);
 
 	void RegisterPreparatoryBeat(real_time_t const & time);
 	void RegisterBeat(real_time_t const & time, double prob);
