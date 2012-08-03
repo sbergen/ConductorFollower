@@ -72,8 +72,11 @@ public:
 		, data_(data)
 	{}
 
-	value_type * operator->() const { return data_.get(); }
-	value_type & operator* () const { return *data_; }
+	value_type * operator->() { return data_.get(); }
+	value_type & operator* () { return *data_; }
+
+	value_type const * operator->() const { return data_.get(); }
+	value_type const & operator* () const { return *data_; }
 
 private:
 	ptr_type data_;
@@ -84,7 +87,7 @@ template<typename T>
 class RTReadRCU : public RCUBase<T>
 {
 public:
-	typedef RCUWriterHandle<RCUBase> WriterHandle;
+	typedef RCUWriterHandle<RTReadRCU> WriterHandle;
 
 	RTReadRCU(ButlerPtr butler, value_type const & data)
 		: RCUBase(butler, data)
@@ -94,7 +97,7 @@ public:
 	WriterHandle writer()
 	{
 		ptr_type copy = write_copy();
-		return WriterHandle(*this, &RCUBase::updateFromCopy, copy);
+		return WriterHandle(*this, &RTReadRCU::updateFromCopy, copy);
 	}
 };
 
@@ -103,7 +106,7 @@ template<typename T>
 class RTWriteRCU : public RCUBase<T>
 {
 public:
-	typedef RCUWriterHandle<RCUBase> WriterHandle;
+	typedef RCUWriterHandle<RTWriteRCU> WriterHandle;
 
 	RTWriteRCU(ButlerPtr butler, value_type const & data)
 		: RCUBase(butler, data)
@@ -112,7 +115,7 @@ public:
 	const_ptr_type read() { return read_copy(); }
 	WriterHandle writer()
 	{
-		return WriterHandle(*this, &RCUBase::update, write());
+		return WriterHandle(*this, &RTWriteRCU::update, write());
 	}
 };
 
