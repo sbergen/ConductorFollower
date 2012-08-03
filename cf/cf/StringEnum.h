@@ -26,7 +26,7 @@
 		_className () : value_( CF_STRING_ENUM_first_value(_seq) ) { } \
 		_className (Value val) : value_(val) { } \
 		_className & operator=(Value val) { value_ = val; return *this; } \
-		operator char const *() const { switch(value_) { CF_STRING_ENUM_conversion_cases(_seq)  } } \
+		operator char const *() const { switch(value_) { CF_STRING_ENUM_conversion_cases(_seq) } return nullptr; } \
 		operator Value() const { return value_; } \
 		bool operator==(Value value) const { return value_ == value; } \
 		bool operator!=(Value value) const { return value_ != value; } \
