@@ -125,6 +125,7 @@
     <ClInclude Include="cf\LogItem.h" />
     <ClInclude Include="cf\PeakHolder.h" />
     <ClInclude Include="cf\polynomial.h" />
+    <ClInclude Include="cf\RTContext.h" />
     <ClInclude Include="cf\SavitzkyGolay.h" />
     <ClInclude Include="cf\score_units.h" />
     <ClInclude Include="cf\physics.h" />

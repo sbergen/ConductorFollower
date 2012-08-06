@@ -21,6 +21,8 @@ inline bool disallow_new_headeronly(boost::thread::id const & thread_id, bool ch
 
 } // anon namespace
 
+namespace cf {
+
 inline bool new_disallowed()
 {
 	return disallow_new_headeronly(boost::this_thread::get_id(), true);
@@ -36,9 +38,11 @@ inline void allow_new()
 	disallow_new_headeronly(boost::thread::id(), false);
 }
 
+} // namespace cf
+
 inline void* operator new( size_t size )
 {
-	assert(!new_disallowed());
+	assert(!cf::new_disallowed());
 	void * ret = malloc(size);
 	if (!ret) { throw std::bad_alloc(); }
 	return ret;
@@ -46,6 +50,6 @@ inline void* operator new( size_t size )
 
 inline void operator delete( void* ptr )
 {
-	assert(!new_disallowed());
+	assert(!cf::new_disallowed());
 	free(ptr);
 }

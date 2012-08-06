@@ -17,16 +17,11 @@
 
 #include "cf/serialization.h"
 #include "cf/globals.h"
+#include "cf/RTContext.h"
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MidiReader.h"
-
-#define DEBUG_NEW !NDEBUG
-#if DEBUG_NEW
-#include "cf/debug_new.h"
-#endif
-
 
 using namespace cf;
 using namespace cf::ScoreFollower;
@@ -156,9 +151,7 @@ void CfpluginAudioProcessor::releaseResources()
 
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-	#if DEBUG_NEW
-	disallow_new();
-	#endif
+	RTContext rt;
 
 	auto timeAtStartOfBlock = time::now();
 
@@ -219,10 +212,6 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	if (elapsedTime > (0.3 * blockSize)) {
 		LOG("Possible xrun! Process callback took %1% (max: %2%)", elapsedTime, blockSize);
 	}
-
-	#if DEBUG_NEW
-	allow_new();
-	#endif
 }
 
 //==============================================================================
