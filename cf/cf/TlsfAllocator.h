@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <boost/shared_ptr.hpp>
+
 #include "tlsf/tlsf.h"
 
 namespace cf {
@@ -33,13 +35,20 @@ public: // required typedefs
 	typedef std::size_t size_type;
 	typedef std::ptrdiff_t difference_type;
 
-    template <typename U>
+	// Rebind support
+
+    template<typename U>
     struct rebind
 	{
 		typedef TlsfAllocator<U> other;
     };
 
+	template<typename U>
+	TlsfAllocator(TlsfAllocator<U> const &) {}
+
 public: // Actual functionality
+
+	TlsfAllocator() {}
 
     pointer address(reference r) { return &r; }
     const_pointer address(const_reference s) { return &s; }
@@ -73,5 +82,27 @@ public:
        typedef TlsfAllocator<U> other;
     };
 };
+
+// Matching deleter
+class TlsfDeleter
+{
+public:
+	template<typename T>
+	void operator()(T * ptr)
+	{
+		TlsfAllocator<T> allocator;
+		allocator.destroy(ptr);
+		allocator.deallocate(ptr, 1);
+	}
+};
+
+template<typename T, typename Deleter>
+boost::shared_ptr<T> make_tlsf_shared(T const & val, Deleter deleter = TlsfDeleter())
+{
+	TlsfAllocator<T> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.construct(ptr, val);
+	return boost::shared_ptr<T>(ptr, deleter, allocator);
+}
 
 } // namespace cf
