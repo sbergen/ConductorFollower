@@ -114,6 +114,7 @@
     <ClInclude Include="cf\ButlerDeletable.h" />
     <ClInclude Include="cf\ButlerDeleter.h" />
     <ClInclude Include="cf\ButlerThread.h" />
+    <ClInclude Include="cf\debug_new.h" />
     <ClInclude Include="cf\dummy_mutex.h" />
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\Fir.h" />

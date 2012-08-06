@@ -125,6 +125,9 @@
     <ClInclude Include="cf\ValueWrapper.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\debug_new.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
