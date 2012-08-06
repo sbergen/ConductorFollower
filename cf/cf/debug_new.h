@@ -36,7 +36,7 @@ inline void allow_new()
 	disallow_new_headeronly(boost::thread::id(), false);
 }
 
-inline void* operator new( size_t size ) throw()
+inline void* operator new( size_t size )
 {
 	assert(!new_disallowed());
 	void * ret = malloc(size);
@@ -44,8 +44,8 @@ inline void* operator new( size_t size ) throw()
 	return ret;
 }
 
-inline void operator delete( void* ptr ) throw()
+inline void operator delete( void* ptr )
 {
-	//assert(!new_disallowed());
+	assert(!new_disallowed());
 	free(ptr);
 }
