@@ -8,10 +8,10 @@
 
 namespace sf = cf::ScoreFollower;
 
-class MidiEvent : public sf::ScoreEvent
+class MidiEventBase : public sf::ScoreEvent
 {
 public:
-	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
+	MidiEventBase(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
 
 public: // ScoreEvent implementation
 	double GetVelocity() { return msg_.getFloatVelocity(); }
@@ -20,21 +20,47 @@ public: // ScoreEvent implementation
 
 	void ApplyVelocity(double velocity);
 
-	sf::ScoreEventPtr MakeKeyswitch(int note);
+	// MakeKeyswitch needs to be implemented in deriving classes
 
 public: // Additional functionality
 	juce::MidiMessage const & Message() const { return msg_; }
 
-private:
+protected:
 	juce::MidiMessage msg_;
+
+private:
 	sf::score_time_t noteLength_;
 };
 
-typedef boost::shared_ptr<MidiEvent> MidiEventPtr;
+// Keyswitch event, may not produce more keyswitches (will throw)
+class KeyswitchEvent : public MidiEventBase
+{
+public:
+	KeyswitchEvent(int channel);
+	void SetNote(int note);
+
+public: // ScoreEvent implementation
+	sf::ScoreEventPtr MakeKeyswitch(int note);
+};
+
+// "regular" midi event, which holds an allocated keyswitch event for note ons
+class MidiEvent : public MidiEventBase
+{
+public:
+	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
+
+public: // ScoreEvent implementation
+	sf::ScoreEventPtr MakeKeyswitch(int note);
+
+private:
+	boost::shared_ptr<KeyswitchEvent> keyswitchEvent_;
+};
+
+typedef boost::shared_ptr<MidiEventBase> MidiEventPtr;
 
 inline MidiEventPtr midi_event_cast(sf::ScoreEventPtr ev)
 {
 	// Yes, we are using static_cast for downcasting on purpose here
-	return boost::static_pointer_cast<MidiEvent>(ev);
+	return boost::static_pointer_cast<MidiEventBase>(ev);
 }
 
