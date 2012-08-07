@@ -19,6 +19,8 @@ ScoreHelper::ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper, PatchMapper::
 void
 ScoreHelper::LearnScore(boost::shared_ptr<ScoreReader> scoreReader)
 {
+	LOG("Reading %1% tracks of midi", (int)scoreReader->TrackCount());
+
 	// Keep reference to this
 	scoreReader_ = scoreReader;
 
@@ -37,6 +39,8 @@ ScoreHelper::LearnScore(boost::shared_ptr<ScoreReader> scoreReader)
 void
 ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::TrackList const & tracks)
 {
+	LOG("Learning instruments for %1% tracks", (int)tracks.size());
+
 	trackInstruments_.clear();
 	trackInstruments_.reserve(tracks.size());
 

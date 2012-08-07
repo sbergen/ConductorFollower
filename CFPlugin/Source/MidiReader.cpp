@@ -2,6 +2,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include "cf/globals.h"
+
 #include "ScoreFollower/ScoreEvent.h"
 
 using namespace cf;
@@ -27,6 +29,7 @@ MidiReader::OpenFile(std::string const & filename)
 sf::TrackReaderPtr
 MidiReader::Track(int index)
 {
+	LOG("Getting track %1%", index);
 	assert(index < TrackCount());
 	return boost::make_shared<TrackReaderImpl>(*file_.getTrack(index));
 }
@@ -119,6 +122,10 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 
 	auto eventPtr = sequence_.getEventPointer(current_);
 	data = boost::make_shared<MidiEvent>(eventPtr->message, noteLength);
+
+	if (current_ < 10) {
+		LOG("Read event with channel %1%", eventPtr->message.getChannel());
+	}
 
 	++current_;
 	return current_ < count_;
