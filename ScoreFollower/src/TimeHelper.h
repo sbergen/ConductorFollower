@@ -23,6 +23,7 @@ public:
 
 public:
 	TimeHelper(Follower & parent, PatchMapper::ConductorContext & conductorContext);
+	boost::shared_ptr<TimeHelper> FreshClone();
 	
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 	void ReadScore(ScoreReader & reader) { tempoFollower_.ReadScore(reader); }

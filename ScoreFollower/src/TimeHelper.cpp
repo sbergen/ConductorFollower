@@ -15,6 +15,14 @@ TimeHelper::TimeHelper(Follower & parent, PatchMapper::ConductorContext & conduc
 {
 }
 
+boost::shared_ptr<TimeHelper>
+TimeHelper::FreshClone()
+{
+	auto clone = boost::make_shared<TimeHelper>(parent_, conductorContext_);
+	clone->timeManager_ = timeManager_;
+	return clone;
+}
+
 void
 TimeHelper::SetBlockParameters(unsigned samplerate, unsigned blockSize)
 {

@@ -58,8 +58,6 @@ public: // Follower implementation
 	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
 private:
-	void RestartScore();
-
 	FollowerState State();
 	void SetState(FollowerState::Value state);
 	void SetState(StatusRCU::WriterHandle & writer, FollowerState::Value state);
@@ -69,6 +67,8 @@ private:
 private: // Stuff related to butler thread
 	void CheckForConfigChange();
 	void CollectData(std::string const & scoreFile);
+	void RestartScore();
+	void EnsureMotionTrackingIsStarted();
 
 private:
 	typedef boost::signals2::connection      SignalConnection;

@@ -34,6 +34,9 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	, options_(Options::FollowerOptions())
 	, scoreReader_(scoreReader)
 {
+	// Set proper initial state
+	SetState(FollowerState::Stopped);
+
 	// Construct memebers
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, conductorContext_);
 	eventProvider_= EventProvider::Create();
@@ -62,14 +65,6 @@ FollowerImpl::SetBlockParameters(unsigned samplerate, unsigned blockSize)
 unsigned
 FollowerImpl::StartNewBlock()
 {
-	// Reset if necessary
-	int restart;
-	options_.read()->GetValue<Options::Restart>(restart);
-	if (restart != restartVersion_) {
-		restartVersion_ = restart;
-		RestartScore();
-	}
-
 	// Start new RT block
 	timeHelper_->StartNewBlock();
 	auto const & currentBlock = timeHelper_->CurrentRealTimeBlock();
@@ -99,26 +94,11 @@ void
 FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 {
 	events.Clear();
-	
-	if (State() != FollowerState::Rolling) { return; }
-
-	// Lock config and get data
 	TryLock lock(configMutex_);
 	if (!lock.owns_lock()) { return; }
+	if (State() != FollowerState::Rolling) { return; }
+
 	scoreHelper_->GetTrackEventsForBlock(track, events);
-}
-
-void
-FollowerImpl::RestartScore()
-{
-	// TODO reset score time
-
-	if (State() == FollowerState::Stopped) {
-		SetState(FollowerState::WaitingForCalibration);
-		eventProvider_->StartProduction();
-	} else {
-		SetState(FollowerState::WaitingForStart);
-	}
 }
 
 FollowerState
@@ -189,11 +169,22 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 void
 FollowerImpl::CheckForConfigChange()
 {
+	// Restart
+	int restart;
+	bool forceScoreRead = false;
+	options_.read()->GetValue<Options::Restart>(restart);
+	if (restart != restartVersion_) {
+		restartVersion_ = restart;
+		forceScoreRead = true;
+		RestartScore();
+	}
+
+	// Score file
 	std::string scoreFile;
 	auto options = options_.read();
 	options->GetValue<Options::ScoreDefinition>(scoreFile);
 
-	if (scoreFile != scoreFile_ && scoreFile != "") {
+	if ((forceScoreRead ||scoreFile != scoreFile_) && scoreFile != "") {
 		scoreFile_ = scoreFile;
 		CollectData(scoreFile);
 	}
@@ -223,9 +214,27 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 	// Instrument mappings
 	scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
 
-	// Start listening to gestures
-	SetState(FollowerState::WaitingForCalibration);
-	eventProvider_->StartProduction();
+	EnsureMotionTrackingIsStarted();
+}
+
+void
+FollowerImpl::RestartScore()
+{
+	// Lock
+	Lock lock(configMutex_);
+	timeHelper_ = timeHelper_->FreshClone();
+	EnsureMotionTrackingIsStarted();
+}
+
+void
+FollowerImpl::EnsureMotionTrackingIsStarted()
+{
+	if (State() == FollowerState::Stopped) {
+		SetState(FollowerState::WaitingForCalibration);
+		eventProvider_->StartProduction();
+	} else if (State() != FollowerState::WaitingForStart) {
+		SetState(FollowerState::WaitingForStart);
+	}
 }
 
 } // namespace ScoreFollower
