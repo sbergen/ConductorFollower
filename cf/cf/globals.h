@@ -11,7 +11,7 @@
 #ifdef NDEBUG
 	#define LOG(...)
 #else
-	#define LOG(fmt, ...) GlobalsRef().Logger()->Log((LogItem(fmt), __VA_ARGS__))
+	#define LOG(fmt, ...) cf::GlobalsRef().Logger()->Log((cf::LogItem(fmt), __VA_ARGS__))
 #endif
 
 namespace cf {
