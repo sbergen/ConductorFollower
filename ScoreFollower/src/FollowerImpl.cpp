@@ -30,8 +30,8 @@ Follower::Create(boost::shared_ptr<ScoreReader> scoreReader)
 }
 
 FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
-	: status_(globalsRef_.Butler(), Status::FollowerStatus())
-	, options_(globalsRef_.Butler(), Options::FollowerOptions())
+	: status_(Status::FollowerStatus())
+	, options_(Options::FollowerOptions())
 	, scoreReader_(scoreReader)
 {
 	// Construct memebers

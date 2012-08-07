@@ -45,19 +45,19 @@ void TestOneWrite(RCUType & rcu, int previousValue, int newValue)
 
 BOOST_AUTO_TEST_CASE(TestNonRTWrite)
 {
-	RTReadRCU<IntWrapper> rcu(GlobalsRef().Butler(), IntWrapper(0));
+	RTReadRCU<IntWrapper> rcu(IntWrapper(0));
 	TestOneWrite(rcu, 0, 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestRTWrite)
 {
-	RTWriteRCU<IntWrapper> rcu(GlobalsRef().Butler(), IntWrapper(0));
+	RTWriteRCU<IntWrapper> rcu(IntWrapper(0));
 	TestOneWrite(rcu, 0, 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestContinuousRTWrite)
 {
-	RTWriteRCU<IntWrapper> rcu(GlobalsRef().Butler(), IntWrapper(0));
+	RTWriteRCU<IntWrapper> rcu(IntWrapper(0));
 
 	for (int i = 1; i < 10; ++i)
 	{
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(TestContinuousRTWrite)
 
 BOOST_AUTO_TEST_CASE(TestContinuousNonRTWrite)
 {
-	RTReadRCU<IntWrapper> rcu(GlobalsRef().Butler(), IntWrapper(0));
+	RTReadRCU<IntWrapper> rcu(IntWrapper(0));
 
 	for (int i = 1; i < 10; ++i)
 	{

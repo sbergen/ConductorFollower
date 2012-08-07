@@ -1,9 +1,13 @@
 #pragma once
 
+#include <list>
+#include <algorithm>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "cf/LockfreeRefCount.h"
 #include "cf/ButlerDeleter.h"
@@ -16,34 +20,12 @@ template<typename T>
 class RCUBase : public boost::noncopyable, public LockfreeRefCountProvider
 {
 public:
-	typedef boost::shared_ptr<ButlerThread> ButlerPtr;
-
 	typedef T value_type;
-	typedef T * raw_ptr_type;
-	typedef boost::shared_ptr<T> smart_ptr_type;
+	typedef boost::shared_ptr<T> ptr_type;
+	typedef boost::shared_ptr<T const> const_ptr_type;
 
 protected:
-	RCUBase(ButlerPtr butler, value_type const & data)
-		: butler_(butler)
-	{
-		read_data_ = new T(data);
-		write_data_ = new T(data);
-	}
-
-	~RCUBase()
-	{
-		delete read_data_;
-		delete write_data_;
-	}
-
-protected:
-	inline smart_ptr_type managed_copy(raw_ptr_type ptr) { return boost::make_shared<T>(*ptr); }
-	inline raw_ptr_type unmanaged_copy(raw_ptr_type ptr) { return new T(*ptr); }
-
-protected:
-	ButlerPtr butler_;
-	raw_ptr_type read_data_;
-	raw_ptr_type write_data_;
+	inline ptr_type copy(ptr_type ptr) { return boost::make_shared<T>(*ptr); }
 };
 
 } // anon namespace
@@ -51,10 +33,10 @@ protected:
 
 // RAII write handle
 template<typename Parent>
-class RCUWriterHandle : public LockfreeRefCounted<Parent, typename Parent::raw_ptr_type>
+class RCUWriterHandle : public LockfreeRefCounted<Parent, typename Parent::ptr_type>
 {
 public:
-	typedef typename Parent::raw_ptr_type ptr_type;
+	typedef typename Parent::ptr_type ptr_type;
 	typedef typename Parent::value_type value_type;
 	typedef typename LockfreeRefCounted::CleanupFunction CleanupFunction;
 
@@ -63,10 +45,10 @@ public:
 		, data_(data)
 	{}
 
-	value_type * operator->() { return data_; }
+	value_type * operator->() { return data_.get(); }
 	value_type & operator* () { return *data_; }
 
-	value_type const * operator->() const { return data_; }
+	value_type const * operator->() const { return data_.get(); }
 	value_type const & operator* () const { return *data_; }
 
 private:
@@ -74,71 +56,95 @@ private:
 };
 
 /* RCU providing lock-free read
-    - Only one writer thread allowed
-    - pointer returned by read() not guaranteed to be valid
-	  any longer than the butler interval
+   Updates happen in whatever order they do,
+   multithreaded access to writers is a bit sketchy...
 */
-template<typename T>
+template<typename T, typename MutexType = boost::mutex>
 class RTReadRCU : public RCUBase<T>
 {
 public:
 	typedef RCUWriterHandle<RTReadRCU> WriterHandle;
-	typedef T const * read_ptr_type;
 
-	RTReadRCU(ButlerPtr butler, value_type const & data)
-		: RCUBase(butler, data)
+	RTReadRCU(value_type const & data)
+		: currentValue_(new value_type(data))
 	{}
 
-	read_ptr_type read()
+	const_ptr_type read()
 	{
-		return read_data_;
+		return currentValue_;
 	}
 
 	WriterHandle writer()
 	{
-		return WriterHandle(*this, &RTReadRCU::updateFromCopy, unmanaged_copy(write_data_));
+		boost::unique_lock<MutexType> lock(oldValuesMutex_);
+		CleanOld();
+		return WriterHandle(*this, &RTReadRCU::Update, copy(currentValue_));
 	}
 
 public: // Needs to be public for binding, would otherwise be private...
-	void updateFromCopy(raw_ptr_type write_data)
+	void Update(ptr_type write_data)
 	{
-		butler_->ScheduleDelete(read_data_);
-		read_data_ = write_data;
-		*write_data_ = *read_data_;
+		boost::unique_lock<MutexType> lock(oldValuesMutex_);
+		PushOld(); // Ensure the old value is not deleted in an RT context
+		currentValue_.swap(write_data);
 	}
+
+private:
+	void CleanOld()
+	{
+		auto newEnd = std::remove_if(std::begin(oldValues_), std::end(oldValues_),
+			[](ptr_type const & ptr) { return ptr.unique(); });
+		oldValues_.erase(newEnd, std::end(oldValues_));
+	}
+
+	void PushOld()
+	{
+		oldValues_.push_back(currentValue_);
+	}
+
+private:
+	ptr_type currentValue_;
+	
+	MutexType oldValuesMutex_;
+	std::list<ptr_type> oldValues_;
+
 };
 
 /* RCU providing lock-free write
-    - Only one writer thread allowed
+   There must be only one writer thread!
 */
 template<typename T>
 class RTWriteRCU : public RCUBase<T>
 {
 public:
 	typedef RCUWriterHandle<RTWriteRCU> WriterHandle;
-	typedef boost::shared_ptr<T const> read_ptr_type;
 
-	RTWriteRCU(ButlerPtr butler, value_type const & data)
-		: RCUBase(butler, data)
+	RTWriteRCU(value_type const & data)
+		: readData_(new value_type(data))
+		, writeData_(new value_type(data))
 	{}
 
-	read_ptr_type read()
+	const_ptr_type read()
 	{
-		return managed_copy(read_data_);
+		return copy(readData_);
 	}
 
 	WriterHandle writer()
 	{
-		return WriterHandle(*this, &RTWriteRCU::update, write_data_);
+		return WriterHandle(*this, &RTWriteRCU::update, writeData_);
 	}
 
 public: // Needs to be public for binding, would otherwise be private...
-	void update(raw_ptr_type write_data)
+	void update(ptr_type writeData)
 	{
-		assert(write_data == write_data_);
-		std::swap(read_data_, write_data_);
-		*write_data_ = *read_data_;
+		assert(writeData == writeData_);
+		readData_.swap(writeData_);
+		*writeData_ = *readData_;
 	}
+
+private:
+	ptr_type readData_;
+	ptr_type writeData_;
 };
 
 } // namespace cf
