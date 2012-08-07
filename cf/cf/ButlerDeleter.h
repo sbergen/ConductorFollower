@@ -24,8 +24,7 @@ private:
 	ButlerThread & butler_;
 };
 
-
-
+// NOTE, parts of the shared_ptr get freed immediately with delete! Not RT safe
 template<typename T>
 boost::shared_ptr<T> butler_deletable_copy(T const & value, ButlerThread & butler)
 {

@@ -6,6 +6,8 @@
 
 namespace cf {
 
+// CallbackRef
+
 class ButlerThread::CallbackRef
 {
 public:
@@ -20,14 +22,46 @@ private:
 	ButlerThread::CallbackIterator const callbackIt_;
 };
 
+// CallbackHandle
+
 ButlerThread::CallbackHandle::CallbackHandle(ButlerThread & parent, CallbackIterator const & callback)
 	: ref_(boost::make_shared<CallbackRef>(parent, callback))
 {}
 
+// DeleteEntry
+
+bool
+ButlerThread::DeleteEntry::Exprired(counter_t counterNow) const
+{
+	// Check only these two to make it overflow-safe
+	return (counter != counterNow) &&
+			(counter != counterNow - 1);
+}
+
+void
+ButlerThread::DeleteEntry::Destroy()
+{
+	delete ptr;
+	ptr = nullptr;
+}
+
+ButlerThread::DeleteEntry
+ButlerThread::MakeDeleteEntry(ButlerDeletable * ptr)
+{
+	DeleteEntry entry;
+	entry.ptr = ptr;
+	entry.counter = loopCounter_.load();
+	return entry;
+}
+
+// ButlerThread
+
 ButlerThread::ButlerThread(milliseconds_t runInterval)
 	: runInterval_(runInterval)
-	, deleteList_(512) // reasonable size
+	, deleteQueue_(512) // reasonable size
+	, loopCounter_(0)
 {
+	pendingDelete_ = MakeDeleteEntry(nullptr);
 	thread_= boost::make_shared<boost::thread>(boost::bind(&ButlerThread::Loop, this));
 }
 
@@ -35,7 +69,7 @@ ButlerThread::~ButlerThread()
 {
 	thread_->interrupt();
 	thread_->join();
-	RunDeleteQueue();
+	RunDeleteQueue(loopCounter_.load() + 2);
 }
 
 ButlerThread::CallbackHandle
@@ -60,8 +94,10 @@ ButlerThread::Loop()
 		boost::system_time wakeUpTime = boost::get_system_time();
 		wakeUpTime += boost::posix_time::milliseconds(runInterval_.count());
 
-		RunDeleteQueue();
-		RunCallbacks();
+		// This is the only place this is incremented, it's only read in other locations...
+		counter_t currentRound = loopCounter_.fetch_add(1) + 1;
+		RunDeleteQueue(currentRound);
+		RunCallbacks(currentRound);
 
 		try {
 			boost::thread::sleep(wakeUpTime);
@@ -72,17 +108,17 @@ ButlerThread::Loop()
 }
 
 void
-ButlerThread::RunDeleteQueue()
+ButlerThread::RunDeleteQueue(counter_t currentRound)
 {
-	ButlerDeletable * ptr;
-	while (deleteList_.dequeue(ptr))
+	do
 	{
-		delete ptr;
-	}
+		if (pendingDelete_ && !pendingDelete_.Exprired(currentRound)) { return; }
+		pendingDelete_.Destroy();
+	} while (deleteQueue_.dequeue(pendingDelete_));
 }
 
 void
-ButlerThread::RunCallbacks()
+ButlerThread::RunCallbacks(counter_t currentRound)
 {
 	std::list<Callback> callbacks;
 

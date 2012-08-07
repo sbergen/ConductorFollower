@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
 
@@ -18,41 +19,31 @@ public:
 	typedef boost::shared_ptr<ButlerThread> ButlerPtr;
 
 	typedef T value_type;
-	typedef boost::shared_ptr<T> ptr_type;
-	typedef boost::shared_ptr<const T> const_ptr_type;
+	typedef T * raw_ptr_type;
+	typedef boost::shared_ptr<T> smart_ptr_type;
 
 protected:
 	RCUBase(ButlerPtr butler, value_type const & data)
 		: butler_(butler)
 	{
-		read_data_ = butler_deletable_copy(data, *butler_);
-		write_data_ = butler_deletable_copy(data, *butler_);
+		read_data_ = new T(data);
+		write_data_ = new T(data);
 	}
 
-	const_ptr_type read() const { return read_data_; }
-	const_ptr_type read_copy() const { return butler_deletable_copy(*read_data_, *butler_); }
-
-	ptr_type write() { return write_data_; }
-	ptr_type write_copy() const { return butler_deletable_copy(*write_data_, *butler_); }
-
-public: // These need to be public to work
-	void update(ptr_type write_data)
+	~RCUBase()
 	{
-		assert(write_data == write_data_);
-		read_data_.swap(write_data_);
-		*write_data_ = *read_data_;
+		delete read_data_;
+		delete write_data_;
 	}
 
-	void updateFromCopy(ptr_type write_data)
-	{
-		read_data_.swap(write_data);
-		*write_data_ = *read_data_;
-	}
+protected:
+	inline smart_ptr_type managed_copy(raw_ptr_type ptr) { return boost::make_shared<T>(*ptr); }
+	inline raw_ptr_type unmanaged_copy(raw_ptr_type ptr) { return new T(*ptr); }
 
-private:
+protected:
 	ButlerPtr butler_;
-	ptr_type read_data_;
-	ptr_type write_data_;
+	raw_ptr_type read_data_;
+	raw_ptr_type write_data_;
 };
 
 } // anon namespace
@@ -60,10 +51,10 @@ private:
 
 // RAII write handle
 template<typename Parent>
-class RCUWriterHandle : public LockfreeRefCounted<Parent, typename Parent::ptr_type>
+class RCUWriterHandle : public LockfreeRefCounted<Parent, typename Parent::raw_ptr_type>
 {
 public:
-	typedef typename Parent::ptr_type ptr_type;
+	typedef typename Parent::raw_ptr_type ptr_type;
 	typedef typename Parent::value_type value_type;
 	typedef typename LockfreeRefCounted::CleanupFunction CleanupFunction;
 
@@ -72,50 +63,81 @@ public:
 		, data_(data)
 	{}
 
-	value_type * operator->() { return data_.get(); }
+	value_type * operator->() { return data_; }
 	value_type & operator* () { return *data_; }
 
-	value_type const * operator->() const { return data_.get(); }
+	value_type const * operator->() const { return data_; }
 	value_type const & operator* () const { return *data_; }
 
 private:
 	ptr_type data_;
 };
 
-// RCU providing lock-free read
+/* RCU providing lock-free read
+    - Only one writer thread allowed
+    - pointer returned by read() not guaranteed to be valid
+	  any longer than the butler interval
+*/
 template<typename T>
 class RTReadRCU : public RCUBase<T>
 {
 public:
 	typedef RCUWriterHandle<RTReadRCU> WriterHandle;
+	typedef T const * read_ptr_type;
 
 	RTReadRCU(ButlerPtr butler, value_type const & data)
 		: RCUBase(butler, data)
 	{}
 
-	using RCUBase::read;
+	read_ptr_type read()
+	{
+		return read_data_;
+	}
+
 	WriterHandle writer()
 	{
-		ptr_type copy = write_copy();
-		return WriterHandle(*this, &RTReadRCU::updateFromCopy, copy);
+		return WriterHandle(*this, &RTReadRCU::updateFromCopy, unmanaged_copy(write_data_));
+	}
+
+public: // Needs to be public for binding, would otherwise be private...
+	void updateFromCopy(raw_ptr_type write_data)
+	{
+		butler_->ScheduleDelete(read_data_);
+		read_data_ = write_data;
+		*write_data_ = *read_data_;
 	}
 };
 
-// RCU providing lock-free write
+/* RCU providing lock-free write
+    - Only one writer thread allowed
+*/
 template<typename T>
 class RTWriteRCU : public RCUBase<T>
 {
 public:
 	typedef RCUWriterHandle<RTWriteRCU> WriterHandle;
+	typedef boost::shared_ptr<T const> read_ptr_type;
 
 	RTWriteRCU(ButlerPtr butler, value_type const & data)
 		: RCUBase(butler, data)
 	{}
 
-	const_ptr_type read() { return read_copy(); }
+	read_ptr_type read()
+	{
+		return managed_copy(read_data_);
+	}
+
 	WriterHandle writer()
 	{
-		return WriterHandle(*this, &RTWriteRCU::update, write());
+		return WriterHandle(*this, &RTWriteRCU::update, write_data_);
+	}
+
+public: // Needs to be public for binding, would otherwise be private...
+	void update(raw_ptr_type write_data)
+	{
+		assert(write_data == write_data_);
+		std::swap(read_data_, write_data_);
+		*write_data_ = *read_data_;
 	}
 };
 

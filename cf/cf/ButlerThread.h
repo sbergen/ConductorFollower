@@ -6,7 +6,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
-#include <boost/lockfree/ringbuffer.hpp>
+#include <boost/lockfree/fifo.hpp>
 
 #include "cf/time.h"
 
@@ -47,24 +47,45 @@ public:
 	
 	void ScheduleDelete(ButlerDeletable * ptr)
 	{
-		bool success = deleteList_.enqueue(ptr);
+		bool success = deleteQueue_.enqueue(MakeDeleteEntry(ptr));
 		assert(success);
 	}
 
 private:
-	void RemoveCallback(CallbackIterator const & callback);
-	void Loop();
-	void RunDeleteQueue();
-	void RunCallbacks();
+	typedef unsigned counter_t;
+	typedef boost::atomic<counter_t> atomic_counter_t;
+
+	// Has to be POD to work with lockfree fifo
+	struct DeleteEntry
+	{
+		operator bool () const { return ptr != nullptr; }
+		bool Exprired(counter_t counterNow) const;
+		void Destroy();
+
+		ButlerDeletable * ptr;
+		counter_t counter;
+	};
+	DeleteEntry MakeDeleteEntry(ButlerDeletable * ptr);
+
+	typedef boost::lockfree::fifo<DeleteEntry> DeleteQueue;
 
 private:
-	typedef boost::lockfree::ringbuffer<ButlerDeletable *, 0> DeleteList;
+	void RemoveCallback(CallbackIterator const & callback);
+	void Loop();
+	void RunDeleteQueue(counter_t currentRound);
+	void RunCallbacks(counter_t currentRound);
+
+private:
 
 	milliseconds_t runInterval_;
 	boost::mutex callbackMutex_;
 	CallbackList callbacks_;
 	boost::shared_ptr<boost::thread> thread_;
-	DeleteList deleteList_;
+	
+	DeleteQueue deleteQueue_;
+	DeleteEntry pendingDelete_;
+
+	atomic_counter_t loopCounter_;
 };
 
 } // namespace cf
