@@ -131,6 +131,9 @@
     <ClInclude Include="cf\RTContext.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\EMA.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

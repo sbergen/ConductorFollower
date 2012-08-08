@@ -8,6 +8,7 @@
 #include "cf/geometry.h"
 #include "cf/globals.h"
 #include "cf/fir.h"
+#include "cf/EMA.h"
 #include "cf/PeakHolder.h"
 
 #include "MotionTracker/EventProvider.h"
@@ -51,13 +52,13 @@ private: // tracker thread state and event buffer
 	BeatDetector beatDetector_;
 	StartGestureDetector startDetector_;
 
-	AveragingFir<15> velocityFir_;
+	EMA<15> velocityFir_;
 	PeakHolder<30> velocityPeakHolder_;
 	
-	AveragingFir<3> jerkFir_;
+	EMA<3> jerkFir_;
 	PeakHolder<40> jerkPeakHolder_;
 
-	AveragingFir<10> powerFir_;
+	EMA<10> powerFir_;
 };
 
 } // namespace MotionTracker
