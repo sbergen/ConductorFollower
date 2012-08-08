@@ -192,7 +192,7 @@ TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
 		[&, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
 	{
 		auto offset = classification.offset().value();
-		offset = math::sgn(offset) * 2 * std::pow(offset, 2);
+		//offset = math::sgn(offset) * 2 * std::pow(offset, 2);
 
 		double weight = *wIt * classification.clarity();
 		weightedSum += weight * beat_pos_t::from_value(offset);
