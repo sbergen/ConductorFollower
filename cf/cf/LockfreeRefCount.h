@@ -12,7 +12,6 @@ protected:
 	{}
 
 private:
-	// TODO make more specific once you get the syntax right...
 	template<typename T, typename A>
 	friend class LockfreeRefCounted;
 
