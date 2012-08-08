@@ -17,9 +17,6 @@
 CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 	, ownerFilter(ownerFilter)
-	//, playButton(0)
-	//, speedLabel(nullptr)
-	//, runningLabel(nullptr)
 {
     // This is where our plugin's editor size is set.
     setSize (600, 300);
@@ -72,34 +69,19 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 {
 	ownerFilter->changeBroadcaster.removeChangeListener(this);
-	// TODO make a sane system for this
-	//deleteAllChildren();
+	// The automatic child components are in the fusion::maps,
+	// and deleteAllChildren() should NOT be called!
 }
 
 //==============================================================================
 void CfpluginAudioProcessorEditor::paint (Graphics& g)
 {
 	g.fillAll (Colours::white);
-
-	/*
-    g.setColour (Colours::black);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!",
-                      0, 0, getWidth(), getHeight(),
-                      Justification::centred, 1);
-	*/
-
-	
 }
 
 void
 CfpluginAudioProcessorEditor::buttonClicked(Button * button)
 {
-	/*
-	if (button == playButton) {
-		ownerFilter->shouldRun.store(!ownerFilter->shouldRun.load());
-	}
-	*/
 }
 
 void

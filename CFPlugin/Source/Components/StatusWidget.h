@@ -14,11 +14,12 @@ template<typename KeyType, typename ValueType>
 class StatusWidget
 	: public StatusWidgetSelector<KeyType, ValueType, ValueType::status_type> {};
 
+// Specialization for InformationWidget
 template<typename KeyType, typename ValueType>
 class StatusWidgetSelector<KeyType, ValueType, cf::Status::Information>
 	: public InformationWidget<KeyType, ValueType, ValueType::presentation> {};
 
-
+// Specialization for OptionWidget
 template<typename KeyType, typename ValueType>
 class StatusWidgetSelector<KeyType, ValueType, cf::Status::Setting>
 	: public OptionWidget<KeyType, ValueType, ValueType::presentation> {};
