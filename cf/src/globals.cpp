@@ -15,7 +15,7 @@ void Globals::Ref()
 	if (refCount_.fetch_add(1) > 0) { return; }
 
 	// Init pool allocator
-	TlsfPool::Init(8192);
+	TlsfPool::Init(16 * 1024);
 
 	butler_ = boost::make_shared<ButlerThread>(milliseconds_t(50));
 	logger_ = boost::make_shared<FileLogger>("ScoreFollower.log", butler_);
