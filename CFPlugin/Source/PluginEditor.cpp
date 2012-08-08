@@ -20,8 +20,14 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 {
     // This is where our plugin's editor size is set.
     setSize (600, 300);
+	BuildUI();
+	ownerFilter->changeBroadcaster.addChangeListener(this);
+}
 
-	/**************************/
+
+void
+CfpluginAudioProcessorEditor::BuildUI()
+{
 	{
 		using namespace cf::ScoreFollower::Status;
 		auto status = ownerFilter->followerStatus().read();
@@ -60,10 +66,6 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 			yPos += height;
 		}
 	}
-
-	/**************************/
-
-	ownerFilter->changeBroadcaster.addChangeListener(this);
 }
 
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
@@ -80,18 +82,6 @@ void CfpluginAudioProcessorEditor::paint (Graphics& g)
 }
 
 void
-CfpluginAudioProcessorEditor::buttonClicked(Button * button)
-{
-}
-
-void
-CfpluginAudioProcessorEditor::buttonStateChanged(Button * button)
-{
-
-}
-
-
-void
 CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
 	{
@@ -105,6 +95,4 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
 		boost::fusion::for_each(options->map(), updater);
 	}
-
 }
-

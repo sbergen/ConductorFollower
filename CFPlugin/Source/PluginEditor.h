@@ -30,7 +30,6 @@ using namespace cf::ScoreFollower;
 */
 class CfpluginAudioProcessorEditor
 	: public AudioProcessorEditor
-	, public Button::Listener
 	, public ChangeListener
 {
 public:
@@ -41,17 +40,15 @@ public:
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
 
-public: // Button::Listener implementation
-	void buttonClicked(Button * button);
-	void buttonStateChanged(Button * button);
-
 public:
 	void changeListenerCallback(ChangeBroadcaster *source);
 
 private:
-	CfpluginAudioProcessor* ownerFilter;
+	void BuildUI();
 
 private:
+	CfpluginAudioProcessor* ownerFilter;
+
 	typedef Status::FollowerStatus::transformed<StatusWidget>::type FollowerStatusWidgets;
 	FollowerStatusWidgets statusWidgets;
 
