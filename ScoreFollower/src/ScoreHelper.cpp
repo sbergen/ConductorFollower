@@ -91,7 +91,10 @@ double
 ScoreHelper::NewVelocityAt(double oldVelocity, score_time_t const & time) const
 {
 	// TODO use time and something fancier :)
-	return (oldVelocity + (velocity_ - 0.5));
+	auto velocity = (oldVelocity + (velocity_ - 0.5));
+	velocity = std::max(velocity, 0.05);
+	velocity = std::min(velocity, 1.00);
+	return velocity;
 }
 } // namespace ScoreFollower
 } // namespace cf
