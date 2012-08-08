@@ -39,8 +39,10 @@ public:
 
 	~LockfreeThread()
 	{
-		thread_->interrupt();
-		thread_->join();
+		if (thread_) {
+			thread_->interrupt();
+			thread_->join();
+		}
 	}
 
 	void RequestStart() { shouldRun_.store(true); }
