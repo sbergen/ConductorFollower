@@ -130,6 +130,7 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		break;
 	case Event::TrackingEnded:
 		SetState(writer, FollowerState::Stopped);
+		eventProvider_->StopProduction();
 		break;
 	case Event::MotionStateUpdate:
 		// Do we need these?
@@ -223,17 +224,26 @@ FollowerImpl::RestartScore()
 	// Lock
 	Lock lock(configMutex_);
 	timeHelper_ = timeHelper_->FreshClone();
+	scoreHelper_->ResetTimeHelper(timeHelper_);
 	EnsureMotionTrackingIsStarted();
 }
 
 void
 FollowerImpl::EnsureMotionTrackingIsStarted()
 {
-	if (State() == FollowerState::Stopped) {
+	switch(State())
+	{
+	case FollowerState::WaitingForCalibration:
+	case FollowerState::WaitingForStart:
+		break;
+	case FollowerState::GotStart:
+	case FollowerState::Rolling:
+		SetState(FollowerState::WaitingForStart);
+		break;
+	case FollowerState::Stopped:
 		SetState(FollowerState::WaitingForCalibration);
 		eventProvider_->StartProduction();
-	} else if (State() != FollowerState::WaitingForStart) {
-		SetState(FollowerState::WaitingForStart);
+		break;
 	}
 }
 

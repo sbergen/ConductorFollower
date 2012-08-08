@@ -80,6 +80,7 @@ private:
 		} else {
 			if (IsRunning()) {
 				thread_->interrupt();
+				thread_->join();
 			}
 		}
 	}

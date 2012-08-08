@@ -25,6 +25,7 @@ class ScoreHelper : public boost::noncopyable
 
 public:
 	ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper, PatchMapper::ConductorContext const & conductorContext);
+	void ResetTimeHelper(boost::shared_ptr<TimeHelper> timeHelper) { timeHelper_ = timeHelper; }
 
 	void LearnScore(boost::shared_ptr<ScoreReader> scoreReader);
 	void LearnInstruments(Data::InstrumentMap const & instruments, Data::TrackList const & tracks);
