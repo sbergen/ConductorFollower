@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include <boost/make_shared.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -29,9 +30,8 @@ using namespace cf::ScoreFollower;
 
 //==============================================================================
 CfpluginAudioProcessor::CfpluginAudioProcessor()
-	: shouldRun(false)
-	, running_(false)
-	, eventBuffer_(100)
+	: eventBuffer_(128)
+	, resetting_(false)
 {
 	follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
 }
@@ -138,9 +138,6 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 	samplesPerBlock_ = samplesPerBlock;
 
 	follower_->SetBlockParameters(sampleRate, samplesPerBlock);
-
-	// Lets see...
-	shouldRun.store(true);
 }
 
 void CfpluginAudioProcessor::releaseResources()
@@ -151,19 +148,16 @@ void CfpluginAudioProcessor::releaseResources()
 
 void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-	RTContext rt;
+	RTContext rt; // Debug RT stuff in debug mode
 
 	auto timeAtStartOfBlock = time::now();
 
 	/************************************************************************************/
 
-	if (!shouldRun.load()) {
-		running_ = false;
-		return;
-	}
-
 	// Update UI on every run, TODO make this happen every n times?
 	changeBroadcaster.sendChangeMessage();
+
+	if (resetting_.load()) { return; }
 
 	/************************************************************************************/
 
@@ -212,6 +206,21 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	if (elapsedTime > (0.3 * blockSize)) {
 		LOG("Possible xrun! Process callback took %1% (max: %2%)", elapsedTime, blockSize);
 	}
+}
+
+void CfpluginAudioProcessor::Reset()
+{
+	resetting_.store(true);
+
+	// Ensure we have the only reference to follower
+	boost::weak_ptr<ScoreFollower> weak_ptr(follower_);
+	follower_.reset();
+	assert(weak_ptr.expired());
+
+	follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
+	follower_->SetBlockParameters(samplerate_, samplesPerBlock_);
+
+	resetting_.store(false);
 }
 
 //==============================================================================

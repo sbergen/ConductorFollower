@@ -73,7 +73,6 @@ public:
     void setStateInformation (const void* data, int sizeInBytes);
 
 public: // Own stuff...
-	boost::atomic<bool> shouldRun;
 
 	ChangeBroadcaster changeBroadcaster;
 
@@ -87,9 +86,10 @@ public: // Own stuff...
 		return follower_->options();			
 	}
 
-private:
+	// To be called from GUI thread
+	void Reset();
 
-	bool running_;
+private:
 	double samplerate_;
 	unsigned samplesPerBlock_;
 
@@ -98,6 +98,8 @@ private:
 	
 	boost::shared_ptr<ScoreFollower> follower_;
 	MidiEventBuffer eventBuffer_;
+
+	boost::atomic<bool> resetting_;
 
 
 private:
