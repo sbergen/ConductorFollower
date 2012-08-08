@@ -56,7 +56,14 @@ public: // Actual functionality
     void construct(const pointer ptr, const value_type & t) { new (ptr) T(t); }
     void destroy(const pointer ptr) { ptr->~T(); }
 
-    pointer allocate(const size_type n) { return static_cast<pointer>(tlsf_malloc(TlsfPool::pool(), sizeof(T) * n)); }
+    pointer allocate(const size_type n)
+	{
+		assert(TlsfPool::pool() != nullptr);
+		void * ptr = tlsf_malloc(TlsfPool::pool(), sizeof(T) * n);
+		if (ptr == nullptr) { throw std::bad_alloc(); }
+		return static_cast<pointer>(ptr);
+	}
+
     pointer allocate(const size_type n, const void * const) { return allocate(n); }
     static void deallocate(const pointer ptr, const size_type n) { tlsf_free(TlsfPool::pool(), ptr); }
 
