@@ -4,9 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "tlsf.h"
 #include "tlsfbits.h"
+
+#if PTRDIFF_MAX == INT64_MAX
+#define TLSF_64BIT
+#endif
 
 /*
 ** Constants.
