@@ -25,6 +25,7 @@ ScoreHelper::LearnScore(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreReader_ = scoreReader;
 
 	// Read data
+	trackBuffers_.clear();
 	score_time_t timestamp;
 	ScoreEventPtr data;
 	for (int i = 0; i < scoreReader->TrackCount(); ++i) {
