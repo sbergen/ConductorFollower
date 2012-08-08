@@ -163,6 +163,8 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	unsigned trackCount = follower_->StartNewBlock();
 
+	if (trackCount == 0) { MidiPanic(midiMessages); return; }
+
 	// Track 0 is supposed to be the tempo track
 	for (unsigned i = 1; i < trackCount; ++i) {
 		follower_->GetTrackEventsForBlock(i, eventBuffer_);
@@ -205,6 +207,15 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	time_quantity blockSize((samplesPerBlock_ * score::samples) / (samplerate_ * score::samples_per_second));
 	if (elapsedTime > (0.3 * blockSize)) {
 		LOG("Possible xrun! Process callback took %1% (max: %2%)", elapsedTime, blockSize);
+	}
+}
+
+void
+CfpluginAudioProcessor::MidiPanic(MidiBuffer& midiMessages)
+{
+	for(int i = 1; i <= 16; ++i) {
+		midiMessages.addEvent(MidiMessage::allNotesOff(i), 0);
+		midiMessages.addEvent(MidiMessage::allSoundOff(i), 0);
 	}
 }
 

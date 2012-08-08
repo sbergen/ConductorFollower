@@ -90,6 +90,10 @@ public: // Own stuff...
 	void Reset();
 
 private:
+
+	// Stop all sound!
+	void MidiPanic(MidiBuffer& midiMessages);
+
 	double samplerate_;
 	unsigned samplesPerBlock_;
 
