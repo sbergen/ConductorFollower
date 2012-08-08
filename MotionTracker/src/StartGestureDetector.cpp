@@ -31,25 +31,18 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 	// Check y-movement magnitude
 	// The beat position is already quite high, we don't need much above that for a proper start
 	auto magnitude = geometry::distance_vector(previousBeatPosition_, state.position);
-	if (magnitude.get<coord::Y>() < coord_t(5 * si::centi * si::meters)) { return Result(); }
+	if (magnitude.get<coord::Y>() < coord_t(4 * si::centi * si::meters)) { return Result(); }
 
-	// Check duration
+	// Check duration, the duration is from beat to apex, which is about a fourth of a beat
 	duration_t gestureLength = timestamp - previousBeatTime_;
-	seconds_t minTempo(60.0 / 40 / 2);
-	seconds_t maxTempo(60.0 / 200 / 2);
+	seconds_t minTempo(60.0 / 40 / 4);
+	seconds_t maxTempo(60.0 / 200 / 4);
+	LOG("Start gesture length: %1%", gestureLength);
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return Result(); }
 
 	// Done!
 	return Result(previousBeatTime_);
 }
-
-/*
-private:
-
-	timestamp_t previousBeatTime_;
-	Point3D previousBeatPosition_;
-};
-*/
 
 } // namespace MotionTracker
 } // namespace cf
