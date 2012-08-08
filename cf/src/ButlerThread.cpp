@@ -120,15 +120,11 @@ ButlerThread::RunDeleteQueue(counter_t currentRound)
 void
 ButlerThread::RunCallbacks(counter_t currentRound)
 {
-	std::list<Callback> callbacks;
+	// Must block during execution to make this safe
+	// (think about destruction time...)
+	unique_lock lock(callbackMutex_);
 
-	// Don't block during execution, just copy
-	{
-		unique_lock lock(callbackMutex_);
-		callbacks = callbacks_;
-	}
-
-	for (auto it = callbacks.begin(); it != callbacks.end(); ++it) {
+	for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
 		(*it)();
 	}
 }
