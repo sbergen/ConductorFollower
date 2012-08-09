@@ -96,28 +96,42 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 	if (!motionFilter_.NewPosition(realTime, pos)) { return; }
 	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
 
-	// Power
+	// Calculations
+	CalculatePower(realTime);
+	bool beatOccurred = DetectBeat(realTime);
+	DetectStartGesture(realTime, beatOccurred);
+}
+
+void
+EventProviderImpl::CalculatePower(timestamp_t const & timeNow)
+{
 	auto velFirOut = velocityFir_.Run(geometry::abs(motionFilter_.State().velocity).value());
 	auto velocity = 600 * velocityPeakHolder_.Run(velFirOut);
 
 	auto jerkFirOut = jerkFir_.Run(geometry::abs(motionFilter_.State().jerk).value());
 	auto jerk = jerkPeakHolder_.Run(jerkFirOut);
+	auto power = powerFir_.Run(0.3 * velocity + 0.7 * jerk);
+	eventBuffer_.enqueue(Event(timeNow, Event::Power, power));
+}
 
-	double power = powerFir_.Run(0.3 * velocity + 0.7 * jerk);
-	eventBuffer_.enqueue(Event(realTime, Event::Power, power));
-
-	// Beat detection
+bool
+EventProviderImpl::DetectBeat(timestamp_t const & timeNow)
+{
 	double beatVal;
 	bool beat = beatDetector_.Detect(motionFilter_.State(), beatVal);
-	eventBuffer_.enqueue(Event(realTime, Event::BeatProb, beatVal));
+	eventBuffer_.enqueue(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
-		eventBuffer_.enqueue(Event(realTime, Event::Beat, beatVal));
+		eventBuffer_.enqueue(Event(timeNow, Event::Beat, beatVal));
 	}
+	return beat;
+}
 
-	// Start gesture detection
-	auto startResult = startDetector_.Detect(realTime, motionFilter_.State(), beat);
+void
+EventProviderImpl::DetectStartGesture(timestamp_t const & timeNow, bool beatOccurred)
+{
+	auto startResult = startDetector_.Detect(timeNow, motionFilter_.State(), beatOccurred);
 	if (startResult) {
-		eventBuffer_.enqueue(Event(realTime, Event::StartGesture, startResult.previousBeatTime));
+		eventBuffer_.enqueue(Event(timeNow, Event::StartGesture, startResult.previousBeatTime));
 	}
 }
 

@@ -42,6 +42,11 @@ public: // HandObserver implementation, called from tracker thread
 	void HandLost();
 	void NewHandPosition(float time, Point3D const & pos);
 
+private:
+	void CalculatePower(timestamp_t const & timeNow);
+	bool DetectBeat(timestamp_t const & timeNow);
+	void DetectStartGesture(timestamp_t const & timeNow, bool beatOccurred);
+
 private: // tracker thread state and event buffer
 	GlobalsRef globalsRef_;
 	class TrackerThread;
