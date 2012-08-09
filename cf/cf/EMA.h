@@ -25,8 +25,8 @@ public:
 	}
 
 private:
-	math::float_type coef_;
-	math::float_type coefComplement_;
+	math::float_type const coef_;
+	math::float_type const coefComplement_;
 	T previousValue_;
 };
 
