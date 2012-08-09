@@ -5,8 +5,6 @@
 
 #include <boost/thread.hpp>
 
-namespace {
-
 // Header only hack (static variable init)
 inline bool disallow_new_headeronly(boost::thread::id const & thread_id, bool check)
 {
@@ -18,8 +16,6 @@ inline bool disallow_new_headeronly(boost::thread::id const & thread_id, bool ch
 		return false;
 	}
 }
-
-} // anon namespace
 
 namespace cf {
 

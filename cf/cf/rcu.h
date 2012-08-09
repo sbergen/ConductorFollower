@@ -14,8 +14,6 @@
 
 namespace cf {
 
-namespace {
-
 template<typename T>
 class RCUBase : public boost::noncopyable, public LockfreeRefCountProvider
 {
@@ -27,9 +25,6 @@ public:
 protected:
 	inline ptr_type copy(ptr_type ptr) { return boost::make_shared<T>(*ptr); }
 };
-
-} // anon namespace
-
 
 // RAII write handle
 template<typename Parent>
