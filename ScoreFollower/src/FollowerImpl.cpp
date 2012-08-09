@@ -133,7 +133,7 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		eventProvider_->StopProduction();
 		break;
 	case Event::MotionStateUpdate:
-		// Do we need these?
+		// Not used
 		break;
 	case Event::Power:
 		{

@@ -94,7 +94,7 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 
 	// Motion filter
 	if (!motionFilter_.NewPosition(realTime, pos)) { return; }
-	eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
+	//eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
 
 	// Calculations
 	CalculatePower(realTime);
