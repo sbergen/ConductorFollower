@@ -57,13 +57,12 @@ private: // tracker thread state and event buffer
 	BeatDetector beatDetector_;
 	StartGestureDetector startDetector_;
 
-	EMA<15> velocityFir_;
-	PeakHolder<30> velocityPeakHolder_;
-	
-	EMA<3> jerkFir_;
-	PeakHolder<40> jerkPeakHolder_;
-
-	EMA<10> powerFir_;
+	// "power", move to own class?
+	EMA<4> velocityFir_;
+	PeakHolder<15> velocityPeakHolder_;
+	EMA<4> jerkFir_;
+	PeakHolder<15> jerkPeakHolder_;
+	EMA<1> powerFir_;
 };
 
 } // namespace MotionTracker

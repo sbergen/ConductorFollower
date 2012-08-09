@@ -110,6 +110,7 @@ EventProviderImpl::CalculatePower(timestamp_t const & timeNow)
 
 	auto jerkFirOut = jerkFir_.Run(geometry::abs(motionFilter_.State().jerk).value());
 	auto jerk = jerkPeakHolder_.Run(jerkFirOut);
+
 	auto power = powerFir_.Run(0.3 * velocity + 0.7 * jerk);
 	eventBuffer_.enqueue(Event(timeNow, Event::Power, power));
 }
