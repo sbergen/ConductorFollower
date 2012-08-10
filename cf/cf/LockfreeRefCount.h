@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/atomic.hpp>
+#include <boost/utility.hpp>
 
 namespace cf {
 
@@ -19,7 +20,7 @@ private:
 };
 
 template<typename CountProvider, typename CleanupArg>
-class LockfreeRefCounted
+class LockfreeRefCounted : public boost::noncopyable
 {
 public:
 	typedef void (CountProvider::*CleanupFunction)(CleanupArg);

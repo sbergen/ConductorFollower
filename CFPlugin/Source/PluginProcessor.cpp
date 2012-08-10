@@ -51,21 +51,21 @@ int CfpluginAudioProcessor::getNumParameters()
     return 0;
 }
 
-float CfpluginAudioProcessor::getParameter (int index)
+float CfpluginAudioProcessor::getParameter (int /*index*/)
 {
     return 0.0f;
 }
 
-void CfpluginAudioProcessor::setParameter (int index, float newValue)
+void CfpluginAudioProcessor::setParameter (int /*index*/, float /*newValue*/)
 {
 }
 
-const String CfpluginAudioProcessor::getParameterName (int index)
+const String CfpluginAudioProcessor::getParameterName (int /*index*/)
 {
     return String::empty;
 }
 
-const String CfpluginAudioProcessor::getParameterText (int index)
+const String CfpluginAudioProcessor::getParameterText (int /*index*/)
 {
     return String::empty;
 }
@@ -80,12 +80,12 @@ const String CfpluginAudioProcessor::getOutputChannelName (int channelIndex) con
     return String (channelIndex + 1);
 }
 
-bool CfpluginAudioProcessor::isInputChannelStereoPair (int index) const
+bool CfpluginAudioProcessor::isInputChannelStereoPair (int /*index*/) const
 {
     return false;
 }
 
-bool CfpluginAudioProcessor::isOutputChannelStereoPair (int index) const
+bool CfpluginAudioProcessor::isOutputChannelStereoPair (int /*index*/) const
 {
     return false;
 }
@@ -118,16 +118,16 @@ int CfpluginAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void CfpluginAudioProcessor::setCurrentProgram (int index)
+void CfpluginAudioProcessor::setCurrentProgram (int /*index*/)
 {
 }
 
-const String CfpluginAudioProcessor::getProgramName (int index)
+const String CfpluginAudioProcessor::getProgramName (int /*index*/)
 {
     return String::empty;
 }
 
-void CfpluginAudioProcessor::changeProgramName (int index, const String& newName)
+void CfpluginAudioProcessor::changeProgramName (int /*index*/, const String& /*newName*/)
 {
 }
 
@@ -137,7 +137,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 	samplerate_ = sampleRate;
 	samplesPerBlock_ = samplesPerBlock;
 
-	follower_->SetBlockParameters(sampleRate, samplesPerBlock);
+	follower_->SetBlockParameters(static_cast<unsigned>(sampleRate), samplesPerBlock);
 }
 
 void CfpluginAudioProcessor::releaseResources()
@@ -190,18 +190,30 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	// This is the place where you'd normally do the guts of your plugin's
     // audio processing...
+	/*
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
         float* channelData = buffer.getSampleData (channel);
     }
+	*/
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
+	/*
     for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
+	*/
+
+	// However, we reset all channels
+	for (int i = 0; i < getNumOutputChannels(); ++i)
+    {
+        buffer.clear (i, 0, buffer.getNumSamples());
+    }
+
+	/******************************/
 
 	time_quantity elapsedTime = time::quantity_cast<time_quantity>(time::now() - timeAtStartOfBlock);
 	time_quantity blockSize((samplesPerBlock_ * score::samples) / (samplerate_ * score::samples_per_second));
@@ -229,7 +241,7 @@ void CfpluginAudioProcessor::Reset()
 	assert(weak_ptr.expired());
 
 	follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
-	follower_->SetBlockParameters(samplerate_, samplesPerBlock_);
+	follower_->SetBlockParameters(static_cast<unsigned>(samplerate_), samplesPerBlock_);
 
 	resetting_.store(false);
 }

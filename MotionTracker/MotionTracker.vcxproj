@@ -78,6 +78,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(OPEN_NI_INCLUDE);$(BOOST_INCLUDE);"../boost_lockfree";"..\cf";"."</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

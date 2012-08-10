@@ -82,7 +82,7 @@ void CfpluginAudioProcessorEditor::paint (Graphics& g)
 }
 
 void
-CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
+CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*source*/)
 {
 	{
 		auto status = ownerFilter->followerStatus().read();

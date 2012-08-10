@@ -120,10 +120,7 @@ public:
 
         for(;;) {
             if (!old_pool.get_ptr()) {
-                if (allocate_may_allocate)
-                    return Alloc::allocate(1);
-                else
-                    return 0;
+                return allocate_may_allocate ? Alloc::allocate(1) : 0;
             }
 
             freelist_node * new_pool_ptr = old_pool->next.get_ptr();

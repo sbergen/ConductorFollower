@@ -85,6 +85,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../ScoreFollower";"../ScoreFollower/src";"../cf"</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

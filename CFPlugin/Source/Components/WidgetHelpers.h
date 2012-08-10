@@ -1,10 +1,13 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 template<typename MapType>
-class WidgetInitializer
+class WidgetInitializer : public boost::noncopyable
 {
 public:
 	WidgetInitializer(MapType & map) : map_(map) {}
+	WidgetInitializer(WidgetInitializer const & other) : map_(other.map_) {}
 
 	template<typename PairType>
 	void operator()(PairType & pair) const
@@ -17,10 +20,11 @@ private:
 };
 
 template<typename MapType>
-class WidgetUpdater
+class WidgetUpdater : public boost::noncopyable
 {
 public:
 	WidgetUpdater(MapType & map) : map_(map) {}
+	WidgetUpdater(WidgetUpdater const & other) : map_(other.map_) {}
 
 	template<typename PairType>
 	void operator()(PairType & pair) const
@@ -33,10 +37,11 @@ private:
 };
 
 template<typename TContainer>
-class WidgetCollector
+class WidgetCollector : public boost::noncopyable
 {
 public:
 	WidgetCollector(TContainer & container) : container_(container) {}
+	WidgetCollector(WidgetCollector const & other) : container_(other.container_) {}
 
 	template<typename PairType>
 	void operator()(PairType & pair) const

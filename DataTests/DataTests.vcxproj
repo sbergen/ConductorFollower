@@ -78,6 +78,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../Data";"../Data/src";"../cf";"../boost_lockfree"</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

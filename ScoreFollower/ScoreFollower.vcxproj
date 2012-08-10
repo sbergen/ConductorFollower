@@ -82,6 +82,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);"../cf";".";"../MotionTracker";"../FeatureExtractor";"../boost_lockfree";"../boost_enum";"../Data";"../PatchMapper"</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
+      <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

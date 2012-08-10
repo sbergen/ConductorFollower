@@ -89,21 +89,21 @@ public:
 		value_ = value;
 		
 		int range = value_type::max_value - value_type::min_value;
-		float fraction = (value_ - value_type::min_value) / range;
+		float fraction = static_cast<float>((value_ - value_type::min_value) / range);
 
 		if (fraction < 0.01) {
 			valueRect_->setFill(FillType(Colours::red));
-			fraction = 0.01;
+			fraction = 0.01f;
 		} else if(fraction > 0.99) {
 			valueRect_->setFill(FillType(Colours::red));
-			fraction = 1.0;
+			fraction = 1.0f;
 		} else {
 			valueRect_->setFill(FillType(Colours::green));
 		}
 
 		Rectangle<float> rect(
-			valueRect_->getX(), valueRect_->getY(),
-			fraction * getWidth(), valueRect_->getHeight());
+			static_cast<float>(valueRect_->getX()), static_cast<float>(valueRect_->getY()),
+			fraction * getWidth(), static_cast<float>(valueRect_->getHeight()));
 		valueRect_->setRectangle(rect);
 	}
 

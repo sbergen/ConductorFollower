@@ -1,13 +1,13 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/utility.hpp>
 
 #include "cf/ButlerThread.h"
 
 namespace cf {
 
-class ButlerDeleter
+class ButlerDeleter : boost::noncopyable
 {
 public:
 	ButlerDeleter(ButlerThread & butler)

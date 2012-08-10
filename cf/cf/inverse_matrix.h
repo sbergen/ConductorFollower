@@ -21,7 +21,7 @@ bool inverse_matrix(M const & input, M & inverse)
 	permutation_matrix<std::size_t, unbounded_array<math::uint_type, math::uint_allocator_type> > pm(A.size1());
 
 	// perform LU-factorization
-	int result = lu_factorize(A, pm);
+	auto result = lu_factorize(A, pm);
 	if( result != 0 ) { return false; }
 
 	// create identity matrix of "inverse"

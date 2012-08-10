@@ -90,7 +90,7 @@ inline void fit_polynomial(Matrix const & matrix, Vector const & y, Vector & coe
 // Number of coefficients (n) is derived from size of coefs.
 inline bool fit_polynomial(Vector const & x, Vector const & y, Vector & coefs)
 {
-	unsigned const order = coefs.size() - 1;
+	auto const order = coefs.size() - 1;
 
 	Matrix M;
 	if (!make_polynomial_fit_matrix(x, order, M)) { return false; }
@@ -124,9 +124,9 @@ bool fit_polynomials(unsigned order, Vector const & x, C1 const & yValues, C2 & 
 template<unsigned n>
 Vector derivative(Vector const & coefs)
 {
-	const Vector::size_type size = coefs.size() - n;
+	const unsigned size = static_cast<unsigned>(coefs.size() - n);
 	Vector r(size);
-	for(Vector::size_type i = 0; i < size; ++i) {
+	for(unsigned i = 0; i < size; ++i) {
 		r(i) = derivative_coef<n>(i + n) * coefs(i + n);
 	}
 	return r;

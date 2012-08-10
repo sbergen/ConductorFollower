@@ -28,7 +28,8 @@ protected:
 
 // RAII write handle
 template<typename Parent>
-class RCUWriterHandle : public LockfreeRefCounted<Parent, typename Parent::ptr_type>
+class RCUWriterHandle
+	: public LockfreeRefCounted<Parent, typename Parent::ptr_type>
 {
 public:
 	typedef typename Parent::ptr_type ptr_type;

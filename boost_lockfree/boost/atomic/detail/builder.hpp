@@ -337,14 +337,14 @@ private:
 		address&=~(sizeof(larger_integral_type)-1);
 		return *reinterpret_cast<Base *>(address);
 	}
-	unsigned int get_offset(void) const volatile
+	intptr_t get_offset(void) const volatile
 	{
 		intptr_t address=(intptr_t)this;
 		address&=(sizeof(larger_integral_type)-1);
 		return address;
 	}
 	
-	unsigned int get_shift(void) const volatile
+	intptr_t get_shift(void) const volatile
 	{
 #if defined(BOOST_LITTLE_ENDIAN)
 		return get_offset()*8;
@@ -357,7 +357,7 @@ private:
 	
 	integral_type extract(larger_integral_type v) const volatile
 	{
-		return v>>get_shift();
+		return static_cast<integral_type>(v>>get_shift());
 	}
 	
 	larger_integral_type insert(larger_integral_type target, integral_type source) const volatile

@@ -120,7 +120,7 @@ public:
 	}
 
 public: // FilenameComponentListener implementation
-	void filenameComponentChanged(FilenameComponent *fileComponent)
+	void filenameComponentChanged(FilenameComponent * /*fileComponent*/)
 	{
 		changed_ = true;
 	}
@@ -157,7 +157,7 @@ public:
 		deleteAllChildren();
 	}
 
-	void Initialize(ValueType const & value)
+	void Initialize(ValueType const & /*value*/)
 	{
 		addAndMakeVisible(button_ = new TextButton("button"));
 		button_->setButtonText(String(KeyType::description().c_str()));
@@ -172,7 +172,7 @@ public:
 	}
 
 public: // Button::Listener implementation
-	void buttonClicked (Button* button)
+	void buttonClicked (Button* /*button*/)
 	{
 		clicked_ = true;
 	}

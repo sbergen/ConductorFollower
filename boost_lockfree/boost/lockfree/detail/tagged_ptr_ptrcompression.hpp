@@ -51,7 +51,7 @@ private:
         return cu.tag[tag_index];
     }
 
-    static compressed_ptr_t pack_ptr(T * ptr, int tag)
+    static compressed_ptr_t pack_ptr(T * ptr, tag_t tag)
     {
         cast_unit ret;
         ret.value = compressed_ptr_t(ptr);
