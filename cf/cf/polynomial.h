@@ -7,12 +7,13 @@ namespace cf {
 namespace math {
 
 // coefs are from 0th to Nth degree
-inline float_type evaluate_polynomial(Vector const & coefs, float_type x)
+template<typename VectorType>
+float_type evaluate_polynomial(VectorType const & coefs, float_type x)
 {
 	if (coefs.size() == 0) { return 0.0; }
-	float_type result = coefs(0);
+	float_type result = coefs[0];
 	for (int i = 1; i < coefs.size(); ++i) {
-		result += coefs(i) * std::pow(x, i);
+		result += coefs[i] * std::pow(x, i);
 	}
 	return result;
 }

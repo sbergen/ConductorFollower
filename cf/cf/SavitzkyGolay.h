@@ -134,4 +134,55 @@ private:
 	int prevDirection_;
 };
 
+template<unsigned Length, unsigned SkipAmount, unsigned Dim>
+class InterpolatingSavitzkyGolay
+	: public SavitzkyGolay<Length - SkipAmount, Length - SkipAmount - 1, Dim>
+{
+	enum
+	{
+		matrix_size = Length - SkipAmount,
+		order = matrix_size - 1
+	};
+
+public:
+	InterpolatingSavitzkyGolay(math::float_type xStep)
+		: xStep_(xStep)
+	{
+		math::Vector x(matrix_size);
+		for (int i = 0; i < order; ++i) {
+			x(i) = i * xStep;
+		}
+		x(order) = (Length - 1) * xStep;
+		math::make_polynomial_fit_matrix(x, order, filterMatrix_);
+	}
+
+	template<typename VecArrayType>
+	void RunFromValues(VecArrayType const & values)
+	{
+		for (std::size_t i = 0; i < matrix_size; ++i) {
+			for (std::size_t dim = 0; dim < Dim; ++dim) {
+				// yes, the indexes are in different order
+				values_[dim][i] = values[i][dim];
+			}
+		}
+
+		math::fit_polynomials(filterMatrix_, values_, coefs_);
+	}
+
+	template<unsigned N, typename VecType>
+	void NthMissingValue(VecType & result)
+	{
+		BOOST_STATIC_ASSERT(N < SkipAmount);
+		
+		auto const x = (order + N) * xStep_;
+		for (std::size_t dim = 0; dim < Dim; ++dim) {
+			result[dim] = math::evaluate_polynomial(coefs_[dim], x);
+		}
+	}
+
+private:
+	math::float_type xStep_;
+
+};
+
 } // namespace cf
