@@ -21,8 +21,10 @@ public:
 		MotionStateUpdate,
 		Beat,
 		BeatProb,
-		Power,
-		StartGesture
+		StartGesture,
+		VelocityPeak,
+		VelocityDynamicRange,
+		JerkPeak
 	};
 
 	// Data

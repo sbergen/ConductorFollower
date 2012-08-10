@@ -135,6 +135,17 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 	case Event::MotionStateUpdate:
 		// Not used
 		break;
+
+	case Event::VelocityPeak:
+		writer->SetValue<Status::VelocityPeak>(e.data<double>());
+		break;
+	case Event::VelocityDynamicRange:
+		writer->SetValue<Status::VelocityRange>(e.data<double>());
+		break;
+	case Event::JerkPeak:
+		writer->SetValue<Status::JerkPeak>(e.data<double>());
+		break;
+		/*
 	case Event::Power:
 		{
 		double power = e.data<double>() / 1000.0;
@@ -144,6 +155,7 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		scoreHelper_->SetVelocityFromMotion(power);
 		break;
 		}
+		*/
 	case Event::Beat:
 		{
 		if (State() == FollowerState::GotStart) {

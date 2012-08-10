@@ -69,7 +69,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 		auto catchupTime = 2.0 * score::beats;
 		targetSpeed_ = SpeedFromBeatCatchup(tempoNow, catchupTime);
-		if (targetSpeed_ > 2.0) { targetSpeed_ = 2.0; } // TODO limit better
+		targetSpeed_ = math::clamp(targetSpeed_, 0.0, 2.0);
 
 		accelerateUntil_ = time + boost::chrono::duration_cast<duration_t>(seconds_t(0.5));
 		auto accelerationPerTimeUnit = (targetSpeed_ - speed_) / time::quantity_cast<time_quantity>(accelerateUntil_ - time);

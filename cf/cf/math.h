@@ -20,6 +20,14 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
+// Clamp
+template<typename T> 
+T clamp(T val, T min, T max)
+{
+	// uses only op<
+	return (val < min) ? min : ((max < val) ? max : val);
+} 
+
 // Numeric types
 typedef double float_type;
 typedef std::size_t uint_type;

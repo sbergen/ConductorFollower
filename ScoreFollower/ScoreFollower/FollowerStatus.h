@@ -20,20 +20,23 @@ namespace Status {
 
 typedef BooleanStatusItem<cf::Status::Information, false> BooleanTypeFalse;
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 1, 0, 2> SpeedType;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 1> MagnitudeType;
 typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, FollowerState, FollowerState::Stopped> StateType;
 
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, -10, 10> BeatType;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 1> PowerType;
+
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityPeakType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityRangeType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 100, 100, 700> JerkPeakType;
 
 CF_STATUS_GROUP
 (
 FollowerStatus,
 	((State, "State", StateType))
 	((Speed, "Speed", SpeedType))
-	((MagnitudeOfMovement, "Magnitude of movement", MagnitudeType))
 	((Beat, "Beat Probability", BeatType))
-	((Power, "Power (speed + jerk)", PowerType))
+	((VelocityPeak, "Velocity peak", VelocityPeakType))
+	((VelocityRange, "Velocity dynamic range", VelocityRangeType))
+	((JerkPeak, "Jerk peak", JerkPeakType))
 )
 
 } // namespace Status

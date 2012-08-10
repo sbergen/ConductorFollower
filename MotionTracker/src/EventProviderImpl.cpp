@@ -97,22 +97,27 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 	//eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
 
 	// Calculations
-	CalculatePower(realTime);
+	RunMotionFilters(realTime);
 	bool beatOccurred = DetectBeat(realTime);
 	DetectStartGesture(realTime, beatOccurred);
 }
 
 void
-EventProviderImpl::CalculatePower(timestamp_t const & timeNow)
+EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow)
 {
-	auto velFirOut = velocityFir_.Run(geometry::abs(motionFilter_.State().velocity).value());
-	auto velocity = 600 * velocityPeakHolder_.Run(velFirOut);
+	auto const velocity = geometry::abs(motionFilter_.State().velocity).value();
+	auto const velocityRange = velocityRange_.Run(velocity);
+	auto const velFirOut = velocityFir_.Run(velocity);
+	auto const velocityPeak = velocityPeakHolder_.Run(velFirOut);
 
-	auto jerkFirOut = jerkFir_.Run(geometry::abs(motionFilter_.State().jerk).value());
-	auto jerk = jerkPeakHolder_.Run(jerkFirOut);
+	eventBuffer_.enqueue(Event(timeNow, Event::VelocityDynamicRange, velocityRange));
+	eventBuffer_.enqueue(Event(timeNow, Event::VelocityPeak, velocityPeak));
 
-	auto power = powerFir_.Run(0.3 * velocity + 0.7 * jerk);
-	eventBuffer_.enqueue(Event(timeNow, Event::Power, power));
+	auto const jerk = geometry::abs(motionFilter_.State().jerk).value();
+	auto const jerkFirOut = jerkFir_.Run(jerk);
+	auto const jerkPeak = jerkPeakHolder_.Run(jerkFirOut);
+
+	eventBuffer_.enqueue(Event(timeNow, Event::JerkPeak, jerkPeak));
 }
 
 bool

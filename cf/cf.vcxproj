@@ -116,6 +116,7 @@
     <ClInclude Include="cf\ButlerThread.h" />
     <ClInclude Include="cf\debug_new.h" />
     <ClInclude Include="cf\dummy_mutex.h" />
+    <ClInclude Include="cf\DynamicRange.h" />
     <ClInclude Include="cf\EMA.h" />
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\Fir.h" />

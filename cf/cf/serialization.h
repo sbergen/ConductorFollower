@@ -3,8 +3,9 @@
 namespace cf {
 
 template<class Archive>
-struct PairArchiver
+class PairArchiver
 {
+public:
 	PairArchiver(Archive & ar) : ar_(ar) {}
 
 	template <typename Pair>

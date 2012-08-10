@@ -1,5 +1,7 @@
 #include "mappers.h"
 
+#include "cf/math.h"
+
 namespace cf {
 namespace PatchMapper {
 
@@ -9,8 +11,7 @@ double map_length(MappingContext const & context)
 									context.instrumentContext.shortestNoteThreshold;
 	double factor = (context.noteLength - context.instrumentContext.shortestNoteThreshold) / fullScale;
 
-	// TODO use boost 1.50.0
-	factor = (factor < 0.0) ? 0.0 : ((factor > 1.0) ? 1.0 : factor);
+	factor = math::clamp(factor, 0.0, 1.0);
 	//LOG("Note length: %1% mapped to t_s %2%", noteContext.length, factor);
 	return factor;
 

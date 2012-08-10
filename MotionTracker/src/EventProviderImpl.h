@@ -9,6 +9,7 @@
 #include "cf/globals.h"
 #include "cf/fir.h"
 #include "cf/EMA.h"
+#include "cf/DynamicRange.h"
 #include "cf/PeakHolder.h"
 
 #include "MotionTracker/EventProvider.h"
@@ -43,7 +44,7 @@ public: // HandObserver implementation, called from tracker thread
 	void NewHandPosition(float time, Point3D const & pos);
 
 private:
-	void CalculatePower(timestamp_t const & timeNow);
+	void RunMotionFilters(timestamp_t const & timeNow);
 	bool DetectBeat(timestamp_t const & timeNow);
 	void DetectStartGesture(timestamp_t const & timeNow, bool beatOccurred);
 
@@ -57,12 +58,12 @@ private: // tracker thread state and event buffer
 	BeatDetector beatDetector_;
 	StartGestureDetector startDetector_;
 
-	// "power", move to own class?
 	EMA<4> velocityFir_;
-	PeakHolder<15> velocityPeakHolder_;
+	PeakHolder<20> velocityPeakHolder_;
+	DynamicRange<20> velocityRange_;
+
 	EMA<4> jerkFir_;
-	PeakHolder<15> jerkPeakHolder_;
-	EMA<1> powerFir_;
+	PeakHolder<20> jerkPeakHolder_;
 };
 
 } // namespace MotionTracker
