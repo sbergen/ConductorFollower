@@ -124,6 +124,7 @@
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
     <ClInclude Include="cf\inverse_matrix.h" />
+    <ClInclude Include="cf\LinearRationalInterpolator.h" />
     <ClInclude Include="cf\LockfreeRefCount.h" />
     <ClInclude Include="cf\LogItem.h" />
     <ClInclude Include="cf\PeakHolder.h" />

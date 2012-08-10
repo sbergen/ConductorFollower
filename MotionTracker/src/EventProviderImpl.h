@@ -44,9 +44,9 @@ public: // HandObserver implementation, called from tracker thread
 	void NewHandPosition(float time, Point3D const & pos);
 
 private:
-	void RunMotionFilters(timestamp_t const & timeNow);
-	bool DetectBeat(timestamp_t const & timeNow);
-	void DetectStartGesture(timestamp_t const & timeNow, bool beatOccurred);
+	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);
+	bool DetectBeat(timestamp_t const & timeNow, MotionState const & state);
+	void DetectStartGesture(timestamp_t const & timeNow, MotionState const & state, bool beatOccurred);
 
 private: // tracker thread state and event buffer
 	GlobalsRef globalsRef_;
@@ -55,6 +55,7 @@ private: // tracker thread state and event buffer
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
 	InterThreadEventBuffer eventBuffer_;
 	MotionFilter motionFilter_;
+
 	BeatDetector beatDetector_;
 	StartGestureDetector startDetector_;
 

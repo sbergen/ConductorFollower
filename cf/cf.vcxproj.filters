@@ -137,6 +137,9 @@
     <ClInclude Include="cf\DynamicRange.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\LinearRationalInterpolator.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

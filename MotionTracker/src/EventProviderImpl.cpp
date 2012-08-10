@@ -93,19 +93,19 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 	auto realTime = time::now();
 
 	// Motion filter
-	if (!motionFilter_.NewPosition(realTime, pos)) { return; }
-	//eventBuffer_.enqueue(Event(realTime, Event::MotionStateUpdate, motionFilter_.State()));
-
-	// Calculations
-	RunMotionFilters(realTime);
-	bool beatOccurred = DetectBeat(realTime);
-	DetectStartGesture(realTime, beatOccurred);
+	motionFilter_.NewPosition(realTime, pos,
+		[this](timestamp_t const & time, MotionState const & state)
+		{
+			RunMotionFilters(time, state);
+			bool beatOccurred = DetectBeat(time, state);
+			DetectStartGesture(time, state, beatOccurred);
+		});	
 }
 
 void
-EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow)
+EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState const & state)
 {
-	auto const velocity = geometry::abs(motionFilter_.State().velocity).value();
+	auto const velocity = geometry::abs(state.velocity).value();
 	auto const velocityRange = velocityRange_.Run(velocity);
 	auto const velFirOut = velocityFir_.Run(velocity);
 	auto const velocityPeak = velocityPeakHolder_.Run(velFirOut);
@@ -113,7 +113,7 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow)
 	eventBuffer_.enqueue(Event(timeNow, Event::VelocityDynamicRange, velocityRange));
 	eventBuffer_.enqueue(Event(timeNow, Event::VelocityPeak, velocityPeak));
 
-	auto const jerk = geometry::abs(motionFilter_.State().jerk).value();
+	auto const jerk = geometry::abs(state.jerk).value();
 	auto const jerkFirOut = jerkFir_.Run(jerk);
 	auto const jerkPeak = jerkPeakHolder_.Run(jerkFirOut);
 
@@ -121,10 +121,10 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow)
 }
 
 bool
-EventProviderImpl::DetectBeat(timestamp_t const & timeNow)
+EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & state)
 {
 	double beatVal;
-	bool beat = beatDetector_.Detect(motionFilter_.State(), beatVal);
+	bool beat = beatDetector_.Detect(state, beatVal);
 	eventBuffer_.enqueue(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
 		eventBuffer_.enqueue(Event(timeNow, Event::Beat, beatVal));
@@ -133,9 +133,9 @@ EventProviderImpl::DetectBeat(timestamp_t const & timeNow)
 }
 
 void
-EventProviderImpl::DetectStartGesture(timestamp_t const & timeNow, bool beatOccurred)
+EventProviderImpl::DetectStartGesture(timestamp_t const & timeNow, MotionState const & state, bool beatOccurred)
 {
-	auto startResult = startDetector_.Detect(timeNow, motionFilter_.State(), beatOccurred);
+	auto startResult = startDetector_.Detect(timeNow, state, beatOccurred);
 	if (startResult) {
 		eventBuffer_.enqueue(Event(timeNow, Event::StartGesture, startResult.previousBeatTime));
 	}

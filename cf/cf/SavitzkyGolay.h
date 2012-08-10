@@ -138,10 +138,12 @@ template<unsigned Length, unsigned SkipAmount, unsigned Dim>
 class InterpolatingSavitzkyGolay
 	: public SavitzkyGolay<Length - SkipAmount, Length - SkipAmount - 1, Dim>
 {
+public:
 	enum
 	{
 		matrix_size = Length - SkipAmount,
-		order = matrix_size - 1
+		order = matrix_size - 1,
+		skip_amount = SkipAmount
 	};
 
 public:
@@ -149,10 +151,10 @@ public:
 		: xStep_(xStep)
 	{
 		math::Vector x(matrix_size);
-		for (int i = 0; i < order; ++i) {
-			x(i) = i * xStep;
+		for (int i = 1; i <= order; ++i) {
+			x(i - 1) = i * xStep;
 		}
-		x(order) = (Length - 1) * xStep;
+		x(order) = Length * xStep;
 		math::make_polynomial_fit_matrix(x, order, filterMatrix_);
 	}
 
@@ -174,7 +176,7 @@ public:
 	{
 		BOOST_STATIC_ASSERT(N < SkipAmount);
 		
-		auto const x = (order + N) * xStep_;
+		auto const x = (matrix_size + N) * xStep_;
 		for (std::size_t dim = 0; dim < Dim; ++dim) {
 			result[dim] = math::evaluate_polynomial(coefs_[dim], x);
 		}

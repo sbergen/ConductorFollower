@@ -11,6 +11,10 @@
 namespace cf {
 namespace math {
 
+// Numeric types
+typedef double float_type;
+typedef std::size_t uint_type;
+
 namespace detail {
 	enum { float_pool_size = 2048u, uint_pool_size = 512u };
 }
@@ -26,11 +30,13 @@ T clamp(T val, T min, T max)
 {
 	// uses only op<
 	return (val < min) ? min : ((max < val) ? max : val);
-} 
+}
 
-// Numeric types
-typedef double float_type;
-typedef std::size_t uint_type;
+// Round
+inline float_type round(float_type number)
+{
+    return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
 
 // Allocator and array types
 namespace ublas = boost::numeric::ublas;
