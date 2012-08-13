@@ -48,15 +48,15 @@ BOOST_AUTO_TEST_CASE(TestFilter)
 BOOST_AUTO_TEST_CASE(TestInterpolation)
 {
 	// Filter definition, length 7, skip 2, one dimensional
-	math::float_type xStep = 0.5;
+	math::float_type xStep = 0.03333333;
 	InterpolatingSavitzkyGolay<7, 2, 1> filter(xStep);
 
 	// Reference polynomial, max order 4, for length of 7 and skip of 2 (7 - 2 - 1 = 4)
 	Vector p(4);
-	p(0) = 6.0;
+	p(0) = 7.0;
 	p(1) = 3.0;
-	p(2) = -2.0;
-	p(3) = 1.0;
+	p(2) = -5.0;
+	p(3) = 2.0;
 
 	// We should have 5 values in the estimation vector (7 - 2 = 5)
 	boost::array<Vector, 5> x;

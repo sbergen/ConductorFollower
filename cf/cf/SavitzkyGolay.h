@@ -151,10 +151,11 @@ public:
 		: xStep_(xStep)
 	{
 		math::Vector x(matrix_size);
-		for (int i = 1; i <= order; ++i) {
-			x(i - 1) = i * xStep;
+		for (int i = 0; i < order; ++i) {
+			// To get a positive definite matrix, we need to invert the values here
+			x(order - i) = i * xStep;
 		}
-		x(order) = Length * xStep;
+		x(0) = (Length - 1) * xStep;
 		math::make_polynomial_fit_matrix(x, order, filterMatrix_);
 	}
 
@@ -163,8 +164,9 @@ public:
 	{
 		for (std::size_t i = 0; i < matrix_size; ++i) {
 			for (std::size_t dim = 0; dim < Dim; ++dim) {
-				// yes, the indexes are in different order
-				values_[dim][i] = values[i][dim];
+				// yes, the indexes are in different order,
+				// and we invert the order, see above...
+				values_[dim][order - i] = values[i][dim];
 			}
 		}
 
@@ -176,7 +178,7 @@ public:
 	{
 		BOOST_STATIC_ASSERT(N < SkipAmount);
 		
-		auto const x = (matrix_size + N) * xStep_;
+		auto const x = (order + N) * xStep_;
 		for (std::size_t dim = 0; dim < Dim; ++dim) {
 			result[dim] = math::evaluate_polynomial(coefs_[dim], x);
 		}
