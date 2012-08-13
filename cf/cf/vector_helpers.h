@@ -14,6 +14,12 @@ struct indexer {
 		to.set<I::value>(f(from.get<I::value>()));
 	}
 
+	template<typename T, typename U>
+	static void Copy(T const & from, U & to)
+	{ 
+		to.set<I::value>(from.get<I::value>());
+	}
+
 	template<typename T>
 	static typename T::quantity Get(T const & t) { return t.get<I::value>(); }
 };
@@ -32,6 +38,21 @@ struct transformer {
 	From const & from;
 	To & to;
 	F f;
+};
+
+template<typename From, typename To>
+struct copyer {
+	copyer(From const & from, To & to)
+		: from(from), to(to) {}
+
+	template<typename Indexer>
+	void operator() (Indexer const &) const
+	{
+		Indexer::Copy(from, to);
+	}
+
+	From const & from;
+	To & to;
 };
 
 template<typename From, typename To>

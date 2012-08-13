@@ -38,13 +38,21 @@ public:
 		typedef VectorND<Dim, T, Rep> type;
 	};
 
+	template<unsigned NewDim>
+	struct reduced
+	{
+		typedef VectorND<NewDim, Unit, Rep> type;
+	};
+
 public: // ctors
-	VectorND() : data_(3) { }
+	VectorND() : data_(Dim) { }
 
 	// Shorthand for 3D
 	VectorND(quantity x, quantity y, quantity z)
-		 : data_(3)
+		 : data_(Dim)
 	{
+		BOOST_STATIC_ASSERT(Dim == 3);
+
 		set<coord::X>(x);
 		set<coord::Y>(y);
 		set<coord::Z>(z);
@@ -77,8 +85,16 @@ public: // Dimensionally safe transforms and other operations
 	template<typename T, typename F>
 	void transform(T & result, F f) const
 	{
-		mpl::for_each<mpl::range_c<unsigned, 0, Dim> , detail::indexer<mpl::_1> >
+		mpl::for_each<mpl::range_c<unsigned, 0, Dim>, detail::indexer<mpl::_1> >
 			(detail::transformer<VectorND, T, F>(*this, result, f));
+	}
+
+	template<unsigned NewDim>
+	void reduceDimension(VectorND<NewDim, Unit, Rep> & result) const
+	{
+		BOOST_STATIC_ASSERT(NewDim < Dim);
+		mpl::for_each<mpl::range_c<unsigned, 0, NewDim>, detail::indexer<mpl::_1> >
+			(detail::copyer<VectorND, decltype(result)>(*this, result));
 	}
 
 	quantity accumulate(quantity initial = quantity()) const
