@@ -163,7 +163,10 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	unsigned trackCount = follower_->StartNewBlock();
 
-	if (trackCount == 0) { MidiPanic(midiMessages); return; }
+	if (trackCount == 0) {
+		MidiPanic(midiMessages);
+		return;
+	}
 
 	// Track 0 is supposed to be the tempo track
 	for (unsigned i = 1; i < trackCount; ++i) {
