@@ -37,7 +37,6 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 	duration_t gestureLength = timestamp - previousBeatTime_;
 	seconds_t minTempo(60.0 / 40 / 4);
 	seconds_t maxTempo(60.0 / 200 / 4);
-	LOG("Start gesture length: %1%", gestureLength);
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return Result(); }
 
 	// Done!
