@@ -30,7 +30,7 @@ ForwardIterator lower_bound_inclusive(ForwardIterator first, ForwardIterator las
 }
 
 // linear nearest neighbour search
-
+// Distance::operator() params: (itemBeingEvaluated, targetItem)
 template<typename ForwardIterator, typename T, typename Distance>
 ForwardIterator nearest_neighbour_linear(ForwardIterator first, ForwardIterator last, T const & value, Distance distance)
 {

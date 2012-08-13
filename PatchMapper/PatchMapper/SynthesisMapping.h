@@ -13,7 +13,7 @@ SynthesisParameters SynthParametersFromContexts(
 	NoteContext const & noteContext,
 	ConductorContext const & conductorContext);
 
-double ComparableDistance(SynthesisParameters const & a, SynthesisParameters const & b);
+double ComparableDistance(SynthesisParameters const & params, SynthesisParameters const & target);
 
 } // namespace PatchMapper
 } // namespace cf
