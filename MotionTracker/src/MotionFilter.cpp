@@ -30,13 +30,15 @@ MotionFilter::EstimateMissedUpdates(timestamp_t const & time)
 	auto timeSinceLast = time::quantity_cast<time_quantity>(
 		time - lastReceivedPosition_);
 	auto estimate = timeSinceLast / timeStep_;
-	return static_cast<unsigned>(math::round(estimate));
+	unsigned intEstimate = static_cast<unsigned>(math::round(estimate));
+	return (intEstimate == 0) ? 0 : intEstimate - 1;
 }
 
 void
 MotionFilter::FillCacheFromNewPosition(timestamp_t const & time, Point3D const & pos)
 {
 	static int positionsReceived = 0;
+	stateCache_.Clear();
 
 	// We need to fill the filter straight out once, before we can trust anything
 	// (we could probably do better, but it's not worth it...)
@@ -56,7 +58,8 @@ MotionFilter::FillCacheFromNewPosition(timestamp_t const & time, Point3D const &
 	// and we can go the regular route. Note that the if above was not executed!
 	
 	// first check need for interpolation and register the interpolated points
-	switch(EstimateMissedUpdates(time))
+	auto const missedUpdated = EstimateMissedUpdates(time);
+	switch(missedUpdated)
 	{
 	case 0:
 		break;
@@ -75,7 +78,9 @@ MotionFilter::FillCacheFromNewPosition(timestamp_t const & time, Point3D const &
 		return;
 	}
 
-	LOG("--- Missed %1% samples", EstimateMissedUpdates(time));
+	if (missedUpdated > 0) {
+		LOG("--- Missed %1% samples", EstimateMissedUpdates(time));
+	}
 
 	// ...and the "real" one
 	lastReceivedPosition_ = time;
@@ -108,8 +113,8 @@ void
 MotionFilter::RunInterpolator(Interpolator & interpolator, timestamp_t const & time, Point3D const & pos)
 {
 	// Init stuff
-	auto const lastDataIndex = Interpolator::matrix_size - Interpolator::skip_amount;
 	boost::array<Point3D::data_type, Interpolator::matrix_size> data;
+	auto const lastDataIndex = Interpolator::matrix_size - 1;
 	auto history = history_.LastNumEvnets(lastDataIndex);
 
 	// Fill data
@@ -129,7 +134,7 @@ MotionFilter::RegisterInterpolatorResult(boost::mpl::int_<Offset> offset, Interp
 {
 	// Register results
 	timestamp_t iTime;
-	Point3D::data_type iPos;
+	Point3D::data_type iPos(Point3D::dimension);
 
 	auto quantity = math::LinearRationalInterpolator<1, Interpolator::skip_amount + 1>(
 		time::quantity_cast<time_quantity>(lastReceivedPosition_.time_since_epoch()),
