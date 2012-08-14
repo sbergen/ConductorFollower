@@ -68,6 +68,7 @@ OpenNIHandTracker::InitNodes()
 	CheckXnStatus(utils_, s, "Create gesture generator");
 
 	s = handsGenerator_.Create(context_);
+	handsGenerator_.SetSmoothing(0.3);
 	CheckXnStatus(utils_, s, "Create hands generator");
 }
 
