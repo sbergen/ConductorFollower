@@ -4,6 +4,7 @@
 
 #include "cf/geometry.h"
 #include "cf/globals.h"
+#include "cf/RTContext.h"
 
 #include "MotionTracker/Event.h"
 
@@ -37,6 +38,7 @@ public:
 
 	bool operator() ()
 	{
+		//RTContext rt;
 		return tracker_->WaitForData();
 	}
 
@@ -105,19 +107,35 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 void
 EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState const & state)
 {
-	auto const velocity = geometry::abs(state.velocity).value();
+	// Ugly and temporary
+	static Point3D prevPoint;
+
+	Velocity3D::reduced<2>::type vel2D;
+	state.velocity.reduceDimension(vel2D);
+
+	auto const velocity = geometry::abs(vel2D).value();
 	auto const velocityRange = velocityRange_.Run(velocity);
 	auto const velFirOut = velocityFir_.Run(velocity);
 	auto const velocityPeak = velocityPeakHolder_.Run(velFirOut);
 
-	eventBuffer_.enqueue(Event(timeNow, Event::VelocityDynamicRange, velocityRange));
+	auto const velocityDev = velocityDev_.Run(geometry::abs(geometry::distance_vector(state.position, prevPoint)).value() * 100);
+
+	eventBuffer_.enqueue(Event(timeNow, Event::VelocityDynamicRange, velocityDev));
 	eventBuffer_.enqueue(Event(timeNow, Event::VelocityPeak, velocityPeak));
 
-	auto const jerk = geometry::abs(state.jerk).value();
+	//Acceleration3D::reduced<2>::type acc2D;
+	//state.acceleration.reduceDimension(acc2D);
+
+	Jerk3D::reduced<2>::type jerk2D;
+	state.jerk.reduceDimension(jerk2D);
+
+	auto const jerk = geometry::abs(jerk2D).value();
 	auto const jerkFirOut = jerkFir_.Run(jerk);
 	auto const jerkPeak = jerkPeakHolder_.Run(jerkFirOut);
 
 	eventBuffer_.enqueue(Event(timeNow, Event::JerkPeak, jerkPeak));
+	
+	prevPoint = state.position;
 }
 
 bool

@@ -26,7 +26,7 @@ typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, -10, 10> Be
 
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityPeakType;
 typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityRangeType;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 100, 100, 700> JerkPeakType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 200> JerkPeakType;
 
 CF_STATUS_GROUP
 (

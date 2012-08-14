@@ -11,6 +11,7 @@
 #include "cf/EMA.h"
 #include "cf/DynamicRange.h"
 #include "cf/PeakHolder.h"
+#include "cf/StdDev.h"
 
 #include "MotionTracker/EventProvider.h"
 
@@ -63,8 +64,10 @@ private: // tracker thread state and event buffer
 	PeakHolder<20> velocityPeakHolder_;
 	DynamicRange<20> velocityRange_;
 
-	EMA<4> jerkFir_;
-	PeakHolder<20> jerkPeakHolder_;
+	AveragingFir<10> jerkFir_;
+	DipHolder<20> jerkPeakHolder_;
+
+	StdDev<20> velocityDev_;
 };
 
 } // namespace MotionTracker
