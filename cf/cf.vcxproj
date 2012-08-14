@@ -143,6 +143,7 @@
     <ClInclude Include="cf\rcu.h" />
     <ClInclude Include="cf\StatusGroup.h" />
     <ClInclude Include="cf\StatusItem.h" />
+    <ClInclude Include="cf\StdDev.h" />
     <ClInclude Include="cf\StringEnum.h" />
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
