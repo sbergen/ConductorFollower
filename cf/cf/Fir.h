@@ -1,6 +1,7 @@
 #pragma once
 
 #include <numeric>
+#include <valarray>
 
 #include <boost/array.hpp>
 #include <boost/circular_buffer.hpp>
@@ -47,19 +48,19 @@ class AveragingFir
 public:
 	AveragingFir()
 		: sampleBuffer_(Order)
-	{
-		sampleBuffer_.assign(Order, T());
-	}
+		, pos_(0)
+	{}
 
 	T Run(T const & nextValue)
 	{
-		sampleBuffer_.push_back(nextValue);
-		T sum = std::accumulate(std::begin(sampleBuffer_), std::end(sampleBuffer_), T());
-		return sum / T(Order);
+		sampleBuffer_[pos_] = nextValue;
+		pos_ = (pos_ + 1) % Order;
+		return sampleBuffer_.sum() / T(Order);
 	}
 
 private:
-	boost::circular_buffer<T> sampleBuffer_;
+	std::valarray<T> sampleBuffer_;
+	std::size_t pos_;
 };
 
 } // namespace cf
