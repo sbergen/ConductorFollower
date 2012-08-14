@@ -74,7 +74,6 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		accelerateUntil_ = time + boost::chrono::duration_cast<duration_t>(seconds_t(0.5));
 		auto accelerationPerTimeUnit = (targetSpeed_ - speed_) / time::quantity_cast<time_quantity>(accelerateUntil_ - time);
 
-		// TODO allocates!
 		auto speed = speed_;
 		acceleration_.SetParameters(speed, time, accelerationPerTimeUnit);
 	}
