@@ -19,7 +19,7 @@ class OpenNIUtils : public boost::noncopyable
 public:
 	OpenNIUtils(std::ostream & errorStream) : errorStream_(errorStream) {}
 
-	bool CheckStatus(XnStatus status, std::string const & taskDescription, std::string const & file, int line);
+	bool CheckStatus(XnStatus status, char const * taskDescription, char const * file, int line);
 
 	void ResetErrors() { errorsOccurred_ = false; }
 	bool ErrorsOccurred() { return errorsOccurred_; }

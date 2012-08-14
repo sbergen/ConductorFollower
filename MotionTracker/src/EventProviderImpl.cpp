@@ -38,7 +38,7 @@ public:
 
 	bool operator() ()
 	{
-		//RTContext rt;
+		RTContext rt;
 		return tracker_->WaitForData();
 	}
 
