@@ -12,7 +12,7 @@
 #include "BeatClassifier.h"
 
 #include <boost/utility.hpp>
-#include <boost/function.hpp>
+#include <boost/units/cmath.hpp>
 
 namespace cf {
 namespace ScoreFollower {
@@ -41,11 +41,7 @@ private:
 	double ClassificationSelector(BeatClassification const & latestBeat, double quality) const;
 
 	beat_pos_t BeatOffsetEstimate() const;
-	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat) const;
-	beat_pos_t BeatOffsetHypothesis(BeatClassification const & latestBeat,
-		BeatHistoryBuffer::Range const & otherBeats) const;
-
-	speed_t SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const;
+	beat_pos_t BeatOffsetEstimate(BeatClassification const & latestBeat) const;
 
 private:
 	TimeWarper const & timeWarper_;
@@ -63,10 +59,9 @@ private:
 	class SpeedFunction
 	{
 	public:
-		// Change of dimensionless unit over time
-		typedef boost::units::quantity<boost::units::si::frequency> ChangePerTime;
+		typedef boost::units::quantity<score::speed_change> SpeedChangeRate;
 
-		void SetParameters(speed_t const & reference_speed, real_time_t const & reference_time, ChangePerTime const & changePerTimeUnit)
+		void SetParameters(speed_t const & reference_speed, real_time_t const & reference_time, SpeedChangeRate const & changePerTimeUnit)
 		{
 			reference_speed_ = reference_speed;
 			reference_time_ = reference_time;
@@ -82,11 +77,10 @@ private:
 	private:
 		speed_t reference_speed_;
 		real_time_t reference_time_;
-		ChangePerTime changePerTimeUnit_;
+		SpeedChangeRate changePerTimeUnit_;
 	};
 
 	SpeedFunction acceleration_;
-	double targetSpeed_; // TODO units
 	real_time_t accelerateUntil_;
 
 };

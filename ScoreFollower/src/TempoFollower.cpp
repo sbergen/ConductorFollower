@@ -11,6 +11,8 @@
 namespace cf {
 namespace ScoreFollower {
 
+namespace si = boost::units::si;
+
 TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	: timeWarper_(timeWarper)
 	, parent_(parent)
@@ -33,6 +35,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
 
 	auto classification = ClassifyBeatAt(beatTime, prob);
+	//LOG("Classification quality: %1%", classification.Quality());
 	if (classification.classification().value() > 0) {
 		beatHistory_.RegisterEvent(beatTime, classification);
 		newBeats_ = true;
@@ -67,15 +70,17 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
 		TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
 
-		auto catchupTime = 2.0 * score::beats;
-		targetSpeed_ = SpeedFromBeatCatchup(tempoNow, catchupTime);
-		targetSpeed_ = math::clamp(targetSpeed_, 0.0, 2.0);
+		auto accelerationTime = time_quantity(1.0 * score::seconds);
+		auto offsetEstimate = BeatOffsetEstimate();
+		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
+		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow.tempo());
 
-		accelerateUntil_ = time + boost::chrono::duration_cast<duration_t>(seconds_t(0.5));
-		auto accelerationPerTimeUnit = (targetSpeed_ - speed_) / time::quantity_cast<time_quantity>(accelerateUntil_ - time);
+		LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
+			offsetEstimate, tempoChange.value(), acceleration.value());
 
-		auto speed = speed_;
-		acceleration_.SetParameters(speed, time, accelerationPerTimeUnit);
+		acceleration_.SetParameters(speed_, time, acceleration);
+
+		accelerateUntil_ = time + time::duration_cast<duration_t>(accelerationTime);
 	}
 
 	if (time < accelerateUntil_) {
@@ -90,11 +95,13 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 {
 	// Special case for the first two beats, TODO make better
 	if (beatHistory_.AllEvents().Size() == 0) {
-		return BeatClassification(time, 1.0 * score::beats, 1.0);
+		return BeatClassification::PreparatoryBeat(time);
+		//return BeatClassification(time, 1.0 * score::beats, 1.0);
 	}
 
 	if (beatHistory_.AllEvents().Size() == 1) {
-		return BeatClassification(time, 1.0 * score::beats, 1.0 /*???*/);
+		return BeatClassification::PreparatoryBeat(time);
+		//return BeatClassification(time, 1.0 * score::beats, 1.0 /*???*/);
 	}
 
 
@@ -128,17 +135,21 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 double
 TempoFollower::ClassificationQuality(BeatClassification const & latestBeat) const
 {
-	auto offset = BeatOffsetHypothesis(latestBeat);
+	auto offset = BeatOffsetEstimate(latestBeat);
 	double speedChange = std::abs(offset / (1.0 * score::quarter_notes));
 	double diffFromUnity = std::abs(1.0 - (speed_ + speedChange));
 
-	double quality = 7.0 - 5.0 * speedChange - 1.0 * diffFromUnity;
+	//double quality = 7.0 - 5.0 * speedChange - 1.0 * diffFromUnity;
+	double quality = 7.0 - 10.0 * speedChange;
 	return quality;
 }
 
 double
 TempoFollower::ClassificationSelector(BeatClassification const & latestBeat, double quality) const
 {
+	return quality;
+
+	/*
 	double bonusFromPrevious = 0.0;
 
 	if (!beatHistory_.AllEvents().Empty()) {
@@ -148,61 +159,21 @@ TempoFollower::ClassificationSelector(BeatClassification const & latestBeat, dou
 	double bonus = std::max(0.0, std::min(quality, bonusFromPrevious));
 	double result = quality + 1.5 * bonus;
 	return result;
-}
-
-
-speed_t
-TempoFollower::SpeedFromBeatCatchup(TempoPoint const & tempoNow, beat_pos_t catchupTime) const
-{
-	auto bos = BeatOffsetEstimate();
-	speed_t speed = speed_ + (bos / catchupTime);
-
-	assert(speed >= 0.0);
-	return speed;
+	*/
 }
 
 beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
-	auto events = beatHistory_.AllEvents();
-	auto lastBeat = events.PopBack().data;
-	return BeatOffsetHypothesis(lastBeat, events);
+	auto lastBeat = beatHistory_.AllEvents().Back().data;
+	return BeatOffsetEstimate(lastBeat);
 }
 
 beat_pos_t
-TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat) const
+TempoFollower::BeatOffsetEstimate(BeatClassification const & latestBeat) const
 {
-	return BeatOffsetHypothesis(latestBeat, beatHistory_.AllEvents());
+	return latestBeat.offset();
 }
-
-beat_pos_t
-TempoFollower::BeatOffsetHypothesis(BeatClassification const & latestBeat,
-		BeatHistoryBuffer::Range const & otherBeats) const
-{
-	double const firstWeight = 10.0 * latestBeat.clarity();
-	boost::array<double, 3> weights = { 5.0, 2.0, 1.0 };
-	
-	beat_pos_t weightedSum = firstWeight * latestBeat.offset();
-	double normalizationTerm = firstWeight;
-
-	auto wIt = weights.begin();
-	auto wEnd = weights.end();
-	otherBeats.ReverseForEachWhile(
-		[&, wEnd] (real_time_t const & time, BeatClassification const & classification) -> bool
-	{
-		auto offset = classification.offset().value();
-		//offset = math::sgn(offset) * 2 * std::pow(offset, 2);
-
-		double weight = *wIt * classification.clarity();
-		weightedSum += weight * beat_pos_t::from_value(offset);
-		normalizationTerm += weight;
-		return ++wIt == wEnd;
-	});
-
-	beat_pos_t estimate = weightedSum / normalizationTerm;
-	return estimate;
-}
-
 
 } // namespace ScoreFollower
 } // namespace cf
