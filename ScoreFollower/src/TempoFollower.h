@@ -47,14 +47,11 @@ private:
 	TimeWarper const & timeWarper_;
 	Follower & parent_;
 
-	BeatClassifier beatClassifier_;
-
 	TempoMap tempoMap_;
 	BeatHistoryBuffer beatHistory_;
 
 	bool newBeats_;
 	speed_t speed_;
-
 
 	class SpeedFunction
 	{

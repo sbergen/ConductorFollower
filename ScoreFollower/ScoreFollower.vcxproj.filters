@@ -51,9 +51,6 @@
     <ClInclude Include="ScoreFollower\FollowerOptions.h">
       <Filter>ScoreFollower</Filter>
     </ClInclude>
-    <ClInclude Include="BeatClassifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\FollowerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,9 +84,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TempoMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BeatClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\FollowerImpl.cpp">
