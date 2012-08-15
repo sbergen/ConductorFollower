@@ -49,7 +49,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double prob)
 		real_time_t secondBeat = beats[1].timestamp;
 		time_quantity beatDiff = time::quantity_cast<time_quantity>(secondBeat - firstBeat);
 		tempo_t conductedTempo(1.0 * score::beat / beatDiff);
+
 		speed_ = conductedTempo / tempo;
+		acceleration_.SetParameters(speed_, beatTime, 0.0 * score::fractions_per_second, 0.0 * score::seconds); 
 
 		LOG("Starting tempo: %1%, (%3% - %4%) speed_: %2%", conductedTempo, speed_, secondBeat, firstBeat);
 	}
@@ -78,15 +80,10 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
 			offsetEstimate, tempoChange.value(), acceleration.value());
 
-		acceleration_.SetParameters(speed_, time, acceleration);
-
-		accelerateUntil_ = time + time::duration_cast<duration_t>(accelerationTime);
+		acceleration_.SetParameters(speed_, time, acceleration, accelerationTime);
 	}
 
-	if (time < accelerateUntil_) {
-		speed_ = acceleration_.NewSpeed(time);
-	}
-
+	speed_ = acceleration_.NewSpeed(time);
 	return speed_;
 }
 

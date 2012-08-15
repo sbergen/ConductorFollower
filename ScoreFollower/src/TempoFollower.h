@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "cf/EventBuffer.h"
+#include "cf/units_math.h"
 
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/ScoreReader.h"
@@ -13,7 +14,6 @@
 #include "SpeedFunction.h"
 
 #include <boost/utility.hpp>
-#include <boost/units/cmath.hpp>
 
 namespace cf {
 namespace ScoreFollower {
@@ -55,8 +55,6 @@ private:
 	speed_t speed_;
 
 	SpeedFunction acceleration_;
-	real_time_t accelerateUntil_;
-
 };
 
 } // namespace ScoreFollower

@@ -143,6 +143,9 @@
     <ClInclude Include="cf\StdDev.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\units_math.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
