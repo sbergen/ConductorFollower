@@ -76,7 +76,12 @@ public:
 	beat_pos_t classification() const { return classification_; }
 	beat_pos_t offset() const { return classification_ - rawOffset_; }
 
-	// May not be used during evaluation
+	double Quality() const
+	{
+		return classification_.value() == 0.0 ? 0.0 : QualityAs(classification_);
+	}
+
+	// Must not be used during evaluation
 	double QualityAs(beat_pos_t classification) const
 	{
 		int index = static_cast<int>(classification.value() - 1);
