@@ -98,5 +98,8 @@
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\BeatClassification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

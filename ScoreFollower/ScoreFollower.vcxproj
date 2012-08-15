@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
+    <ClCompile Include="src\BeatClassification.cpp" />
     <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp" />
     <ClCompile Include="src\ScoreHelper.cpp" />

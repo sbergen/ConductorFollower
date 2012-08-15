@@ -20,31 +20,9 @@ private:
 
 public:
 
-	static BeatClassification PreparatoryBeat(timestamp_t const & timestamp)
-	{
-		BeatClassification bc(timestamp, 1.0 * score::beats, 10.0);
+	static BeatClassification PreparatoryBeat(timestamp_t const & timestamp);
 
-		bc.Evaluate(
-			[](BeatClassification const & bc) -> double
-			{
-				if (bc.classification() == 1.0 * score::beats) { return 10.0; }
-				return 0.0;
-			},
-			[](BeatClassification const & bc, double quality) -> double
-			{
-				return quality;
-			});
-
-
-		return bc;
-	}
-
-	BeatClassification(timestamp_t const & timestamp, beat_pos_t rawOffset, double clarity)
-		: timestamp_(timestamp)
-		, rawOffset_(rawOffset)
-		, clarity_(clarity)
-		, classification_(rawOffset)
-	{}
+	BeatClassification(timestamp_t const & timestamp, beat_pos_t rawOffset, double clarity);
 
 	template<typename QualityEvaluator, typename SelectionFunction>
 	void Evaluate(QualityEvaluator const & evaluator, SelectionFunction const & selector)
@@ -76,18 +54,10 @@ public:
 	beat_pos_t classification() const { return classification_; }
 	beat_pos_t offset() const { return classification_ - rawOffset_; }
 
-	double Quality() const
-	{
-		return classification_.value() == 0.0 ? 0.0 : QualityAs(classification_);
-	}
+	double Quality() const;
 
 	// Must not be used during evaluation
-	double QualityAs(beat_pos_t classification) const
-	{
-		int index = static_cast<int>(classification.value() - 1);
-		assert(index < NotesToClassify);
-		return classificationQualities_[index].second;
-	}
+	double QualityAs(beat_pos_t classification) const;
 
 private:
 	// These are given
