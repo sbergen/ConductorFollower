@@ -94,16 +94,9 @@ BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time, double prob)
 {
 	// Special case for the first two beats, TODO make better
-	if (beatHistory_.AllEvents().Size() == 0) {
+	if (beatHistory_.AllEvents().Size() < 2) {
 		return BeatClassification::PreparatoryBeat(time);
-		//return BeatClassification(time, 1.0 * score::beats, 1.0);
 	}
-
-	if (beatHistory_.AllEvents().Size() == 1) {
-		return BeatClassification::PreparatoryBeat(time);
-		//return BeatClassification(time, 1.0 * score::beats, 1.0 /*???*/);
-	}
-
 
 	/*************************/
 
