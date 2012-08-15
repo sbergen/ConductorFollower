@@ -128,6 +128,7 @@
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />
+    <ClInclude Include="src\SpeedFunction.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
     <ClInclude Include="src\TempoPoint.h" />
