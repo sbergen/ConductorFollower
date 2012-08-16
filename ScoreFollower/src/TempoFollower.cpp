@@ -49,8 +49,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	}
 
 	auto classification = ClassifyBeatAt(beatTime, clarity);
-	if (/*bu::abs(classification.MostLikelyOffset()) < 0.25 * score::quarter_notes*/
-		true) {
+	if (true /* TODO rejection! */) {
 		beatHistory_.RegisterEvent(beatTime, classification);
 		newBeats_ = true;
 	}
@@ -68,7 +67,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 		// TODO Move to estimator
 		auto accelerationTime = time_quantity(1.0 * score::seconds);
-		auto offsetEstimate = BeatOffsetEstimate();
+		auto offsetEstimate = -BeatOffsetEstimate();
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
 		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow.tempo());
 
@@ -88,10 +87,24 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 	// TODO allow different estimation modes
 	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
 	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
-	
+
 	LOG("Got beat at: %1%", tempoPoint.position());
 
-	return BeatClassification(time, clarity, tempoPoint.position());
+	BeatClassification absoluteClassification(time, clarity, tempoPoint.position());
+	BeatClassification relativeClassification(absoluteClassification);
+
+	if (!beatHistory_.AllEvents().Empty()) {
+		BeatClassification const & previousBeat = beatHistory_.AllEvents().Back().data;
+		relativeClassification.UpdatedEstimate(tempoPoint.position() - previousBeat.beatPosition());
+	}
+
+	if (absoluteClassification.quality() >= relativeClassification.quality()) {
+		LOG("Using absolute classification, offset: %1%", absoluteClassification.MostLikelyOffset());
+		return absoluteClassification;
+	} else {
+		LOG("Using relative classification, offset: %1%", relativeClassification.MostLikelyOffset());
+		return relativeClassification;
+	}
 }
 
 beat_pos_t

@@ -19,18 +19,20 @@ public:
 	BeatClassification(timestamp_t const & timestamp, double const & clarity, beat_pos_t const & beatPosition)
 		: timestamp_(timestamp)
 		, clarity_(clarity)
+		, beatPosition_(beatPosition)
 	{
 		UpdatedEstimate(beatPosition);
 	}
+
+	timestamp_t timestamp() const { return timestamp_; }
+	double clarity() const { return clarity_; }
+	beat_pos_t const & beatPosition() const { return beatPosition_; }
 
 	void UpdatedEstimate(beat_pos_t const & beatPosition)
 	{
 		negativeOffset_ = beatPosition - boost::units::ceil(beatPosition);
 		positiveOffset_ = beatPosition - boost::units::floor(beatPosition);
 	}
-
-	timestamp_t timestamp() const { return timestamp_; }
-	double clarity() const { return clarity_; }
 
 	beat_pos_t MostLikelyOffset() const
 	{
@@ -39,10 +41,16 @@ public:
 			negativeOffset_ : positiveOffset_;
 	}
 
+	double quality() const
+	{
+		return 1.0 - std::abs(MostLikelyOffset().value());
+	}
+
 private:
 	// non-const for assignability
 	real_time_t timestamp_;
 	double clarity_;
+	beat_pos_t beatPosition_;
 
 	beat_pos_t negativeOffset_;
 	beat_pos_t positiveOffset_;
