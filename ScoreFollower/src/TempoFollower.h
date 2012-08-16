@@ -10,8 +10,8 @@
 
 #include "TempoMap.h"
 #include "BeatClassification.h"
-#include "BeatClassifier.h"
 #include "SpeedFunction.h"
+#include "StartTempoEstimator.h"
 
 #include <boost/utility.hpp>
 
@@ -26,7 +26,7 @@ class TempoFollower : public boost::noncopyable
 public:
 	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
 
-	void ReadScore(ScoreReader & reader) { tempoMap_.ReadScore(reader); }
+	void ReadScore(ScoreReader & reader);
 
 	void RegisterPreparatoryBeat(real_time_t const & time);
 	void RegisterBeat(real_time_t const & beatTime, double prob);
@@ -37,23 +37,18 @@ private:
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double prob);
-	
-	double ClassificationQuality(BeatClassification const & latestBeat) const;
-	double ClassificationSelector(BeatClassification const & latestBeat, double quality) const;
 
 	beat_pos_t BeatOffsetEstimate() const;
-	beat_pos_t BeatOffsetEstimate(BeatClassification const & latestBeat) const;
 
 private:
 	TimeWarper const & timeWarper_;
 	Follower & parent_;
-
 	TempoMap tempoMap_;
+
+	StartTempoEstimator startTempoEstimator_;
 	BeatHistoryBuffer beatHistory_;
 
 	bool newBeats_;
-	speed_t speed_;
-
 	SpeedFunction acceleration_;
 };
 

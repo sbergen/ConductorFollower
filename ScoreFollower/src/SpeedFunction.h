@@ -29,7 +29,16 @@ public:
 		accelerationTime_ = accelerationTime;
 	}
 
-	speed_t NewSpeed(real_time_t const & time)
+	void SetConstantSpeed(speed_t const & speed)
+	{
+		SetParameters(
+			speed,
+			real_time_t::min(),
+			0.0 * score::fractions_per_second,
+			0.0 * score::seconds);
+	}
+
+	speed_t SpeedAt(real_time_t const & time)
 	{
 		auto timeDiff = time::quantity_cast<time_quantity>(time - reference_time_);
 		timeDiff = boost::units::min(timeDiff, accelerationTime_);

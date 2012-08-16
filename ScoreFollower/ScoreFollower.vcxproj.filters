@@ -75,6 +75,9 @@
     <ClInclude Include="src\SpeedFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\StartTempoEstimator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">
@@ -101,7 +104,7 @@
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BeatClassification.cpp">
+    <ClCompile Include="src\StartTempoEstimator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

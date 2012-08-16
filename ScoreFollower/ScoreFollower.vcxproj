@@ -129,6 +129,7 @@
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />
     <ClInclude Include="src\SpeedFunction.h" />
+    <ClInclude Include="src\StartTempoEstimator.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
     <ClInclude Include="src\TempoPoint.h" />
@@ -137,10 +138,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
-    <ClCompile Include="src\BeatClassification.cpp" />
     <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp" />
     <ClCompile Include="src\ScoreHelper.cpp" />
+    <ClCompile Include="src\StartTempoEstimator.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />
     <ClCompile Include="src\TempoMap.cpp" />
     <ClCompile Include="src\TimeHelper.cpp" />
