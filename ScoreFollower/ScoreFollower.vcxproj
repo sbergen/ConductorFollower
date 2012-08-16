@@ -132,7 +132,7 @@
     <ClInclude Include="src\StartTempoEstimator.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoMap.h" />
-    <ClInclude Include="src\TempoPoint.h" />
+    <ClInclude Include="src\ScorePosition.h" />
     <ClInclude Include="src\TimeHelper.h" />
     <ClInclude Include="src\TimeWarper.h" />
   </ItemGroup>

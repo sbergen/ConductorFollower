@@ -42,9 +42,6 @@
     <ClInclude Include="src\TempoMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\TempoPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ScoreFollower\FollowerStatus.h">
       <Filter>ScoreFollower</Filter>
     </ClInclude>
@@ -66,9 +63,6 @@
     <ClInclude Include="src\InstrumentPatchSwitcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreFollower\TimeSignature.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\BeatClassification.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,6 +71,12 @@
     </ClInclude>
     <ClInclude Include="src\StartTempoEstimator.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScorePosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreFollower\TimeSignature.h">
+      <Filter>ScoreFollower</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

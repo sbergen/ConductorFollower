@@ -4,8 +4,8 @@
 #include <boost/utility.hpp>
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/TimeSignature.h"
 #include "ScoreFollower/ScoreEvent.h"
+#include "ScoreFollower/TimeSignature.h"
 
 namespace cf {
 namespace ScoreFollower {

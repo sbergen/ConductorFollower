@@ -9,7 +9,7 @@
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/ScoreReader.h"
 
-#include "TempoPoint.h"
+#include "ScorePosition.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -23,7 +23,7 @@ public:
 
 	void ReadScore(ScoreReader & reader);
 
-	TempoPoint GetTempoAt(score_time_t const & time) const;
+	ScorePosition GetScorePositionAt(score_time_t const & time) const;
 	TimeSignature GetMeterAt(score_time_t const & time) const;
 
 private:
@@ -36,12 +36,12 @@ private:
 	{
 	public:
 		TempoChange() {} // Allow uninitialized ctor
-		TempoChange(score_time_t const & timestamp, TempoPoint const & tempo);
-		TempoPoint GetTempoAt(score_time_t const & time) const;
+		TempoChange(score_time_t const & timestamp, ScorePosition const & position);
+		ScorePosition GetScorePositionAt(score_time_t const & time) const;
 
 	private:
 		score_time_t timestamp_;
-		TempoPoint tempo_;
+		ScorePosition position_;
 	};
 
 	typedef EventBuffer<TempoChange, score_time_t, std::vector> ChangeMap;

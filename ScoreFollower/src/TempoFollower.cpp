@@ -27,8 +27,8 @@ void
 TempoFollower::ReadScore(ScoreReader & reader)
 {
 	tempoMap_.ReadScore(reader);
-	auto startTempo = tempoMap_.GetTempoAt(0.0 * score::seconds);
-	startTempoEstimator_.SetStartTempo(startTempo.tempo());
+	auto start = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
+	startTempoEstimator_.SetStartTempo(start.tempo());
 }
 
 void
@@ -63,13 +63,13 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		newBeats_ = false;
 
 		score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
-		TempoPoint tempoNow = tempoMap_.GetTempoAt(scoreTime);
+		tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
 
 		// TODO Move to estimator
-		auto accelerationTime = time_quantity(1.0 * score::seconds);
+		auto accelerationTime = time_quantity(0.8 * score::seconds);
 		auto offsetEstimate = -BeatOffsetEstimate();
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
-		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow.tempo());
+		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
 
 		LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
 			offsetEstimate, tempoChange.value(), acceleration.value());
@@ -86,7 +86,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {
 	// TODO allow different estimation modes
 	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
-	TempoPoint tempoPoint = tempoMap_.GetTempoAt(beatScoreTime);
+	ScorePosition tempoPoint = tempoMap_.GetScorePositionAt(beatScoreTime);
 
 	LOG("Got beat at: %1%", tempoPoint.position());
 

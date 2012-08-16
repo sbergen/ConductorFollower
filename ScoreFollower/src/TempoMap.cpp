@@ -15,16 +15,16 @@ TempoMap::TempoMap()
 void
 TempoMap::ReadScore(ScoreReader & reader)
 {
+	ReadMeter(reader.MeterTrack());
 	ReadTempo(reader.TempoTrack());
-	ReadMeter(reader.MeterTrack());	
 }
 
-TempoPoint
-TempoMap::GetTempoAt(score_time_t const & time) const
+ScorePosition
+TempoMap::GetScorePositionAt(score_time_t const & time) const
 {
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
-	return range[0].data.GetTempoAt(time);
+	return range[0].data.GetScorePositionAt(time);
 }
 
 TimeSignature
@@ -52,11 +52,12 @@ TempoMap::ReadTempo(TempoReaderPtr reader)
 		}
 
 		// Then continue normally...
-		beat_pos_t pos = first ? (0.0 * score::beats) : previousChange.GetTempoAt(timestamp).position();
+		beat_pos_t pos = first ? (0.0 * score::beats) : previousChange.GetScorePositionAt(timestamp).position();
 		first = false;
 
 		LOG("Tempo change, timestamp: %1%, pos: %2%, tempo: %3%", timestamp, pos, tempo);
-		previousChange = TempoChange(timestamp, TempoPoint(timestamp, pos, tempo));
+		TimeSignature meter = GetMeterAt(timestamp);
+		previousChange = TempoChange(timestamp, ScorePosition(timestamp, pos, tempo, meter));
 		changes_.RegisterEvent(timestamp, previousChange);
 	}
 
@@ -80,24 +81,25 @@ TempoMap::EnsureChangesNotEmpty()
 {
 	if (changes_.AllEvents().Empty()) {
 		tempo_t tempo(120.0 * score::beats_per_minute);
-		TempoPoint tp(0.0 * score::seconds, 0.0 * score::beats, tempo);
+		TimeSignature meter = TimeSignature(4, 4);
+		ScorePosition tp(0.0 * score::seconds, 0.0 * score::beats, tempo, meter);
 		changes_.RegisterEvent(0.0 * score::seconds, TempoChange(0.0 * score::seconds, tp));
 	}
 }
 
 /****** TempoChange ******/
 
-TempoMap::TempoChange::TempoChange(score_time_t const & timestamp, TempoPoint const & tempo)
+TempoMap::TempoChange::TempoChange(score_time_t const & timestamp, ScorePosition const & position)
 	: timestamp_(timestamp)
-	, tempo_(tempo)
+	, position_(position)
 {
 }
 
-TempoPoint
-TempoMap::TempoChange::GetTempoAt(score_time_t const & time) const
+ScorePosition
+TempoMap::TempoChange::GetScorePositionAt(score_time_t const & time) const
 {
-	beat_pos_t position = tempo_.position() + tempo_.BeatsTo(time);
-	return TempoPoint(time, position, tempo_.tempo());
+	beat_pos_t position = position_.BeatPositionAt(time);
+	return ScorePosition(time, position, position_.tempo(), position_.meter());
 }
 
 } // namespace ScoreFollower
