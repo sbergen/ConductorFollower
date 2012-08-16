@@ -18,7 +18,7 @@ public:
 		: instrumentContext(instrumentContext)
 		, noteContext(noteContext)
 		, conductorContext(conductorContext)
-		, noteLength(noteContext.length * conductorContext.tempo)
+		, noteLength(noteContext.length / conductorContext.tempo)
 	{}
 
 	InstrumentContext const & instrumentContext;
