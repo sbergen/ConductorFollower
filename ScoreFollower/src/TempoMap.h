@@ -28,8 +28,6 @@ public:
 	TimeSignature GetMeterAt(score_time_t const & time) const;
 
 private:
-	void ReadTempo(TempoReaderPtr reader);
-	void ReadMeter(MeterReaderPtr reader);
 	void EnsureChangesNotEmpty();
 
 private:

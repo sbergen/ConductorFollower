@@ -61,12 +61,8 @@ public:
 		LOG("Meter change to %1%/%2% at %3%",
 			meter.count(), meter.division(), time_);
 
-		map_.RegisterEvent(time_,
-			ScorePosition(
-				time_,
-				previousPosition_.BeatPositionAt(time_),
-				previousPosition_.tempo(),
-				meter));
+		map_.RegisterEvent(
+			time_, previousPosition_.ChangeAt(time_, meter));
 	}
 
 	void operator() (tempo_t const & tempo) const
@@ -74,12 +70,8 @@ public:
 		LOG("Tempo change to %1% at %2%",
 			tempo, time_);
 
-		map_.RegisterEvent(time_,
-			ScorePosition(
-				time_,
-				previousPosition_.BeatPositionAt(time_),
-				tempo,
-				previousPosition_.meter()));
+		map_.RegisterEvent(
+			time_, previousPosition_.ChangeAt(time_, tempo));
 	}
 
 	void operator() (TimeSignature const & meter, tempo_t const & tempo) const
@@ -87,12 +79,8 @@ public:
 		LOG("Meter and tempo change to %1%/%2% @ %3% at %4%",
 			meter.count(), meter.division(), tempo, time_);
 
-		map_.RegisterEvent(time_,
-			ScorePosition(
-				time_,
-				previousPosition_.BeatPositionAt(time_),
-				tempo,
-				meter));
+		map_.RegisterEvent(
+			time_, previousPosition_.ChangeAt(time_, meter, tempo));
 	}
 
 	void operator() (tempo_t const & tempo, TimeSignature const & meter) const
