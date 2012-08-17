@@ -1,5 +1,9 @@
 #include "TempoMap.h"
 
+#include <typeinfo>
+
+#include <boost/variant/apply_visitor.hpp>
+
 #include "cf/globals.h"
 
 #include "ScoreFollower/TrackReader.h"
@@ -8,6 +12,123 @@
 namespace cf {
 namespace ScoreFollower {
 
+namespace {
+
+typedef boost::variant<TimeSignature, tempo_t> EventVariant;
+typedef std::pair<score_time_t, EventVariant> EventPair;
+typedef std::vector<EventPair> EventVector;
+
+struct EventComparer
+{
+	bool operator() (EventPair const & lhs, EventPair const & rhs)
+	{
+		if (lhs.first < rhs.first) {
+			return true;
+		} else if (rhs.first < lhs.first) {
+			return false;
+		} else {
+			// Meter before tempo
+			return (lhs.second.type() == typeid(TimeSignature));
+		}
+	}
+};
+
+template<typename Event, typename ReaderPtr>
+void ReadFromReader(ReaderPtr reader, EventVector & vector)
+{
+	Event event;
+	score_time_t timestamp;
+
+	while (reader->NextEvent(timestamp, event)) {
+		vector.push_back(EventPair(timestamp, event));
+	}
+}
+
+template<typename Map>
+class ChangeBuilder
+{
+public:
+	typedef void result_type;
+
+	ChangeBuilder(Map & map, score_time_t const & time, ScorePosition const & previousPosition)
+		: map_(map)
+		, time_(time)
+		, previousPosition_(previousPosition)
+	{}
+
+	void operator() (TimeSignature const & meter) const
+	{
+		LOG("Meter change to %1%/%2% at %3%",
+			meter.count(), meter.division(), time_);
+
+		map_.RegisterEvent(time_,
+			ScorePosition(
+				time_,
+				previousPosition_.BeatPositionAt(time_),
+				previousPosition_.tempo(),
+				meter));
+	}
+
+	void operator() (tempo_t const & tempo) const
+	{
+		LOG("Tempo change to %1% at %2%",
+			tempo, time_);
+
+		map_.RegisterEvent(time_,
+			ScorePosition(
+				time_,
+				previousPosition_.BeatPositionAt(time_),
+				tempo,
+				previousPosition_.meter()));
+	}
+
+	void operator() (TimeSignature const & meter, tempo_t const & tempo) const
+	{
+		LOG("Meter and tempo change to %1%/%2% @ %3% at %4%",
+			meter.count(), meter.division(), tempo, time_);
+
+		map_.RegisterEvent(time_,
+			ScorePosition(
+				time_,
+				previousPosition_.BeatPositionAt(time_),
+				tempo,
+				meter));
+	}
+
+	void operator() (tempo_t const & tempo, TimeSignature const & meter) const
+	{
+		(*this)(meter, tempo);
+	}
+
+	void operator() (TimeSignature const & meter, TimeSignature const & meter2) const
+	{
+		assert(false);
+	}
+
+	void operator() (tempo_t const & tempo, tempo_t const & tempo2) const
+	{
+		assert(false);
+	}
+
+private:
+	Map & map_;
+	score_time_t const & time_;
+	ScorePosition const & previousPosition_;
+};
+
+template<typename Map>
+ChangeBuilder<Map> MakeChangeBuilder(Map & map, score_time_t const & time)
+{
+	ScorePosition previousPosition;
+	if (!map.AllEvents().Empty()) {
+		previousPosition = map.AllEvents().Back().data;
+	}
+
+	return ChangeBuilder<Map>(map, time, previousPosition);
+}
+
+} // anon namespace
+
 TempoMap::TempoMap()
 {
 }
@@ -15,8 +136,37 @@ TempoMap::TempoMap()
 void
 TempoMap::ReadScore(ScoreReader & reader)
 {
-	ReadMeter(reader.MeterTrack());
-	ReadTempo(reader.TempoTrack());
+	EventVector vector;
+	ReadFromReader<TimeSignature>(reader.MeterTrack(), vector);
+	ReadFromReader<tempo_t>(reader.TempoTrack(), vector);
+	std::sort(std::begin(vector), std::end(vector), EventComparer());
+
+	if (vector.front().first > 0.0 * score::seconds) {
+		EnsureChangesNotEmpty();
+	}
+
+	EventVector::iterator previous = vector.begin();
+	for (auto it = previous + 1; it != vector.end(); ++it) {
+		if (it->first > previous->first) {
+			boost::apply_visitor(
+				MakeChangeBuilder(changes_, previous->first),
+				previous->second);
+		} else if (it == vector.end() - 1) {
+			boost::apply_visitor(
+				MakeChangeBuilder(changes_, it->first),
+				it->second);
+		} else {
+			boost::apply_visitor(
+				MakeChangeBuilder(changes_, previous->first),
+				previous->second,
+				it->second);
+		}
+
+		previous = it;
+	}
+
+	//ReadMeter(reader.MeterTrack());
+	//ReadTempo(reader.TempoTrack());
 }
 
 ScorePosition
@@ -24,82 +174,24 @@ TempoMap::GetScorePositionAt(score_time_t const & time) const
 {
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
-	return range[0].data.GetScorePositionAt(time);
+	return range[0].data.ScorePositionAt(time);
 }
 
 TimeSignature
 TempoMap::GetMeterAt(score_time_t const & time) const
 {
-	auto range = meters_.EventsSinceInclusive(time);
+	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
-	return range[0].data;
+	return range[0].data.meter();
 }
 
-void
-TempoMap::ReadTempo(TempoReaderPtr reader)
-{
-	bool first = true;
-	TempoChange previousChange;
-	score_time_t timestamp;
-	tempo_t tempo;
-
-	while (reader->NextEvent(timestamp, tempo)) {
-		// If the first tempo change is not at zero, insert default tempo at beginning
-		if (first && timestamp > 0.0 * score::seconds) {
-			EnsureChangesNotEmpty();
-			previousChange = changes_.AllEvents()[0].data;
-			first = false;
-		}
-
-		// Then continue normally...
-		beat_pos_t pos = first ? (0.0 * score::beats) : previousChange.GetScorePositionAt(timestamp).position();
-		first = false;
-
-		LOG("Tempo change, timestamp: %1%, pos: %2%, tempo: %3%", timestamp, pos, tempo);
-		TimeSignature meter = GetMeterAt(timestamp);
-		previousChange = TempoChange(timestamp, ScorePosition(timestamp, pos, tempo, meter));
-		changes_.RegisterEvent(timestamp, previousChange);
-	}
-
-	EnsureChangesNotEmpty();
-}
-
-void
-TempoMap::ReadMeter(MeterReaderPtr reader)
-{
-	score_time_t timestamp;
-	TimeSignature signature;
-
-	while (reader->NextEvent(timestamp, signature)) {
-		LOG("Meter change, timestamp: %1%, %2%/%3%", timestamp, signature.count(), signature.division());
-		meters_.RegisterEvent(timestamp, signature);
-	}
-}
 
 void
 TempoMap::EnsureChangesNotEmpty()
 {
 	if (changes_.AllEvents().Empty()) {
-		tempo_t tempo(120.0 * score::beats_per_minute);
-		TimeSignature meter = TimeSignature(4, 4);
-		ScorePosition tp(0.0 * score::seconds, 0.0 * score::beats, tempo, meter);
-		changes_.RegisterEvent(0.0 * score::seconds, TempoChange(0.0 * score::seconds, tp));
+		changes_.RegisterEvent( 0.0 * score::seconds, ScorePosition());
 	}
-}
-
-/****** TempoChange ******/
-
-TempoMap::TempoChange::TempoChange(score_time_t const & timestamp, ScorePosition const & position)
-	: timestamp_(timestamp)
-	, position_(position)
-{
-}
-
-ScorePosition
-TempoMap::TempoChange::GetScorePositionAt(score_time_t const & time) const
-{
-	beat_pos_t position = position_.BeatPositionAt(time);
-	return ScorePosition(time, position, position_.tempo(), position_.meter());
 }
 
 } // namespace ScoreFollower

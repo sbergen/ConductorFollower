@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <boost/utility.hpp>
+#include <boost/variant.hpp>
 
 #include "cf/EventBuffer.h"
 
@@ -32,23 +33,10 @@ private:
 	void EnsureChangesNotEmpty();
 
 private:
-	class TempoChange
-	{
-	public:
-		TempoChange() {} // Allow uninitialized ctor
-		TempoChange(score_time_t const & timestamp, ScorePosition const & position);
-		ScorePosition GetScorePositionAt(score_time_t const & time) const;
 
-	private:
-		score_time_t timestamp_;
-		ScorePosition position_;
-	};
-
-	typedef EventBuffer<TempoChange, score_time_t, std::vector> ChangeMap;
-	typedef EventBuffer<TimeSignature, score_time_t, std::vector> MeterMap;
+	typedef EventBuffer<ScorePosition, score_time_t, std::vector> ChangeMap;
 
 	ChangeMap changes_;
-	MeterMap  meters_;
 };
 
 } // namespace ScoreFollower

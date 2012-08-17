@@ -30,10 +30,16 @@ public:
 	unsigned count() const { return count_; }
 	unsigned division() const { return division_; }
 
+	std::string toString() const
+	{
+		return (boost::format("%1%/%2%") % count_ % division_).str();
+	}
+
 private:
 	unsigned count_;
 	unsigned division_;
 };
+
 
 } // namespace ScoreFollower
 } // namespace cf

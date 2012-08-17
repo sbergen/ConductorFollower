@@ -9,7 +9,14 @@ namespace ScoreFollower {
 class ScorePosition
 {
 public:
-	ScorePosition() {} // Allow uninitialized ctor
+	// Midi default at 0.0
+	ScorePosition()
+		: reference_(0.0 * score::seconds)
+		, position_(0.0 * score::beats)
+		, tempo_(120.0 * score::beats_per_minute)
+		, timeSignature_(4, 4)
+	{}
+
 	ScorePosition(score_time_t const & ref, beat_pos_t const & position,
 		tempo_t const & tempo, TimeSignature const & timeSignature)
 		: reference_(ref)
@@ -30,6 +37,13 @@ public:
 	beat_pos_t BeatPositionAt(score_time_t const & time) const
 	{
 		return position_ + BeatsTo(time);
+	}
+
+	ScorePosition ScorePositionAt(score_time_t const & time) const
+	{
+		ScorePosition result(*this);
+		result.position_ = BeatPositionAt(time);
+		return result;
 	}
 
 private:
