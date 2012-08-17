@@ -1,14 +1,10 @@
 #pragma once
 
 #include <stdexcept>
-#include <string>
 
-#include <boost/format.hpp>
-
-#include "ScoreFollower/types.h"
+#include "cf/score_units.h"
 
 namespace cf {
-namespace ScoreFollower {
 
 class TimeSignature
 {
@@ -32,14 +28,18 @@ public:
 	unsigned count() const { return count_; }
 	unsigned division() const { return division_; }
 
+	typedef boost::units::quantity<score::bar_duration> bar_duration_t;
 	bar_duration_t BarDuration() const
 	{
 		return bar_duration_t(((count_ * score::full_notes) / division_) / score::bar);
 	}
 
-	std::string toString() const
+public: // For ordering
+	bool operator< (TimeSignature const & other)
 	{
-		return (boost::format("%1%/%2%") % count_ % division_).str();
+		return (division_ != other.division_) ? 
+			division_ < other.division_ :
+			count_ < other.count_;
 	}
 
 private:
@@ -47,6 +47,4 @@ private:
 	unsigned division_;
 };
 
-
-} // namespace ScoreFollower
 } // namespace cf
