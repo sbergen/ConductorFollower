@@ -112,8 +112,8 @@ public:
 
 private:
 	Map & map_;
-	score_time_t const & time_;
-	ScorePosition const & previousPosition_;
+	score_time_t time_;
+	ScorePosition previousPosition_;
 };
 
 template<typename Map>
@@ -164,9 +164,6 @@ TempoMap::ReadScore(ScoreReader & reader)
 
 		previous = it;
 	}
-
-	//ReadMeter(reader.MeterTrack());
-	//ReadTempo(reader.TempoTrack());
 }
 
 ScorePosition

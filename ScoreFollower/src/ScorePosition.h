@@ -41,9 +41,8 @@ public:
 
 	ScorePosition ScorePositionAt(score_time_t const & time) const
 	{
-		ScorePosition result(*this);
-		result.position_ = BeatPositionAt(time);
-		return result;
+		beat_pos_t position = BeatPositionAt(time);
+		return ScorePosition(time, position, tempo_, timeSignature_);
 	}
 
 private:
