@@ -19,15 +19,22 @@ namespace bu = boost::units;
 
 // Base dimensions
 struct beat_base_dimension : public bu::base_dimension<beat_base_dimension, 1> {};
-struct sample_base_dimension : public bu::base_dimension<sample_base_dimension, 2> {};
+struct bar_base_dimension : public bu::base_dimension<bar_base_dimension, 2> {};
+struct sample_base_dimension : public bu::base_dimension<sample_base_dimension, 3> {};
 typedef bu::time_base_dimension time_base_dimension;
 
 // Direct dimensions
 typedef beat_base_dimension::dimension_type beat_dimension;
+typedef bar_base_dimension::dimension_type bar_dimension;
 typedef sample_base_dimension::dimension_type sample_dimension;
 typedef bu::time_dimension time_dimension;
 
 // Derived dimensions (these have no base dimension or unit)
+
+typedef bu::derived_dimension<
+	beat_base_dimension, 1,
+	bar_base_dimension, -1>::type bar_duration_dimension;
+
 typedef bu::derived_dimension<
 	beat_base_dimension, 1,
 	time_base_dimension, -1>::type tempo_dimension;
@@ -48,7 +55,13 @@ struct beat_base_unit : public bu::base_unit<beat_base_unit, beat_dimension, 1>
     static std::string symbol() { return "b"; }
 };
 
-struct sample_base_unit : public bu::base_unit<sample_base_unit, sample_dimension, 2>
+struct bar_base_unit : public bu::base_unit<bar_base_unit, bar_dimension, 2>
+{
+    static std::string name()   { return "bar"; }
+    static std::string symbol() { return "B"; }
+};
+
+struct sample_base_unit : public bu::base_unit<sample_base_unit, sample_dimension, 3>
 {
     static std::string name()   { return "sample"; }
     static std::string symbol() { return "1"; }
@@ -59,6 +72,7 @@ typedef bu::si::second_base_unit second_base_unit;
 // system
 typedef bu::make_system<
     beat_base_unit,
+	bar_base_unit,
 	sample_base_unit,
 	second_base_unit>::type system;
 
@@ -71,6 +85,13 @@ BOOST_UNITS_STATIC_CONSTANT(beat, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(beats, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(quarter_note, musical_time);
 BOOST_UNITS_STATIC_CONSTANT(quarter_notes, musical_time);
+
+typedef bu::unit<bar_dimension, system> bar_count;
+BOOST_UNITS_STATIC_CONSTANT(bar, bar_count);
+BOOST_UNITS_STATIC_CONSTANT(bars, bar_count);
+
+typedef bu::unit<bar_duration_dimension, system> bar_duration;
+BOOST_UNITS_STATIC_CONSTANT(beats_per_bar, bar_duration);
 
 typedef bu::unit<sample_dimension, system> sample_count;
 BOOST_UNITS_STATIC_CONSTANT(sample, sample_count);

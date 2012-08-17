@@ -21,7 +21,8 @@ private:
 		int, unsigned, long,
 		char const *,
 		timestamp_t, duration_t, milliseconds_t, seconds_t, boost::chrono::microseconds,
-		bu::quantity<score::musical_time>, bu::quantity<score::physical_time>, bu::quantity<score::tempo> > Arg;
+		bu::quantity<score::musical_time>, bu::quantity<score::physical_time>,
+		bu::quantity<score::tempo>, bu::quantity<score::bar_count>, bu::quantity<score::bar_duration> > Arg;
 
 public:
 	LogItem()

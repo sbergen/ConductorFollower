@@ -5,6 +5,8 @@
 
 #include <boost/format.hpp>
 
+#include "ScoreFollower/types.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -29,6 +31,11 @@ public:
 
 	unsigned count() const { return count_; }
 	unsigned division() const { return division_; }
+
+	bar_duration_t BarDuration() const
+	{
+		return bar_duration_t(((count_ * score::full_notes) / division_) / score::bar);
+	}
 
 	std::string toString() const
 	{
