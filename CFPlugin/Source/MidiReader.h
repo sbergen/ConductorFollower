@@ -4,6 +4,8 @@
 
 #include "JuceHeader.h"
 
+#include "cf/TimeSignature.h"
+
 #include "ScoreFollower/ScoreReader.h"
 #include "ScoreFollower/TrackReader.h"
 
@@ -41,11 +43,11 @@ private:
 	};
 
 	// Meter reader implementation
-	class MeterReaderImpl : public sf::TrackReader<sf::TimeSignature>
+	class MeterReaderImpl : public sf::TrackReader<cf::TimeSignature>
 	{
 	public:
 		MeterReaderImpl(MidiFile const & file);
-		bool NextEvent(sf::score_time_t & timestamp, sf::TimeSignature & data);
+		bool NextEvent(sf::score_time_t & timestamp, cf::TimeSignature & data);
 
 	protected:
 		MidiMessageSequence sequence_;

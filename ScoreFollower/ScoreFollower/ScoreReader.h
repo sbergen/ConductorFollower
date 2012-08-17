@@ -3,9 +3,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
+#include "cf/TimeSignature.h"
+
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/ScoreEvent.h"
-#include "ScoreFollower/TimeSignature.h"
 
 namespace cf {
 namespace ScoreFollower {

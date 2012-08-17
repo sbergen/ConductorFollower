@@ -13,9 +13,10 @@
 #include "ScorePosition.h"
 
 namespace cf {
-namespace ScoreFollower {
 
 class TimeSignature;
+
+namespace ScoreFollower {
 
 class TempoMap : public boost::noncopyable
 {

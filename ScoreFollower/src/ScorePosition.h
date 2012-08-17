@@ -1,9 +1,9 @@
 #pragma once
 
 #include "cf/units_math.h"
+#include "cf/TimeSignature.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/TimeSignature.h"
 
 namespace cf {
 namespace ScoreFollower {

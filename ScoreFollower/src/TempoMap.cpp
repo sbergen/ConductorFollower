@@ -5,9 +5,9 @@
 #include <boost/variant/apply_visitor.hpp>
 
 #include "cf/globals.h"
+#include "cf/TimeSignature.h"
 
 #include "ScoreFollower/TrackReader.h"
-#include "ScoreFollower/TimeSignature.h"
 
 namespace cf {
 namespace ScoreFollower {

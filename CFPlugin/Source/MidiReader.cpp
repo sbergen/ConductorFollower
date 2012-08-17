@@ -87,7 +87,7 @@ MidiReader::MeterReaderImpl::MeterReaderImpl(MidiFile const & file)
 }
 
 bool
-MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, sf::TimeSignature & data)
+MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, cf::TimeSignature & data)
 {
 	assert(current_ < count_);
 	
