@@ -9,6 +9,8 @@
 using namespace cf;
 using namespace cf::ScoreFollower;
 
+#define DEBUG_SCORE 0
+
 MidiReader::MidiReader()
 {
 }
@@ -29,7 +31,10 @@ MidiReader::OpenFile(std::string const & filename)
 sf::TrackReaderPtr
 MidiReader::Track(int index)
 {
+#if DEBUG_SCORE
 	LOG("Getting track %1%", index);
+#endif // DEBUG_SCORE
+
 	assert(index < TrackCount());
 	return boost::make_shared<TrackReaderImpl>(*file_.getTrack(index));
 }
@@ -123,9 +128,11 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	auto eventPtr = sequence_.getEventPointer(current_);
 	data = boost::make_shared<MidiEvent>(eventPtr->message, noteLength);
 
+#if DEBUG_SCORE
 	if (current_ < 10) {
 		LOG("Read event with channel %1%", eventPtr->message.getChannel());
 	}
+#endif // DEBUG_SCORE
 
 	++current_;
 	return current_ < count_;
