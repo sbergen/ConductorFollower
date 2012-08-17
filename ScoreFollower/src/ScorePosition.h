@@ -15,7 +15,7 @@ public: // Constructors and generation methods
 	// Position at beginning, with MIDI defaults
 	ScorePosition(tempo_t const & tempo = tempo_t(120.0 * score::beats_per_minute),
 	              TimeSignature const & meter = TimeSignature(4, 4))
-		: reference_(0.0 * score::seconds)
+		: absoluteTime_(0.0 * score::seconds)
 		, absolutePosition_(0.0 * score::beats)
 		, tempo_(tempo)
 		, meter_(meter)
@@ -56,6 +56,7 @@ public: // Constructors and generation methods
 
 public:
 
+	score_time_t const & time() const { return absoluteTime_; }
 	beat_pos_t const & position() const { return absolutePosition_; }
 	tempo_t const & tempo() const { return tempo_; }
 	TimeSignature const & meter() const { return meter_; }
@@ -63,10 +64,10 @@ public:
 	beat_pos_t const & beat() const { return beat_; }
 
 private: // "explicit" construction is private, use the generation methods otherwise
-	ScorePosition(score_time_t const & ref, beat_pos_t const & position,
+	ScorePosition(score_time_t const & time, beat_pos_t const & position,
 	              tempo_t const & tempo, TimeSignature const & meter,
 	              bar_pos_t bar, beat_pos_t beat)
-		: reference_(ref)
+		: absoluteTime_(time)
 		, absolutePosition_(position)
 		, tempo_(tempo)
 		, meter_(meter)
@@ -76,7 +77,7 @@ private: // "explicit" construction is private, use the generation methods other
 
 	beats_t BeatsTo(score_time_t const & time) const
 	{
-		return (time - reference_) * tempo_;
+		return (time - absoluteTime_) * tempo_;
 	}
 
 	beat_pos_t AbsolutePositionAt(score_time_t const & time) const
@@ -85,7 +86,7 @@ private: // "explicit" construction is private, use the generation methods other
 	}
 
 private:
-	score_time_t reference_;
+	score_time_t absoluteTime_;
 	beat_pos_t absolutePosition_;
 	tempo_t tempo_;
 	TimeSignature meter_;
