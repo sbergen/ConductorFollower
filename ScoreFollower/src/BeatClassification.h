@@ -16,44 +16,48 @@ namespace ScoreFollower {
 class BeatClassification
 {
 public:
-	BeatClassification(timestamp_t const & timestamp, double const & clarity, beat_pos_t const & beatPosition)
-		: timestamp_(timestamp)
-		, clarity_(clarity)
-		, beatPosition_(beatPosition)
+	enum Type
 	{
-		UpdatedEstimate(beatPosition);
-	}
+		NotClassified,
+		CurrentBar,
+		NextBar
+	};
 
-	timestamp_t timestamp() const { return timestamp_; }
-	double clarity() const { return clarity_; }
-	beat_pos_t const & beatPosition() const { return beatPosition_; }
+	static double QualityFromOffset(beat_pos_t const & offset) { return 1.0 - std::abs(offset.value()); }
 
-	void UpdatedEstimate(beat_pos_t const & beatPosition)
-	{
-		negativeOffset_ = beatPosition - boost::units::ceil(beatPosition);
-		positiveOffset_ = beatPosition - boost::units::floor(beatPosition);
-	}
+public:
+	BeatClassification(ScorePosition position)
+		: type_(NotClassified)
+		, position_(position)
+		, offset_(0.0 * score::beats)
+		, quality_(std::numeric_limits<double>::lowest())
+	{}
 
-	beat_pos_t MostLikelyOffset() const
-	{
-		using boost::units::abs;
-		return (abs(negativeOffset_) < abs(positiveOffset_)) ?
-			negativeOffset_ : positiveOffset_;
-	}
+	BeatClassification(ScorePosition position, Type type, beat_pos_t offset)
+		: type_(type)
+		, position_(position)
+		, offset_(offset)
+		, quality_(QualityFromOffset(offset))
+	{}
 
-	double quality() const
-	{
-		return 1.0 - std::abs(MostLikelyOffset().value());
-	}
+	BeatClassification(ScorePosition position, Type type, beat_pos_t offset, double quality)
+		: type_(type)
+		, position_(position)
+		, offset_(offset)
+		, quality_(quality)
+	{}
+
+	Type type() const { return type_; }
+	ScorePosition const & position() const { return position_; }
+	beat_pos_t offset() const { return offset_; }
+	double quality() const { return quality_; }
 
 private:
 	// non-const for assignability
-	real_time_t timestamp_;
-	double clarity_;
-	beat_pos_t beatPosition_;
-
-	beat_pos_t negativeOffset_;
-	beat_pos_t positiveOffset_;
+	Type type_;
+	ScorePosition position_;
+	beat_pos_t offset_;
+	double quality_;
 };
 
 

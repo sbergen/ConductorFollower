@@ -155,6 +155,22 @@ TempoMap::ReadScore(ScoreReader & reader)
 }
 
 ScorePosition
+TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, score_time_t timeHint) const
+{
+	ScorePosition nearestChange;
+	auto changes = changes_.EventsSinceInclusive(timeHint);
+	changes.ForEachWhile(
+		[&nearestChange, absoluteBeatPosition](score_time_t const & time, ScorePosition const & position) -> bool
+		{
+			if (position.position() > absoluteBeatPosition) { return false; }
+			nearestChange = position;
+			return true;
+		});
+
+	return nearestChange.ScorePositionAt(absoluteBeatPosition);
+}
+
+ScorePosition
 TempoMap::GetScorePositionAt(score_time_t const & time) const
 {
 	auto range = changes_.EventsSinceInclusive(time);
@@ -169,7 +185,6 @@ TempoMap::GetMeterAt(score_time_t const & time) const
 	assert(!range.Empty());
 	return range[0].data.meter();
 }
-
 
 void
 TempoMap::EnsureChangesNotEmpty()

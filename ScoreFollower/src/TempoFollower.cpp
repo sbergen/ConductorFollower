@@ -18,6 +18,7 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	, parent_(parent)
 	, tempoMap_()
 	, startTempoEstimator_()
+	, beatClassifier_(tempoMap_)
 	, beatHistory_(100) // Arbitrary length, should be long enough...
 	, newBeats_(false)
 {
@@ -45,12 +46,15 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	if (!startTempoEstimator_.Done()) {
 		auto speed = startTempoEstimator_.SpeedFromBeat(beatTime, clarity);
 		acceleration_.SetConstantSpeed(speed);
+		// Give the first beat to the classifiers also, but discard result
+		ClassifyBeatAt(beatTime, clarity);
 		return;
 	}
 
 	auto classification = ClassifyBeatAt(beatTime, clarity);
 	if (true /* TODO rejection! */) {
 		beatHistory_.RegisterEvent(beatTime, classification);
+		LOG("Classified with offset: %1%", classification.offset());
 		newBeats_ = true;
 	}
 }
@@ -66,7 +70,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
 
 		// TODO Move to estimator
-		auto accelerationTime = time_quantity(0.8 * score::seconds);
+		auto accelerationTime = time_quantity(1.0 * score::seconds);
 		auto offsetEstimate = -BeatOffsetEstimate();
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
 		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
@@ -86,32 +90,17 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {
 	// TODO allow different estimation modes
 	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
-	ScorePosition tempoPoint = tempoMap_.GetScorePositionAt(beatScoreTime);
+	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
 
-	LOG("Got beat at: %1% | %2%", tempoPoint.bar(), tempoPoint.beat());
-
-	BeatClassification absoluteClassification(time, clarity, tempoPoint.position());
-	BeatClassification relativeClassification(absoluteClassification);
-
-	if (!beatHistory_.AllEvents().Empty()) {
-		BeatClassification const & previousBeat = beatHistory_.AllEvents().Back().data;
-		relativeClassification.UpdatedEstimate(tempoPoint.position() - previousBeat.beatPosition());
-	}
-
-	if (absoluteClassification.quality() >= relativeClassification.quality()) {
-		//LOG("Using absolute classification, offset: %1%", absoluteClassification.MostLikelyOffset());
-		return absoluteClassification;
-	} else {
-		//LOG("Using relative classification, offset: %1%", relativeClassification.MostLikelyOffset());
-		return relativeClassification;
-	}
+	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
+	return beatClassifier_.ClassifyBeat(position);
 }
 
 beat_pos_t
 TempoFollower::BeatOffsetEstimate() const
 {
 	auto lastBeat = beatHistory_.AllEvents().Back().data;
-	return lastBeat.MostLikelyOffset();
+	return lastBeat.offset();
 }
 
 } // namespace ScoreFollower

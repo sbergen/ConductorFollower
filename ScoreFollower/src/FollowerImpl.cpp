@@ -231,8 +231,7 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 	// Beat patterns
 	Data::BeatPatternParser beatPatternParser;
 	beatPatternParser.parse(scoreParser.data().beatPatternFile);
-	// TODO use beat pattern data
-	LOG("Using beat patterns for %1% different time signatures", (int)beatPatternParser.Patterns().size());
+	timeHelper_->LearnPatterns(beatPatternParser.Patterns());
 
 	EnsureMotionTrackingIsStarted();
 }

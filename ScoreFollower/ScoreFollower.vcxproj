@@ -123,7 +123,9 @@
     <ClInclude Include="ScoreFollower\TrackReader.h" />
     <ClInclude Include="ScoreFollower\types.h" />
     <ClInclude Include="src\AudioBlockTimeManager.h" />
+    <ClInclude Include="src\BarProgressEstimator.h" />
     <ClInclude Include="src\BeatClassification.h" />
+    <ClInclude Include="src\BeatClassifier.h" />
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />
@@ -137,6 +139,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
+    <ClCompile Include="src\BarProgressEstimator.cpp" />
+    <ClCompile Include="src\BeatClassifier.cpp" />
     <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp" />
     <ClCompile Include="src\ScoreHelper.cpp" />

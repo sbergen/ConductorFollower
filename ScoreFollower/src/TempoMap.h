@@ -28,6 +28,11 @@ public:
 	ScorePosition GetScorePositionAt(score_time_t const & time) const;
 	TimeSignature GetMeterAt(score_time_t const & time) const;
 
+	// timeHint needs to be smaller than the time at absolutePosition
+	ScorePosition GetScorePositionAt(
+		beat_pos_t const & absoluteBeatPosition,
+		score_time_t timeHint = score_time_t(0.0 * score::seconds)) const;
+
 private:
 	void EnsureChangesNotEmpty();
 

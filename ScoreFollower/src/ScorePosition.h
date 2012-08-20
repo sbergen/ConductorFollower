@@ -54,6 +54,22 @@ public: // Constructors and generation methods
 		return ChangeAt(time, meter_, tempo_);
 	}
 
+	ScorePosition ScorePositionAt(beat_pos_t const & absolutePosition) const
+	{
+		// We only go toward the future
+		assert(absolutePosition >= absolutePosition_);
+
+		auto barDuration = meter_.BarDuration();
+		beat_pos_t beatsFromBeginningOfThisBar = absolutePosition - BeginningOfThisBar();
+		bars_t barsFromBeginningOfThisBar = boost::units::floor(beatsFromBeginningOfThisBar / barDuration);
+
+		auto time = AbsoluteTimeAt(absolutePosition);
+		bars_t bar = bar_ + barsFromBeginningOfThisBar;
+		beats_t beat = beatsFromBeginningOfThisBar - (barsFromBeginningOfThisBar * barDuration);
+
+		return ScorePosition(time, absolutePosition, tempo_, meter_, bar, beat);
+	}
+
 public:
 
 	score_time_t const & time() const { return absoluteTime_; }
@@ -62,6 +78,16 @@ public:
 	TimeSignature const & meter() const { return meter_; }
 	bar_pos_t const & bar() const { return bar_; }
 	beat_pos_t const & beat() const { return beat_; }
+
+	beat_pos_t BeginningOfThisBar() const
+	{
+		return absolutePosition_ - beat_;
+	}
+
+	beat_pos_t BeginningOfNextBar() const
+	{
+		return BeginningOfThisBar() + (meter_.BarDuration() * score::bar);
+	}
 
 private: // "explicit" construction is private, use the generation methods otherwise
 	ScorePosition(score_time_t const & time, beat_pos_t const & position,
@@ -83,6 +109,12 @@ private: // "explicit" construction is private, use the generation methods other
 	beat_pos_t AbsolutePositionAt(score_time_t const & time) const
 	{
 		return absolutePosition_ + BeatsTo(time);
+	}
+
+	score_time_t AbsoluteTimeAt(beat_pos_t const & absolutePosition) const
+	{
+		beats_t beatDiff = absolutePosition - absolutePosition_;
+		return absoluteTime_ + (beatDiff / tempo_);
 	}
 
 private:

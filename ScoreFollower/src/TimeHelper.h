@@ -4,6 +4,7 @@
 #include <boost/utility.hpp>
 
 #include "PatchMapper/ConductorContext.h"
+#include "Data/BeatPatternParser.h"
 
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/Follower.h"
@@ -27,6 +28,7 @@ public:
 	
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 	void ReadScore(ScoreReader & reader) { tempoFollower_.ReadScore(reader); }
+	void LearnPatterns(Data::PatternMap const & patterns) { tempoFollower_.LearnPatterns(patterns); }
 
 	// These need to be clled in this order!
 	void StartNewBlock();
