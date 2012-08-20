@@ -82,7 +82,7 @@ public: // Needs to be public for binding, would otherwise be private...
 	{
 		boost::unique_lock<MutexType> lock(oldValuesMutex_);
 		PushOld(); // Ensure the old value is not deleted in an RT context
-		currentValue_.swap(write_data);
+		currentValue_.swap(write_data); // TODO XXX This should use atomic exchange!
 	}
 
 private:
@@ -134,7 +134,7 @@ public: // Needs to be public for binding, would otherwise be private...
 	void update(ptr_type writeData)
 	{
 		assert(writeData == writeData_);
-		readData_.swap(writeData_);
+		readData_.swap(writeData_); // TODO XXX This should use atomic exchange!
 		*writeData_ = *readData_;
 	}
 
