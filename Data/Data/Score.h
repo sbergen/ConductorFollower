@@ -15,6 +15,7 @@ struct Score
 	std::string name;
 	std::string midiFile;
 	std::string instrumentFile;
+	std::string beatPatternFile;
 	TrackList tracks;
 };
 

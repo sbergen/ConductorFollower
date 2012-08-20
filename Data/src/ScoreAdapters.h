@@ -15,5 +15,6 @@ BOOST_FUSION_ADAPT_STRUCT(
     (std::string, name)
 	(std::string, midiFile)
 	(std::string, instrumentFile)
+	(std::string, beatPatternFile)
 	(cf::Data::TrackList, tracks)
 )

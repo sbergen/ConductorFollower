@@ -5,6 +5,7 @@
 #include "cf/globals.h"
 #include "Data/InstrumentParser.h"
 #include "Data/ScoreParser.h"
+#include "Data/BeatPatternParser.h"
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
 
@@ -226,6 +227,12 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 	
 	// Instrument mappings
 	scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
+
+	// Beat patterns
+	Data::BeatPatternParser beatPatternParser;
+	beatPatternParser.parse(scoreParser.data().beatPatternFile);
+	// TODO use beat pattern data
+	LOG("Using beat patterns for %1% different time signatures", (int)beatPatternParser.Patterns().size());
 
 	EnsureMotionTrackingIsStarted();
 }

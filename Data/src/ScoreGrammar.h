@@ -48,7 +48,8 @@ struct ScoreGrammar : qi::grammar<Iterator, Score(), SkipperType>
 		track_list = lit("tracks") > ':' > '[' > *(track >> elem_separator) > ']' >> elem_separator;
 		midi_file = lit("midi_file") > ':' > quoted_string >> elem_separator;
 		instrument_file = lit("instrument_file") > ':' > quoted_string >> elem_separator;
-		score_body = name ^ midi_file ^ instrument_file ^ track_list;
+		beat_pattern_file = lit("beat_pattern_file") > ':' > quoted_string >> elem_separator;
+		score_body = name ^ midi_file ^ instrument_file ^ beat_pattern_file ^ track_list;
 
 		// Start
 		start = lit("score") > '{' > -score_body > '}';
@@ -71,6 +72,7 @@ struct ScoreGrammar : qi::grammar<Iterator, Score(), SkipperType>
 	
 	qi::rule<Iterator, std::string(), SkipperType> midi_file;
 	qi::rule<Iterator, std::string(), SkipperType> instrument_file;
+	qi::rule<Iterator, std::string(), SkipperType> beat_pattern_file;
 	qi::rule<Iterator, Score(), SkipperType> score_body;
 
 	qi::rule<Iterator, Score(), SkipperType> start;
