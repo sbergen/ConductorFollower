@@ -116,12 +116,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Data\Beat.h" />
+    <ClInclude Include="Data\BeatPattern.h" />
+    <ClInclude Include="Data\BeatPatternParser.h" />
     <ClInclude Include="Data\Instrument.h" />
     <ClInclude Include="Data\InstrumentParser.h" />
     <ClInclude Include="Data\InstrumentPatch.h" />
     <ClInclude Include="Data\Score.h" />
     <ClInclude Include="Data\ScoreParser.h" />
     <ClInclude Include="Data\Track.h" />
+    <ClInclude Include="src\BeatPatternAdapters.h" />
+    <ClInclude Include="src\BeatPatternGrammar.h" />
     <ClInclude Include="src\CommentSkipper.h" />
     <ClInclude Include="src\ErrorHandler.h" />
     <ClInclude Include="src\InstrumentGrammar.h" />
@@ -130,10 +135,17 @@
     <ClInclude Include="src\parse.h" />
     <ClInclude Include="src\ScoreAdapters.h" />
     <ClInclude Include="src\ScoreGrammar.h" />
+    <ClInclude Include="src\time_signature.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BeatPatternParser.cpp" />
     <ClCompile Include="src\InstrumentParser.cpp" />
     <ClCompile Include="src\ScoreParser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

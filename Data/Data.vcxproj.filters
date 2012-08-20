@@ -60,12 +60,33 @@
     <ClInclude Include="src\parse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Data\BeatPattern.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Beat.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\BeatPatternParser.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BeatPatternAdapters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BeatPatternGrammar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\time_signature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ScoreParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BeatPatternParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

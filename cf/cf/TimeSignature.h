@@ -35,7 +35,7 @@ public:
 	}
 
 public: // For ordering
-	bool operator< (TimeSignature const & other)
+	bool operator< (TimeSignature const & other) const
 	{
 		return (division_ != other.division_) ? 
 			division_ < other.division_ :
