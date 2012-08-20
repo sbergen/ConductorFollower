@@ -113,7 +113,7 @@ BOOST_UNITS_STATIC_CONSTANT(fractions_per_second, speed_change);
 
 // scaled units
 
-typedef bu::make_scaled_unit<musical_time, bu::scale<2, bu::static_rational<2> > >::type full_note_duration;
+typedef bu::make_scaled_unit<musical_time, bu::scale<4, bu::static_rational<1> > >::type full_note_duration;
 BOOST_UNITS_STATIC_CONSTANT(full_note, full_note_duration);
 BOOST_UNITS_STATIC_CONSTANT(full_notes, full_note_duration);
 
