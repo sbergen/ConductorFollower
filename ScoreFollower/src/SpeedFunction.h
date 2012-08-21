@@ -38,11 +38,21 @@ public:
 			0.0 * score::seconds);
 	}
 
-	speed_t SpeedAt(real_time_t const & time)
+	speed_t SpeedAt(real_time_t const & time) const
 	{
+		double fraction = FractionAt(time);
+		return reference_speed_ + (fraction * accelerationTime_ * changePerTimeUnit_);
+	}
+
+	double FractionAt(real_time_t const & time) const
+	{
+		namespace bu = boost::units;
+
+		if (accelerationTime_ == 0.0 * bu::si::seconds) { return 1.0; }
+
 		auto timeDiff = time::quantity_cast<time_quantity>(time - reference_time_);
-		timeDiff = boost::units::min(timeDiff, accelerationTime_);
-		return reference_speed_ + (timeDiff * changePerTimeUnit_);
+		timeDiff = bu::min(timeDiff, accelerationTime_);
+		return std::pow(timeDiff / accelerationTime_, 0.5);
 	}
 
 private:

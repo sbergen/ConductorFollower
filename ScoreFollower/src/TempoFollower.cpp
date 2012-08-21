@@ -13,6 +13,12 @@ namespace ScoreFollower {
 
 namespace si = boost::units::si;
 
+namespace {
+
+	score_time_t accelerationTime = time_quantity(1.8 * score::seconds);
+
+} // anon namespace
+
 TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	: timeWarper_(timeWarper)
 	, parent_(parent)
@@ -70,7 +76,6 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
 
 		// TODO Move to estimator
-		auto accelerationTime = time_quantity(1.4 * score::seconds);
 		auto offsetEstimate = -BeatOffsetEstimate();
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
 		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
@@ -93,7 +98,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
 
 	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
-	return beatClassifier_.ClassifyBeat(position);
+	return beatClassifier_.ClassifyBeat(position, acceleration_.FractionAt(time));
 }
 
 beat_pos_t

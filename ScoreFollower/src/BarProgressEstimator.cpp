@@ -49,12 +49,12 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	// Else evaluate for this bar
 	qualityForThisBar_ += BeatClassification::QualityFromOffset(offsets.estimation);
 	if(!beatIt->used) {
-		if (boost::units::abs(offsets.estimation) < (0.4 * score::beats)) {
+		//if (boost::units::abs(offsets.estimation) < (0.4 * score::beats)) {
 			beatIt->used = true;
 			return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
-		} else {
-			return BeatClassification(position, BeatClassification::NotClassified, 0.0 * score::beats, qualityForThisBar_);
-		}
+		//} else {
+		//	return BeatClassification(position, BeatClassification::NotClassified, 0.0 * score::beats, qualityForThisBar_);
+		//}
 	} else {
 		return BeatClassification(position);
 	}
@@ -75,11 +75,23 @@ BarProgressEstimator::ResetIfBarChanged(beat_pos_t const & beginningOfBar)
 BarProgressEstimator::BeatList::iterator
 BarProgressEstimator::ClassifyBeat(beat_pos_t const & estimationPosition)
 {
-	return nearest_neighbour_linear(std::begin(beats_), std::end(beats_), estimationPosition,
-		[](Beat const & beat, beat_pos_t const & target)
-		{
-			return std::abs((beat.position - target).value());
-		});
+	beat_pos_t bestEstimatedOffset = 100.0 * score::beats;
+	BeatList::iterator bestIt = std::end(beats_);
+
+	for (auto it = std::begin(beats_); it != std::end(beats_); ++it) {
+
+		beat_pos_t estimatedOffset =
+			boost::units::abs(estimationPosition - it->position) +
+			// TODO adjust duplicate penalty
+			(it->used ? 0.25 : 0.0) * score::beats;
+
+		if (estimatedOffset < bestEstimatedOffset) {
+			bestEstimatedOffset = estimatedOffset;
+			bestIt = it;
+		}
+	}
+
+	return bestIt;
 }
 
 void

@@ -39,18 +39,15 @@ BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 }
 
 BeatClassification
-BeatClassifier::ClassifyBeat(ScorePosition const & position)
+BeatClassifier::ClassifyBeat(ScorePosition const & position, double catchupFraction)
 {
 	BeatClassification bestClassification(position);
 
-	// TODO make time dependent
-	// decay of offset estimate
-	currentOffsetEstimate_ *= 0.9;
-
 	auto range = estimators_.equal_range(currentTimeSignature_);
 	for (auto it = range.first; it != range.second; ++it) {
+		auto offset = (1.0 - catchupFraction) * currentOffsetEstimate_;
 		BeatClassification classification =
-			it->second.ClassifyBeat(position, currentBarStart_.position(), currentOffsetEstimate_);
+			it->second.ClassifyBeat(position, currentBarStart_.position(), offset);
 		if (classification.quality() > bestClassification.quality()) {
 			bestClassification = classification;
 		}
@@ -60,13 +57,14 @@ BeatClassifier::ClassifyBeat(ScorePosition const & position)
 	{
 	case BeatClassification::NextBar:
 		ProgressToNextBar();
-		bestClassification = ClassifyBeat(position);
+		bestClassification = ClassifyBeat(position, catchupFraction);
 		break;
 	case BeatClassification::CurrentBar:
 		currentOffsetEstimate_ = bestClassification.offset();
 		LOG("Offset estimate: %1%", currentOffsetEstimate_);
 		break;
 	case BeatClassification::NotClassified:
+		LOG("-Dropping beat!");
 		break;
 	}
 
