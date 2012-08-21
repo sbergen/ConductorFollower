@@ -34,9 +34,26 @@ private:
 			{ return position == other.position; }
 	};
 
+	struct OffsetPair
+	{
+		OffsetPair(beat_pos_t const & absolute, beat_pos_t const & estimation)
+			: absolute(absolute), estimation(estimation) {}
+
+		beat_pos_t absolute;
+		beat_pos_t estimation;
+	};
+
+private:
+	typedef std::vector<Beat> BeatList;
+
+	void ResetIfBarChanged(beat_pos_t const & beginningOfBar);
+	BeatList::iterator ClassifyBeat(beat_pos_t const & estimationPosition);
+	void AddPenaltyForUnusedBeats(BeatList::iterator currentBeat);
+	OffsetPair EstimateForNextBar(OffsetPair const & positions);
+
 private:
 	Data::BeatPattern pattern_;
-	std::vector<Beat> beats_;
+	BeatList beats_;
 	beat_pos_t previousBeginningOfBar_;
 
 	double qualityForThisBar_;
