@@ -18,11 +18,13 @@ BeatClassifier::BeatClassifier(TempoMap const & tempoMap)
 void
 BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 {
+	estimators_.clear();
 	int totalPatterns = 0;
+
 	for (auto gIt = patternGroups.begin(); gIt != patternGroups.end(); ++gIt) {
 		auto const & patterns = gIt->second;
 		for (auto pIt = patterns.begin(); pIt != patterns.end(); ++pIt) {
-			estimators_.insert(std::make_pair(pIt->meter, *pIt));
+			AddEstimatorsForPattern(*pIt);
 			totalPatterns++;
 		}
 	}
@@ -30,6 +32,7 @@ BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 	currentTimeSignature_ = tempoMap_.GetMeterAt(0.0 * score::seconds);
 	currentBarStart_ = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
 	nextBarStart_ = tempoMap_.GetScorePositionAt(currentBarStart_.BeginningOfNextBar());
+	currentOffsetEstimate_ = 0.0 * score::beats;
 
 	LOG("Using a total of %1% beat patterns for %2% different time signatures",
 		totalPatterns, (int)patternGroups.size());
@@ -40,18 +43,31 @@ BeatClassifier::ClassifyBeat(ScorePosition const & position)
 {
 	BeatClassification bestClassification(position);
 
+	// TODO make time dependent
+	// decay of offset estimate
+	currentOffsetEstimate_ *= 0.9;
+
 	auto range = estimators_.equal_range(currentTimeSignature_);
 	for (auto it = range.first; it != range.second; ++it) {
 		BeatClassification classification =
-			it->second.ClassifyBeat(position, currentBarStart_.position());
+			it->second.ClassifyBeat(position, currentBarStart_.position(), currentOffsetEstimate_);
 		if (classification.quality() > bestClassification.quality()) {
 			bestClassification = classification;
 		}
 	}
 
-	if (bestClassification.type() == BeatClassification::NextBar) {
+	switch (bestClassification.type())
+	{
+	case BeatClassification::NextBar:
 		ProgressToNextBar();
 		bestClassification = ClassifyBeat(position);
+		break;
+	case BeatClassification::CurrentBar:
+		currentOffsetEstimate_ = bestClassification.offset();
+		LOG("Offset estimate: %1%", currentOffsetEstimate_);
+		break;
+	case BeatClassification::NotClassified:
+		break;
 	}
 
 	return bestClassification;
@@ -65,6 +81,12 @@ BeatClassifier::ProgressToNextBar()
 	currentBarStart_ = nextBarStart_;
 	currentTimeSignature_ = currentBarStart_.meter();
 	nextBarStart_ = tempoMap_.GetScorePositionAt(currentBarStart_.BeginningOfNextBar(), currentBarStart_.time());
+}
+
+void
+BeatClassifier::AddEstimatorsForPattern(Data::BeatPattern const & pattern)
+{
+	estimators_.insert(std::make_pair(pattern.meter, pattern));
 }
 
 } // namespace ScoreFollower

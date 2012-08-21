@@ -28,6 +28,7 @@ public:
 
 private:
 	void ProgressToNextBar();
+	void AddEstimatorsForPattern(Data::BeatPattern const & pattern);
 
 private:
 	typedef std::multimap<TimeSignature, BarProgressEstimator> EstimatorMap;
@@ -38,6 +39,8 @@ private:
 	TimeSignature currentTimeSignature_;
 	ScorePosition currentBarStart_;
 	ScorePosition nextBarStart_;
+
+	beat_pos_t currentOffsetEstimate_;
 };
 
 

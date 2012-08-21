@@ -23,7 +23,7 @@ public:
 		NextBar
 	};
 
-	static double QualityFromOffset(beat_pos_t const & offset) { return 1.0 - std::abs(offset.value()); }
+	static double QualityFromOffset(beat_pos_t const & offset) { return -std::abs(offset.value()); }
 
 public:
 	BeatClassification(ScorePosition position)

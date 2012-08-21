@@ -29,7 +29,7 @@ BeatDetector::Detect(MotionState const & state, double & strength)
 	double vy = state.velocity.get_raw<coord::Y>();
 	strength = vyFir_.Run(vy);
 	if (peakDetector_.Run(strength) == PeakDetector::Max &&
-		strength > 0.7) {
+		strength > 0.5) {
 		return true;
 	}
 

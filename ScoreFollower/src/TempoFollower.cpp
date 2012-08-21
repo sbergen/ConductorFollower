@@ -70,7 +70,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
 
 		// TODO Move to estimator
-		auto accelerationTime = time_quantity(1.0 * score::seconds);
+		auto accelerationTime = time_quantity(1.4 * score::seconds);
 		auto offsetEstimate = -BeatOffsetEstimate();
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
 		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
