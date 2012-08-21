@@ -49,12 +49,8 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	// Else evaluate for this bar
 	qualityForThisBar_ += BeatClassification::QualityFromOffset(offsets.estimation);
 	if(!beatIt->used) {
-		//if (boost::units::abs(offsets.estimation) < (0.4 * score::beats)) {
-			beatIt->used = true;
-			return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
-		//} else {
-		//	return BeatClassification(position, BeatClassification::NotClassified, 0.0 * score::beats, qualityForThisBar_);
-		//}
+		beatIt->used = true;
+		return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
 	} else {
 		return BeatClassification(position);
 	}
