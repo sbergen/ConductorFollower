@@ -1,9 +1,12 @@
 #pragma once
 
+#include <boost/utility.hpp>
+
 #ifdef NDEBUG
 
 namespace cf {
 	class RTContext {};
+	class NonRTSection {};
 }
 
 #else
@@ -12,7 +15,7 @@ namespace cf {
 
 namespace cf {
 
-class RTContext
+class RTContext : public boost::noncopyable
 {
 public:
 	RTContext()
@@ -24,6 +27,24 @@ public:
 	{
 		 allow_new();
 	}
+};
+
+class NonRTSection : public boost::noncopyable
+{
+public:
+	NonRTSection()
+		: wasRT_(new_disallowed())
+	{
+		if (wasRT_) { allow_new(); }
+	}
+
+	~NonRTSection()
+	{
+		if (wasRT_) { disallow_new(); }
+	}
+
+private:
+	bool const wasRT_;
 };
 
 } // namespace cf

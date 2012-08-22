@@ -4,6 +4,8 @@
 
 #include <boost/units/systems/si/prefixes.hpp>
 
+#include "cf/RTContext.h"
+
 #include "CallbackWrappers.h"
 
 namespace cf {
@@ -122,6 +124,8 @@ OpenNIHandTracker::HandCreateCallback(
 	const XnPoint3D* position,
     XnFloat time)
 {
+	NonRTSection nonRt; // Not critical
+
 	{
 		OpenNIHandRequest & request = handRequestQueue_.front();
 		request.isPending = false;
@@ -140,6 +144,8 @@ OpenNIHandTracker::HandUpdateCallback(
 	const XnPoint3D* position,
     XnFloat time)
 {
+	// This one is RT critical
+
 	auto it = hands_.find(id);
 	if (it != hands_.end())
 	{
@@ -161,6 +167,8 @@ OpenNIHandTracker::HandDestroyCallback(
     XnUserID id,
 	XnFloat time)
 {
+	NonRTSection nonRt; // Not critical
+
 	auto it = hands_.find(id);
 	if (it != hands_.end())
 	{
