@@ -92,8 +92,8 @@ double
 ScoreHelper::NewVelocityAt(double oldVelocity, score_time_t const & time) const
 {
 	// TODO use time and something fancier :)
-	auto change = (conductorContext_.velocity - 0.5) / 3;
-	auto velocity = math::clamp(oldVelocity + change, 0.05, 1.0);
+	auto velocity = 0.3 * conductorContext_.velocity + 0.7 * oldVelocity;
+	velocity = math::clamp(velocity, 0.05, 1.0);
 	return velocity;
 }
 } // namespace ScoreFollower
