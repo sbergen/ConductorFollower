@@ -29,6 +29,9 @@ private:
 
 	timestamp_t previousBeatTime_;
 	Point3D previousBeatPosition_;
+
+	timestamp_t previousBottomTime_;
+	Point3D previousBottomPosition_;
 };
 
 
