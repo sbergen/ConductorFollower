@@ -65,7 +65,7 @@ private: // tracker thread state and event buffer
 	DynamicRange<20> velocityRange_;
 
 	AveragingFir<10> jerkFir_;
-	DipHolder<20> jerkPeakHolder_;
+	DipHolder<40> jerkPeakHolder_;
 
 	StdDev<20> velocityDev_;
 };

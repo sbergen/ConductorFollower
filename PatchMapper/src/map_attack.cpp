@@ -5,7 +5,7 @@ namespace PatchMapper {
 
 double map_attack(MappingContext const & context)
 {
-	return context.conductorContext.power;
+	return context.conductorContext.attack;
 }
 
 } // namespace PatchMapper

@@ -3,6 +3,7 @@
 #include <boost/make_shared.hpp>
 
 #include "cf/globals.h"
+#include "cf/math.h"
 #include "Data/InstrumentParser.h"
 #include "Data/ScoreParser.h"
 #include "Data/BeatPatternParser.h"
@@ -139,24 +140,22 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 
 	case Event::VelocityPeak:
 		writer->SetValue<Status::VelocityPeak>(e.data<double>());
+		conductorContext_.velocity = math::clamp(
+			e.data<double>() / Status::VelocityPeakType::max_value,
+			0.0, 1.0);
 		break;
 	case Event::VelocityDynamicRange:
 		writer->SetValue<Status::VelocityRange>(e.data<double>());
+		conductorContext_.attack = math::clamp(
+			e.data<double>() / Status::VelocityRangeType::max_value,
+			0.3, 1.0);
 		break;
 	case Event::JerkPeak:
 		writer->SetValue<Status::JerkPeak>(e.data<double>());
+		conductorContext_.weight = math::clamp(
+			e.data<double>() / Status::JerkPeakType::max_value,
+			0.3, 1.0);
 		break;
-		/*
-	case Event::Power:
-		{
-		double power = e.data<double>() / 1000.0;
-		if (power > 1.0) { power = 1.0; }
-		conductorContext_.power = power;
-		writer->SetValue<Status::Power>(power);
-		scoreHelper_->SetVelocityFromMotion(power);
-		break;
-		}
-		*/
 	case Event::Beat:
 		{
 		if (State() == FollowerState::GotStart) {

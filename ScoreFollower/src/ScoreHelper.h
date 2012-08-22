@@ -30,8 +30,6 @@ public:
 	void LearnScore(boost::shared_ptr<ScoreReader> scoreReader);
 	void LearnInstruments(Data::InstrumentMap const & instruments, Data::TrackList const & tracks);
 
-	void SetVelocityFromMotion(double velocity) { velocity_ = velocity; }
-
 	void GetTrackEventsForBlock(unsigned track, Follower::BlockBuffer & events);
 
 private:
@@ -49,8 +47,6 @@ private:
 
 	boost::ptr_vector<TrackBuffer> trackBuffers_;
 	boost::ptr_vector<InstrumentPatchSwitcher> trackInstruments_;
-
-	double velocity_;
 };
 
 } // namespace ScoreFollower

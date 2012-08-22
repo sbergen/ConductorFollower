@@ -15,7 +15,6 @@ namespace ScoreFollower {
 ScoreHelper::ScoreHelper(boost::shared_ptr<TimeHelper> timeHelper, PatchMapper::ConductorContext const & conductorContext)
 	: timeHelper_(timeHelper)
 	, conductorContext_(conductorContext)
-	, velocity_(0.5)
 {}
 
 void
@@ -93,8 +92,8 @@ double
 ScoreHelper::NewVelocityAt(double oldVelocity, score_time_t const & time) const
 {
 	// TODO use time and something fancier :)
-	auto velocity = (oldVelocity + (velocity_ - 0.5));
-	velocity = math::clamp(velocity, 0.05, 1.0);
+	auto change = (conductorContext_.velocity - 0.5) / 3;
+	auto velocity = math::clamp(oldVelocity + change, 0.05, 1.0);
 	return velocity;
 }
 } // namespace ScoreFollower
