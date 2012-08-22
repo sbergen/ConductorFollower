@@ -21,6 +21,7 @@ public:
 		MotionStateUpdate,
 		Beat,
 		BeatProb,
+		PreparatoryBeat,
 		StartGesture,
 		VelocityPeak,
 		VelocityDynamicRange,
@@ -32,7 +33,7 @@ public:
 		boost::blank,
 		double,
 		MotionState,
-		timestamp_t
+		timestamp_t, duration_t
 		> Data;
 
 	// Ctors

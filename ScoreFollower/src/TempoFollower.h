@@ -30,8 +30,11 @@ public:
 	void ReadScore(ScoreReader & reader);
 	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_.LearnPatterns(patterns); }
 
+	void RegisterStartGestureLength(duration_t const & gestureDuration);
 	void RegisterPreparatoryBeat(real_time_t const & time);
 	void RegisterBeat(real_time_t const & beatTime, double prob);
+
+	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:
@@ -41,6 +44,7 @@ private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
 
 	beat_pos_t BeatOffsetEstimate() const;
+	void UseStartTempoEstimateIfReady();
 
 private:
 	TimeWarper const & timeWarper_;

@@ -76,7 +76,6 @@ FollowerImpl::StartNewBlock()
 	if (!lock.owns_lock()) { return 0; }
 
 	// Consume events until the start of this block
-	// TODO bind
 	auto writer = status_.writer();
 	eventThrottler_->ConsumeEventsUntil(
 		[&, this](Event const & e)
@@ -84,6 +83,15 @@ FollowerImpl::StartNewBlock()
 			ConsumeEvent(writer, e);
 		},
 		currentBlock.first);
+
+
+	// Check for starting state
+	// TODO intra-buffer start
+	if (State() == FollowerState::GotStart &&
+		currentBlock.first >= timeHelper_->StartTimeEstimate())
+	{
+		SetState(writer, FollowerState::Rolling);
+	}
 
 	if (State() != FollowerState::Rolling) { return 0; }
 
@@ -157,24 +165,21 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 			0.3, 1.0);
 		break;
 	case Event::Beat:
-		{
-		if (State() == FollowerState::GotStart) {
-			SetState(writer, FollowerState::Rolling);
-		}
-
-		if (State() == FollowerState::Rolling) {
+		if (State() == FollowerState::Rolling || State() == FollowerState::GotStart) {
 			timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
 		}
 		break;
-		}
 	case Event::BeatProb:
 		writer->SetValue<Status::Beat>(e.data<double>());
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
-			timeHelper_->RegisterPreparatoryBeat(e.data<real_time_t>());
+			timeHelper_->RegisterStartGestureLength(e.data<duration_t>());
 			SetState(writer, FollowerState::GotStart);
 		}
+		break;
+	case Event::PreparatoryBeat:
+		timeHelper_->RegisterPreparatoryBeat(e.data<real_time_t>());
 		break;
 	}
 }

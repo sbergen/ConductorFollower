@@ -52,7 +52,7 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 	if (gestureLength > minTempo || gestureLength < maxTempo) { return Result(); }
 
 	// Done!
-	return Result(previousBeatTime_);
+	return Result(previousBeatTime_, gestureLength);
 }
 
 } // namespace MotionTracker

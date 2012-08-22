@@ -15,10 +15,14 @@ public:
 	struct Result
 	{
 		Result() : previousBeatTime(timestamp_t::min()) {}
-		Result(timestamp_t const & prevBeat) : previousBeatTime(prevBeat) {}
+		Result(timestamp_t const & prevBeat, duration_t const & gestureLength)
+			: previousBeatTime(prevBeat)
+			, gestureLength(gestureLength)
+		{}
 
 		operator bool() const { return previousBeatTime != timestamp_t::min(); }
 		timestamp_t previousBeatTime;
+		duration_t gestureLength;
 	};
 
 	Result Detect(timestamp_t const & timestamp, MotionState const & state, bool beatOccurred);

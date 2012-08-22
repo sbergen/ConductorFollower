@@ -13,16 +13,21 @@ public:
 	StartTempoEstimator();
 
 	void SetStartTempo(tempo_t const & tempoInScore) { tempoInScore_ = tempoInScore; }
-	void RegisterPreparatoryBeat(real_time_t const & time);
-	speed_t SpeedFromBeat(real_time_t const & beatTime, double clarity);
 
-	bool Done() { return done_; }
+	void RegisterStartGestureLength(duration_t const & gestureDuration);
+	void RegisterPreparatoryBeat(real_time_t const & time);
+
+	bool ReadyForEstimates();
+	real_time_t StartTimeEstimate();
+	speed_t SpeedEstimate();
+
+private:
+	tempo_t TempoFromStartGesture();
 
 private:
 	tempo_t tempoInScore_;
+	duration_t startGestureDuration_;
 	real_time_t preparatoryBeatTime_;
-
-	bool done_;
 };
 
 } // namespace ScoreFollower

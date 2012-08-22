@@ -13,10 +13,11 @@ TimeWarper::WarpPoint::WarpPoint(speed_t speed, real_time_t realTime, score_time
 }
 
 score_time_t
-TimeWarper::WarpPoint::Warp(real_time_t const & time) const
+TimeWarper::WarpPoint::Warp(real_time_t const & time, bool allowBackwardsWarping) const
 {
-	// Only allow warping after the fixed point
-	assert(time >= realTime_);
+	if (!allowBackwardsWarping && (time < realTime_)) {
+		throw std::runtime_error("Backwards warp not allowed!");
+	}
 
 	duration_t diff = time - realTime_;
 	score_time_t progress = time::quantity_cast<score_time_t>(diff) * speed_;
@@ -53,12 +54,19 @@ TimeWarper::FixTimeMapping(real_time_t const & realTime, score_time_t const & sc
 score_time_t
 TimeWarper::WarpTimestamp(real_time_t const & time) const
 {
-	auto history = warpHistory_.EventsSinceInclusive(time);
-	if (history.Empty()) {
+	// No warping done, return 0.0 for the first timestamps
+	if (warpHistory_.AllEvents().Empty()) {
 		return 0.0 * score::seconds;
-	} else {
+	}
+
+	// Regular warping
+	auto history = warpHistory_.EventsSinceInclusive(time);
+	if (!history.Empty()) {
 		return history[0].data.Warp(time);
 	}
+
+	// Warp backwards for before-the-start events
+	return warpHistory_.AllEvents().Front().data.Warp(time, true);
 }
 
 real_time_t

@@ -39,23 +39,23 @@ TempoFollower::ReadScore(ScoreReader & reader)
 }
 
 void
+TempoFollower::RegisterStartGestureLength(duration_t const & gestureDuration)
+{
+	startTempoEstimator_.RegisterStartGestureLength(gestureDuration);
+	UseStartTempoEstimateIfReady();
+}
+
+void
 TempoFollower::RegisterPreparatoryBeat(real_time_t const & time)
 {
 	startTempoEstimator_.RegisterPreparatoryBeat(time);
+	UseStartTempoEstimateIfReady();
 }
 
 void
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
 	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
-
-	if (!startTempoEstimator_.Done()) {
-		auto speed = startTempoEstimator_.SpeedFromBeat(beatTime, clarity);
-		acceleration_.SetConstantSpeed(speed);
-		// Give the first beat to the classifiers also, but discard result
-		ClassifyBeatAt(beatTime, clarity);
-		return;
-	}
 
 	auto classification = ClassifyBeatAt(beatTime, clarity);
 	if (true /* TODO rejection! */) {
@@ -106,6 +106,20 @@ TempoFollower::BeatOffsetEstimate() const
 {
 	auto lastBeat = beatHistory_.AllEvents().Back().data;
 	return lastBeat.offset();
+}
+
+
+void
+TempoFollower::UseStartTempoEstimateIfReady()
+{
+	// TODO ugly hack! (do only once)
+	static bool done = false;
+	if (done || !startTempoEstimator_.ReadyForEstimates()) { return; }
+	done = true;
+
+	auto speed = startTempoEstimator_.SpeedEstimate();
+	acceleration_.SetConstantSpeed(speed);
+	return;
 }
 
 } // namespace ScoreFollower

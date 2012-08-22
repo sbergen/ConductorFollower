@@ -64,6 +64,12 @@ TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 }
 
 void
+TimeHelper::RegisterStartGestureLength(duration_t const & gestureDuration)
+{
+	tempoFollower_.RegisterStartGestureLength(gestureDuration);
+}
+
+void
 TimeHelper::RegisterPreparatoryBeat(real_time_t const & time)
 {
 	tempoFollower_.RegisterPreparatoryBeat(time);

@@ -40,7 +40,7 @@ private:
 	public:
 		WarpPoint(speed_t speed, real_time_t realTime, score_time_t scoreTime);
 		
-		score_time_t Warp(real_time_t const & time) const;
+		score_time_t Warp(real_time_t const & time, bool allowBackwardsWarping = false) const;
 		real_time_t InverseWarp(score_time_t const & time) const;
 
 		real_time_t realTime() const { return realTime_; }

@@ -34,8 +34,11 @@ public:
 	void StartNewBlock();
 	void FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter);
 
+	void RegisterStartGestureLength(duration_t const & gestureDuration);
 	void RegisterPreparatoryBeat(real_time_t const & time);
 	void RegisterBeat(real_time_t const & time, double prob);
+
+	real_time_t StartTimeEstimate() { return tempoFollower_.StartTimeEstimate(); }
 
 	// frame offset in current audio block
 	samples_t ScoreTimeToFrameOffset(score_time_t const & time) const;
