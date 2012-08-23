@@ -11,7 +11,7 @@
 namespace cf {
 namespace MotionTracker {
 
-namespace bus = boost::units::si;
+namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
@@ -149,9 +149,9 @@ OpenNIHandTracker::HandUpdateCallback(
 	auto it = hands_.find(id);
 	if (it != hands_.end())
 	{
-		coord_t x(position->X * bus::milli * bus::meter);
-		coord_t y(position->Y * bus::milli * bus::meter);
-		coord_t z(position->Z * bus::milli * bus::meter);
+		coord_t x(position->X * si::milli * si::meter);
+		coord_t y(position->Y * si::milli * si::meter);
+		coord_t z(position->Z * si::milli * si::meter);
 
 		it->second.observer.NewHandPosition(time, Point3D(x, y, z));
 	}
