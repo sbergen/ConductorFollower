@@ -40,10 +40,8 @@ TimeHelper::StartNewBlock()
 void
 TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 {
-	std::pair<score_time_t, score_time_t> scoreRange;
-
 	// Get start estimate based on old data
-	scoreRange.first = timeWarper_.WarpTimestamp(rtRange_.first);
+	scoreRange_.first = timeWarper_.WarpTimestamp(rtRange_.first);
 
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
@@ -51,16 +49,11 @@ TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 		previousSpeed_ = speed;
 		statusWriter->SetValue<Status::Speed>(speed);
 		conductorContext_.tempo = speed;
-		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange.first, speed);
+		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange_.first, speed);
 	}
 
 	// Now use the new estimate for this block
-	scoreRange.second = timeWarper_.WarpTimestamp(rtRange_.second);
-
-	if (scoreRange.first != 0.0 * score::seconds) {
-		assert(scoreRange_.second == scoreRange.first);
-	}
-	scoreRange_ = scoreRange;
+	scoreRange_.second = timeWarper_.WarpTimestamp(rtRange_.second);
 }
 
 void
