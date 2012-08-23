@@ -10,6 +10,7 @@
 #include "HandTracker.h"
 #include "HandObserver.h"
 #include "OpenNIUtils.h"
+#include "OpenNIRecorder.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -28,7 +29,7 @@ public:
 	bool WaitForData();
 
 protected:
-	virtual void InitNodes();
+	void InitNodes();
 	void InitCallbacks();
 
 private: // Callbacks
@@ -104,6 +105,10 @@ private: // OpenNI stuff
 
 	xn::HandsGenerator handsGenerator_;
 	XnCallbackHandle handsCallbackHandle_;
+
+private: // Recording
+
+	OpenNIRecorder recorder_;
 };
 
 } // namespace MotionTacker

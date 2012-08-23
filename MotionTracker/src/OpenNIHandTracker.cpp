@@ -15,6 +15,7 @@ namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
+	, recorder_(OpenNIRecorder::Record, "recording.oni")
 {
 }
 
@@ -33,7 +34,9 @@ OpenNIHandTracker::Init()
 	XnStatus s = context_.Init();
 	CheckXnStatus(utils_, s, "Context init");
 
+	recorder_.PreNodeInit(context_);
 	InitNodes();
+	recorder_.PostNodeInit(context_);
 	InitCallbacks();
 
 	s = context_.StartGeneratingAll();

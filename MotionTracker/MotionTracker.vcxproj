@@ -131,6 +131,7 @@
     <ClInclude Include="src\HandTracker.h" />
     <ClInclude Include="src\MotionFilter.h" />
     <ClInclude Include="src\OpenNIHandTracker.h" />
+    <ClInclude Include="src\OpenNIRecorder.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
     <ClInclude Include="src\StartGestureDetector.h" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClCompile Include="src\HandTracker.cpp" />
     <ClCompile Include="src\MotionFilter.cpp" />
     <ClCompile Include="src\OpenNIHandTracker.cpp" />
+    <ClCompile Include="src\OpenNIRecorder.cpp" />
     <ClCompile Include="src\OpenNIUtils.cpp" />
     <ClCompile Include="src\StartGestureDetector.cpp" />
   </ItemGroup>
