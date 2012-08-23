@@ -119,6 +119,7 @@
     <ClInclude Include="MotionTracker\EventProvider.h" />
     <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="MotionTracker\MotionState.h" />
+    <ClInclude Include="MotionTracker\StartGestureData.h" />
     <ClInclude Include="src\BeatDetector.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
     <ClInclude Include="src\common_types.h" />

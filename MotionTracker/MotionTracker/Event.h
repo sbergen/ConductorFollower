@@ -5,6 +5,7 @@
 #include "cf/time.h"
 
 #include "MotionTracker/MotionState.h"
+#include "MotionTracker/StartGestureData.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -21,7 +22,6 @@ public:
 		MotionStateUpdate,
 		Beat,
 		BeatProb,
-		PreparatoryBeat,
 		StartGesture,
 		VelocityPeak,
 		VelocityDynamicRange,
@@ -33,6 +33,7 @@ public:
 		boost::blank,
 		double,
 		MotionState,
+		StartGestureData,
 		timestamp_t, duration_t
 		> Data;
 

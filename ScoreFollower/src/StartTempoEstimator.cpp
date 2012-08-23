@@ -12,22 +12,10 @@ StartTempoEstimator::StartTempoEstimator()
 }
 
 void
-StartTempoEstimator::RegisterStartGestureLength(duration_t const & gestureDuration)
+StartTempoEstimator::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
-	startGestureDuration_ = gestureDuration;
-}
-
-void
-StartTempoEstimator::RegisterPreparatoryBeat(real_time_t const & time)
-{
-	preparatoryBeatTime_ = time;
-}
-
-bool
-StartTempoEstimator::ReadyForEstimates()
-{
-	return (startGestureDuration_ != duration_t(0) &&
-	        preparatoryBeatTime_ != real_time_t::min());
+	startGestureDuration_ = data.gestureDuration;
+	preparatoryBeatTime_ = data.preparatoryBeatTime;
 }
 
 real_time_t
@@ -46,6 +34,13 @@ StartTempoEstimator::SpeedEstimate()
 
 	LOG("Starting tempo: %1%, speed_: %2%", TempoFromStartGesture(), speed);
 	return speed;
+}
+
+bool
+StartTempoEstimator::ReadyForEstimates()
+{
+	return (startGestureDuration_ != duration_t(0) &&
+	        preparatoryBeatTime_ != real_time_t::min());
 }
 
 tempo_t

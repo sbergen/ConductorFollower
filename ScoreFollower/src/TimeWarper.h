@@ -19,6 +19,9 @@ public:
 		score_time_t const & scoreTime,
 		speed_t const & speed);
 
+	// return true if no mappings have been fixed
+	bool Empty() const { return warpHistory_.AllEvents().Empty(); }
+
 	// Returns the score time that should "occur" at the real time
 	score_time_t WarpTimestamp(real_time_t const & time) const;
 
@@ -32,6 +35,13 @@ public:
 	real_time_t InverseWarpTimestamp(score_time_t const & time) const;
 
 	speed_t SpeedAt(real_time_t const & time) const;
+
+	// Do a static time warp without registering any points to any warper.
+	static score_time_t WarpTimestamp(
+		real_time_t const & time,
+		real_time_t const & referenceRealTime,
+		score_time_t const & referenceScoreTime,
+		speed_t const & referenceSpeed);
 
 private:
 	// class for storing warping history

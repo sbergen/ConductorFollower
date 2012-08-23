@@ -95,6 +95,17 @@ TimeWarper::SpeedAt(real_time_t const & time) const
 	return events[0].data.speed();
 }
 
+score_time_t
+TimeWarper::WarpTimestamp(
+	real_time_t const & time,
+	real_time_t const & referenceRealTime,
+	score_time_t const & referenceScoreTime,
+	speed_t const & referenceSpeed)
+{
+	WarpPoint point(referenceSpeed, referenceRealTime, referenceScoreTime);
+	return point.Warp(time, true);
+}
+
 real_time_t
 TimeWarper::InverseWarpTimestamp(score_time_t const & time, WarpHistoryBuffer::Range & searchRange) const
 {

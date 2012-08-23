@@ -173,6 +173,11 @@ TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, score_time
 ScorePosition
 TempoMap::GetScorePositionAt(score_time_t const & time) const
 {
+	// Scpecial case for before the start
+	if (time < 0.0 * score::seconds) {
+		return changes_.AllEvents().Front().data.ScorePositionAt(time);
+	}
+
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
 	return range[0].data.ScorePositionAt(time);
@@ -181,6 +186,11 @@ TempoMap::GetScorePositionAt(score_time_t const & time) const
 TimeSignature
 TempoMap::GetMeterAt(score_time_t const & time) const
 {
+	// Scpecial case for before the start
+	if (time < 0.0 * score::seconds) {
+		return changes_.AllEvents().Front().data.meter();
+	}
+
 	auto range = changes_.EventsSinceInclusive(time);
 	assert(!range.Empty());
 	return range[0].data.meter();

@@ -40,8 +40,15 @@ TimeHelper::StartNewBlock()
 void
 TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 {
-	// Get start estimate based on old data
-	scoreRange_.first = timeWarper_.WarpTimestamp(rtRange_.first);
+	// Get start estimate based on old data or start gesture
+	if (timeWarper_.Empty()) {
+		auto startTime = tempoFollower_.StartTimeEstimate();
+		auto startSpeed = tempoFollower_.SpeedEstimateAt(startTime);
+		scoreRange_.first = TimeWarper::WarpTimestamp(rtRange_.first,
+			startTime, 0.0 * score::seconds, startSpeed);
+	} else {
+		scoreRange_.first = timeWarper_.WarpTimestamp(rtRange_.first);
+	}
 
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
@@ -54,18 +61,13 @@ TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 
 	// Now use the new estimate for this block
 	scoreRange_.second = timeWarper_.WarpTimestamp(rtRange_.second);
+	//LOG("Score range for audio block: %1% to %2%", scoreRange_.first, scoreRange_.second);
 }
 
 void
-TimeHelper::RegisterStartGestureLength(duration_t const & gestureDuration)
+TimeHelper::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
-	tempoFollower_.RegisterStartGestureLength(gestureDuration);
-}
-
-void
-TimeHelper::RegisterPreparatoryBeat(real_time_t const & time)
-{
-	tempoFollower_.RegisterPreparatoryBeat(time);
+	tempoFollower_.RegisterStartGesture(data);
 }
 
 void

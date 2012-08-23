@@ -5,6 +5,8 @@
 #include "cf/EventBuffer.h"
 #include "cf/units_math.h"
 
+#include "MotionTracker/StartGestureData.h"
+
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/ScoreReader.h"
 
@@ -30,8 +32,7 @@ public:
 	void ReadScore(ScoreReader & reader);
 	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_.LearnPatterns(patterns); }
 
-	void RegisterStartGestureLength(duration_t const & gestureDuration);
-	void RegisterPreparatoryBeat(real_time_t const & time);
+	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 	void RegisterBeat(real_time_t const & beatTime, double prob);
 
 	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
@@ -44,7 +45,6 @@ private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
 
 	beat_pos_t BeatOffsetEstimate() const;
-	void UseStartTempoEstimateIfReady();
 
 private:
 	TimeWarper const & timeWarper_;

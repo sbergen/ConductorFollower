@@ -39,17 +39,17 @@ TempoFollower::ReadScore(ScoreReader & reader)
 }
 
 void
-TempoFollower::RegisterStartGestureLength(duration_t const & gestureDuration)
+TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
-	startTempoEstimator_.RegisterStartGestureLength(gestureDuration);
-	UseStartTempoEstimateIfReady();
-}
+	startTempoEstimator_.RegisterStartGesture(data);
 
-void
-TempoFollower::RegisterPreparatoryBeat(real_time_t const & time)
-{
-	startTempoEstimator_.RegisterPreparatoryBeat(time);
-	UseStartTempoEstimateIfReady();
+	// TODO ugly hack! (do only once)
+	static bool done = false;
+	if (done) { return; }
+	done = true;
+
+	auto speed = startTempoEstimator_.SpeedEstimate();
+	acceleration_.SetConstantSpeed(speed);
 }
 
 void
@@ -108,19 +108,6 @@ TempoFollower::BeatOffsetEstimate() const
 	return lastBeat.offset();
 }
 
-
-void
-TempoFollower::UseStartTempoEstimateIfReady()
-{
-	// TODO ugly hack! (do only once)
-	static bool done = false;
-	if (done || !startTempoEstimator_.ReadyForEstimates()) { return; }
-	done = true;
-
-	auto speed = startTempoEstimator_.SpeedEstimate();
-	acceleration_.SetConstantSpeed(speed);
-	return;
-}
 
 } // namespace ScoreFollower
 } // namespace cf

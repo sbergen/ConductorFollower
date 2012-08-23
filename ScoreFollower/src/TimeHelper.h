@@ -5,6 +5,7 @@
 
 #include "PatchMapper/ConductorContext.h"
 #include "Data/BeatPatternParser.h"
+#include "MotionTracker/StartGestureData.h"
 
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/Follower.h"
@@ -34,8 +35,7 @@ public:
 	void StartNewBlock();
 	void FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter);
 
-	void RegisterStartGestureLength(duration_t const & gestureDuration);
-	void RegisterPreparatoryBeat(real_time_t const & time);
+	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 	void RegisterBeat(real_time_t const & time, double prob);
 
 	real_time_t StartTimeEstimate() { return tempoFollower_.StartTimeEstimate(); }

@@ -2,6 +2,8 @@
 
 #include <boost/utility.hpp>
 
+#include "MotionTracker/StartGestureData.h"
+
 #include "ScoreFollower/types.h"
 
 namespace cf {
@@ -14,14 +16,13 @@ public:
 
 	void SetStartTempo(tempo_t const & tempoInScore) { tempoInScore_ = tempoInScore; }
 
-	void RegisterStartGestureLength(duration_t const & gestureDuration);
-	void RegisterPreparatoryBeat(real_time_t const & time);
+	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 
-	bool ReadyForEstimates();
 	real_time_t StartTimeEstimate();
 	speed_t SpeedEstimate();
 
 private:
+	bool ReadyForEstimates();
 	tempo_t TempoFromStartGesture();
 
 private:

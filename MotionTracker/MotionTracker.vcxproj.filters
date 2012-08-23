@@ -65,6 +65,9 @@
     <ClInclude Include="src\StartGestureDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MotionTracker\StartGestureData.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">

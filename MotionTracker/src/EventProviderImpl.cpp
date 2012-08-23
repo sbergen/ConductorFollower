@@ -156,8 +156,9 @@ EventProviderImpl::DetectStartGesture(timestamp_t const & timeNow, MotionState c
 {
 	auto startResult = startDetector_.Detect(timeNow, state, beatOccurred);
 	if (startResult) {
-		eventBuffer_.enqueue(Event(timeNow, Event::PreparatoryBeat, startResult.previousBeatTime));
-		eventBuffer_.enqueue(Event(timeNow, Event::StartGesture, startResult.gestureLength));
+		eventBuffer_.enqueue(
+			Event(timeNow, Event::StartGesture,
+				StartGestureData(startResult.previousBeatTime, startResult.gestureLength)));
 	}
 }
 

@@ -86,14 +86,14 @@ FollowerImpl::StartNewBlock()
 
 
 	// Check for starting state
-	// TODO intra-buffer start
 	if (State() == FollowerState::GotStart &&
-		currentBlock.first >= timeHelper_->StartTimeEstimate())
+		currentBlock.second >= timeHelper_->StartTimeEstimate())
 	{
 		SetState(writer, FollowerState::Rolling);
 	}
 
-	if (State() != FollowerState::Rolling) { return 0; }
+	if (State() != FollowerState::Rolling &&
+		State() != FollowerState::GotStart) { return 0; }
 
 	// If rolling, fix score range
 	timeHelper_->FixScoreRange(writer);
@@ -174,12 +174,9 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
-			timeHelper_->RegisterStartGestureLength(e.data<duration_t>());
+			timeHelper_->RegisterStartGesture(e.data<StartGestureData>());
 			SetState(writer, FollowerState::GotStart);
 		}
-		break;
-	case Event::PreparatoryBeat:
-		timeHelper_->RegisterPreparatoryBeat(e.data<real_time_t>());
 		break;
 	}
 }
