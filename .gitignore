@@ -27,3 +27,4 @@
 # Test related sutff
 *.testdata
 *.log
+*.oni
