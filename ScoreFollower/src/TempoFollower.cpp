@@ -1,5 +1,8 @@
 #include "TempoFollower.h"
 
+#include <boost/bind.hpp>
+#include <boost/variant/apply_visitor.hpp>
+
 #include "cf/globals.h"
 #include "cf/math.h"
 
@@ -13,11 +16,23 @@ namespace ScoreFollower {
 
 namespace si = boost::units::si;
 
-namespace {
+class TempoFollower::ScoreEventBuilder
+{
+public:
+	typedef void result_type;
 
-	score_time_t accelerationTime = time_quantity(1.8 * score::seconds);
+	ScoreEventBuilder(TempoFollower & parent)
+		: parent_(parent) {}
 
-} // anon namespace
+	void operator() (Data::TempoSensitivityChange const & change) const
+	{
+		auto scoreTime = parent_.tempoMap_.TimeAt(change.position);
+		parent_.tempoSensitivities_.RegisterEvent(scoreTime, change);
+	}
+
+private:
+	TempoFollower & parent_;
+};
 
 TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	: timeWarper_(timeWarper)
@@ -36,6 +51,17 @@ TempoFollower::ReadScore(ScoreReader & reader)
 	tempoMap_.ReadScore(reader);
 	auto start = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
 	startTempoEstimator_.SetStartTempo(start.tempo());
+}
+
+void
+TempoFollower::LearnScoreEvents(Data::ScoreEventList const & events)
+{
+	ScoreEventBuilder visitor(*this);
+	std::for_each(std::begin(events), std::end(events),
+		[visitor](Data::ScoreEvent const & event)
+		{
+			boost::apply_visitor(visitor, event);
+		});
 }
 
 void
@@ -71,6 +97,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 
 		// TODO Move to estimator
 		auto offsetEstimate = -BeatOffsetEstimate();
+		auto accelerationTime = AccelerationTimeAt(scoreTime);
 		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
 		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
 
@@ -102,6 +129,20 @@ TempoFollower::BeatOffsetEstimate() const
 	return lastBeat.offset();
 }
 
+score_time_t
+TempoFollower::AccelerationTimeAt(score_time_t time)
+{
+	score_time_t const minAccelerationTime = time_quantity(0.1 * score::seconds);
+	score_time_t const accelerationTimeRange = time_quantity(3.4 * score::seconds);
+	score_time_t const defaultAccelerationTime = time_quantity(1.8 * score::seconds);
+
+	auto changes = tempoSensitivities_.EventsSinceInclusive(time);
+	if (changes.Empty()) { return defaultAccelerationTime; }
+
+	auto sensitivity = changes.Front().data.sensitivity;
+	auto factor = 1.0 - sensitivity;
+	return minAccelerationTime + (factor * accelerationTimeRange);
+}
 
 } // namespace ScoreFollower
 } // namespace cf

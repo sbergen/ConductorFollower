@@ -234,6 +234,9 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 	beatPatternParser.parse(scoreParser.data().beatPatternFile);
 	timeHelper_->LearnPatterns(beatPatternParser.Patterns());
 
+	// Events
+	timeHelper_->LearnScoreEvents(scoreParser.data().events);
+
 	EnsureMotionTrackingIsStarted();
 }
 

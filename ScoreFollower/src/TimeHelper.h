@@ -30,6 +30,7 @@ public:
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
 	void ReadScore(ScoreReader & reader) { tempoFollower_.ReadScore(reader); }
 	void LearnPatterns(Data::PatternMap const & patterns) { tempoFollower_.LearnPatterns(patterns); }
+	void LearnScoreEvents(Data::ScoreEventList const & events) { tempoFollower_.LearnScoreEvents(events); }
 
 	// These need to be clled in this order!
 	void StartNewBlock();

@@ -196,6 +196,29 @@ TempoMap::GetMeterAt(score_time_t const & time) const
 	return range[0].data.meter();
 }
 
+score_time_t
+TempoMap::TimeAt(Data::ScorePosition const & pos)
+{
+	auto bar = pos.bar * score::bars;
+	auto beat = pos.beat * score::beats;
+
+	ScorePosition closestChange;
+	changes_.AllEvents().ForEachWhile(
+		[&closestChange, bar, beat](score_time_t const &, ScorePosition const & position) -> bool
+		{
+			if (position.bar() > bar ||
+				(position.bar() == bar && position.beat() > beat))
+			{
+				return false;
+			}
+			closestChange = position;
+			return true;
+
+		});
+
+	return closestChange.ScorePositionAt(bar, beat).time();
+}
+
 void
 TempoMap::EnsureChangesNotEmpty()
 {

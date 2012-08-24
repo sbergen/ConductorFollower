@@ -70,6 +70,13 @@ public: // Constructors and generation methods
 		return ScorePosition(time, absolutePosition, tempo_, meter_, bar, beat);
 	}
 
+	ScorePosition ScorePositionAt(bar_pos_t const & bar, beat_pos_t const & beat)
+	{
+		beat_pos_t beatsFromBeginningOfBar = (bar - bar_) * meter_.BarDuration() + beat;
+		beat_pos_t absolutePos = BeginningOfThisBar() + beatsFromBeginningOfBar;
+		return ScorePositionAt(absolutePos);
+	}
+
 public:
 
 	score_time_t const & time() const { return absoluteTime_; }

@@ -6,9 +6,10 @@
 #include "cf/units_math.h"
 
 #include "MotionTracker/StartGestureData.h"
+#include "Data/ScoreEvent.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/ScoreReader.h"
+#include "Data/Score.h"
 
 #include "TempoMap.h"
 #include "BeatClassification.h"
@@ -31,6 +32,7 @@ public:
 
 	void ReadScore(ScoreReader & reader);
 	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_.LearnPatterns(patterns); }
+	void LearnScoreEvents(Data::ScoreEventList const & events);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 	void RegisterBeat(real_time_t const & beatTime, double prob);
@@ -39,12 +41,15 @@ public:
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
 private:
+	class ScoreEventBuilder;
 	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
+	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t> TempoSensitivityBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
 
 	beat_pos_t BeatOffsetEstimate() const;
+	score_time_t AccelerationTimeAt(score_time_t time);
 
 private:
 	TimeWarper const & timeWarper_;
@@ -57,6 +62,8 @@ private:
 
 	bool newBeats_;
 	SpeedFunction acceleration_;
+
+	TempoSensitivityBuffer tempoSensitivities_;
 };
 
 } // namespace ScoreFollower
