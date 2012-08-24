@@ -4,11 +4,13 @@
 #include <vector>
 
 #include "Data/Track.h"
+#include "Data/ScoreEvent.h"
 
 namespace cf {
 namespace Data {
 
 typedef std::vector<Track> TrackList;
+typedef std::vector<ScoreEvent> ScoreEventList;
 
 struct Score
 {
@@ -16,7 +18,9 @@ struct Score
 	std::string midiFile;
 	std::string instrumentFile;
 	std::string beatPatternFile;
+
 	TrackList tracks;
+	ScoreEventList events;
 };
 
 } // namespace Data

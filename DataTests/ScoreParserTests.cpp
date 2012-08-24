@@ -26,6 +26,10 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 					<< "instrument: \"piano\""
 				<< "},"
 				<< "track { }" // dummy track
+			<< "],"
+			<< "events: ["
+				<< "tempo_sensitivity { position: 0|0, sensitivity: 0.8 }"
+				<< "tempo_sensitivity { position: 1|2, sensitivity: 0.5 }"
 			<< "]"
 		<< "}";
 
@@ -45,12 +49,21 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	BOOST_CHECK_EQUAL(score.midiFile, "/home/user/nggyu.mid");
 	BOOST_CHECK_EQUAL(score.instrumentFile, "/home/user/instr.def");
 	
-	// Track
+	// Tracks
 	BOOST_REQUIRE_GT(score.tracks.size(), 0);
 	BOOST_CHECK_EQUAL(score.tracks.size(), 2);
 	auto track = score.tracks[0];
 	BOOST_CHECK_EQUAL(track.name, "piano");
 	BOOST_CHECK_EQUAL(track.instrument, "piano");
+
+	// Events
+	BOOST_REQUIRE_GT(score.events.size(), 0);
+	BOOST_CHECK_EQUAL(score.events.size(), 2);
+	BOOST_REQUIRE(score.events[0].type() == typeid(TempoSensitivityChange));
+	auto tempoSensitivityChange = boost::get<TempoSensitivityChange>(score.events[0]);
+	BOOST_CHECK_EQUAL(tempoSensitivityChange.position.bar, 0);
+	BOOST_CHECK_EQUAL(tempoSensitivityChange.position.beat, 0.0);
+	BOOST_CHECK_CLOSE(tempoSensitivityChange.sensitivity, 0.8, 0.001);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
