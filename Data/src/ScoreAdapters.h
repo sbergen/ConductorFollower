@@ -3,6 +3,7 @@
 #include <boost/fusion/adapted.hpp>
 
 #include "Data/Score.h"
+#include "Data/ScorePosition.h"
 
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Track,
@@ -17,4 +18,10 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(std::string, instrumentFile)
 	(std::string, beatPatternFile)
 	(cf::Data::TrackList, tracks)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	cf::Data::ScorePosition,
+    (int, bar)
+	(double, beat)
 )
