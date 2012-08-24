@@ -4,6 +4,7 @@
 
 #include "Data/Score.h"
 #include "Data/ScorePosition.h"
+#include "Data/ScoreEvent.h"
 
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Track,
@@ -20,8 +21,18 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(cf::Data::TrackList, tracks)
 )
 
+// Position
+
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::ScorePosition,
     (int, bar)
 	(double, beat)
+)
+
+// Events
+
+BOOST_FUSION_ADAPT_STRUCT(
+	cf::Data::TempoSensitivityChange,
+    (cf::Data::ScorePosition, position)
+	(double, sensitivity)
 )

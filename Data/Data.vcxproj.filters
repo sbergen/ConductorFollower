@@ -84,6 +84,12 @@
     <ClInclude Include="src\score_position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Data\ScoreEvent.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\score_event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp">

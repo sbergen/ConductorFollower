@@ -4,7 +4,7 @@
 
 #include "score_position.h"
 
-BOOST_AUTO_TEST_SUITE(KeyswitchParserTests)
+BOOST_AUTO_TEST_SUITE(ScorePositionParserTests)
 
 using namespace cf;
 using namespace cf::Data;
@@ -46,6 +46,15 @@ BOOST_AUTO_TEST_CASE(TestPositions)
 	pos = ParseString("42|1.234");
 	BOOST_CHECK_EQUAL(pos.bar, 42);
 	BOOST_CHECK_CLOSE(pos.beat, 1.234, 0.001);
+}
+
+BOOST_AUTO_TEST_CASE(TestSpace)
+{
+	ScorePosition pos;
+	
+	pos = ParseString(" 1 | 4.2 ");
+	BOOST_CHECK_EQUAL(pos.bar, 1);
+	BOOST_CHECK_CLOSE(pos.beat, 4.2, 0.001);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

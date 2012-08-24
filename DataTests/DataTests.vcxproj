@@ -119,6 +119,7 @@
     <ClCompile Include="InstrumentParserTests.cpp" />
     <ClCompile Include="KeyswitchParserTests.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ScoreEventParserTest.cpp" />
     <ClCompile Include="ScoreParserTests.cpp" />
     <ClCompile Include="ScorePositionParserTest.cpp" />
   </ItemGroup>

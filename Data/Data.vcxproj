@@ -123,6 +123,7 @@
     <ClInclude Include="Data\InstrumentParser.h" />
     <ClInclude Include="Data\InstrumentPatch.h" />
     <ClInclude Include="Data\Score.h" />
+    <ClInclude Include="Data\ScoreEvent.h" />
     <ClInclude Include="Data\ScoreParser.h" />
     <ClInclude Include="Data\ScorePosition.h" />
     <ClInclude Include="Data\Track.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="src\parse.h" />
     <ClInclude Include="src\ScoreAdapters.h" />
     <ClInclude Include="src\ScoreGrammar.h" />
+    <ClInclude Include="src\score_event.h" />
     <ClInclude Include="src\score_position.h" />
     <ClInclude Include="src\time_signature.h" />
   </ItemGroup>
