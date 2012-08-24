@@ -181,6 +181,7 @@ public: // Main interface
 
 	void RegisterEvent(TTimestamp const & time, TData const & data)
 	{
+		assert(timestamps_.empty() || time >= timestamps_.back());
 		timestamps_.push_back(time);
 		data_.push_back(data);
 	}
