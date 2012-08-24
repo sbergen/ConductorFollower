@@ -9,22 +9,7 @@ BOOST_AUTO_TEST_SUITE(KeyswitchParserTests)
 using namespace cf;
 using namespace cf::Data;
 
-namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
-namespace phoenix = boost::phoenix;
-
-// Test grammar
-template <typename Iterator>
-struct TestGrammar : qi::grammar<Iterator, int(), ascii::space_type>
-{
-    TestGrammar() : TestGrammar::base_type(start)
-    {
-		start %= keyswitch;
-    }
-
-	keyswitch::grammar<Iterator, ascii::space_type> keyswitch;
-	qi::rule<Iterator, int(), ascii::space_type> start;
-};
 
 int ParseString(std::string const & str)
 {
@@ -33,7 +18,7 @@ int ParseString(std::string const & str)
     iterator_type end = str.end();
 
 	int ret = -1;
-	TestGrammar<iterator_type> grammar;
+	keyswitch::grammar<iterator_type, ascii::space_type> grammar;
 	bool success = qi::phrase_parse(iter, end, grammar, ascii::space, ret);
 	BOOST_CHECK(iter == end); // Can't print these...
 
