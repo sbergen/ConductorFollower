@@ -42,12 +42,6 @@ void
 TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
 	startTempoEstimator_.RegisterStartGesture(data);
-
-	// TODO ugly hack! (do only once)
-	static bool done = false;
-	if (done) { return; }
-	done = true;
-
 	auto speed = startTempoEstimator_.SpeedEstimate();
 	acceleration_.SetConstantSpeed(speed);
 }
