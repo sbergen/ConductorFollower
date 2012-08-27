@@ -64,7 +64,7 @@ MidiReader::TempoReaderImpl::TempoReaderImpl(MidiFile const & file)
 bool
 MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, tempo_t & data)
 {
-	assert(current_ < count_);
+	if (current_ >= count_) { return false; }
 	
 	timestamp = sequence_.getEventTime(current_) * score::seconds;
 	
@@ -74,7 +74,7 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	data = tempo_t(1.0 / rawTempo);
 	
 	++current_;
-	return current_ < count_;
+	return true;
 }
 
 // Meter reader
@@ -89,7 +89,7 @@ MidiReader::MeterReaderImpl::MeterReaderImpl(MidiFile const & file)
 bool
 MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, cf::TimeSignature & data)
 {
-	assert(current_ < count_);
+	if (current_ >= count_) { return false; }
 	
 	timestamp = sequence_.getEventTime(current_) * score::seconds;
 	
@@ -100,7 +100,7 @@ MidiReader::MeterReaderImpl::NextEvent(sf::score_time_t & timestamp, cf::TimeSig
 	data = TimeSignature(numerator, denominator);
 
 	++current_;
-	return current_ < count_;
+	return true;
 }
 
 // Track reader
@@ -114,7 +114,7 @@ MidiReader::TrackReaderImpl::TrackReaderImpl(MidiMessageSequence const & sequenc
 bool
 MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timestamp, sf::ScoreEventPtr & data)
 {
-	assert(current_ < count_);
+	if (current_ >= count_) { return false; }
 	
 	timestamp = sequence_.getEventTime(current_) * score::seconds;
 
@@ -135,5 +135,5 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 #endif // DEBUG_SCORE
 
 	++current_;
-	return current_ < count_;
+	return true;
 }

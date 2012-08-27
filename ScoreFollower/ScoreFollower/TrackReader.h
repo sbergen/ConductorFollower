@@ -14,6 +14,7 @@ class TrackReader : public boost::noncopyable
 public:
 	virtual ~TrackReader() {}
 
+	// Return false when no event could be read (i.e. past-the-end)
 	virtual bool NextEvent(score_time_t & timestamp, TData & data) = 0;
 };
 

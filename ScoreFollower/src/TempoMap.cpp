@@ -129,10 +129,20 @@ TempoMap::ReadScore(ScoreReader & reader)
 	ReadFromReader<tempo_t>(reader.TempoTrack(), vector);
 	std::sort(std::begin(vector), std::end(vector), EventComparer());
 
+	// If empty set defaults and return
+	if (vector.empty()) {
+		EnsureChangesNotEmpty();
+		return;
+	}
+
+	// otherwise check the first time stamp
+	// if it is not at the beginning, add defaults to beginning
 	if (vector.front().first > 0.0 * score::seconds) {
 		EnsureChangesNotEmpty();
 	}
 
+	// Then iterate through the rest, note that begin() is 
+	// guaranteed to be valid at this stage
 	EventVector::iterator previous = vector.begin();
 	for (auto it = previous + 1; it != vector.end(); ++it) {
 		if (it->first > previous->first) {
