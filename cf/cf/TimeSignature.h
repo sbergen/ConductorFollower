@@ -31,7 +31,8 @@ public:
 	typedef boost::units::quantity<score::bar_duration> bar_duration_t;
 	bar_duration_t BarDuration() const
 	{
-		return bar_duration_t(((count_ * score::full_notes) / division_) / score::bar);
+		double fullNotes = static_cast<double>(count_) / division_;
+		return bar_duration_t((fullNotes * score::full_notes) / score::bar);
 	}
 
 public: // For ordering
