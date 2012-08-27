@@ -27,11 +27,12 @@ struct grammar : qi::grammar<Iterator, cf::TimeSignature(), SkipperType>
 	{
 		using qi::lit;
 		using qi::uint_;
+		using qi::_val;
 		using qi::_1;
 		using qi::_2;
 
 		start = (uint_ >> lit('/') > uint_)
-			[ phoenix::construct<cf::TimeSignature>(_1, _2) ];
+			[ _val = phoenix::construct<cf::TimeSignature>(_1, _2) ];
 	}
 
 	qi::rule<Iterator, cf::TimeSignature(), SkipperType> start;
