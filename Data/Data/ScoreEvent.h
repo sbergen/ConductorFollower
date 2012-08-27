@@ -2,6 +2,8 @@
 
 #include <boost/variant.hpp>
 
+#include "cf/score_units.h"
+
 #include "Data/ScorePosition.h"
 
 namespace cf {
@@ -13,7 +15,13 @@ struct TempoSensitivityChange
 	double sensitivity;
 };
 
-typedef boost::variant<TempoSensitivityChange> ScoreEvent;
+struct Fermata
+{
+	ScorePosition position;
+	double length;
+};
+
+typedef boost::variant<TempoSensitivityChange, Fermata> ScoreEvent;
 
 } // namespace Data
 } // namespace cf

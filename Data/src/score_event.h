@@ -33,10 +33,14 @@ struct grammar : qi::grammar<Iterator, ScoreEvent(), SkipperType>
 		score_position_ = lit("position") > ':' > score_position_grammar >> elem_separator;
 
 		sensitivity = lit("sensitivity") > ':' > double_ >> elem_separator;
-		tempo_sensitivity_body = score_position_ > sensitivity;
+		tempo_sensitivity_body = score_position_ ^ sensitivity;
 		tempo_sensitivity = lit("tempo_sensitivity") > '{' > tempo_sensitivity_body > '}';
 
-		start = tempo_sensitivity;
+		length = lit("length") > ':' > double_ >> elem_separator;
+		fermata_body = score_position_ ^ length;
+		fermata = lit("fermata") > '{' > fermata_body > '}';
+
+		start = tempo_sensitivity | fermata;
 	}
 
 	qi::rule<Iterator, void(), SkipperType> elem_separator;
@@ -48,6 +52,10 @@ struct grammar : qi::grammar<Iterator, ScoreEvent(), SkipperType>
 	qi::rule<Iterator, double(), SkipperType> sensitivity;
 	qi::rule<Iterator, TempoSensitivityChange(), SkipperType> tempo_sensitivity_body;
 	qi::rule<Iterator, TempoSensitivityChange(), SkipperType> tempo_sensitivity;
+
+	qi::rule<Iterator, double(), SkipperType> length;
+	qi::rule<Iterator, Fermata(), SkipperType> fermata_body;
+	qi::rule<Iterator, Fermata(), SkipperType> fermata;
 };
 
 } // namespace keyswitch

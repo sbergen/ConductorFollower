@@ -30,6 +30,12 @@ public:
 		parent_.tempoSensitivities_.RegisterEvent(scoreTime, change);
 	}
 
+	void operator() (Data::Fermata const & fermata) const
+	{
+		auto scoreTime = parent_.tempoMap_.TimeAt(fermata.position);
+		parent_.fermatas_.RegisterEvent(scoreTime, fermata);
+	}
+
 private:
 	TempoFollower & parent_;
 };

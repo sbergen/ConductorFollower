@@ -44,6 +44,7 @@ private:
 	class ScoreEventBuilder;
 	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t> TempoSensitivityBuffer;
+	typedef EventBuffer<Data::Fermata, score_time_t> FermataBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
@@ -64,6 +65,7 @@ private:
 	SpeedFunction acceleration_;
 
 	TempoSensitivityBuffer tempoSensitivities_;
+	FermataBuffer fermatas_;
 };
 
 } // namespace ScoreFollower
