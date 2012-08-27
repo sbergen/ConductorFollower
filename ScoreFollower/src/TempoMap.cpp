@@ -165,7 +165,7 @@ TempoMap::ReadScore(ScoreReader & reader)
 }
 
 ScorePosition
-TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, score_time_t timeHint) const
+TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, ScorePosition::Rounding rounding, score_time_t timeHint) const
 {
 	ScorePosition nearestChange;
 	auto changes = changes_.EventsSinceInclusive(timeHint);
@@ -177,7 +177,7 @@ TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, score_time
 			return true;
 		});
 
-	return nearestChange.ScorePositionAt(absoluteBeatPosition);
+	return nearestChange.ScorePositionAt(absoluteBeatPosition, rounding);
 }
 
 ScorePosition

@@ -31,7 +31,7 @@ BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 
 	currentTimeSignature_ = tempoMap_.GetMeterAt(0.0 * score::seconds);
 	currentBarStart_ = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
-	nextBarStart_ = tempoMap_.GetScorePositionAt(currentBarStart_.BeginningOfNextBar());
+	nextBarStart_ = tempoMap_.GetScorePositionAt(currentBarStart_.BeginningOfNextBar(), ScorePosition::RoundToBar);
 	currentOffsetEstimate_ = 0.0 * score::beats;
 
 	LOG("Using a total of %1% beat patterns for %2% different time signatures",
@@ -78,7 +78,10 @@ BeatClassifier::ProgressToNextBar()
 
 	currentBarStart_ = nextBarStart_;
 	currentTimeSignature_ = currentBarStart_.meter();
-	nextBarStart_ = tempoMap_.GetScorePositionAt(currentBarStart_.BeginningOfNextBar(), currentBarStart_.time());
+	nextBarStart_ = tempoMap_.GetScorePositionAt(
+		currentBarStart_.BeginningOfNextBar(), ScorePosition::RoundToBar, currentBarStart_.time());
+
+	assert(currentBarStart_.position() != nextBarStart_.position());
 }
 
 void

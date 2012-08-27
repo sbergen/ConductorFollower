@@ -33,6 +33,7 @@ public:
 	// timeHint needs to be smaller than the time at absolutePosition
 	ScorePosition GetScorePositionAt(
 		beat_pos_t const & absoluteBeatPosition,
+		ScorePosition::Rounding rounding = ScorePosition::NoRounding,
 		score_time_t timeHint = score_time_t(0.0 * score::seconds)) const;
 
 	score_time_t TimeAt(Data::ScorePosition const & pos);

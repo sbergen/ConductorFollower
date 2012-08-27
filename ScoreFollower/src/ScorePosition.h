@@ -10,6 +10,15 @@ namespace ScoreFollower {
 
 class ScorePosition
 {
+public:
+	enum Rounding
+	{
+		NoRounding,
+		RoundToBar,
+		RoundToBeat,
+		RoundToMeterDivision
+	};
+
 public: // Constructors and generation methods
 
 	// Position at beginning, with MIDI defaults
@@ -54,7 +63,7 @@ public: // Constructors and generation methods
 		return ChangeAt(time, meter_, tempo_);
 	}
 
-	ScorePosition ScorePositionAt(beat_pos_t const & absolutePosition) const
+	ScorePosition ScorePositionAt(beat_pos_t const & absolutePosition, Rounding rounding = NoRounding) const
 	{
 		// We only go toward the future
 		assert(absolutePosition >= absolutePosition_);
@@ -67,14 +76,14 @@ public: // Constructors and generation methods
 		bars_t bar = bar_ + barsFromBeginningOfThisBar;
 		beats_t beat = beatsFromBeginningOfThisBar - (barsFromBeginningOfThisBar * barDuration);
 
-		return ScorePosition(time, absolutePosition, tempo_, meter_, bar, beat);
+		return ScorePosition(time, absolutePosition, tempo_, meter_, bar, beat, rounding);
 	}
 
-	ScorePosition ScorePositionAt(bar_pos_t const & bar, beat_pos_t const & beat)
+	ScorePosition ScorePositionAt(bar_pos_t const & bar, beat_pos_t const & beat, Rounding rounding = NoRounding)
 	{
 		beat_pos_t beatsFromBeginningOfBar = (bar - bar_) * meter_.BarDuration() + beat;
 		beat_pos_t absolutePos = BeginningOfThisBar() + beatsFromBeginningOfBar;
-		return ScorePositionAt(absolutePos);
+		return ScorePositionAt(absolutePos, rounding);
 	}
 
 public:
@@ -99,14 +108,17 @@ public:
 private: // "explicit" construction is private, use the generation methods otherwise
 	ScorePosition(score_time_t const & time, beat_pos_t const & position,
 	              tempo_t const & tempo, TimeSignature const & meter,
-	              bar_pos_t bar, beat_pos_t beat)
+	              bar_pos_t bar, beat_pos_t beat,
+				  Rounding rounding = NoRounding)
 		: absoluteTime_(time)
 		, absolutePosition_(position)
 		, tempo_(tempo)
 		, meter_(meter)
 		, bar_(bar)
 		, beat_(beat)
-	{}
+	{
+		Round(rounding);
+	}
 
 	beats_t BeatsTo(score_time_t const & time) const
 	{
@@ -122,6 +134,38 @@ private: // "explicit" construction is private, use the generation methods other
 	{
 		beats_t beatDiff = absolutePosition - absolutePosition_;
 		return absoluteTime_ + (beatDiff / tempo_);
+	}
+
+	void Round(Rounding rounding)
+	{
+		switch (rounding)
+		{
+		case NoRounding:
+			break;
+		case RoundToBar:
+			{
+				if (beat_ == 0.0 * score::beats) { break; }
+
+				auto diffToEnd = meter_.BarDuration() * score::bars - beat_;
+				if (diffToEnd <= beat_) {
+					// Round up
+					bar_ += 1.0 * score::bars;
+					absolutePosition_ += diffToEnd;
+				} else {
+					// Round down
+					absolutePosition_ -=  beat_;
+				}
+
+				beat_ = 0.0 * score::beats;
+			}
+			break;
+		case RoundToBeat:
+			assert(false); // Not implemented
+			break;
+		case RoundToMeterDivision:
+			assert(false); // Not implemented
+			break;
+		}
 	}
 
 private:
