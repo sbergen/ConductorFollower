@@ -42,5 +42,5 @@ BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Fermata,
 	(cf::Data::ScorePosition, tempoReference)
 	(cf::Data::ScorePosition, position)
-	(double, length)
+	(cf::Data::ScorePosition, end)
 )

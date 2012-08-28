@@ -19,7 +19,7 @@ struct Fermata
 {
 	ScorePosition tempoReference;
 	ScorePosition position;
-	double length;
+	ScorePosition end;
 };
 
 typedef boost::variant<TempoSensitivityChange, Fermata> ScoreEvent;

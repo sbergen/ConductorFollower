@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/operators.hpp>
+
 #include "cf/units_math.h"
 #include "cf/TimeSignature.h"
 
@@ -8,7 +10,7 @@
 namespace cf {
 namespace ScoreFollower {
 
-class ScorePosition
+class ScorePosition : public boost::totally_ordered<ScorePosition>
 {
 public:
 	enum Rounding
@@ -103,6 +105,19 @@ public:
 	beat_pos_t BeginningOfNextBar() const
 	{
 		return BeginningOfThisBar() + (meter_.BarDuration() * score::bar);
+	}
+
+public: // Ordering and comparison (totally_ordered provides the rest)
+	bool operator< (ScorePosition const & other) const
+	{
+		// Use absolute position
+		return absolutePosition_ < other.absolutePosition_;
+	}
+
+	bool operator== (ScorePosition const & other) const
+	{
+		// Treat really close values as equal
+		return std::abs(absolutePosition_.value() - other.absolutePosition_.value()) < 0.001;
 	}
 
 private: // "explicit" construction is private, use the generation methods otherwise

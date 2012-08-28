@@ -37,8 +37,8 @@ struct grammar : qi::grammar<Iterator, ScoreEvent(), SkipperType>
 		tempo_sensitivity = lit("tempo_sensitivity") > '{' > tempo_sensitivity_body > '}';
 
 		tempo_reference = lit("tempo_reference") > ':' > score_position_grammar >> elem_separator;
-		length = lit("length") > ':' > double_ >> elem_separator;
-		fermata_body = tempo_reference ^ score_position_ ^ length;
+		end = lit("end") > ':' > score_position_grammar >> elem_separator;
+		fermata_body = tempo_reference ^ score_position_ ^ end;
 		fermata = lit("fermata") > '{' > fermata_body > '}';
 
 		start = tempo_sensitivity | fermata;
@@ -55,7 +55,7 @@ struct grammar : qi::grammar<Iterator, ScoreEvent(), SkipperType>
 	qi::rule<Iterator, TempoSensitivityChange(), SkipperType> tempo_sensitivity;
 
 	qi::rule<Iterator, ScorePosition(), SkipperType> tempo_reference;
-	qi::rule<Iterator, double(), SkipperType> length;
+	qi::rule<Iterator, ScorePosition(), SkipperType> end;
 	qi::rule<Iterator, Fermata(), SkipperType> fermata_body;
 	qi::rule<Iterator, Fermata(), SkipperType> fermata;
 };

@@ -207,7 +207,13 @@ TempoMap::GetMeterAt(score_time_t const & time) const
 }
 
 score_time_t
-TempoMap::TimeAt(Data::ScorePosition const & pos)
+TempoMap::TimeAt(Data::ScorePosition const & pos) const
+{
+	return TranslatePosition(pos).time();
+}
+
+ScorePosition
+TempoMap::TranslatePosition(Data::ScorePosition const & pos) const
 {
 	auto bar = pos.bar * score::bars;
 	auto beat = pos.beat * score::beats;
@@ -226,7 +232,7 @@ TempoMap::TimeAt(Data::ScorePosition const & pos)
 
 		});
 
-	return closestChange.ScorePositionAt(bar, beat).time();
+	return closestChange.ScorePositionAt(bar, beat);
 }
 
 void

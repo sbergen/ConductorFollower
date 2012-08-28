@@ -126,6 +126,7 @@
     <ClInclude Include="src\BarProgressEstimator.h" />
     <ClInclude Include="src\BeatClassification.h" />
     <ClInclude Include="src\BeatClassifier.h" />
+    <ClInclude Include="src\Fermata.h" />
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />

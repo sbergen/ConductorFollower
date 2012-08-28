@@ -41,16 +41,17 @@ BOOST_AUTO_TEST_CASE(TestTempoSensitivity)
 
 BOOST_AUTO_TEST_CASE(TestFermata)
 {
-	ScoreEvent e = ParseString("fermata { tempo_reference: 4|0, position: 5|0, length: 0.5 }");
+	ScoreEvent e = ParseString("fermata { tempo_reference: 4|0, position: 4|3.5, end: 5|0 }");
 	
 	BOOST_CHECK(e.type() == typeid(Fermata));
 
 	auto fermata = boost::get<Fermata>(e);
 	BOOST_CHECK_EQUAL(fermata.tempoReference.bar, 4);
 	BOOST_CHECK_CLOSE(fermata.tempoReference.beat, 0.0, 0.001);
-	BOOST_CHECK_EQUAL(fermata.position.bar, 5);
-	BOOST_CHECK_CLOSE(fermata.position.beat, 0.0, 0.001);
-	BOOST_CHECK_CLOSE(fermata.length, 0.5, 0.001);
+	BOOST_CHECK_EQUAL(fermata.position.bar, 4);
+	BOOST_CHECK_CLOSE(fermata.position.beat, 3.5, 0.001);
+	BOOST_CHECK_EQUAL(fermata.end.bar, 5);
+	BOOST_CHECK_CLOSE(fermata.end.beat, 0.0, 0.001);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -116,6 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommentSkipperTests.cpp" />
     <ClCompile Include="InstrumentParserTests.cpp" />
     <ClCompile Include="KeyswitchParserTests.cpp" />
     <ClCompile Include="main.cpp" />
@@ -123,11 +124,6 @@
     <ClCompile Include="ScoreParserTests.cpp" />
     <ClCompile Include="ScorePositionParserTest.cpp" />
     <ClCompile Include="TimeSignatureTests.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CommentSkipperTests.cpp">
-      <FileType>CppHeader</FileType>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">

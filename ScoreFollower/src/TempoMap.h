@@ -36,7 +36,8 @@ public:
 		ScorePosition::Rounding rounding = ScorePosition::NoRounding,
 		score_time_t timeHint = score_time_t(0.0 * score::seconds)) const;
 
-	score_time_t TimeAt(Data::ScorePosition const & pos);
+	score_time_t TimeAt(Data::ScorePosition const & pos) const;
+	ScorePosition TranslatePosition(Data::ScorePosition const & pos) const;
 
 private:
 	void EnsureChangesNotEmpty();

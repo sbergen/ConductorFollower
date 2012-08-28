@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <boost/utility.hpp>
+
 #include "cf/EventBuffer.h"
 #include "cf/units_math.h"
 
@@ -16,8 +18,7 @@
 #include "SpeedFunction.h"
 #include "StartTempoEstimator.h"
 #include "BeatClassifier.h"
-
-#include <boost/utility.hpp>
+#include "Fermata.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -43,8 +44,8 @@ public:
 private:
 	class ScoreEventBuilder;
 	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
-	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t> TempoSensitivityBuffer;
-	typedef EventBuffer<Data::Fermata, score_time_t> FermataBuffer;
+	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;
+	typedef EventBuffer<Fermata, score_time_t, std::vector> FermataBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
@@ -52,7 +53,9 @@ private:
 	beat_pos_t BeatOffsetEstimate() const;
 	score_time_t AccelerationTimeAt(score_time_t time);
 
-private:
+	void LookupNextFermata(score_time_t const & timeNow);
+
+private: // Basic tempo following
 	TimeWarper const & timeWarper_;
 	Follower & parent_;
 	TempoMap tempoMap_;
@@ -64,8 +67,12 @@ private:
 	bool newBeats_;
 	SpeedFunction acceleration_;
 
+private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;
 	FermataBuffer fermatas_;
+
+	FermataState nextFermata_;
+	speed_t fermataReferenceSpeed_;
 };
 
 } // namespace ScoreFollower

@@ -81,6 +81,9 @@
     <ClInclude Include="src\BarProgressEstimator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Fermata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">
