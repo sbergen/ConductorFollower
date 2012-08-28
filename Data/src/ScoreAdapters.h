@@ -34,12 +34,13 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::TempoSensitivityChange,
-    (cf::Data::ScorePosition, position)
+	(cf::Data::ScorePosition, position)
 	(double, sensitivity)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	cf::Data::Fermata,
-    (cf::Data::ScorePosition, position)
+	(cf::Data::ScorePosition, tempoReference)
+	(cf::Data::ScorePosition, position)
 	(double, length)
 )

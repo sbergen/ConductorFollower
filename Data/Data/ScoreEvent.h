@@ -17,6 +17,7 @@ struct TempoSensitivityChange
 
 struct Fermata
 {
+	ScorePosition tempoReference;
 	ScorePosition position;
 	double length;
 };
