@@ -51,8 +51,6 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	, tempoMap_()
 	, startTempoEstimator_()
 	, beatClassifier_(tempoMap_)
-	, beatHistory_(100) // Arbitrary length, should be long enough...
-	, newBeats_(false)
 {
 }
 
@@ -93,13 +91,27 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 void
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
-	assert(beatTime > beatHistory_.AllEvents().LastTimestamp());
-
 	auto classification = ClassifyBeatAt(beatTime, clarity);
-	if (true /* TODO rejection! */) {
-		beatHistory_.RegisterEvent(beatTime, classification);
-		LOG("Classified with offset: %1%", classification.offset());
-		newBeats_ = true;
+	LOG("Classified with offset: %1%", classification.offset());
+	
+	score_time_t scoreTime = timeWarper_.WarpTimestamp(beatTime);
+	tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
+
+	// TODO Move to estimator
+	auto accelerationTime = AccelerationTimeAt(scoreTime);
+	auto tempoChange = -classification.offset() / boost::units::pow<2>(accelerationTime);
+	SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
+
+	//LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
+	//	offsetEstimate, tempoChange.value(), acceleration.value());
+		
+	// TODO clean up
+	if (nextFermata_.IsInFermata()) {
+		acceleration_.SetConstantSpeed(fermataReferenceSpeed_);
+		nextFermata_.Reset();
+	} else {
+		auto speed = acceleration_.SpeedAt(beatTime);
+		acceleration_.SetParameters(speed, beatTime, acceleration, accelerationTime);
 	}
 }
 
@@ -108,31 +120,6 @@ speed_t
 TempoFollower::SpeedEstimateAt(real_time_t const & time)
 {
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(time);
-
-	// Beats
-	if (newBeats_) {
-		newBeats_ = false;
-
-		tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
-
-		// TODO Move to estimator
-		auto offsetEstimate = -BeatOffsetEstimate();
-		auto accelerationTime = AccelerationTimeAt(scoreTime);
-		auto tempoChange = offsetEstimate / boost::units::pow<2>(accelerationTime);
-		SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
-
-		//LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
-		//	offsetEstimate, tempoChange.value(), acceleration.value());
-		
-		// TODO clean up
-		if (nextFermata_.IsInFermata()) {
-			acceleration_.SetConstantSpeed(fermataReferenceSpeed_);
-			nextFermata_.Reset();
-		} else {
-			auto speed = acceleration_.SpeedAt(time);
-			acceleration_.SetParameters(speed, time, acceleration, accelerationTime);
-		}
-	}
 
 	// Fermata
 	switch (nextFermata_.GetActionAtTime(scoreTime))
@@ -163,21 +150,14 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 	return beatClassifier_.ClassifyBeat(position, acceleration_.FractionAt(time));
 }
 
-beat_pos_t
-TempoFollower::BeatOffsetEstimate() const
-{
-	auto lastBeat = beatHistory_.AllEvents().Back().data;
-	return lastBeat.offset();
-}
-
 score_time_t
 TempoFollower::AccelerationTimeAt(score_time_t time)
 {
 	// first beats can be before 0, but we want the sensitivity from the beginning
 	time = boost::units::max(time, 0.0 * score::seconds);
 
-	score_time_t const minAccelerationTime = time_quantity(1.0 * score::seconds);
-	score_time_t const accelerationTimeRange = time_quantity(1.6 * score::seconds);
+	score_time_t const minAccelerationTime = time_quantity(0.8 * score::seconds);
+	score_time_t const accelerationTimeRange = time_quantity(2.0 * score::seconds);
 	score_time_t const defaultAccelerationTime = time_quantity(1.8 * score::seconds);
 
 	auto changes = tempoSensitivities_.EventsSinceInclusive(time);

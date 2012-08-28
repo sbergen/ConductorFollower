@@ -43,14 +43,12 @@ public:
 
 private:
 	class ScoreEventBuilder;
-	typedef EventBuffer<BeatClassification, real_time_t> BeatHistoryBuffer;
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;
 	typedef EventBuffer<Fermata, score_time_t, std::vector> FermataBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
 
-	beat_pos_t BeatOffsetEstimate() const;
 	score_time_t AccelerationTimeAt(score_time_t time);
 
 	void LookupNextFermata(score_time_t const & timeNow);
@@ -62,9 +60,6 @@ private: // Basic tempo following
 
 	StartTempoEstimator startTempoEstimator_;
 	BeatClassifier beatClassifier_;
-	BeatHistoryBuffer beatHistory_;
-
-	bool newBeats_;
 	SpeedFunction acceleration_;
 
 private: // Score events
