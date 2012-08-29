@@ -51,6 +51,7 @@ private:
 
 	score_time_t AccelerationTimeAt(score_time_t time);
 
+	void EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime);
 	void LookupNextFermata(score_time_t const & timeNow);
 
 private: // Basic tempo following
@@ -68,6 +69,7 @@ private: // Score events
 
 	FermataState nextFermata_;
 	speed_t fermataReferenceSpeed_;
+	real_time_t fermataEndTime_;
 };
 
 } // namespace ScoreFollower

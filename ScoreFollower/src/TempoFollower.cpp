@@ -106,7 +106,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	//	offsetEstimate, tempoChange.value(), acceleration.value());
 		
 	// TODO clean up
-	if (nextFermata_.IsInFermata()) {
+	if (nextFermata_.IsInFermata() && beatTime > fermataEndTime_) {
 		acceleration_.SetConstantSpeed(fermataReferenceSpeed_);
 		nextFermata_.Reset();
 	} else {
@@ -128,7 +128,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		fermataReferenceSpeed_ = acceleration_.SpeedAt(time);
 		break;
 	case FermataState::EnterFermata:
-		acceleration_.SetConstantSpeed(0.0);
+		EnterFermata(time, scoreTime);
 		break;
 	}
 
@@ -138,8 +138,8 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {
-	// TODO clean up
-	if (nextFermata_.IsInFermata()) {
+	// TODO clean up (duplicate condition)
+	if (nextFermata_.IsInFermata() && time > fermataEndTime_) {
 		return beatClassifier_.ClassifyBeat(nextFermata_.FermataEnd(), 1.0);
 	}
 
@@ -166,6 +166,13 @@ TempoFollower::AccelerationTimeAt(score_time_t time)
 	auto sensitivity = changes.Front().data.sensitivity;
 	auto factor = 1.0 - sensitivity;
 	return minAccelerationTime + (factor * accelerationTimeRange);
+}
+
+void
+TempoFollower::EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime)
+{
+	fermataEndTime_ = timeWarper_.InverseWarpTimestamp(nextFermata_.FermataEnd().time(), realTime);
+	acceleration_.SetConstantSpeed(0.0);
 }
 
 void
