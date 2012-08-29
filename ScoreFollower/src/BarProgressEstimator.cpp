@@ -77,10 +77,11 @@ BarProgressEstimator::ClassifyBeat(beat_pos_t const & estimationPosition)
 	for (auto it = std::begin(beats_); it != std::end(beats_); ++it) {
 		// TODO adjust penalty amount?
 		// This penalty is only for selection, will not apply to bar quality
-		auto penaltyOffset = (1.0 / beats_.size());
+		auto penaltyBarFraction = (0.25 / beats_.size()) * score::bars;
+		auto penaltyOffset = pattern_.meter.BarDuration() * penaltyBarFraction;
 		beat_pos_t estimatedOffset =
 			boost::units::abs(estimationPosition - it->position) +
-			(it->used ? penaltyOffset : 0.0) * score::beats;
+			(it->used ? penaltyOffset : (0.0 * score::beats));
 
 		if (estimatedOffset < bestEstimatedOffset) {
 			bestEstimatedOffset = estimatedOffset;
@@ -97,7 +98,8 @@ BarProgressEstimator::AddPenaltyForUnusedBeats(BeatList::iterator currentBeat)
 	for (auto it = std::begin(beats_); it != currentBeat; ++it) {
 		if (!it->used) {
 			// TODO adjust penalty amount?
-			auto penaltyOffset = (1.0 / beats_.size()) * score::beats;
+			auto penaltyBarFraction = (0.25 / beats_.size()) * score::bars;
+			auto penaltyOffset = pattern_.meter.BarDuration() * penaltyBarFraction;
 			qualityForThisBar_ += BeatClassification::QualityFromOffset(penaltyOffset);
 			it->used = true;
 		}
