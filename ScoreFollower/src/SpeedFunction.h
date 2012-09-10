@@ -40,7 +40,9 @@ public:
 
 	speed_t SpeedAt(real_time_t const & time) const
 	{
-		double fraction = FractionAt(time);
+		// The integral of sqrt(x) from 0 to 1 is 4/3 times the integral
+		// of x from 0 to 1, so we need to scale this here
+		double fraction = 0.75 * FractionAt(time);
 		return reference_speed_ + (fraction * accelerationTime_ * changePerTimeUnit_);
 	}
 

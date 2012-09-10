@@ -156,8 +156,8 @@ TempoFollower::AccelerationTimeAt(score_time_t time)
 	// first beats can be before 0, but we want the sensitivity from the beginning
 	time = boost::units::max(time, 0.0 * score::seconds);
 
-	score_time_t const minAccelerationTime = time_quantity(0.8 * score::seconds);
-	score_time_t const accelerationTimeRange = time_quantity(2.0 * score::seconds);
+	score_time_t const minAccelerationTime = time_quantity(0.3 * score::seconds);
+	score_time_t const accelerationTimeRange = time_quantity(3.0 * score::seconds);
 	score_time_t const defaultAccelerationTime = time_quantity(1.8 * score::seconds);
 
 	auto changes = tempoSensitivities_.EventsSinceInclusive(time);
