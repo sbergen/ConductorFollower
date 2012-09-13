@@ -41,7 +41,8 @@ LogBuffer::CommitOne(LogItem const & item) const
 
 	for (int i = 0; i < LogItem::MaxArgs; ++i) {
 		LogItem::Arg const & arg = item.args_[i];
-		if (arg == LogItem::Arg()) { break; }
+		// Avoid direct comparison operator
+		if (arg.type() == typeid(boost::blank)) { break; }
 		fmt % arg;
 	}
 

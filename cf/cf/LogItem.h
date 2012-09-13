@@ -4,13 +4,16 @@
 
 #include <boost/variant.hpp>
 #include <boost/array.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
 #include "cf/time.h"
 #include "cf/score_units.h"
+#include "cf/math.h"
 
 namespace cf {
 
 namespace bu = boost::units;
+namespace ublas = boost::numeric::ublas;
 
 class LogItem
 {
@@ -22,7 +25,8 @@ private:
 		char const *,
 		timestamp_t, duration_t, milliseconds_t, seconds_t, boost::chrono::microseconds,
 		bu::quantity<score::musical_time>, bu::quantity<score::physical_time>,
-		bu::quantity<score::tempo>, bu::quantity<score::bar_count>, bu::quantity<score::bar_duration> > Arg;
+		bu::quantity<score::tempo>, bu::quantity<score::bar_count>, bu::quantity<score::bar_duration>,
+		math::Matrix > Arg;
 
 public:
 	LogItem()
