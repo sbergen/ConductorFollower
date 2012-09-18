@@ -4,6 +4,8 @@
 
 #include "cf/time.h"
 
+#include "Visualizer/VisualizationData.h"
+
 #include "MotionTracker/MotionState.h"
 #include "MotionTracker/StartGestureData.h"
 
@@ -25,7 +27,8 @@ public:
 		StartGesture,
 		VelocityPeak,
 		VelocityDynamicRange,
-		JerkPeak
+		JerkPeak,
+		VisualizationData
 	};
 
 	// Data
@@ -34,7 +37,8 @@ public:
 		double,
 		MotionState,
 		StartGestureData,
-		timestamp_t, duration_t
+		timestamp_t, duration_t,
+		boost::shared_ptr<Visualizer::VisualizationDataRCU>
 		> Data;
 
 	// Ctors

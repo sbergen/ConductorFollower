@@ -9,6 +9,7 @@ namespace cf {
 namespace MotionTracker {
 
 class HandObserver;
+class VisualizationObserver;
 
 class HandTracker : public boost::noncopyable
 {
@@ -25,6 +26,9 @@ public:
 	// Basic tracking
 	virtual bool StartTrackingHand(Gesture gesture, HandObserver & observer) = 0;
 	virtual bool StopTrackingHand(HandObserver & observer) = 0;
+
+	// Visualization data
+	virtual void AddVisualizationObserver(VisualizationObserver & observer) = 0;
 
 	// "event loop"
 	virtual bool WaitForData() = 0;

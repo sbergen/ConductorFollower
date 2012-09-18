@@ -71,6 +71,9 @@
     <ClInclude Include="src\OpenNIRecorder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\VisualizationObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">

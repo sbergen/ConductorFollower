@@ -77,9 +77,6 @@
     <ClInclude Include="..\..\Source\Components\InformationWidget.h">
       <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\common.h">
-      <Filter>CFPlugin\Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Components\StringExtractor.h">
       <Filter>CFPlugin\Source\Components</Filter>
     </ClInclude>

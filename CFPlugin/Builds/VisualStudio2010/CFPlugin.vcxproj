@@ -237,7 +237,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\common.h" />
     <ClInclude Include="..\..\Source\Components\InformationWidget.h" />
     <ClInclude Include="..\..\Source\Components\OptionWidget.h" />
     <ClInclude Include="..\..\Source\Components\StatusWidget.h" />
@@ -266,6 +265,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\ScoreFollower\ScoreFollower.vcxproj">
       <Project>{262368e6-b5c0-4a0c-94db-e0baf6357069}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Visualizer\Visualizer.vcxproj">
+      <Project>{ebb0341c-8e81-4765-aa95-8737cdd0b6e9}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

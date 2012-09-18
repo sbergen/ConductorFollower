@@ -7,6 +7,7 @@
 #include "cf/RTContext.h"
 
 #include "CallbackWrappers.h"
+#include "VisualizationObserver.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -15,7 +16,8 @@ namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
-	, recorder_(OpenNIRecorder::Record, "recording.oni")
+	, recorder_(OpenNIRecorder::Playback, "recording.oni")
+	, visualizationData_(boost::make_shared<Visualizer::VisualizationDataRCU>(Visualizer::VisualizationData()))
 {
 }
 
@@ -59,11 +61,21 @@ OpenNIHandTracker::StopTrackingHand(HandObserver & observer)
 	return true;
 }
 
+void
+OpenNIHandTracker::AddVisualizationObserver(VisualizationObserver & observer)
+{
+	visualizationObservers_.push_back(boost::ref(observer));
+}
+
 bool
 OpenNIHandTracker::WaitForData()
 {
 	XnStatus s = context_.WaitAndUpdateAll();
-	return CheckXnStatus(utils_, s, "WaitAndUpdateAll");
+	if (!CheckXnStatus(utils_, s, "WaitAndUpdateAll")) { return false; }
+
+	NotifyVisualizationObservers();
+
+	return true;
 }
 
 void
@@ -75,6 +87,9 @@ OpenNIHandTracker::InitNodes()
 	s = handsGenerator_.Create(context_);
 	handsGenerator_.SetSmoothing(static_cast<XnFloat>(0.3));
 	CheckXnStatus(utils_, s, "Create hands generator");
+
+	s = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depthGenerator_);
+	CheckXnStatus(utils_, s, "Get depth generator");
 }
 
 void
@@ -197,6 +212,22 @@ OpenNIHandTracker::ProcessNextHandRequest()
 	request.isPending = true;
 	XnStatus s = gestureGenerator_.AddGesture(request.gestureName, 0);
 	return CheckXnStatus(utils_, s, "Start tracking gesture");
+}
+
+void
+OpenNIHandTracker::NotifyVisualizationObservers()
+{
+	xn::DepthMetaData dmd;
+	depthGenerator_.GetMetaData(dmd);
+
+	{
+		auto vd = visualizationData_->writer();
+		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.Data());
+	}
+
+	for (auto it = std::begin(visualizationObservers_); it != std::end(visualizationObservers_); ++it) {
+		it->get().NewVisualizationData(visualizationData_);
+	}
 }
 
 } // namespace MotionTracker

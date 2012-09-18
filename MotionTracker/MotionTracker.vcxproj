@@ -77,7 +77,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(OPEN_NI_INCLUDE);$(BOOST_INCLUDE);"../boost_lockfree";"..\cf";"."</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPEN_NI_INCLUDE);$(BOOST_INCLUDE);"../boost_lockfree";"..\cf";".";"../Visualizer"</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -134,6 +134,7 @@
     <ClInclude Include="src\OpenNIRecorder.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
     <ClInclude Include="src\StartGestureDetector.h" />
+    <ClInclude Include="src\VisualizationObserver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BeatDetector.cpp" />
@@ -149,6 +150,9 @@
   <ItemGroup>
     <ProjectReference Include="..\cf\cf.vcxproj">
       <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Visualizer\Visualizer.vcxproj">
+      <Project>{ebb0341c-8e81-4765-aa95-8737cdd0b6e9}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

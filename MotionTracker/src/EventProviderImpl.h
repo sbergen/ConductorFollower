@@ -21,11 +21,15 @@
 #include "MotionFilter.h"
 #include "BeatDetector.h"
 #include "StartGestureDetector.h"
+#include "VisualizationObserver.h"
 
 namespace cf {
 namespace MotionTracker {
 
-class EventProviderImpl : public EventProvider, public HandObserver
+class EventProviderImpl
+	: public EventProvider
+	, public HandObserver
+	, public VisualizationObserver
 {
 public:
 	typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
@@ -43,6 +47,9 @@ public: // HandObserver implementation, called from tracker thread
 	void HandFound();
 	void HandLost();
 	void NewHandPosition(float time, Point3D const & pos);
+
+public: // VisualizationObserver implementation
+	void NewVisualizationData(VisualizationDataPtr data);
 
 private:
 	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);

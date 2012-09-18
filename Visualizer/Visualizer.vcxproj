@@ -18,9 +18,23 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\VisualizerImpl.h" />
+    <ClInclude Include="Visualizer\VisualizationData.h" />
+    <ClInclude Include="Visualizer\Visualizer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\VisualizationData.cpp" />
+    <ClCompile Include="src\VisualizerImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E89D5998-53E7-41A3-B604-12C0DC717D0A}</ProjectGuid>
-    <RootNamespace>MotionTrackerTests</RootNamespace>
+    <ProjectGuid>{EBB0341C-8E81-4765-AA95-8737CDD0B6E9}</ProjectGuid>
+    <RootNamespace>Visualizer</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -29,7 +43,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -61,9 +75,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)\build\$(ProjectName)\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(SolutionDir)\build\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -71,29 +82,21 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>"..\MotionTracker";"..\MotionTracker\src";$(BOOST_INCLUDE);$(OPEN_NI_INCLUDE);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(BOOST_LIB)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>"..\MotionTracker";"..\MotionTracker\src";$(BOOST_INCLUDE);$(OPEN_NI_INCLUDE);"../boost_lockfree"</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);./;../CFPlugin/JuceLibraryCode;"../FeatureExtractor";"../MotionTracker";"../ScoreFollower";"../cf";"../boost_lockfree";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(BOOST_LIB);$(OPEN_NI_LIB64)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>"$(TargetDir)\$(TargetName).exe" --result_code=yes --report_level=no</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,21 +124,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="OpenNIUtilsTest.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\cf\cf.vcxproj">
-      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\MotionTracker\MotionTracker.vcxproj">
-      <Project>{567bba55-f7d3-4a9f-80b3-7f8c5c739c59}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Visualizer\Visualizer.vcxproj">
-      <Project>{ebb0341c-8e81-4765-aa95-8737cdd0b6e9}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

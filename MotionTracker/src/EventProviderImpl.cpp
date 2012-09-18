@@ -106,6 +106,12 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 }
 
 void
+EventProviderImpl::NewVisualizationData(VisualizationDataPtr data)
+{
+	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, data));
+}
+
+void
 EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState const & state)
 {
 	// Ugly and temporary

@@ -3,8 +3,13 @@
 #include <string>
 #include <map>
 #include <queue>
+#include <vector>
+
+#include <boost/ref.hpp>
 
 #include <XnCppWrapper.h>
+
+#include "Visualizer/VisualizationData.h"
 
 #include "Gestures.h"
 #include "HandTracker.h"
@@ -26,6 +31,7 @@ public:
 	bool Init();
 	bool StartTrackingHand(Gesture gesture, HandObserver & observer);
 	bool StopTrackingHand(HandObserver & observer);
+	void AddVisualizationObserver(VisualizationObserver & observer);
 	bool WaitForData();
 
 protected:
@@ -106,9 +112,18 @@ private: // OpenNI stuff
 	xn::HandsGenerator handsGenerator_;
 	XnCallbackHandle handsCallbackHandle_;
 
+	xn::DepthGenerator depthGenerator_;
+
 private: // Recording
 
 	OpenNIRecorder recorder_;
+
+private: // Visualization observers
+
+	void NotifyVisualizationObservers();
+
+	std::vector<boost::reference_wrapper<VisualizationObserver> > visualizationObservers_;
+	boost::shared_ptr<Visualizer::VisualizationDataRCU> visualizationData_;
 };
 
 } // namespace MotionTacker
