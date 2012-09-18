@@ -15,8 +15,10 @@ public:
 	static void Init(std::size_t size);
 	static void Destroy();
 	static tlsf_pool pool() { return pool_; }
+	static std::size_t maxSize() { return maxSize_; }
 
 private:
+	static std::size_t maxSize_;
 	static tlsf_pool pool_;
 	static void * memory_;
 };
@@ -67,7 +69,7 @@ public: // Actual functionality
     pointer allocate(const size_type n, const void * const) { return allocate(n); }
     static void deallocate(const pointer ptr, const size_type n) { tlsf_free(TlsfPool::pool(), ptr); }
 
-	size_type max_size() { return (std::numeric_limits<size_type>::max)(); }
+	size_type max_size() const { return TlsfPool::maxSize(); }
 
 	bool operator==(const TlsfAllocator &) const { return true; }
     bool operator!=(const TlsfAllocator &) const { return false; }
