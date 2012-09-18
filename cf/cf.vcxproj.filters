@@ -149,6 +149,9 @@
     <ClInclude Include="cf\TimeSignature.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\ChenBuffer.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
