@@ -32,8 +32,7 @@ Follower::Create(boost::shared_ptr<ScoreReader> scoreReader)
 }
 
 FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
-	: status_(Status::FollowerStatus())
-	, options_(Options::FollowerOptions())
+	: optionsReader_(optionsBuffer_)
 	, scoreReader_(scoreReader)
 {
 	// Set proper initial state
@@ -46,8 +45,8 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Change tracking
-	options_.read()->GetValue<Options::Restart>(restartVersion_);
-	options_.read()->GetValue<Options::ScoreDefinition>(scoreFile_);
+	optionsReader_->GetValue<Options::Restart>(restartVersion_);
+	optionsReader_->GetValue<Options::ScoreDefinition>(scoreFile_);
 
 	// Hook up to butler thread
 	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
@@ -76,11 +75,10 @@ FollowerImpl::StartNewBlock()
 	if (!lock.owns_lock()) { return 0; }
 
 	// Consume events until the start of this block
-	auto writer = status_.writer();
 	eventThrottler_->ConsumeEventsUntil(
 		[&, this](Event const & e)
 		{
-			ConsumeEvent(writer, e);
+			ConsumeEvent(e);
 		},
 		currentBlock.first);
 
@@ -89,14 +87,20 @@ FollowerImpl::StartNewBlock()
 	if (State() == FollowerState::GotStart &&
 		currentBlock.second >= timeHelper_->StartTimeEstimate())
 	{
-		SetState(writer, FollowerState::Rolling);
+		SetState(FollowerState::Rolling, false);
 	}
 
 	if (State() != FollowerState::Rolling &&
 		State() != FollowerState::GotStart) { return 0; }
 
 	// If rolling, fix score range
-	timeHelper_->FixScoreRange(writer);
+	timeHelper_->FixScoreRange(status_);
+
+	{
+		StatusBuffer::Writer writer(statusBuffer_);
+		*writer = status_;
+	}
+
 	return scoreReader_->TrackCount();
 }
 
@@ -114,32 +118,32 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 FollowerState
 FollowerImpl::State()
 {
-	return state_;
+	FollowerState state;
+	status_.GetValue<Status::State>(state);
+	return state;
 }
 
 void
-FollowerImpl::SetState(FollowerState::Value state)
+FollowerImpl::SetState(FollowerState::Value state, bool propagateChange)
 {
-	SetState(status_.writer(), state);
+	status_.SetValue<Status::State>(state);
+	if (propagateChange)
+	{
+		StatusBuffer::Writer writer(statusBuffer_);
+		*writer = status_;
+	}
 }
 
 void
-FollowerImpl::SetState(StatusRCU::WriterHandle & writer, FollowerState::Value state)
-{
-	state_ = state;
-	writer->SetValue<Status::State>(state);
-}
-
-void
-FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
+FollowerImpl::ConsumeEvent(Event const & e)
 {
 	switch(e.type())
 	{
 	case Event::TrackingStarted:
-		SetState(writer, FollowerState::WaitingForStart);
+		SetState(FollowerState::WaitingForStart, false);
 		break;
 	case Event::TrackingEnded:
-		SetState(writer, FollowerState::Stopped);
+		SetState(FollowerState::Stopped, false);
 		eventProvider_->StopProduction();
 		break;
 	case Event::MotionStateUpdate:
@@ -147,19 +151,19 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		break;
 
 	case Event::VelocityPeak:
-		writer->SetValue<Status::VelocityPeak>(e.data<double>());
+		status_.SetValue<Status::VelocityPeak>(e.data<double>());
 		conductorContext_.velocity = math::clamp(
 			e.data<double>() / Status::VelocityPeakType::max_value,
 			0.0, 1.0);
 		break;
 	case Event::VelocityDynamicRange:
-		writer->SetValue<Status::VelocityRange>(e.data<double>());
+		status_.SetValue<Status::VelocityRange>(e.data<double>());
 		conductorContext_.attack = math::clamp(
 			e.data<double>() / Status::VelocityRangeType::max_value,
 			0.3, 1.0);
 		break;
 	case Event::JerkPeak:
-		writer->SetValue<Status::JerkPeak>(e.data<double>());
+		status_.SetValue<Status::JerkPeak>(e.data<double>());
 		conductorContext_.weight = math::clamp(
 			e.data<double>() / Status::JerkPeakType::max_value,
 			0.3, 1.0);
@@ -170,12 +174,12 @@ FollowerImpl::ConsumeEvent(StatusRCU::WriterHandle & writer, Event const & e)
 		}
 		break;
 	case Event::BeatProb:
-		writer->SetValue<Status::Beat>(e.data<double>());
+		status_.SetValue<Status::Beat>(e.data<double>());
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
 			timeHelper_->RegisterStartGesture(e.data<StartGestureData>());
-			SetState(writer, FollowerState::GotStart);
+			SetState(FollowerState::GotStart, false);
 		}
 		break;
 	}
@@ -187,7 +191,7 @@ FollowerImpl::CheckForConfigChange()
 	// Restart
 	int restart;
 	bool forceScoreRead = false;
-	options_.read()->GetValue<Options::Restart>(restart);
+	optionsReader_->GetValue<Options::Restart>(restart);
 	if (restart != restartVersion_) {
 		restartVersion_ = restart;
 		forceScoreRead = true;
@@ -196,8 +200,7 @@ FollowerImpl::CheckForConfigChange()
 
 	// Score file
 	std::string scoreFile;
-	auto options = options_.read();
-	options->GetValue<Options::ScoreDefinition>(scoreFile);
+	optionsReader_->GetValue<Options::ScoreDefinition>(scoreFile);
 
 	if ((forceScoreRead ||scoreFile != scoreFile_) && scoreFile != "") {
 		scoreFile_ = scoreFile;

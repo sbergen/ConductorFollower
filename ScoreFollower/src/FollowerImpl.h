@@ -47,8 +47,8 @@ public:
 	~FollowerImpl();
 
 public: // Follower implementation
-	StatusRCU & status() { return status_; }
-	OptionsRCU & options() { return options_; }
+	StatusBuffer & status() { return statusBuffer_; }
+	OptionsBuffer & options() { return optionsBuffer_; }
 
 	// Called from non-rt context
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
@@ -59,10 +59,9 @@ public: // Follower implementation
 
 private:
 	FollowerState State();
-	void SetState(FollowerState::Value state);
-	void SetState(StatusRCU::WriterHandle & writer, FollowerState::Value state);
+	void SetState(FollowerState::Value state, bool propagateChange = true);
 
-	void ConsumeEvent(StatusRCU::WriterHandle & writer, MotionTracker::Event const & e);
+	void ConsumeEvent(MotionTracker::Event const & e);
 
 private: // Stuff related to butler thread
 	void CheckForConfigChange();
@@ -80,8 +79,12 @@ private: // Change tracking
 	std::string scoreFile_; // Used from ctor and butler
 
 private:
-	StatusRCU status_;
-	OptionsRCU options_;
+	Status::FollowerStatus status_;
+	StatusBuffer statusBuffer_;
+
+	OptionsBuffer optionsBuffer_;
+	OptionsBuffer::Reader optionsReader_;
+
 	FollowerState state_;
 	
 	boost::mutex configMutex_;

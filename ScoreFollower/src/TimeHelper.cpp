@@ -38,7 +38,7 @@ TimeHelper::StartNewBlock()
 }
 
 void
-TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
+TimeHelper::FixScoreRange(Status::FollowerStatus & status)
 {
 	// Get start estimate based on old data or start gesture
 	if (timeWarper_.Empty()) {
@@ -54,7 +54,7 @@ TimeHelper::FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter)
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
 	if (speed != previousSpeed_) {
 		previousSpeed_ = speed;
-		statusWriter->SetValue<Status::Speed>(speed);
+		status.SetValue<Status::Speed>(speed);
 		conductorContext_.tempo = speed;
 		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange_.first, speed);
 	}

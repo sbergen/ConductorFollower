@@ -34,7 +34,7 @@ public:
 
 	// These need to be clled in this order!
 	void StartNewBlock();
-	void FixScoreRange(Follower::StatusRCU::WriterHandle & statusWriter);
+	void FixScoreRange(Status::FollowerStatus & status);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 	void RegisterBeat(real_time_t const & time, double prob);

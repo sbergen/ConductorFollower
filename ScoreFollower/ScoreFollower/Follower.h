@@ -6,17 +6,16 @@
 #include <boost/shared_ptr.hpp>
 
 #include "cf/EventBuffer.h"
-#include "cf/rcu.h"
+#include "cf/ChenBuffer.h"
 
 #include "ScoreFollower/ScoreEvent.h"
+#include "ScoreFollower/FollowerOptions.h"
+#include "ScoreFollower/FollowerStatus.h"
 
 namespace cf {
 namespace ScoreFollower {
 
 class ScoreReader;
-
-namespace Status { class FollowerStatus; }
-namespace Options { class FollowerOptions; }
 
 class Follower : public boost::noncopyable
 {
@@ -24,8 +23,8 @@ public:
 	// Container for fetching events for each block
 	typedef EventBuffer<ScoreEventPtr, samples_t> BlockBuffer;
 
-	typedef cf::RTWriteRCU<Status::FollowerStatus> StatusRCU;
-	typedef cf::RTReadRCU<Options::FollowerOptions> OptionsRCU;
+	typedef cf::ChenBuffer<Status::FollowerStatus, 1> StatusBuffer;
+	typedef cf::ChenBuffer<Options::FollowerOptions, 1> OptionsBuffer;
 
 public: // Not real time safe functions
 
@@ -33,8 +32,8 @@ public: // Not real time safe functions
 	static boost::shared_ptr<Follower> Create(boost::shared_ptr<ScoreReader> scoreReader);
 	virtual ~Follower() {}
 
-	virtual StatusRCU & status() = 0;
-	virtual OptionsRCU & options() = 0;
+	virtual StatusBuffer & status() = 0;
+	virtual OptionsBuffer & options() = 0;
 
 	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 
