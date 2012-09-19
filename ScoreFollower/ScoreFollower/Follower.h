@@ -9,11 +9,12 @@
 #include "cf/ChenBuffer.h"
 
 #include "ScoreFollower/ScoreEvent.h"
-#include "ScoreFollower/FollowerOptions.h"
-#include "ScoreFollower/FollowerStatus.h"
 
 namespace cf {
 namespace ScoreFollower {
+
+namespace Options { class FollowerOptions; }
+namespace Status { class FollowerStatus; }
 
 class ScoreReader;
 

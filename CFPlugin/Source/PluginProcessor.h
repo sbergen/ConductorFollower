@@ -14,6 +14,7 @@
 #include <boost/atomic.hpp>
 
 #include "ScoreFollower/Follower.h"
+#include "ScoreFollower/FollowerOptions.h"
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/ScoreEvent.h"
 
