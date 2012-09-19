@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/circular_buffer.hpp>
+
 #include "Visualizer/Visualizer.h"
 #include "Visualizer/Data.h"
 
@@ -28,6 +30,9 @@ private:
 	Data::depth_type maxDepth_;
 
 	juce::Image depthImage_;
+
+	typedef boost::circular_buffer<Data::Position> HandBuffer;
+	HandBuffer handBuffer_;
 };
 
 } // namespace Visualizer

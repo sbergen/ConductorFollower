@@ -182,6 +182,12 @@ OpenNIHandTracker::HandUpdateCallback(
 		coord_t z(position->Z * si::milli * si::meter);
 
 		it->second.observer.NewHandPosition(time, Point3D(x, y, z));
+
+		// Update visualization stat
+		XnPoint3D projected;
+		depthGenerator_.ConvertRealWorldToProjective(1, position, &projected);
+		visualizationHandPos_.x = projected.X;
+		visualizationHandPos_.y = projected.Y;
 	}
 	else
 	{
@@ -233,6 +239,7 @@ OpenNIHandTracker::NotifyVisualizationObservers()
 	{
 		auto vd = visualizationData_->GetWriter();
 		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.FrameID(), dmd.Data());
+		vd->SetHandPosition(visualizationHandPos_);
 	}
 
 	for (auto it = std::begin(visualizationObservers_); it != std::end(visualizationObservers_); ++it) {
