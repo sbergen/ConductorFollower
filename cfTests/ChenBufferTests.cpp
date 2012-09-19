@@ -53,6 +53,20 @@ BOOST_AUTO_TEST_CASE(TestInit)
 	BOOST_CHECK_EQUAL(*reader, 42);
 }
 
+BOOST_AUTO_TEST_CASE(TestUnsafeRead)
+{
+	typedef ChenBuffer<int, 1> Buffer;
+	Buffer buffer;
+
+	{
+		auto writer = buffer.GetWriter();
+		*writer = 42;
+	}
+
+	auto reader = buffer.GetUnsafeReader();
+	BOOST_CHECK_EQUAL(*reader, 42);
+}
+
 BOOST_AUTO_TEST_CASE(TestCongestedReaderCase)
 {
 	// See that writes succeed even if nobody is reading

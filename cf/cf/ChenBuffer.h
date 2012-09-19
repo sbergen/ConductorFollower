@@ -54,6 +54,29 @@ public:
 		reader_id id_;
 	};
 
+	// Unsafe reader to be used only from the writer thread
+	// Note that the writer object has to be destructed before reading,
+	// otherwise old values will be read!
+	// This should be used from writer thread when reading,
+	// otherwise we'll run out of the reader count.
+	class UnsafeReader : boost::noncopyable
+	{
+	public:
+		UnsafeReader(ChenBuffer & parent)
+			: parent_(parent)
+		{}
+
+		UnsafeReader(ChenBuffer && other)
+			: parent_(other.parent_)
+		{}
+
+		T const * operator->() const { return &(**this); }
+		T const & operator* () const { return parent_.buffer_[parent_.latest_.load()]; }
+
+	private:
+		ChenBuffer & parent_;
+	};
+
 	// Use in a RAII fashion: acquire -> write -> destroy
 	class Writer : boost::noncopyable
 	{
@@ -104,6 +127,7 @@ public:
 	}
 
 	Reader GetReader() { return Reader(*this); }
+	UnsafeReader GetUnsafeReader() { return UnsafeReader(*this); }
 	Writer GetWriter() { return Writer(*this); }
 
 private:
