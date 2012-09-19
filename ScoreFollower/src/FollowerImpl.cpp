@@ -183,6 +183,8 @@ FollowerImpl::ConsumeEvent(Event const & e)
 			SetState(FollowerState::GotStart, false);
 		}
 		break;
+	case Event::VisualizationData:
+		visualizationData_ = e.data<Visualizer::DataPtr>();
 	}
 }
 

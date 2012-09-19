@@ -9,7 +9,7 @@
 
 #include <XnCppWrapper.h>
 
-#include "Visualizer/VisualizationData.h"
+#include "Visualizer/Data.h"
 
 #include "Gestures.h"
 #include "HandTracker.h"
@@ -123,7 +123,7 @@ private: // Visualization observers
 	void NotifyVisualizationObservers();
 
 	std::vector<boost::reference_wrapper<VisualizationObserver> > visualizationObservers_;
-	boost::shared_ptr<Visualizer::VisualizationDataBuffer> visualizationData_;
+	Visualizer::DataPtr visualizationData_;
 };
 
 } // namespace MotionTacker

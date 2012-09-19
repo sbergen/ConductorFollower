@@ -7,15 +7,16 @@
 namespace cf {
 namespace Visualizer {
 
-class VisualizationData;
+class Data;
 
 class Visualizer : public juce::Component
 {
 public:
-	boost::shared_ptr<Visualizer> Create();
+	typedef boost::shared_ptr<Visualizer> Ptr;
+	static Ptr Create();
 
 public:
-	virtual void UpdateData(VisualizationData & data) = 0;
+	virtual void UpdateData(Data const & data) = 0;
 };
 
 } // namespace Visualizer

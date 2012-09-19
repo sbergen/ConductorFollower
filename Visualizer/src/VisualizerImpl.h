@@ -8,7 +8,7 @@ namespace Visualizer {
 class VisualizerImpl : public Visualizer
 {
 public: // Visualizer implementation
-	void UpdateData(VisualizationData & data);
+	void UpdateData(Data const & data);
 
 private:
 };

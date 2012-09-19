@@ -18,7 +18,7 @@ namespace si = boost::units::si;
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
 	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
-	, visualizationData_(boost::make_shared<Visualizer::VisualizationDataBuffer>())
+	, visualizationData_(boost::make_shared<Visualizer::DataBuffer>())
 {
 }
 
@@ -96,7 +96,7 @@ OpenNIHandTracker::InitNodes()
 	xn::DepthMetaData dmd;
 	depthGenerator_.GetMetaData(dmd);
 	visualizationData_->Init(
-		[&dmd](Visualizer::VisualizationData & data)
+		[&dmd](Visualizer::Data & data)
 		{
 			data.Reserve(dmd.XRes(), dmd.YRes());
 		});
@@ -232,7 +232,7 @@ OpenNIHandTracker::NotifyVisualizationObservers()
 
 	{
 		auto vd = visualizationData_->GetWriter();
-		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.Data());
+		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.FrameID(), dmd.Data());
 	}
 
 	for (auto it = std::begin(visualizationObservers_); it != std::end(visualizationObservers_); ++it) {

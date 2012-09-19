@@ -3,7 +3,7 @@
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "Visualizer/VisualizationData.h"
+#include "Visualizer/Data.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -11,11 +11,9 @@ namespace MotionTracker {
 class VisualizationObserver : public boost::noncopyable
 {
 public:
-	typedef boost::shared_ptr<Visualizer::VisualizationDataBuffer> VisualizationDataPtr;
-
 	virtual ~VisualizationObserver() {}
 
-	virtual void NewVisualizationData(VisualizationDataPtr data) = 0;
+	virtual void NewVisualizationData(Visualizer::DataPtr data) = 0;
 };
 
 } // namespace MotionTracker

@@ -12,7 +12,7 @@ Visualizer::Create()
 }
 
 void
-VisualizerImpl::UpdateData(VisualizationData & data)
+VisualizerImpl::UpdateData(Data const & data)
 {
 
 }

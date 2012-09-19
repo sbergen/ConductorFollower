@@ -24,7 +24,7 @@
     <ClInclude Include="src\VisualizerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Visualizer\VisualizationData.h">
+    <ClInclude Include="Visualizer\Data.h">
       <Filter>Visualizer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="src\VisualizerImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VisualizationData.cpp">
+    <ClCompile Include="src\Data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

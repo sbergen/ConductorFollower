@@ -1,34 +1,38 @@
-#include "Visualizer/VisualizationData.h"
+#include "Visualizer/Data.h"
 
 #include <cassert>
 
 namespace cf {
 namespace Visualizer {
 
-VisualizationData::VisualizationData()
+Data::Data()
 	: width_(0)
 	, height_(0)
 	, maxDepth_(1)
+	, frameId_(0)
 {
 }
 
 void
-VisualizationData::Update(int width, int height, int maxDepth, depth_type const * data)
+Data::Update(int width, int height,
+	int maxDepth, frame_id_type frameId,
+	depth_type const * data)
 {
 	width_ = width;
 	height_ = height;
 	maxDepth_ = maxDepth;
+	frameId_ = frameId_;
 	depthData_.assign(data, data + (width * height));
 }
 
 void
-VisualizationData::Reserve(int width, int height)
+Data::Reserve(int width, int height)
 {
 	depthData_.reserve(width * height);
 }
 
-VisualizationData::depth_type const &
-VisualizationData::operator()(int x, int y) const
+Data::depth_type const &
+Data::operator()(int x, int y) const
 {
 	assert(x < width_ && y < height_);
 	return depthData_[y * width_ + x];

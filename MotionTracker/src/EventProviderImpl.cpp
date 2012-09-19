@@ -106,7 +106,7 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 }
 
 void
-EventProviderImpl::NewVisualizationData(VisualizationDataPtr data)
+EventProviderImpl::NewVisualizationData(Visualizer::DataPtr data)
 {
 	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, data));
 }

@@ -4,7 +4,7 @@
 
 #include "cf/physics.h"
 
-#include "Visualizer/VisualizationData.h"
+#include "Visualizer/Data.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -16,7 +16,7 @@ struct MotionState
 	Acceleration3D acceleration;
 	Jerk3D jerk;
 
-	boost::shared_ptr<Visualizer::VisualizationData> visualizationData;
+	boost::shared_ptr<Visualizer::Data> visualizationData;
 };
 
 } // namespace MotionTracker

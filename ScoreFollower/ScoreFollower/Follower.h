@@ -10,7 +10,10 @@
 
 #include "ScoreFollower/ScoreEvent.h"
 
+#include "Visualizer/Data.h"
+
 namespace cf {
+
 namespace ScoreFollower {
 
 namespace Options { class FollowerOptions; }
@@ -35,6 +38,7 @@ public: // Not real time safe functions
 
 	virtual StatusBuffer & status() = 0;
 	virtual OptionsBuffer & options() = 0;
+	virtual Visualizer::DataPtr visualizationData() = 0;
 
 	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 

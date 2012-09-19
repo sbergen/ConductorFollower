@@ -4,7 +4,7 @@
 
 #include "cf/time.h"
 
-#include "Visualizer/VisualizationData.h"
+#include "Visualizer/Data.h"
 
 #include "MotionTracker/MotionState.h"
 #include "MotionTracker/StartGestureData.h"
@@ -38,7 +38,7 @@ public:
 		MotionState,
 		StartGestureData,
 		timestamp_t, duration_t,
-		boost::shared_ptr<Visualizer::VisualizationDataBuffer>
+		Visualizer::DataPtr
 		> Data;
 
 	// Ctors

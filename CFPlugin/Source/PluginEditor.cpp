@@ -17,9 +17,11 @@
 CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 	, ownerFilter(ownerFilter)
+	, visualizer_(cf::Visualizer::Visualizer::Create())
+	, latestFrameId_(-1)
 {
     // This is where our plugin's editor size is set.
-    setSize (600, 300);
+    setSize (1200, 1000);
 	BuildUI();
 	ownerFilter->changeBroadcaster.addChangeListener(this);
 }
@@ -66,6 +68,9 @@ CfpluginAudioProcessorEditor::BuildUI()
 			yPos += height;
 		}
 	}
+
+	addAndMakeVisible(visualizer_.get());
+	visualizer_->setBounds(0, 300, 1200, 700);
 }
 
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
@@ -79,6 +84,15 @@ CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 void CfpluginAudioProcessorEditor::paint (Graphics& g)
 {
 	g.fillAll (Colours::white);
+	
+	auto visualizationData = ownerFilter->VisualizationData();
+	if (visualizationData) {
+		auto reader = visualizationData->GetReader();
+		if (reader->frameId() != latestFrameId_) {
+			latestFrameId_ = reader->frameId();
+			visualizer_->UpdateData(*reader);
+		}	
+	}
 }
 
 void

@@ -96,6 +96,11 @@ public: // Own stuff...
 		return follower_->options().GetWriter();
 	}
 
+	cf::Visualizer::DataPtr VisualizationData()
+	{
+		return follower_->visualizationData();
+	}
+
 	// To be called from GUI thread
 	void Reset();
 

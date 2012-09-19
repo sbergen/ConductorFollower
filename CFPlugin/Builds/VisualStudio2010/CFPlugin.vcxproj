@@ -115,7 +115,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);c:\SDKs\vstsdk2.4;../../JuceLibraryCode;"../../../FeatureExtractor";"../../../MotionTracker";"../../../ScoreFollower";"../../../cf";"../../../boost_lockfree";"../../../boost_enum";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE);c:\SDKs\vstsdk2.4;../../JuceLibraryCode;"../../../FeatureExtractor";"../../../MotionTracker";"../../../ScoreFollower";"../../../cf";"../../../boost_lockfree";"../../../boost_enum";"../../../Visualizer";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>

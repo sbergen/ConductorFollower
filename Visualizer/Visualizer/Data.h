@@ -1,20 +1,26 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
+
+#include <boost/shared_ptr.hpp>
 
 #include "cf/ChenBuffer.h"
 
 namespace cf {
 namespace Visualizer {
 
-class VisualizationData
+class Data
 {
 public:
 	typedef unsigned short depth_type;
+	typedef uint32_t frame_id_type;
 
 public:
-	VisualizationData();
-	void Update(int width, int height, int maxDepth, depth_type const * data);
+	Data();
+	void Update(int width, int height,
+		int maxDepth, frame_id_type frameId,
+		depth_type const * data);
 	void Reserve(int width, int height);
 	
 	depth_type const & operator()(int x, int y) const;
@@ -22,15 +28,18 @@ public:
 	int width() const { return width_; }
 	int height() const { return height_; }
 	depth_type const & maxDepth() const { return maxDepth_; }
+	frame_id_type const & frameId() const { return frameId_; }
 
 private:
 	int width_;
 	int height_;
 	depth_type maxDepth_;
+	frame_id_type frameId_;
 	std::vector<depth_type> depthData_;
 };
 
-typedef ChenBuffer<VisualizationData, 1, false> VisualizationDataBuffer;
+typedef ChenBuffer<Data, 1, false> DataBuffer;
+typedef boost::shared_ptr<DataBuffer> DataPtr;
 
 } // namespace Visualizer
 } // namespace cf

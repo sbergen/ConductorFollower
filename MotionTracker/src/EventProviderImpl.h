@@ -49,7 +49,7 @@ public: // HandObserver implementation, called from tracker thread
 	void NewHandPosition(float time, Point3D const & pos);
 
 public: // VisualizationObserver implementation
-	void NewVisualizationData(VisualizationDataPtr data);
+	void NewVisualizationData(Visualizer::DataPtr data);
 
 private:
 	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);

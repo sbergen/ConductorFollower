@@ -49,6 +49,7 @@ public:
 public: // Follower implementation
 	StatusBuffer & status() { return statusBuffer_; }
 	OptionsBuffer & options() { return optionsBuffer_; }
+	Visualizer::DataPtr visualizationData() { return visualizationData_; }
 
 	// Called from non-rt context
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
@@ -85,6 +86,8 @@ private:
 	OptionsBuffer optionsBuffer_;
 	OptionsBuffer::Reader optionsReader_;
 
+	Visualizer::DataPtr visualizationData_;
+
 	FollowerState state_;
 	
 	boost::mutex configMutex_;
@@ -95,7 +98,7 @@ private:
 	boost::shared_ptr<MotionTracker::EventProvider> eventProvider_;
 	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
-	boost::shared_ptr<ScoreHelper> scoreHelper_;	
+	boost::shared_ptr<ScoreHelper> scoreHelper_;
 
 	// Destroy this very first
 	ButlerThread::CallbackHandle configCallbackHandle_;

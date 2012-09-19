@@ -20,11 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VisualizerImpl.h" />
-    <ClInclude Include="Visualizer\VisualizationData.h" />
+    <ClInclude Include="Visualizer\Data.h" />
     <ClInclude Include="Visualizer\Visualizer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\VisualizationData.cpp" />
+    <ClCompile Include="src\Data.cpp" />
     <ClCompile Include="src\VisualizerImpl.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -16,6 +16,9 @@
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/FollowerOptions.h"
 
+#include "Visualizer/Data.h"
+#include "Visualizer/Visualizer.h"
+
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "PluginProcessor.h"
@@ -54,6 +57,9 @@ private:
 
 	typedef Options::FollowerOptions::transformed<StatusWidget>::type FollowerOptionWidgets;
 	FollowerOptionWidgets optionWidgets;
+
+	cf::Visualizer::Visualizer::Ptr visualizer_;
+	cf::Visualizer::Data::frame_id_type latestFrameId_;
 };
 
 
