@@ -13,7 +13,7 @@ A lock free single writer multiple reader construct from
 by Jing Chen and Alan Burns (1997)
 */
 
-template<typename T, int Readers>
+template<typename T, int Readers, bool SynchronizeWriter = true>
 class ChenBuffer
 {
 private:
@@ -85,9 +85,9 @@ public:
 			: parent_(parent)
 			, writeIndex_(parent.GetBuffer())
 		{
-			// Keep Writable data up to date
-			// TODO make this optional?
-			**this = parent_.buffer_[parent_.latest_.load()];
+			if (SynchronizeWriter) {
+				**this = parent_.buffer_[parent_.latest_.load()];
+			}
 		}
 
 		Writer(Writer && other)

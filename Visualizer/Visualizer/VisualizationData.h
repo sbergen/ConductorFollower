@@ -30,7 +30,7 @@ private:
 	std::vector<depth_type> depthData_;
 };
 
-typedef ChenBuffer<VisualizationData, 1> VisualizationDataBuffer;
+typedef ChenBuffer<VisualizationData, 1, false> VisualizationDataBuffer;
 
 } // namespace Visualizer
 } // namespace cf
