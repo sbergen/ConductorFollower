@@ -109,9 +109,8 @@ BOOST_AUTO_TEST_CASE(TestSlowAssignCase)
 		boost::thread readerThread(
 			[&barrier, &buffer, rounds]()
 			{
-				auto reader = buffer.GetReader();
-
 				for (int i = 0; i < rounds; ++i) {
+					auto reader = buffer.GetReader();
 					SlowAssignable var;
 					var = *reader;
 					// BOOST_CHECK is not thread safe

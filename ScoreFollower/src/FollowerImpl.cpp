@@ -97,7 +97,7 @@ FollowerImpl::StartNewBlock()
 	timeHelper_->FixScoreRange(status_);
 
 	{
-		StatusBuffer::Writer writer(statusBuffer_);
+		auto writer = statusBuffer_.GetWriter();
 		*writer = status_;
 	}
 
@@ -129,7 +129,7 @@ FollowerImpl::SetState(FollowerState::Value state, bool propagateChange)
 	status_.SetValue<Status::State>(state);
 	if (propagateChange)
 	{
-		StatusBuffer::Writer writer(statusBuffer_);
+		auto writer = statusBuffer_.GetWriter();
 		*writer = status_;
 	}
 }

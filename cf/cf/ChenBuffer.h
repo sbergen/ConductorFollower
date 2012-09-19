@@ -23,6 +23,7 @@ public:
 
 	// Use one instance per thread,
 	// keep alive as long as it's going to be used.
+	// May be used in a RAII fashion also
 	class Reader : boost::noncopyable
 	{
 	public:
@@ -36,6 +37,13 @@ public:
 			, id_(other.id_)
 		{
 			other.id_ = -1;
+		}
+
+		~Reader()
+		{
+			if (id_ > -1) {
+				parent_.ReleaseReaderId(id_);
+			}
 		}
 
 		T const * operator->() const { return &(**this); }
@@ -80,11 +88,12 @@ public:
 public:
 	ChenBuffer()
 		: latest_(0)
-		, reader_id_counter_(0)
 	{
 		std::for_each(std::begin(reading_), std::end(reading_),
 			[](boost::atomic<int> & val) { val.store(-1); } );
 
+		std::for_each(std::begin(reader_id_reserve_), std::end(reader_id_reserve_),
+			[](boost::atomic<bool> & val) { val.store(false); } );
 	}
 
 	template<typename F>
@@ -101,12 +110,19 @@ private:
 
 	reader_id AcquireReaderId()
 	{
-		reader_id ret = reader_id_counter_.fetch_add(1);
-		if (ret >= Readers)
-		{
-			throw std::runtime_error("Too many readers for Chen buffer!");
+		for (reader_id i = 0; i < Readers; ++i) {
+			bool expected = false;
+			if (reader_id_reserve_[i].compare_exchange_strong(expected, true)) {
+				return i;
+			}
 		}
-		return ret;
+
+		throw std::runtime_error("Too many readers for Chen buffer!");
+	}
+
+	void ReleaseReaderId(reader_id id)
+	{
+		reader_id_reserve_[id].store(false);
 	}
 
 	T const & Read(reader_id readerId)
@@ -149,7 +165,9 @@ private:
 	std::array<T, Readers + 2> buffer_;
 	std::array<boost::atomic<int>, Readers> reading_;
 	boost::atomic<int> latest_;
-	boost::atomic<reader_id> reader_id_counter_;
+
+	// Reader id usage
+	std::array<boost::atomic<bool>, Readers> reader_id_reserve_;
 };
 
 } // namespace cf
