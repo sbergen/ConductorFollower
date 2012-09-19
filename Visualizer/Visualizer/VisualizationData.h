@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "cf/rcu.h"
+#include "cf/ChenBuffer.h"
 
 namespace cf {
 namespace Visualizer {
@@ -15,6 +15,8 @@ public:
 public:
 	VisualizationData();
 	void Update(int width, int height, int maxDepth, depth_type const * data);
+	void Reserve(int width, int height);
+	
 	depth_type const & operator()(int x, int y) const;
 
 	int width() const { return width_; }
@@ -28,7 +30,7 @@ private:
 	std::vector<depth_type> depthData_;
 };
 
-typedef RTWriteRCU<VisualizationData> VisualizationDataRCU;
+typedef ChenBuffer<VisualizationData, 1> VisualizationDataBuffer;
 
 } // namespace Visualizer
 } // namespace cf

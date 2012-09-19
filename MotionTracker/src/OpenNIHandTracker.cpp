@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <boost/make_shared.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 
 #include "cf/RTContext.h"
@@ -16,8 +17,8 @@ namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
-	, recorder_(OpenNIRecorder::Playback, "recording.oni")
-	, visualizationData_(boost::make_shared<Visualizer::VisualizationDataRCU>(Visualizer::VisualizationData()))
+	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
+	, visualizationData_(boost::make_shared<Visualizer::VisualizationDataBuffer>())
 {
 }
 
@@ -90,6 +91,15 @@ OpenNIHandTracker::InitNodes()
 
 	s = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depthGenerator_);
 	CheckXnStatus(utils_, s, "Get depth generator");
+
+	// Init buffers to prevent allocations in the future
+	xn::DepthMetaData dmd;
+	depthGenerator_.GetMetaData(dmd);
+	visualizationData_->Init(
+		[&dmd](Visualizer::VisualizationData & data)
+		{
+			data.Reserve(dmd.XRes(), dmd.YRes());
+		});
 }
 
 void
@@ -221,7 +231,7 @@ OpenNIHandTracker::NotifyVisualizationObservers()
 	depthGenerator_.GetMetaData(dmd);
 
 	{
-		auto vd = visualizationData_->writer();
+		auto vd = visualizationData_->GetWriter();
 		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.Data());
 	}
 

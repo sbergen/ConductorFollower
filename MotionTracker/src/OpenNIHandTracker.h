@@ -123,7 +123,7 @@ private: // Visualization observers
 	void NotifyVisualizationObservers();
 
 	std::vector<boost::reference_wrapper<VisualizationObserver> > visualizationObservers_;
-	boost::shared_ptr<Visualizer::VisualizationDataRCU> visualizationData_;
+	boost::shared_ptr<Visualizer::VisualizationDataBuffer> visualizationData_;
 };
 
 } // namespace MotionTacker

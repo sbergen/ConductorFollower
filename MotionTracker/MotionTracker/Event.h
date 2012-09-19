@@ -38,7 +38,7 @@ public:
 		MotionState,
 		StartGestureData,
 		timestamp_t, duration_t,
-		boost::shared_ptr<Visualizer::VisualizationDataRCU>
+		boost::shared_ptr<Visualizer::VisualizationDataBuffer>
 		> Data;
 
 	// Ctors

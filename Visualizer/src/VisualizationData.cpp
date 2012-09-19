@@ -1,5 +1,7 @@
 #include "Visualizer/VisualizationData.h"
 
+#include <cassert>
+
 namespace cf {
 namespace Visualizer {
 
@@ -17,6 +19,12 @@ VisualizationData::Update(int width, int height, int maxDepth, depth_type const 
 	height_ = height;
 	maxDepth_ = maxDepth;
 	depthData_.assign(data, data + (width * height));
+}
+
+void
+VisualizationData::Reserve(int width, int height)
+{
+	depthData_.reserve(width * height);
 }
 
 VisualizationData::depth_type const &

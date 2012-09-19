@@ -11,7 +11,7 @@ namespace MotionTracker {
 class VisualizationObserver : public boost::noncopyable
 {
 public:
-	typedef boost::shared_ptr<Visualizer::VisualizationDataRCU> VisualizationDataPtr;
+	typedef boost::shared_ptr<Visualizer::VisualizationDataBuffer> VisualizationDataPtr;
 
 	virtual ~VisualizationObserver() {}
 
