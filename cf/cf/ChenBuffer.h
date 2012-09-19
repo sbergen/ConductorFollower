@@ -84,7 +84,11 @@ public:
 		Writer(ChenBuffer & parent)
 			: parent_(parent)
 			, writeIndex_(parent.GetBuffer())
-		{}
+		{
+			// Keep Writable data up to date
+			// TODO make this optional?
+			**this = parent_.buffer_[parent_.latest_.load()];
+		}
 
 		Writer(Writer && other)
 			: parent_(other.parent_)

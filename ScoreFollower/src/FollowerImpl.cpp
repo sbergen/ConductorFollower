@@ -90,18 +90,19 @@ FollowerImpl::StartNewBlock()
 		SetState(FollowerState::Rolling, false);
 	}
 
-	if (State() != FollowerState::Rolling &&
-		State() != FollowerState::GotStart) { return 0; }
-
-	// If rolling, fix score range
-	timeHelper_->FixScoreRange(status_);
-
+	unsigned ret = 0;
+	if (State() == FollowerState::Rolling ||
+		State() == FollowerState::GotStart)
 	{
-		auto writer = statusBuffer_.GetWriter();
-		*writer = status_;
+		// If rolling, fix score range
+		timeHelper_->FixScoreRange(status_);
+		ret = scoreReader_->TrackCount();
 	}
 
-	return scoreReader_->TrackCount();
+	auto writer = statusBuffer_.GetWriter();
+	*writer = status_;
+
+	return ret;
 }
 
 void
