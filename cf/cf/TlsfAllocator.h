@@ -67,7 +67,7 @@ public: // Actual functionality
 	}
 
     pointer allocate(const size_type n, const void * const) { return allocate(n); }
-    static void deallocate(const pointer ptr, const size_type n) { tlsf_free(TlsfPool::pool(), ptr); }
+    static void deallocate(const pointer ptr, const size_type) { tlsf_free(TlsfPool::pool(), ptr); }
 
 	size_type max_size() const { return TlsfPool::maxSize(); }
 
