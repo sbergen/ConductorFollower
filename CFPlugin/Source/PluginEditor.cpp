@@ -21,7 +21,7 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	, latestFrameId_(-1)
 {
     // This is where our plugin's editor size is set.
-    setSize (1200, 1000);
+    setSize (700, 800);
 	BuildUI();
 	ownerFilter->changeBroadcaster.addChangeListener(this);
 }
@@ -70,7 +70,8 @@ CfpluginAudioProcessorEditor::BuildUI()
 	}
 
 	addAndMakeVisible(visualizer_.get());
-	visualizer_->setBounds(0, 300, 1200, 700);
+	visualizer_->setBounds(0, 300, 700, 500);
+	visualizer_->SetSize(700, 500);
 }
 
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
@@ -109,4 +110,6 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*sourc
 		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
 		boost::fusion::for_each(options->map(), updater);
 	}
+
+	visualizer_->repaint();
 }

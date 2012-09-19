@@ -21,7 +21,7 @@ Data::Update(int width, int height,
 	width_ = width;
 	height_ = height;
 	maxDepth_ = maxDepth;
-	frameId_ = frameId_;
+	frameId_ = frameId;
 	depthData_.assign(data, data + (width * height));
 }
 

@@ -16,6 +16,7 @@ public:
 	static Ptr Create();
 
 public:
+	virtual void SetSize(int width, int height) = 0;
 	virtual void UpdateData(Data const & data) = 0;
 };
 

@@ -33,6 +33,7 @@ public:
 			return;
 		}
 
+		tracker_->AddVisualizationObserver(parent);
 		tracker_->StartTrackingHand(MotionTracker::GestureWave, parent);
 	}
 
