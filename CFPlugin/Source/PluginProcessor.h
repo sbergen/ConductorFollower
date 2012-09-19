@@ -76,14 +76,23 @@ public: // Own stuff...
 
 	ChangeBroadcaster changeBroadcaster;
 
-	cf::ScoreFollower::Follower::StatusRCU & followerStatus()
+	typedef cf::ScoreFollower::Follower::StatusBuffer::Reader StatusReaderType;
+	typedef cf::ScoreFollower::Follower::OptionsBuffer::Writer OptionsWriterType;
+	typedef cf::ScoreFollower::Follower::OptionsBuffer::UnsafeReader OptionsReaderType;
+
+	StatusReaderType StatusReader()
 	{
-		return follower_->status();
+		return follower_->status().GetReader();
 	}
 
-	cf::ScoreFollower::Follower::OptionsRCU & followerOptions()
+	OptionsReaderType OptionsReader()
 	{
-		return follower_->options();			
+		return follower_->options().GetUnsafeReader();
+	}
+
+	OptionsWriterType OptionsWriter()
+	{
+		return follower_->options().GetWriter();
 	}
 
 	// To be called from GUI thread
@@ -101,6 +110,7 @@ private:
 	typedef ScoreFollower::BlockBuffer MidiEventBuffer;
 	
 	boost::shared_ptr<ScoreFollower> follower_;
+
 	MidiEventBuffer eventBuffer_;
 
 	boost::atomic<bool> resetting_;

@@ -30,7 +30,7 @@ CfpluginAudioProcessorEditor::BuildUI()
 {
 	{
 		using namespace cf::ScoreFollower::Status;
-		auto status = ownerFilter->followerStatus().read();
+		auto status = ownerFilter->StatusReader();
 		WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
 		boost::fusion::for_each(status->map(), initializer);
 
@@ -50,7 +50,7 @@ CfpluginAudioProcessorEditor::BuildUI()
 	/**************************/
 	{
 		using namespace cf::ScoreFollower::Options;
-		auto options = ownerFilter->followerOptions().read();
+		auto options = ownerFilter->OptionsReader();
 		WidgetInitializer<FollowerOptionWidgets> initializer(optionWidgets);
 		boost::fusion::for_each(options->map(), initializer);
 
@@ -85,13 +85,13 @@ void
 CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*source*/)
 {
 	{
-		auto status = ownerFilter->followerStatus().read();
+		auto status = ownerFilter->StatusReader();
 		WidgetUpdater<FollowerStatusWidgets> updater(statusWidgets);
 		boost::fusion::for_each(status->map(), updater);
 	}
 
 	{
-		auto options = ownerFilter->followerOptions().writer();
+		auto options = ownerFilter->OptionsWriter();
 		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
 		boost::fusion::for_each(options->map(), updater);
 	}
