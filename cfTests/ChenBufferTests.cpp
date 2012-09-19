@@ -98,11 +98,8 @@ BOOST_AUTO_TEST_CASE(TestSlowAssignCase)
 	boost::thread writerThread(
 		[&barrier, &buffer, rounds]()
 		{
-			// f'ing VS...
-			typedef ChenBuffer<SlowAssignable, readers> Buffer;
-
 			for (int i = 0; i < rounds; ++i) {
-				Buffer::Writer writer(buffer);
+				auto writer = buffer.GetWriter();
 				*writer = i;
 			}
 			barrier.wait();
@@ -112,10 +109,7 @@ BOOST_AUTO_TEST_CASE(TestSlowAssignCase)
 		boost::thread readerThread(
 			[&barrier, &buffer, rounds]()
 			{
-				// f'ing VS...
-				typedef ChenBuffer<SlowAssignable, readers> Buffer;
-
-				Buffer::Reader reader(buffer);
+				auto reader = buffer.GetReader();
 
 				for (int i = 0; i < rounds; ++i) {
 					SlowAssignable var;

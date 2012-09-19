@@ -3,6 +3,7 @@
 #include <array>
 
 #include <boost/atomic.hpp>
+#include <boost/utility.hpp>
 
 namespace cf {
 
@@ -20,6 +21,63 @@ private:
 
 public:
 
+	// Use one instance per thread,
+	// keep alive as long as it's going to be used.
+	class Reader : boost::noncopyable
+	{
+	public:
+		Reader(ChenBuffer & parent)
+			: parent_(parent)
+			, id_(parent.AcquireReaderId())
+		{}
+
+		Reader(Reader && other)
+			: parent_(other.parent_)
+			, id_(other.id_)
+		{
+			other.id_ = -1;
+		}
+
+		T const * operator->() const { return &(**this); }
+		T const & operator* () const { return parent_.Read(id_); }
+
+	private:
+		ChenBuffer & parent_;
+		reader_id id_;
+	};
+
+	// Use in a RAII fashion: acquire -> write -> destroy
+	class Writer : boost::noncopyable
+	{
+	public:
+		Writer(ChenBuffer & parent)
+			: parent_(parent)
+			, writeIndex_(parent.GetBuffer())
+		{}
+
+		Writer(Writer && other)
+			: parent_(other.parent_)
+			, writeIndex_(other.writeIndex_)
+		{
+			other.writeIndex_ = -1;
+		}
+
+		~Writer()
+		{
+			if (writeIndex_ > -1) {
+				parent_.CompleteWrite(writeIndex_);
+			}
+		}
+
+		T * operator->() { return &(**this); }
+		T & operator* () { return parent_.buffer_[writeIndex_]; }
+
+	private:
+		ChenBuffer & parent_;
+		int writeIndex_;
+	};
+
+public:
 	ChenBuffer()
 		: latest_(0)
 		, reader_id_counter_(0)
@@ -36,45 +94,8 @@ public:
 			[&initFunc](T & val) { initFunc(val); } );
 	}
 
-	// Use one instance per thread,
-	// keep alive as long as it's going to be used.
-	class Reader
-	{
-	public:
-		Reader(ChenBuffer & parent)
-			: parent_(parent)
-			, id_(parent.AcquireReaderId())
-		{}
-
-		T const * operator->() const { return &(**this); }
-		T const & operator* () const { return parent_.Read(id_); }
-
-	private:
-		ChenBuffer & parent_;
-		reader_id id_;
-	};
-
-	// Use in a RAII fashion: acquire -> write -> destroy
-	class Writer
-	{
-	public:
-		Writer(ChenBuffer & parent)
-			: parent_(parent)
-			, writeIndex_(parent.GetBuffer())
-		{}
-
-		~Writer()
-		{
-			parent_.CompleteWrite(writeIndex_);
-		}
-
-		T * operator->() { return &(**this); }
-		T & operator* () { return parent_.buffer_[writeIndex_]; }
-
-	private:
-		ChenBuffer & parent_;
-		int writeIndex_;
-	};
+	Reader GetReader() { return Reader(*this); }
+	Writer GetWriter() { return Writer(*this); }
 
 private:
 
