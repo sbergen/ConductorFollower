@@ -18,11 +18,17 @@ public:
 	bool Detect(MotionState const & state, double & strength);
 
 private:
+	void ResetBottom();
 
-	typedef SavitzkyGolayPeakDetector<3, 2> PeakDetector;
+private:
 
-	Fir<6> vyFir_;
-	PeakDetector peakDetector_;
+	//typedef SavitzkyGolayPeakDetector<3, 2> PeakDetector;
+	//PeakDetector peakDetector_;
+
+	AveragingFir<3> vyFir_;
+	double prevVy_;
+
+	Point3D bottomPos_;
 };
 
 } // namespace MotionTracker
