@@ -88,6 +88,19 @@ CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 void CfpluginAudioProcessorEditor::paint (Graphics& g)
 {
 	g.fillAll (Colours::white);
+
+	visualizationData_.reset();
+	cf::MotionTracker::Event e;
+	while (eventQueue_->DequeueEvent(e)) {
+		ConsumeEvent(e);
+	}
+
+	if (visualizationData_) {
+		auto reader = visualizationData_->GetReader();
+		visualizer_->UpdateData(*reader);
+	}
+
+	repaint();
 }
 
 void
@@ -104,13 +117,6 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*sourc
 		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
 		boost::fusion::for_each(options->map(), updater);
 	}
-
-	cf::MotionTracker::Event e;
-	while (eventQueue_->DequeueEvent(e)) {
-		ConsumeEvent(e);
-	}
-
-	visualizer_->repaint();
 }
 
 void
@@ -121,24 +127,14 @@ CfpluginAudioProcessorEditor::ConsumeEvent(cf::MotionTracker::Event const & e)
 	using cf::Visualizer::Position;
 
 	switch (e.type()) {
-	/*case Event::VisualizationData:
-		{
-		auto vd = e.data<DataBufferPtr>();
-		if (!vd) { break; }
-
-		auto reader = vd->GetReader();
-		visualizer_->UpdateData(*reader);
+	case Event::VisualizationData:
+		visualizationData_ = e.data<DataBufferPtr>();
 		break;
-		}*/
 	case Event::VisualizationHandPosition:
-		{
 		visualizer_->NewHandPosition(e.timestamp(), e.data<Position>());
 		break;
-		}
 	case Event::Beat:
-		{
 		visualizer_->NewBeat(e.timestamp());
 		break;
-		}
 	}
 }

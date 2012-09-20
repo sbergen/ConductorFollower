@@ -64,7 +64,7 @@ private:
 
 private: // Event stuff
 	void ConsumeEvent(cf::MotionTracker::Event const & e);
-
+	cf::Visualizer::DataBufferPtr visualizationData_;
 	boost::shared_ptr<cf::MotionTracker::EventQueue> eventQueue_;
 };
 
