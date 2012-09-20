@@ -38,7 +38,7 @@ public: // Not real time safe functions
 
 	virtual StatusBuffer & status() = 0;
 	virtual OptionsBuffer & options() = 0;
-	virtual Visualizer::DataPtr visualizationData() = 0;
+	virtual Visualizer::DataBufferPtr visualizationData() = 0;
 
 	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 

@@ -184,7 +184,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	case Event::VisualizationData:
-		visualizationData_ = e.data<Visualizer::DataPtr>();
+		visualizationData_ = e.data<Visualizer::DataBufferPtr>();
 	}
 }
 

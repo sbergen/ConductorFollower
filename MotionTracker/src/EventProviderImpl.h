@@ -49,7 +49,9 @@ public: // HandObserver implementation, called from tracker thread
 	void NewHandPosition(float time, Point3D const & pos);
 
 public: // VisualizationObserver implementation
-	void NewVisualizationData(Visualizer::DataPtr data);
+	void InitVisualizationData(int width, int height);
+	Visualizer::DataPtr GetVisualizationData();
+	void NewVisualizationData();
 
 private:
 	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);
@@ -75,6 +77,10 @@ private: // tracker thread state and event buffer
 	DipHolder<40> jerkPeakHolder_;
 
 	StdDev<20> velocityDev_;
+
+private: // Visualization stuff
+	Visualizer::DataPtr visualizationData_;
+	Visualizer::DataBufferPtr visualizationBuffer_;
 };
 
 } // namespace MotionTracker

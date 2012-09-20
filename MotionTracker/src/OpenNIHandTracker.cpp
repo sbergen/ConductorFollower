@@ -18,7 +18,6 @@ namespace si = boost::units::si;
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
 	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
-	, visualizationData_(boost::make_shared<Visualizer::DataBuffer>())
 {
 }
 
@@ -65,6 +64,11 @@ OpenNIHandTracker::StopTrackingHand(HandObserver & observer)
 void
 OpenNIHandTracker::AddVisualizationObserver(VisualizationObserver & observer)
 {
+	// Init buffers to prevent allocations in the future
+	xn::DepthMetaData dmd;
+	depthGenerator_.GetMetaData(dmd);
+	observer.InitVisualizationData(dmd.XRes(), dmd.YRes());
+
 	visualizationObservers_.push_back(boost::ref(observer));
 }
 
@@ -91,15 +95,6 @@ OpenNIHandTracker::InitNodes()
 
 	s = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depthGenerator_);
 	CheckXnStatus(utils_, s, "Get depth generator");
-
-	// Init buffers to prevent allocations in the future
-	xn::DepthMetaData dmd;
-	depthGenerator_.GetMetaData(dmd);
-	visualizationData_->Init(
-		[&dmd](Visualizer::Data & data)
-		{
-			data.Reserve(dmd.XRes(), dmd.YRes());
-		});
 }
 
 void
@@ -236,14 +231,11 @@ OpenNIHandTracker::NotifyVisualizationObservers()
 	xn::DepthMetaData dmd;
 	depthGenerator_.GetMetaData(dmd);
 
-	{
-		auto vd = visualizationData_->GetWriter();
+	for (auto it = std::begin(visualizationObservers_); it != std::end(visualizationObservers_); ++it) {
+		auto vd = it->get().GetVisualizationData();
 		vd->Update(dmd.XRes(), dmd.YRes(), dmd.ZRes(), dmd.FrameID(), dmd.Data());
 		vd->SetHandPosition(visualizationHandPos_);
-	}
-
-	for (auto it = std::begin(visualizationObservers_); it != std::end(visualizationObservers_); ++it) {
-		it->get().NewVisualizationData(visualizationData_);
+		it->get().NewVisualizationData();
 	}
 }
 

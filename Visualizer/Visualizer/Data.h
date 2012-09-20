@@ -43,6 +43,9 @@ public:
 	frame_id_type const & frameId() const { return frameId_; }
 	Position const & HandPosition() const { return handPosition_; }
 
+	// hmm, why not just have them public?
+	bool beatOccurred;
+
 private:
 	int width_;
 	int height_;
@@ -52,8 +55,10 @@ private:
 	Position handPosition_;
 };
 
+typedef boost::shared_ptr<Data> DataPtr;
+
 typedef ChenBuffer<Data, 1, false> DataBuffer;
-typedef boost::shared_ptr<DataBuffer> DataPtr;
+typedef boost::shared_ptr<DataBuffer> DataBufferPtr;
 
 } // namespace Visualizer
 } // namespace cf

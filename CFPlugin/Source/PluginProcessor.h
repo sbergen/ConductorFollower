@@ -96,7 +96,7 @@ public: // Own stuff...
 		return follower_->options().GetWriter();
 	}
 
-	cf::Visualizer::DataPtr VisualizationData()
+	cf::Visualizer::DataBufferPtr VisualizationData()
 	{
 		return follower_->visualizationData();
 	}

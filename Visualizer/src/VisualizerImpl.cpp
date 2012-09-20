@@ -50,7 +50,7 @@ VisualizerImpl::paint(Graphics & g)
 	Data::Position prevPosition;
 	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
 		if (prevPosition) {
-			alpha *= 0.8;
+			alpha *= 0.8f;
 			g.setColour(color.withAlpha(alpha));
 
 			g.drawLine(juce::Line<float>(prevPosition.x, prevPosition.y, it->x, it->y), 6.0f);

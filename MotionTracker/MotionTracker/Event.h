@@ -38,7 +38,7 @@ public:
 		MotionState,
 		StartGestureData,
 		timestamp_t, duration_t,
-		Visualizer::DataPtr
+		Visualizer::DataBufferPtr
 		> Data;
 
 	// Ctors

@@ -51,6 +51,8 @@ private:
 
 EventProviderImpl::EventProviderImpl()
 	: eventBuffer_(1024)
+	, visualizationData_(boost::make_shared<Visualizer::Data>())
+	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
 {
 	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
 	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
@@ -107,9 +109,30 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 }
 
 void
-EventProviderImpl::NewVisualizationData(Visualizer::DataPtr data)
+EventProviderImpl::InitVisualizationData(int width, int height)
 {
-	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, data));
+	visualizationData_->Reserve(width, height);
+	visualizationBuffer_->Init(
+		[width, height](Visualizer::Data & data)
+		{
+			data.Reserve(width, height);
+		});
+}
+
+Visualizer::DataPtr
+EventProviderImpl::GetVisualizationData()
+{
+	return visualizationData_;
+}
+
+void
+EventProviderImpl::NewVisualizationData()
+{
+	{
+		auto writer = visualizationBuffer_->GetWriter();
+		*writer = *visualizationData_;
+	}
+	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, visualizationBuffer_));
 }
 
 void
@@ -155,6 +178,7 @@ EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & s
 	if (beat) {
 		eventBuffer_.enqueue(Event(timeNow, Event::Beat, beatVal));
 	}
+	
 	return beat;
 }
 
