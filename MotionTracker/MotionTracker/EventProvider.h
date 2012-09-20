@@ -6,7 +6,7 @@
 namespace cf {
 namespace MotionTracker {
 
-class Event;
+class EventQueue;
 
 class EventProvider : public boost::noncopyable
 {
@@ -25,10 +25,9 @@ public:
 	// If started again soon, a stop is not guaranteed
 	virtual void StopProduction() = 0;
 
-	// Lock free getter for events
-	// Returns false if there's no data available
-	virtual bool DequeueEvent(Event & result) = 0;
-
+	// Create a new event queue for yourself,
+	// all events created go to all created queues
+	virtual boost::shared_ptr<EventQueue> GetEventQueue() = 0;
 };
 
 } // namespace MotionTracker

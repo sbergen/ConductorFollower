@@ -4,17 +4,20 @@
 #include <boost/utility.hpp>
 
 #include "MotionTracker/Event.h"
+#include "MotionTracker/EventQueue.h"
 
 namespace cf {
 namespace MotionTracker {
 
-class EventProvider;
+class EventQueue;
 
 class EventThrottler : public boost::noncopyable
 {
 public:
-	EventThrottler(EventProvider & provider)
-		: provider_(provider) {}
+	typedef boost::shared_ptr<EventQueue> QueuePtr;
+
+	EventThrottler(QueuePtr queue)
+		: queue_(queue) {}
 
 	template<typename Consumer>
 	void ConsumeEventsUntil(Consumer const & consumer, timestamp_t const & time)
@@ -24,7 +27,7 @@ public:
 			queuedEvent_.isQueued = false;
 		}
 
-		while (provider_.DequeueEvent(queuedEvent_.e)) {
+		while (queue_->DequeueEvent(queuedEvent_.e)) {
 			if (queuedEvent_.e.timestamp() >= time) {
 				queuedEvent_.isQueued = true;
 				break;
@@ -42,7 +45,7 @@ private:
 		Event e;
 	};
 
-	EventProvider & provider_;
+	QueuePtr queue_;
 	QueuedEvent queuedEvent_;
 };
 

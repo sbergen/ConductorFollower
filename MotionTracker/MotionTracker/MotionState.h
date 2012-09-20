@@ -15,8 +15,6 @@ struct MotionState
 	Velocity3D velocity;
 	Acceleration3D acceleration;
 	Jerk3D jerk;
-
-	boost::shared_ptr<Visualizer::Data> visualizationData;
 };
 
 } // namespace MotionTracker

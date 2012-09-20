@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClInclude Include="MotionTracker\Event.h" />
     <ClInclude Include="MotionTracker\EventProvider.h" />
+    <ClInclude Include="MotionTracker\EventQueue.h" />
     <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="MotionTracker\MotionState.h" />
     <ClInclude Include="MotionTracker\StartGestureData.h" />

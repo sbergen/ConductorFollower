@@ -41,7 +41,7 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	// Construct memebers
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, conductorContext_);
 	eventProvider_= EventProvider::Create();
-	eventThrottler_ = boost::make_shared<EventThrottler>(*eventProvider_);
+	eventThrottler_ = boost::make_shared<EventThrottler>(eventProvider_->GetEventQueue());
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Change tracking

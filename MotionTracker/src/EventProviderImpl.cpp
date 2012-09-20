@@ -50,8 +50,7 @@ private:
 
 
 EventProviderImpl::EventProviderImpl()
-	: eventBuffer_(1024)
-	, visualizationData_(boost::make_shared<Visualizer::Data>())
+	: visualizationData_(boost::make_shared<Visualizer::Data>())
 	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
 {
 	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
@@ -75,21 +74,24 @@ void EventProviderImpl::StopProduction()
 	trackerThread_->RequestStop();
 }
 
-bool EventProviderImpl::DequeueEvent(Event & result)
+boost::shared_ptr<EventQueue>
+EventProviderImpl::GetEventQueue()
 {
-	return eventBuffer_.dequeue(result);
+	auto queue = boost::make_shared<Queue>();
+	queues_.push_back(queue);
+	return queue;
 }
 
 void
 EventProviderImpl::HandFound()
 {
-	eventBuffer_.enqueue(Event(time::now(), Event::TrackingStarted));
+	QueueEvent(Event(time::now(), Event::TrackingStarted));
 }
 
 void
 EventProviderImpl::HandLost()
 {
-	eventBuffer_.enqueue(Event(time::now(), Event::TrackingEnded));
+	QueueEvent(Event(time::now(), Event::TrackingEnded));
 }
 
 void
@@ -133,7 +135,15 @@ EventProviderImpl::NewVisualizationData()
 		*writer = *visualizationData_;
 	}
 	visualizationData_->beatOccurred = false;
-	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, visualizationBuffer_));
+	QueueEvent(Event(time::now(), Event::VisualizationData, visualizationBuffer_));
+}
+
+void
+EventProviderImpl::QueueEvent(Event const & e)
+{
+	for (auto it = queues_.begin(); it != queues_.end(); ++it) {
+		(*it)->eventBuffer.enqueue(e);
+	}
 }
 
 void
@@ -152,8 +162,8 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState con
 
 	auto const velocityDev = velocityDev_.Run(geometry::abs(geometry::distance_vector(state.position, prevPoint)).value() * 100);
 
-	eventBuffer_.enqueue(Event(timeNow, Event::VelocityDynamicRange, velocityDev));
-	eventBuffer_.enqueue(Event(timeNow, Event::VelocityPeak, velocityPeak));
+	QueueEvent(Event(timeNow, Event::VelocityDynamicRange, velocityDev));
+	QueueEvent(Event(timeNow, Event::VelocityPeak, velocityPeak));
 
 	//Acceleration3D::reduced<2>::type acc2D;
 	//state.acceleration.reduceDimension(acc2D);
@@ -165,7 +175,7 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState con
 	auto const jerkFirOut = jerkFir_.Run(jerk);
 	auto const jerkPeak = jerkPeakHolder_.Run(jerkFirOut);
 
-	eventBuffer_.enqueue(Event(timeNow, Event::JerkPeak, jerkPeak));
+	QueueEvent(Event(timeNow, Event::JerkPeak, jerkPeak));
 	
 	prevPoint = state.position;
 }
@@ -175,9 +185,9 @@ EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & s
 {
 	double beatVal;
 	bool beat = beatDetector_.Detect(state, beatVal);
-	eventBuffer_.enqueue(Event(timeNow, Event::BeatProb, beatVal));
+	QueueEvent(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
-		eventBuffer_.enqueue(Event(timeNow, Event::Beat, beatVal));
+		QueueEvent(Event(timeNow, Event::Beat, beatVal));
 		visualizationData_->beatOccurred = true;
 		LOG("************** Detected beat at time: %1%", time::now());
 	}
@@ -190,7 +200,7 @@ EventProviderImpl::DetectStartGesture(timestamp_t const & timeNow, MotionState c
 {
 	auto startResult = startDetector_.Detect(timeNow, state, beatOccurred);
 	if (startResult) {
-		eventBuffer_.enqueue(
+		QueueEvent(
 			Event(timeNow, Event::StartGesture,
 				StartGestureData(startResult.previousBeatTime, startResult.gestureLength)));
 	}

@@ -14,6 +14,7 @@
 #include "cf/StdDev.h"
 
 #include "MotionTracker/EventProvider.h"
+#include "MotionTracker/EventQueue.h"
 
 #include "common_types.h"
 #include "HandObserver.h"
@@ -31,8 +32,23 @@ class EventProviderImpl
 	, public HandObserver
 	, public VisualizationObserver
 {
-public:
-	typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
+
+private:
+	struct Queue : public EventQueue
+	{
+		typedef boost::lockfree::ringbuffer<Event, 0> InterThreadEventBuffer;
+
+		Queue()
+			: eventBuffer(256)
+		{}
+
+		bool DequeueEvent(Event & result)
+		{
+			return eventBuffer.dequeue(result);
+		}
+
+		InterThreadEventBuffer eventBuffer;
+	};
 
 public:
 	EventProviderImpl();
@@ -41,7 +57,7 @@ public:
 public: // EventProvider implementation
 	void StartProduction();
 	void StopProduction();
-	bool DequeueEvent(Event & result);
+	boost::shared_ptr<EventQueue> GetEventQueue();
 
 public: // HandObserver implementation, called from tracker thread
 	void HandFound();
@@ -54,6 +70,7 @@ public: // VisualizationObserver implementation
 	void NewVisualizationData();
 
 private:
+	void QueueEvent(Event const & e);
 	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);
 	bool DetectBeat(timestamp_t const & timeNow, MotionState const & state);
 	void DetectStartGesture(timestamp_t const & timeNow, MotionState const & state, bool beatOccurred);
@@ -63,7 +80,7 @@ private: // tracker thread state and event buffer
 	class TrackerThread;
 
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
-	InterThreadEventBuffer eventBuffer_;
+	std::vector<boost::shared_ptr<Queue> > queues_;
 	MotionFilter motionFilter_;
 
 	BeatDetector beatDetector_;
