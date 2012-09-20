@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="src\VisualizerImpl.h" />
     <ClInclude Include="Visualizer\Data.h" />
+    <ClInclude Include="Visualizer\Position.h" />
     <ClInclude Include="Visualizer\Visualizer.h" />
   </ItemGroup>
   <ItemGroup>

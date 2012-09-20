@@ -49,7 +49,7 @@ public:
 public: // Follower implementation
 	StatusBuffer & status() { return statusBuffer_; }
 	OptionsBuffer & options() { return optionsBuffer_; }
-	Visualizer::DataBufferPtr visualizationData() { return visualizationData_; }
+	MotionTracker::EventProvider & eventProvider() { return *eventProvider_; }
 
 	// Called from non-rt context
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
@@ -85,8 +85,6 @@ private:
 
 	OptionsBuffer optionsBuffer_;
 	OptionsBuffer::Reader optionsReader_;
-
-	Visualizer::DataBufferPtr visualizationData_;
 
 	FollowerState state_;
 	

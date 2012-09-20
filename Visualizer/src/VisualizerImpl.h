@@ -4,6 +4,7 @@
 
 #include "Visualizer/Visualizer.h"
 #include "Visualizer/Data.h"
+#include "Visualizer/Position.h"
 
 namespace cf {
 namespace Visualizer {
@@ -13,19 +14,17 @@ class VisualizerImpl : public Visualizer
 private:
 	struct PositionData
 	{
-		PositionData() : x(-1), y(-1), beat(false) {}
+		PositionData() : beat(false) {}
 
-		PositionData(Data const & data)
-			: x(data.HandPosition().x)
-			, y(data.HandPosition().y)
-			, beat(data.beatOccurred)
+		PositionData(timestamp_t const & time, Position const & pos)
+			: pos(pos), beat(false), timestamp(time)
 		{}
 
-		operator bool() const { return (x > -1 && y > -1); }
+		operator bool() const { return pos; }
 
-		int x;
-		int y;
+		Position pos;
 		bool beat;
+		timestamp_t timestamp;
 	};
 
 public:
@@ -34,6 +33,8 @@ public:
 public: // Visualizer implementation
 	void SetSize(int width, int height);
 	void UpdateData(Data const & data);
+	void NewHandPosition(timestamp_t const & time, Position const & pos);
+	void NewBeat(timestamp_t const & time);
 
 public: // Component overrides
 	void paint(Graphics & g);

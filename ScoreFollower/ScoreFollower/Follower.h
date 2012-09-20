@@ -10,9 +10,9 @@
 
 #include "ScoreFollower/ScoreEvent.h"
 
-#include "Visualizer/Data.h"
-
 namespace cf {
+
+namespace MotionTracker { class EventProvider; }
 
 namespace ScoreFollower {
 
@@ -38,7 +38,7 @@ public: // Not real time safe functions
 
 	virtual StatusBuffer & status() = 0;
 	virtual OptionsBuffer & options() = 0;
-	virtual Visualizer::DataBufferPtr visualizationData() = 0;
+	virtual MotionTracker::EventProvider & eventProvider() = 0;
 
 	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 

@@ -16,7 +16,7 @@ Visualizer::Create()
 
 VisualizerImpl::VisualizerImpl()
 	: maxDepth_(0)
-	, handBuffer_(20)
+	, handBuffer_(50)
 {
 }
 
@@ -31,14 +31,34 @@ VisualizerImpl::SetSize(int width, int height)
 void
 VisualizerImpl::UpdateData(Data const & data)
 {
-	handBuffer_.push_back(data);
-
 	for (int x = 0; x < data.width(); ++x) {
 		for (int y= 0; y < data.height(); ++y) {
 			auto color = ColorFromDepth(data(x, y));
 			depthImage_.setPixelAt(x, y, color);
 		}
 	}
+}
+
+void
+VisualizerImpl::NewHandPosition(timestamp_t const & time, Position const & pos)
+{
+	handBuffer_.push_back(PositionData(time, pos));
+}
+
+void
+VisualizerImpl::NewBeat(timestamp_t const & time)
+{
+	// TODO fix!
+	handBuffer_.back().beat = true;
+	/*
+	// TODO nearest neighbour instead of lower_bound?
+	auto it = std::lower_bound(std::begin(handBuffer_), std::end(handBuffer_), time,
+		[](PositionData const & val, timestamp_t const & time)
+		{
+			return val.timestamp < time;
+		});
+	if (it != std::end(handBuffer_)) { it->beat = true; }
+	*/
 }
 
 void
@@ -53,15 +73,17 @@ VisualizerImpl::paint(Graphics & g)
 	PositionData prevPosition;
 	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
 		if (prevPosition) {
-			alpha *= 0.8f;
+			alpha *= 0.9f;
 			g.setColour(color.withAlpha(alpha));
 
-			g.drawLine(juce::Line<float>(prevPosition.x, prevPosition.y, it->x, it->y), 6.0f);
+			g.drawLine(juce::Line<float>(
+				prevPosition.pos.x, prevPosition.pos.y,
+				it->pos.x, it->pos.y), 6.0f);
 
 		} else {
 			// last known position
 			g.setFillType(juce::FillType(juce::Colour(255, 0, 0)));
-			g.fillEllipse(it->x, it->y, 6.0f, 6.0f);
+			g.fillEllipse(it->pos.x, it->pos.y, 6.0f, 6.0f);
 
 			if (it->beat) {
 				LOG("************** Visualizing beat at time: %1%", time::now());
@@ -70,7 +92,7 @@ VisualizerImpl::paint(Graphics & g)
 
 		if (it->beat) {
 			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 255, 0, alpha)));
-			g.fillEllipse(it->x, it->y, 10.0f, 10.0f);
+			g.fillEllipse(it->pos.x, it->pos.y, 10.0f, 10.0f);
 		}
 
 		if (*it) {

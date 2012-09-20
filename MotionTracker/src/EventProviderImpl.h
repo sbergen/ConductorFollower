@@ -2,6 +2,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
+#include <boost/thread.hpp>
 
 #include "cf/LockfreeThread.h"
 #include "cf/time.h"
@@ -68,9 +69,11 @@ public: // VisualizationObserver implementation
 	void InitVisualizationData(int width, int height);
 	Visualizer::DataPtr GetVisualizationData();
 	void NewVisualizationData();
+	void NewVisualizationHandPosition(Visualizer::Position const & pos);
 
 private:
 	void QueueEvent(Event const & e);
+	void CleanUpQueues();
 	void RunMotionFilters(timestamp_t const & timeNow, MotionState const & state);
 	bool DetectBeat(timestamp_t const & timeNow, MotionState const & state);
 	void DetectStartGesture(timestamp_t const & timeNow, MotionState const & state, bool beatOccurred);
@@ -81,6 +84,8 @@ private: // tracker thread state and event buffer
 
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
 	std::vector<boost::shared_ptr<Queue> > queues_;
+	boost::mutex queueMutex_;
+
 	MotionFilter motionFilter_;
 
 	BeatDetector beatDetector_;

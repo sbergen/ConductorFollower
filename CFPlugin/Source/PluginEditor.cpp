@@ -8,6 +8,9 @@
   ==============================================================================
 */
 
+#include "MotionTracker/EventProvider.h"
+#include "MotionTracker/Event.h"
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -18,7 +21,7 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
     : AudioProcessorEditor (ownerFilter)
 	, ownerFilter(ownerFilter)
 	, visualizer_(cf::Visualizer::Visualizer::Create())
-	, latestFrameId_(-1)
+	, eventQueue_(ownerFilter->EventProvider().GetEventQueue())
 {
     // This is where our plugin's editor size is set.
     setSize (700, 800);
@@ -85,15 +88,6 @@ CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 void CfpluginAudioProcessorEditor::paint (Graphics& g)
 {
 	g.fillAll (Colours::white);
-	
-	auto visualizationData = ownerFilter->VisualizationData();
-	if (visualizationData) {
-		auto reader = visualizationData->GetReader();
-		if (reader->frameId() != latestFrameId_) {
-			latestFrameId_ = reader->frameId();
-			visualizer_->UpdateData(*reader);
-		}	
-	}
 }
 
 void
@@ -111,5 +105,40 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*sourc
 		boost::fusion::for_each(options->map(), updater);
 	}
 
+	cf::MotionTracker::Event e;
+	while (eventQueue_->DequeueEvent(e)) {
+		ConsumeEvent(e);
+	}
+
 	visualizer_->repaint();
+}
+
+void
+CfpluginAudioProcessorEditor::ConsumeEvent(cf::MotionTracker::Event const & e)
+{
+	using cf::MotionTracker::Event;
+	using cf::Visualizer::DataBufferPtr;
+	using cf::Visualizer::Position;
+
+	switch (e.type()) {
+	/*case Event::VisualizationData:
+		{
+		auto vd = e.data<DataBufferPtr>();
+		if (!vd) { break; }
+
+		auto reader = vd->GetReader();
+		visualizer_->UpdateData(*reader);
+		break;
+		}*/
+	case Event::VisualizationHandPosition:
+		{
+		visualizer_->NewHandPosition(e.timestamp(), e.data<Position>());
+		break;
+		}
+	case Event::Beat:
+		{
+		visualizer_->NewBeat(e.timestamp());
+		break;
+		}
+	}
 }

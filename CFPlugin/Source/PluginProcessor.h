@@ -96,9 +96,9 @@ public: // Own stuff...
 		return follower_->options().GetWriter();
 	}
 
-	cf::Visualizer::DataBufferPtr VisualizationData()
+	cf::MotionTracker::EventProvider & EventProvider()
 	{
-		return follower_->visualizationData();
+		return follower_->eventProvider();
 	}
 
 	// To be called from GUI thread

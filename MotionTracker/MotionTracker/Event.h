@@ -5,6 +5,7 @@
 #include "cf/time.h"
 
 #include "Visualizer/Data.h"
+#include "Visualizer/Position.h"
 
 #include "MotionTracker/MotionState.h"
 #include "MotionTracker/StartGestureData.h"
@@ -28,7 +29,8 @@ public:
 		VelocityPeak,
 		VelocityDynamicRange,
 		JerkPeak,
-		VisualizationData
+		VisualizationData,
+		VisualizationHandPosition
 	};
 
 	// Data
@@ -38,7 +40,7 @@ public:
 		MotionState,
 		StartGestureData,
 		timestamp_t, duration_t,
-		Visualizer::DataBufferPtr
+		Visualizer::DataBufferPtr, Visualizer::Position
 		> Data;
 
 	// Ctors

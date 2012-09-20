@@ -77,6 +77,11 @@ void EventProviderImpl::StopProduction()
 boost::shared_ptr<EventQueue>
 EventProviderImpl::GetEventQueue()
 {
+	boost::mutex::scoped_lock lock(queueMutex_);
+
+	// First clean up old ones, then create new
+	CleanUpQueues();
+
 	auto queue = boost::make_shared<Queue>();
 	queues_.push_back(queue);
 	return queue;
@@ -134,16 +139,40 @@ EventProviderImpl::NewVisualizationData()
 		auto writer = visualizationBuffer_->GetWriter();
 		*writer = *visualizationData_;
 	}
-	visualizationData_->beatOccurred = false;
 	QueueEvent(Event(time::now(), Event::VisualizationData, visualizationBuffer_));
+}
+
+void
+EventProviderImpl::NewVisualizationHandPosition(Visualizer::Position const & pos)
+{
+	QueueEvent(Event(time::now(), Event::VisualizationHandPosition, pos));
 }
 
 void
 EventProviderImpl::QueueEvent(Event const & e)
 {
-	for (auto it = queues_.begin(); it != queues_.end(); ++it) {
-		(*it)->eventBuffer.enqueue(e);
+	boost::mutex::scoped_try_lock lock(queueMutex_);
+
+	if (lock.owns_lock()) {
+		for (auto it = queues_.begin(); it != queues_.end(); ++it) {
+			(*it)->eventBuffer.enqueue(e);
+		}
+	} else {
+		LOG("!!! Missing an event because of queue locking!");
 	}
+}
+
+void
+EventProviderImpl::CleanUpQueues()
+{
+	for (auto it = queues_.begin(); it != queues_.end(); ++it) {
+		if (it->use_count() == 1) {
+			it->reset();
+		}
+	}
+	auto newEnd = std::remove(std::begin(queues_), std::end(queues_),
+		boost::shared_ptr<Queue>()); // "null"
+	queues_.erase(newEnd, std::end(queues_));
 }
 
 void
@@ -188,8 +217,6 @@ EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & s
 	QueueEvent(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
 		QueueEvent(Event(timeNow, Event::Beat, beatVal));
-		visualizationData_->beatOccurred = true;
-		LOG("************** Detected beat at time: %1%", time::now());
 	}
 	
 	return beat;

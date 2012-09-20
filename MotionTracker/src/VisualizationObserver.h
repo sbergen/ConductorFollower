@@ -4,6 +4,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "Visualizer/Data.h"
+#include "Visualizer/Position.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -20,6 +21,9 @@ public:
 
 	// Notifies that the data retuned by GetVisualizationData() contains new data
 	virtual void NewVisualizationData() = 0;
+
+	// Provides Visualization position for the hand
+	virtual void NewVisualizationHandPosition(Visualizer::Position const & pos) = 0;
 };
 
 } // namespace MotionTracker

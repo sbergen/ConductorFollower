@@ -123,7 +123,6 @@ private: // Visualization observers
 	void NotifyVisualizationObservers();
 
 	std::vector<boost::reference_wrapper<VisualizationObserver> > visualizationObservers_;
-	Visualizer::Data::Position visualizationHandPos_;
 };
 
 } // namespace MotionTacker

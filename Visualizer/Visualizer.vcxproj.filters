@@ -27,6 +27,9 @@
     <ClInclude Include="Visualizer\Data.h">
       <Filter>Visualizer</Filter>
     </ClInclude>
+    <ClInclude Include="Visualizer\Position.h">
+      <Filter>Visualizer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\VisualizerImpl.cpp">

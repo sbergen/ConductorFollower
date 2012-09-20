@@ -16,6 +16,8 @@
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/FollowerOptions.h"
 
+#include "MotionTracker/EventQueue.h"
+
 #include "Visualizer/Data.h"
 #include "Visualizer/Visualizer.h"
 
@@ -59,7 +61,11 @@ private:
 	FollowerOptionWidgets optionWidgets;
 
 	cf::Visualizer::Visualizer::Ptr visualizer_;
-	cf::Visualizer::Data::frame_id_type latestFrameId_;
+
+private: // Event stuff
+	void ConsumeEvent(cf::MotionTracker::Event const & e);
+
+	boost::shared_ptr<cf::MotionTracker::EventQueue> eventQueue_;
 };
 
 
