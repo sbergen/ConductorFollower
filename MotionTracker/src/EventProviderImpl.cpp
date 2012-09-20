@@ -132,6 +132,7 @@ EventProviderImpl::NewVisualizationData()
 		auto writer = visualizationBuffer_->GetWriter();
 		*writer = *visualizationData_;
 	}
+	visualizationData_->beatOccurred = false;
 	eventBuffer_.enqueue(Event(time::now(), Event::VisualizationData, visualizationBuffer_));
 }
 
@@ -177,6 +178,8 @@ EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & s
 	eventBuffer_.enqueue(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
 		eventBuffer_.enqueue(Event(timeNow, Event::Beat, beatVal));
+		visualizationData_->beatOccurred = true;
+		LOG("************** Detected beat at time: %1%", time::now());
 	}
 	
 	return beat;

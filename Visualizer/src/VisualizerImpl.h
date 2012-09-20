@@ -10,6 +10,24 @@ namespace Visualizer {
 
 class VisualizerImpl : public Visualizer
 {
+private:
+	struct PositionData
+	{
+		PositionData() : x(-1), y(-1), beat(false) {}
+
+		PositionData(Data const & data)
+			: x(data.HandPosition().x)
+			, y(data.HandPosition().y)
+			, beat(data.beatOccurred)
+		{}
+
+		operator bool() const { return (x > -1 && y > -1); }
+
+		int x;
+		int y;
+		bool beat;
+	};
+
 public:
 	VisualizerImpl();
 
@@ -31,7 +49,7 @@ private:
 
 	juce::Image depthImage_;
 
-	typedef boost::circular_buffer<Data::Position> HandBuffer;
+	typedef boost::circular_buffer<PositionData> HandBuffer;
 	HandBuffer handBuffer_;
 };
 

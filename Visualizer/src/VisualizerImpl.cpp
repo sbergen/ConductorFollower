@@ -2,6 +2,9 @@
 
 #include <boost/make_shared.hpp>
 
+#include "cf/globals.h"
+#include "cf/time.h"
+
 namespace cf {
 namespace Visualizer {
 
@@ -28,7 +31,7 @@ VisualizerImpl::SetSize(int width, int height)
 void
 VisualizerImpl::UpdateData(Data const & data)
 {
-	handBuffer_.push_back(data.HandPosition());
+	handBuffer_.push_back(data);
 
 	for (int x = 0; x < data.width(); ++x) {
 		for (int y= 0; y < data.height(); ++y) {
@@ -47,7 +50,7 @@ VisualizerImpl::paint(Graphics & g)
 	float alpha(1.0);
 	g.setColour(color);
 
-	Data::Position prevPosition;
+	PositionData prevPosition;
 	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
 		if (prevPosition) {
 			alpha *= 0.8f;
@@ -59,6 +62,15 @@ VisualizerImpl::paint(Graphics & g)
 			// last known position
 			g.setFillType(juce::FillType(juce::Colour(255, 0, 0)));
 			g.fillEllipse(it->x, it->y, 6.0f, 6.0f);
+
+			if (it->beat) {
+				LOG("************** Visualizing beat at time: %1%", time::now());
+			}
+		}
+
+		if (it->beat) {
+			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 255, 0, alpha)));
+			g.fillEllipse(it->x, it->y, 10.0f, 10.0f);
 		}
 
 		if (*it) {

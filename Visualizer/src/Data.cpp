@@ -10,6 +10,7 @@ Data::Data()
 	, height_(0)
 	, maxDepth_(1)
 	, frameId_(0)
+	, beatOccurred(false)
 {
 }
 
