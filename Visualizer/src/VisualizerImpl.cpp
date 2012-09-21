@@ -48,17 +48,10 @@ VisualizerImpl::NewHandPosition(timestamp_t const & time, Position const & pos)
 void
 VisualizerImpl::NewBeat(timestamp_t const & time)
 {
-	// TODO fix!
+	// The time for visualization events differs from the motion detection timestamps,
+	// so the last beat should always be ok, as the events arrive in time order.
+	// Comparison here would be just extra work
 	handBuffer_.back().beat = true;
-	/*
-	// TODO nearest neighbour instead of lower_bound?
-	auto it = std::lower_bound(std::begin(handBuffer_), std::end(handBuffer_), time,
-		[](PositionData const & val, timestamp_t const & time)
-		{
-			return val.timestamp < time;
-		});
-	if (it != std::end(handBuffer_)) { it->beat = true; }
-	*/
 }
 
 void
@@ -71,6 +64,7 @@ VisualizerImpl::paint(Graphics & g)
 	g.setColour(color);
 
 	PositionData prevPosition;
+	int i = 1;
 	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
 		if (prevPosition) {
 			alpha *= 0.9f;
@@ -84,20 +78,25 @@ VisualizerImpl::paint(Graphics & g)
 			// last known position
 			g.setFillType(juce::FillType(juce::Colour(255, 0, 0)));
 			g.fillEllipse(it->pos.x, it->pos.y, 6.0f, 6.0f);
-
-			if (it->beat) {
-				LOG("************** Visualizing beat at time: %1%", time::now());
-			}
 		}
 
 		if (it->beat) {
 			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 255, 0, alpha)));
+			g.fillEllipse(it->pos.x, it->pos.y, 10.0f, 10.0f);
+			i = -3;
+		}
+
+		if (i == 0) {
+			// Filter lag for beat
+			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 0, 255, alpha)));
 			g.fillEllipse(it->pos.x, it->pos.y, 10.0f, 10.0f);
 		}
 
 		if (*it) {
 			prevPosition = *it;
 		}
+
+		++i;
 	}
 }
 
