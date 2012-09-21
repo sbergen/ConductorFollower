@@ -9,6 +9,7 @@
 
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/Follower.h"
+#include "ScoreFollower/StatusEvents.h"
 
 #include "AudioBlockTimeManager.h"
 #include "TimeWarper.h"
@@ -37,7 +38,7 @@ public:
 	void FixScoreRange(Status::FollowerStatus & status);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
-	void RegisterBeat(real_time_t const & time, double prob);
+	BeatEvent RegisterBeat(real_time_t const & time, double prob);
 
 	real_time_t StartTimeEstimate() { return tempoFollower_.StartTimeEstimate(); }
 

@@ -27,6 +27,18 @@ private:
 		timestamp_t timestamp;
 	};
 
+	struct BeatPhaseData
+	{
+		BeatPhaseData()
+			: phase(-1.0), offset(-1.0) {}
+
+		BeatPhaseData(double phase, double offset)
+			: phase(phase), offset(offset) {}
+
+		double phase;
+		double offset;
+	};
+
 public:
 	VisualizerImpl();
 
@@ -36,6 +48,7 @@ public: // Visualizer implementation
 	void NewHandPosition(timestamp_t const & time, Position const & pos);
 	void NewBarPhase(timestamp_t const & time, double phase);
 	void NewBeat(timestamp_t const & time);
+	void NewBeatPhaseInfo(timestamp_t const & time, double phase, double offset);
 
 public: // Component overrides
 	void paint(Graphics & g);
@@ -57,9 +70,13 @@ private:
 private: // Phase view stuff
 
 	void PaintBarPhase(Graphics & g);
+	void PaintBeatPhases(Graphics & g);
 
 	double barPhase_;
 	bool drawNegativePhase_;
+
+	typedef boost::circular_buffer<BeatPhaseData> BeatBuffer;
+	BeatBuffer beatBuffer_;
 };
 
 } // namespace Visualizer

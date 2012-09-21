@@ -17,7 +17,7 @@ namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_(std::cerr)
-	, recorder_(OpenNIRecorder::Playback, "recording.oni")
+	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
 {
 }
 

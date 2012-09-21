@@ -24,6 +24,7 @@ public:
 	virtual void NewHandPosition(timestamp_t const & time, Position const & pos) = 0;
 	virtual void NewBarPhase(timestamp_t const & time, double phase) = 0;
 	virtual void NewBeat(timestamp_t const & time) = 0;
+	virtual void NewBeatPhaseInfo(timestamp_t const & time, double phase, double offset) = 0;
 };
 
 } // namespace Visualizer

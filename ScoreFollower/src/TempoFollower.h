@@ -8,10 +8,12 @@
 #include "cf/units_math.h"
 
 #include "MotionTracker/StartGestureData.h"
-#include "Data/ScoreEvent.h"
 
 #include "ScoreFollower/types.h"
+#include "ScoreFollower/StatusEvents.h"
+
 #include "Data/Score.h"
+#include "Data/ScoreEvent.h"
 
 #include "TempoMap.h"
 #include "BeatClassification.h"
@@ -36,7 +38,7 @@ public:
 	void LearnScoreEvents(Data::ScoreEventList const & events);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
-	void RegisterBeat(real_time_t const & beatTime, double prob);
+	BeatEvent RegisterBeat(real_time_t const & beatTime, double prob);
 
 	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
 	speed_t SpeedEstimateAt(real_time_t const & time);

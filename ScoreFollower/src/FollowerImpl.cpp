@@ -179,7 +179,9 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		break;
 	case Event::Beat:
 		if (State() == FollowerState::Rolling || State() == FollowerState::GotStart) {
-			timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
+			auto beatEvent = timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
+			statusEventProvider_.buffer_.enqueue(
+				StatusEvent(e.timestamp(), StatusEvent::Beat, beatEvent));
 		}
 		break;
 	case Event::BeatProb:

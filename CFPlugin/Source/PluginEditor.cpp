@@ -136,7 +136,7 @@ CfpluginAudioProcessorEditor::ConsumeEvent(cf::MotionTracker::Event const & e)
 
 	switch (e.type()) {
 	case Event::VisualizationData:
-		visualizationData_ = e.data<DataBufferPtr>();
+		//visualizationData_ = e.data<DataBufferPtr>();
 		break;
 	case Event::VisualizationHandPosition:
 		visualizer_->NewHandPosition(e.timestamp(), e.data<Position>());
@@ -152,11 +152,17 @@ CfpluginAudioProcessorEditor::ConsumeEvent(cf::ScoreFollower::StatusEvent const 
 {
 	using cf::ScoreFollower::StatusEvent;
 	using cf::ScoreFollower::BarPhaseEvent;
-	
+	using cf::ScoreFollower::BeatEvent;
 
 	switch (e.type()) {
 	case StatusEvent::BarPhase:
 		visualizer_->NewBarPhase(e.timestamp(), e.data<BarPhaseEvent>().phase);
+		break;
+	case StatusEvent::Beat:
+		{
+		auto data = e.data<BeatEvent>();
+		visualizer_->NewBeatPhaseInfo(e.timestamp(), data.phase, data.offset);
+		}
 		break;
 	}
 }

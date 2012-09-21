@@ -19,6 +19,7 @@ VisualizerImpl::VisualizerImpl()
 	, handBuffer_(50)
 	, barPhase_(-1.0)
 	, drawNegativePhase_(true)
+	, beatBuffer_(10)
 {
 }
 
@@ -67,9 +68,17 @@ VisualizerImpl::NewBeat(timestamp_t const & time)
 }
 
 void
+VisualizerImpl::NewBeatPhaseInfo(timestamp_t const & time, double phase, double offset)
+{
+	LOG("Beat, phase: %1%, offset: %2%", phase, offset);
+	beatBuffer_.push_back(BeatPhaseData(phase, offset));
+}
+
+void
 VisualizerImpl::paint(Graphics & g)
 {
-	g.drawImageAt(depthImage_, 0, 0);
+	g.fillAll(juce::Colour(0, 0, 0));
+	//g.drawImageAt(depthImage_, 0, 0);
 
 	juce::Colour color(255, 0, 0);
 	float alpha(1.0);
@@ -110,6 +119,7 @@ VisualizerImpl::paint(Graphics & g)
 	}
 
 	PaintBarPhase(g);
+	PaintBeatPhases(g);
 }
 
 juce::Colour
@@ -126,8 +136,9 @@ VisualizerImpl::PaintBarPhase(Graphics & g)
 {
 	if (barPhase_ < 0) { return; }
 
-	float offset = 10;
-	float size = 40;
+	float size = 0.9 * height_;
+	float xOffset = (width_ - size) / 2;
+	float yOffset = (height_ - size) / 2;
 	float width = 3;
 
 	float twoPi = 2 * 3.141f;
@@ -135,13 +146,42 @@ VisualizerImpl::PaintBarPhase(Graphics & g)
 
 	juce::Path path;
 	if (drawNegativePhase_) {
-		path.addArc(offset, offset, size, size, rads, twoPi, true);
+		path.addArc(xOffset, yOffset, size, size, rads, twoPi, true);
 	} else {
-		path.addArc(offset, offset, size, size, 0.0f, rads, true);
+		path.addArc(xOffset, yOffset, size, size, 0.0f, rads, true);
 	}
 
-	g.setColour(juce::Colour(0, 255, 255));
+	g.setColour(juce::Colour((juce::uint8)0, 190, 190, 0.6f));
 	g.strokePath(path, juce::PathStrokeType(width));
+}
+
+void
+VisualizerImpl::PaintBeatPhases(Graphics & g)
+{
+	float size = 0.9 * height_ + 6;
+	float xOffset = (width_ - size) / 2;
+	float yOffset = (height_ - size) / 2;
+	float width = 3;
+
+	float twoPi = 2 * 3.141f;
+	float alpha = 1.0;
+	
+	for (auto it = beatBuffer_.rbegin(); it != beatBuffer_.rend(); ++it) {
+	
+		float start = (it->phase - it->offset) * twoPi;
+		float end = it->phase * twoPi;
+
+		juce::Colour aheadColor((juce::uint8)0, 255, 0, alpha);
+		juce::Colour behindColor((juce::uint8)255, 0, 0, alpha);
+		
+		juce::Path path;
+		path.addArc(xOffset, yOffset, size, size, start, end, true);
+
+		g.setColour(it->offset > 0.0 ? aheadColor : behindColor);
+		g.strokePath(path, juce::PathStrokeType(width));
+
+		alpha *= 0.6;
+	}
 }
 
 } // namespace Visualizer

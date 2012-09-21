@@ -88,11 +88,14 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 	acceleration_.SetConstantSpeed(speed);
 }
 
-void
+BeatEvent
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
 	auto classification = ClassifyBeatAt(beatTime, clarity);
 	LOG("Classified with offset: %1%", classification.offset());
+	auto const & position = classification.position();
+	double offsetFraction = classification.offset() / (position.meter().BarDuration() * score::bar);
+	BeatEvent ret(position.FractionOfBar(), offsetFraction);
 	
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(beatTime);
 	tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
@@ -113,6 +116,8 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		auto speed = acceleration_.SpeedAt(beatTime);
 		acceleration_.SetParameters(speed, beatTime, acceleration, accelerationTime);
 	}
+
+	return ret;
 }
 
 
