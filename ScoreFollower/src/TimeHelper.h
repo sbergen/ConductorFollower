@@ -48,6 +48,11 @@ public:
 	RealTimeBlock const & CurrentRealTimeBlock() { return rtRange_; }
 	ScoreTimeBlock const & CurrentScoreTimeBlock() { return scoreRange_; }
 
+	ScorePosition ScorePositionAt(real_time_t const & time) const
+	{
+		return tempoFollower_.ScorePositionAt(time);
+	}
+
 private:
 	Follower & parent_;
 	PatchMapper::ConductorContext & conductorContext_;

@@ -15,6 +15,7 @@
 
 #include "ScoreFollower/FollowerStatus.h"
 #include "ScoreFollower/FollowerOptions.h"
+#include "ScoreFollower/StatusEvents.h"
 
 #include "MotionTracker/EventQueue.h"
 
@@ -64,6 +65,8 @@ private:
 
 private: // Event stuff
 	void ConsumeEvent(cf::MotionTracker::Event const & e);
+	void ConsumeEvent(cf::ScoreFollower::StatusEvent const & e);
+
 	cf::Visualizer::DataBufferPtr visualizationData_;
 	boost::shared_ptr<cf::MotionTracker::EventQueue> eventQueue_;
 };

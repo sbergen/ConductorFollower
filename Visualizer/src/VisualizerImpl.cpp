@@ -17,6 +17,8 @@ Visualizer::Create()
 VisualizerImpl::VisualizerImpl()
 	: maxDepth_(0)
 	, handBuffer_(50)
+	, barPhase_(-1.0)
+	, drawNegativePhase_(true)
 {
 }
 
@@ -46,6 +48,16 @@ VisualizerImpl::NewHandPosition(timestamp_t const & time, Position const & pos)
 }
 
 void
+VisualizerImpl::NewBarPhase(timestamp_t const & time, double phase)
+{
+	if (phase < barPhase_) {
+		drawNegativePhase_ = !drawNegativePhase_;
+	}
+
+	barPhase_ = phase;
+}
+
+void
 VisualizerImpl::NewBeat(timestamp_t const & time)
 {
 	// The time for visualization events differs from the motion detection timestamps,
@@ -65,7 +77,7 @@ VisualizerImpl::paint(Graphics & g)
 
 	PositionData prevPosition;
 	int i = 1;
-	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
+	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it, ++i) {
 		if (prevPosition) {
 			alpha *= 0.9f;
 			g.setColour(color.withAlpha(alpha));
@@ -95,9 +107,9 @@ VisualizerImpl::paint(Graphics & g)
 		if (*it) {
 			prevPosition = *it;
 		}
-
-		++i;
 	}
+
+	PaintBarPhase(g);
 }
 
 juce::Colour
@@ -107,6 +119,29 @@ VisualizerImpl::ColorFromDepth(Data::depth_type depth)
 
 	float brightness = static_cast<float>(maxDepth_ - depth) / maxDepth_;
 	return juce::Colour(0.0f, 0.0f, brightness, 1.0f); 
+}
+
+void
+VisualizerImpl::PaintBarPhase(Graphics & g)
+{
+	if (barPhase_ < 0) { return; }
+
+	float offset = 10;
+	float size = 40;
+	float width = 3;
+
+	float twoPi = 2 * 3.141f;
+	float rads = barPhase_ * twoPi;
+
+	juce::Path path;
+	if (drawNegativePhase_) {
+		path.addArc(offset, offset, size, size, rads, twoPi, true);
+	} else {
+		path.addArc(offset, offset, size, size, 0.0f, rads, true);
+	}
+
+	g.setColour(juce::Colour(0, 255, 255));
+	g.strokePath(path, juce::PathStrokeType(width));
 }
 
 } // namespace Visualizer

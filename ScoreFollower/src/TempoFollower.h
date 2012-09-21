@@ -41,6 +41,8 @@ public:
 	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
 	speed_t SpeedEstimateAt(real_time_t const & time);
 
+	ScorePosition ScorePositionAt(real_time_t const & time) const;
+
 private:
 	class ScoreEventBuilder;
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;

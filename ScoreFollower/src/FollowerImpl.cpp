@@ -99,8 +99,16 @@ FollowerImpl::StartNewBlock()
 		ret = scoreReader_->TrackCount();
 	}
 
+	// Update stati
+
 	auto writer = statusBuffer_.GetWriter();
 	*writer = status_;
+
+	// Use block and as the visualization will have some lag
+	auto realTime = timeHelper_->CurrentRealTimeBlock().second;
+	auto scorePos = timeHelper_->ScorePositionAt(realTime);
+	statusEventProvider_.buffer_.enqueue(
+		StatusEvent(realTime, StatusEvent::BarPhase, BarPhaseEvent(scorePos.FractionOfBar())));
 
 	return ret;
 }

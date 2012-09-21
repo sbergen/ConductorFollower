@@ -6,6 +6,7 @@
 #include <boost/signals2.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>
+#include <boost/lockfree/ringbuffer.hpp>
 
 #include "cf/globals.h"
 #include "cf/ButlerThread.h"
@@ -20,6 +21,7 @@
 #include "ScoreFollower/types.h"
 #include "ScoreFollower/TrackReader.h"
 #include "ScoreFollower/ScoreReader.h"
+#include "ScoreFollower/StatusEvents.h"
 
 #include "AudioBlockTimeManager.h"
 #include "TempoFollower.h"
@@ -36,6 +38,21 @@ namespace ScoreFollower {
 class ScoreHelper;
 class TimeHelper;
 
+struct StatusEventProviderImpl : public StatusEventProvider
+{
+	StatusEventProviderImpl()
+		: buffer_(32)
+	{}
+
+	bool DequeueEvent(StatusEvent & result)
+	{
+		return buffer_.dequeue(result);
+	}
+
+	typedef boost::lockfree::ringbuffer<StatusEvent, 0> Buffer;
+	Buffer buffer_;
+};
+
 class FollowerImpl : public Follower
 {
 private:
@@ -50,6 +67,7 @@ public: // Follower implementation
 	StatusBuffer & status() { return statusBuffer_; }
 	OptionsBuffer & options() { return optionsBuffer_; }
 	MotionTracker::EventProvider & eventProvider() { return *eventProvider_; }
+	StatusEventProvider & statusEventProvider() { return statusEventProvider_; }
 
 	// Called from non-rt context
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
@@ -97,6 +115,8 @@ private:
 	boost::shared_ptr<MotionTracker::EventThrottler> eventThrottler_;
 	boost::shared_ptr<TimeHelper> timeHelper_;
 	boost::shared_ptr<ScoreHelper> scoreHelper_;
+
+	StatusEventProviderImpl statusEventProvider_;
 
 	// Destroy this very first
 	ButlerThread::CallbackHandle configCallbackHandle_;

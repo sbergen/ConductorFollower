@@ -11,6 +11,8 @@
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/Event.h"
 
+#include "ScoreFollower/StatusEvents.h"
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -95,11 +97,17 @@ void CfpluginAudioProcessorEditor::paint (Graphics& g)
 		ConsumeEvent(e);
 	}
 
+	cf::ScoreFollower::StatusEvent se;
+	while (ownerFilter->StatusEventProvider().DequeueEvent(se)) {
+		ConsumeEvent(se);
+	}
+
 	if (visualizationData_) {
 		auto reader = visualizationData_->GetReader();
 		visualizer_->UpdateData(*reader);
 	}
 
+	// TODO optimize
 	repaint();
 }
 
@@ -135,6 +143,20 @@ CfpluginAudioProcessorEditor::ConsumeEvent(cf::MotionTracker::Event const & e)
 		break;
 	case Event::Beat:
 		visualizer_->NewBeat(e.timestamp());
+		break;
+	}
+}
+
+void
+CfpluginAudioProcessorEditor::ConsumeEvent(cf::ScoreFollower::StatusEvent const & e)
+{
+	using cf::ScoreFollower::StatusEvent;
+	using cf::ScoreFollower::BarPhaseEvent;
+	
+
+	switch (e.type()) {
+	case StatusEvent::BarPhase:
+		visualizer_->NewBarPhase(e.timestamp(), e.data<BarPhaseEvent>().phase);
 		break;
 	}
 }

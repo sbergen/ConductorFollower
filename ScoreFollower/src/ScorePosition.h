@@ -107,6 +107,11 @@ public:
 		return BeginningOfThisBar() + (meter_.BarDuration() * score::bar);
 	}
 
+	double FractionOfBar() const
+	{
+		return beat_ / (meter_.BarDuration() * score::bar);
+	}
+
 public: // Ordering and comparison (totally_ordered provides the rest)
 	bool operator< (ScorePosition const & other) const
 	{

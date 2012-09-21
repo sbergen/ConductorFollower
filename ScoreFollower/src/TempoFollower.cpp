@@ -135,6 +135,13 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	return acceleration_.SpeedAt(time);
 }
 
+ScorePosition
+TempoFollower::ScorePositionAt(real_time_t const & time) const
+{
+	auto scoreTime = timeWarper_.WarpTimestamp(time);
+	return tempoMap_.GetScorePositionAt(scoreTime);
+}
+
 BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {

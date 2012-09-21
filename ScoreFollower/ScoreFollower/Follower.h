@@ -20,6 +20,7 @@ namespace Options { class FollowerOptions; }
 namespace Status { class FollowerStatus; }
 
 class ScoreReader;
+class StatusEventProvider;
 
 class Follower : public boost::noncopyable
 {
@@ -38,7 +39,9 @@ public: // Not real time safe functions
 
 	virtual StatusBuffer & status() = 0;
 	virtual OptionsBuffer & options() = 0;
+	
 	virtual MotionTracker::EventProvider & eventProvider() = 0;
+	virtual StatusEventProvider & statusEventProvider() = 0;
 
 	virtual void SetBlockParameters(unsigned samplerate, unsigned blockSize) = 0;
 

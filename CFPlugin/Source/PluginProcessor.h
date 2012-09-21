@@ -101,6 +101,11 @@ public: // Own stuff...
 		return follower_->eventProvider();
 	}
 
+	cf::ScoreFollower::StatusEventProvider & StatusEventProvider()
+	{
+		return follower_->statusEventProvider();
+	}
+
 	// To be called from GUI thread
 	void Reset();
 

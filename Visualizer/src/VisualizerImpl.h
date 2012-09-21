@@ -34,6 +34,7 @@ public: // Visualizer implementation
 	void SetSize(int width, int height);
 	void UpdateData(Data const & data);
 	void NewHandPosition(timestamp_t const & time, Position const & pos);
+	void NewBarPhase(timestamp_t const & time, double phase);
 	void NewBeat(timestamp_t const & time);
 
 public: // Component overrides
@@ -52,6 +53,13 @@ private:
 
 	typedef boost::circular_buffer<PositionData> HandBuffer;
 	HandBuffer handBuffer_;
+
+private: // Phase view stuff
+
+	void PaintBarPhase(Graphics & g);
+
+	double barPhase_;
+	bool drawNegativePhase_;
 };
 
 } // namespace Visualizer
