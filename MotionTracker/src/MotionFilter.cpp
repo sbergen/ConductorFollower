@@ -79,7 +79,7 @@ MotionFilter::FillCacheFromNewPosition(timestamp_t const & time, Point3D const &
 	}
 
 	if (missedUpdated > 0) {
-		LOG("--- Missed %1% samples", EstimateMissedUpdates(time));
+		LOG("--- Missed %1% samples", missedUpdated);
 	}
 
 	// ...and the "real" one
