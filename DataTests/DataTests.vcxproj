@@ -70,6 +70,9 @@
       <AdditionalLibraryDirectories>$(BOOST_LIB)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(TargetDir)\$(TargetName).exe" --result_code=yes --report_level=no</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommentSkipperTests.cpp" />
