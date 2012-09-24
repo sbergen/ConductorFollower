@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "CommentSkipper.h"
+#include "src/CommentSkipper.h"
 
 BOOST_AUTO_TEST_SUITE(CommentSkipperTests)
 

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "score_position.h"
+#include "src/score_position.h"
 
 BOOST_AUTO_TEST_SUITE(ScorePositionParserTests)
 

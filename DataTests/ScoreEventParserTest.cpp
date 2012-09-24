@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "score_event.h"
+#include "src/score_event.h"
 
 BOOST_AUTO_TEST_SUITE(ScoreEventParserTests)
 

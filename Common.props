@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IntDir>$(SolutionDir)\build\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile />
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OPEN_NI_INCLUDE);$(BOOST_INCLUDE);$(SolutionDir)boost_lockfree;$(SolutionDir)CFPlugin\JuceLibraryCode;$(SolutionDir)cf;$(SolutionDir)Data;$(SolutionDir)MotionTracker;$(SolutionDir)PatchMapper;$(SolutionDir)ScoreFollower;$(SolutionDir)Visualizer</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>OpenNI64.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OPEN_NI_LIB64);$(BOOST_LIB)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

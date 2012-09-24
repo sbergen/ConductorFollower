@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "keyswitch.h"
+#include "src/keyswitch.h"
 
 BOOST_AUTO_TEST_SUITE(KeyswitchParserTests)
 

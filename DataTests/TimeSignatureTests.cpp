@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "time_signature.h"
+#include "src/time_signature.h"
 
 BOOST_AUTO_TEST_SUITE(TimeSignatureTests)
 

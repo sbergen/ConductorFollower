@@ -1,6 +1,8 @@
 # Build dirs
 /Debug
+/Release
 /CFPlugin/Builds/VisualStudio2010/Debug
+/CFPlugin/Builds/VisualStudio2010/Release
 /build
 /x64
 

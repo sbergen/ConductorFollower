@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <boost/enum.hpp>
-
 #include "cf/Limited.h"
 #include "cf/ValueWrapper.h"
 
