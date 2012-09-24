@@ -30,7 +30,12 @@
 
 namespace ProjectInfo
 {
+#ifdef DEBUG
+	const char* const  projectName    = "CFPluginDgb";
+#else
     const char* const  projectName    = "CFPlugin";
+#endif
+
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;
 }

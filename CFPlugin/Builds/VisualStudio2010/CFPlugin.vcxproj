@@ -68,12 +68,13 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DisableSpecificWarnings>4345;4996;4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>c:\SDKs\vstsdk2.4;$(OPEN_NI_INCLUDE);$(BOOST_INCLUDE);$(SolutionDir)boost_lockfree;$(SolutionDir)CFPlugin\JuceLibraryCode;$(SolutionDir)cf;$(SolutionDir)Data;$(SolutionDir)MotionTracker;$(SolutionDir)PatchMapper;$(SolutionDir)ScoreFollower;$(SolutionDir)Visualizer</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <OutputFile>.\Debug\CFPlugin.dll</OutputFile>
+      <OutputFile>.\Debug\CFPluginDbg.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
