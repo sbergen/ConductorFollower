@@ -3,8 +3,9 @@
 namespace cf {
 namespace Visualizer {
 
-struct Position
+class Position
 {
+public:
 	Position() : x(-1), y(-1) {}
 	Position(int x, int y) : x(x), y(y) {}
 
