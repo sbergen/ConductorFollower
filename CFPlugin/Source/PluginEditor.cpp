@@ -136,7 +136,9 @@ CfpluginAudioProcessorEditor::ConsumeEvent(cf::MotionTracker::Event const & e)
 
 	switch (e.type()) {
 	case Event::VisualizationData:
-		//visualizationData_ = e.data<DataBufferPtr>();
+#ifdef NDEBUG
+		visualizationData_ = e.data<DataBufferPtr>();
+#endif
 		break;
 	case Event::VisualizationHandPosition:
 		visualizer_->NewHandPosition(e.timestamp(), e.data<Position>());

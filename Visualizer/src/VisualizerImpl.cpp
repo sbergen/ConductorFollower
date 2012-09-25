@@ -77,8 +77,11 @@ VisualizerImpl::NewBeatPhaseInfo(timestamp_t const & time, double phase, double 
 void
 VisualizerImpl::paint(Graphics & g)
 {
+#ifdef NDEBUG
+	g.drawImageAt(depthImage_, 0, 0);
+#else
 	g.fillAll(juce::Colour(0, 0, 0));
-	//g.drawImageAt(depthImage_, 0, 0);
+#endif
 
 	juce::Colour color(255, 0, 0);
 	float alpha(1.0);
