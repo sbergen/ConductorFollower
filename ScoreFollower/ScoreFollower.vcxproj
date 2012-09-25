@@ -87,6 +87,7 @@
     <ClInclude Include="src\SpeedFunction.h" />
     <ClInclude Include="src\StartTempoEstimator.h" />
     <ClInclude Include="src\TempoFollower.h" />
+    <ClInclude Include="src\TempoFollowerScoreEventBuilder.h" />
     <ClInclude Include="src\TempoMap.h" />
     <ClInclude Include="src\ScorePosition.h" />
     <ClInclude Include="src\TimeHelper.h" />

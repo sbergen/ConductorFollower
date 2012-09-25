@@ -87,6 +87,9 @@
     <ClInclude Include="ScoreFollower\StatusEvents.h">
       <Filter>ScoreFollower</Filter>
     </ClInclude>
+    <ClInclude Include="src\TempoFollowerScoreEventBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">
