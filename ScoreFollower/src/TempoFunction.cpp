@@ -2,7 +2,10 @@
 
 #include <cmath>
 
+#include "cf/globals.h"
 #include "cf/unit_helpers.h"
+
+#define DEBUG_TEMPO_FUNCTION 1
 
 namespace cf {
 namespace ScoreFollower {
@@ -25,7 +28,7 @@ TempoFunction::SetParameters(
 	// Set variables
 	startTime_ = startTime;
 	changeTime_ = changeTime;
-	startTempo_ = startTempo_;
+	startTempo_ = startTempo;
 
 	// Caluculate parameters
 	linearTempoChange_ = tempoChange / changeTime;
@@ -36,7 +39,11 @@ TempoFunction::SetParameters(
 	// total catchup is 2a,
 	// => a = catchup / 2
 	auto catchupLeft = catchup - linearCatchup;
-	nonLinearCoef_ = 0.5 * catchupLeft.value();
+	nonLinearCoef_ = -0.5 * catchupLeft.value();
+
+#if DEBUG_TEMPO_FUNCTION
+	LOG("Linear change: %1%, non-linear coef: %2%", linearTempoChange_.value(), nonLinearCoef_);
+#endif
 }
 
 void
@@ -65,7 +72,8 @@ TempoFunction::CatchupAt(real_time_t const & time) const
 tempo_t
 TempoFunction::LinearTempoChangeAfter(time_quantity const & time) const
 {
-	return linearTempoChange_ * time;
+	auto ret = linearTempoChange_ * time;
+	return ret;
 }
 
 tempo_t
@@ -73,8 +81,9 @@ TempoFunction::NonLinearTempoChangeAfter(time_quantity const & time) const
 {
 	if (changeTime_.value() == 0.0) { return 0.0 * score::beats_per_second; }
 
-	double t = time / changeTime_;
-	return nonLinearCoef_ * std::sin(t) * score::beats_per_second;
+	double t = (time / changeTime_) * pi;
+	auto ret = nonLinearCoef_ * std::sin(t) * score::beats_per_second;
+	return ret;
 }
 
 beat_pos_t
@@ -91,13 +100,12 @@ TempoFunction::LinearCatchupAfter(time_quantity const & time) const
 beat_pos_t
 TempoFunction::NonLinearCatchupAfter(time_quantity const & time) const
 {
-	return unit_integral<score::tempo>(time,
-		[this](double t)
-		{
-			// Integral of a sin(x) = -a cos(x)
-			// => normalize to 0 at x: a (1 - cos(x))
-			return nonLinearCoef_ * (1.0 - std::cos(t));
-		});
+	if (changeTime_.value() == 0.0) { return 0.0 * score::beats; }
+
+	double t = (time / changeTime_) * pi;
+	// Integral of a sin(x) = -a cos(x)
+	// => normalize to 0 at x: a (1 - cos(x))
+	return beat_pos_t::from_value(nonLinearCoef_ * (1.0 - std::cos(t)));
 }
 
 } // namespace ScoreFollower

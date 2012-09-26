@@ -26,6 +26,13 @@ public:
 	static double QualityFromOffset(beat_pos_t const & offset) { return -std::abs(offset.value()); }
 
 public:
+	BeatClassification()
+		: type_(NotClassified)
+		, position_(ScorePosition())
+		, offset_(0.0 * score::beats)
+		, quality_(std::numeric_limits<double>::lowest())
+	{}
+
 	BeatClassification(ScorePosition position)
 		: type_(NotClassified)
 		, position_(position)
@@ -51,6 +58,10 @@ public:
 	ScorePosition const & position() const { return position_; }
 	beat_pos_t offset() const { return offset_; }
 	double quality() const { return quality_; }
+
+	beat_pos_t IntendedPosition() { return position_.position() - offset_; }
+
+	operator bool() const { return type_ != NotClassified; }
 
 private:
 	// non-const for assignability

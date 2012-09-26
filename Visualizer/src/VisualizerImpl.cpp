@@ -70,7 +70,7 @@ VisualizerImpl::NewBeat(timestamp_t const & time)
 void
 VisualizerImpl::NewBeatPhaseInfo(timestamp_t const & time, double phase, double offset)
 {
-	LOG("Beat, phase: %1%, offset: %2%", phase, offset);
+	//LOG("Beat, phase: %1%, offset: %2%", phase, offset);
 	beatBuffer_.push_back(BeatPhaseData(phase, offset));
 }
 

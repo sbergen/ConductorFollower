@@ -13,6 +13,8 @@
 
 #include "TempoFollowerScoreEventBuilder.h"
 
+#define DEBUG_TEMPO_FOLLOWER 1
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -65,31 +67,46 @@ BeatEvent
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
 	auto classification = ClassifyBeatAt(beatTime, clarity);
-	LOG("Classified with offset: %1%", classification.offset());
 	auto const & position = classification.position();
 	double offsetFraction = classification.offset() / (position.meter().BarDuration() * score::bar);
 	BeatEvent ret(position.FractionOfBar(), offsetFraction);
 	
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(beatTime);
-	tempo_t tempoNow = tempoMap_.GetScorePositionAt(scoreTime).tempo();
+	tempo_t tempoNow = tempoFunction_.TempoAt(beatTime);
 
 	// TODO Move to estimator
 	auto accelerationTime = AccelerationTimeAt(scoreTime);
 
-	//LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
-	//	offsetEstimate, tempoChange.value(), acceleration.value());
+	// Tempo
+	tempo_t tempoChange = 0.0 * score::beats_per_second;
+	if (previousClassification_) {
+		auto beatPosDiff = classification.IntendedPosition() - previousClassification_.IntendedPosition();
+		auto beatTimeDiff = time::quantity_cast<time_quantity>(beatTime - previousBeatTime_);
+		tempo_t targetTempo = beatPosDiff / beatTimeDiff;
+		LOG("beatPosDiff %1% beatTimeDiff %2% targetTempo %3%", beatPosDiff, beatTimeDiff, targetTempo);
+		tempoChange = targetTempo - tempoNow;
+	}
+
+#if DEBUG_TEMPO_FOLLOWER
+	LOG("Classified with position %1% and offset %2%", classification.position().position(), classification.offset());
+	LOG("Intended position: %1%", classification.IntendedPosition());
+	LOG("Beat offset: %1%, tempo change: %2%, tempoNow: %3%", classification.offset(), tempoChange, tempoNow);
+#endif
 		
 	// TODO clean up
 	if (nextFermata_.IsInFermata() && beatTime > fermataEndTime_) {
 		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
-		auto tempo = tempoFunction_.TempoAt(beatTime);
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
-			tempo, classification.offset() / accelerationTime,
-			0.0 * score::beats); // TODO!!!
+			tempoNow, tempoChange,
+			classification.offset());
 	}
+
+	// TODO clean up
+	previousClassification_ = classification;
+	previousBeatTime_ = beatTime;
 
 	return ret;
 }

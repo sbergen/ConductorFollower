@@ -67,6 +67,9 @@ private: // Basic tempo following
 	BeatClassifier beatClassifier_;
 	TempoFunction tempoFunction_;
 
+	BeatClassification previousClassification_;
+	real_time_t previousBeatTime_;
+
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;
 	FermataBuffer fermatas_;

@@ -4,6 +4,8 @@
 
 #include "BeatClassification.h"
 
+#define DEBUG_BAR_PROGRESS_ESTIMATOR 0
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -25,8 +27,6 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	OffsetPair positions(
 		position.position() - beginningOfBar,
 		position.position() - beginningOfBar - offsetEstimate);
-	LOG("Relative position: %1%, estimation position: %2%",
-		positions.absolute, positions.estimation);
 
 	// nearest neighbour
 	auto beatIt = ClassifyBeat(positions.estimation);
@@ -36,8 +36,13 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	OffsetPair offsets(
 		positions.absolute - beatIt->position,
 		positions.estimation - beatIt->position);
+
+#if DEBUG_BAR_PROGRESS_ESTIMATOR
+	LOG("Relative position: %1%, estimation position: %2%",
+		positions.absolute, positions.estimation);
 	LOG("Offset: %1%, estimation offset: %2%, beat already used: %3%",
 		offsets.absolute, offsets.estimation, beatIt->used);
+#endif
 
 	auto nextBarOffsets = EstimateForNextBar(positions);
 	// Check end of bar
