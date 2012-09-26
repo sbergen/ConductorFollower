@@ -18,12 +18,13 @@ public:
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 
-	real_time_t StartTimeEstimate();
-	speed_t SpeedEstimate();
+	real_time_t StartTimeEstimate() const;
+	tempo_t TempoEstimate() const;
+	speed_t SpeedEstimate() const;
 
 private:
-	bool ReadyForEstimates();
-	tempo_t TempoFromStartGesture();
+	bool ReadyForEstimates() const;
+	tempo_t TempoFromStartGesture() const;
 
 private:
 	tempo_t tempoInScore_;

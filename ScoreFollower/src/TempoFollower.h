@@ -17,7 +17,7 @@
 
 #include "TempoMap.h"
 #include "BeatClassification.h"
-#include "SpeedFunction.h"
+#include "TempoFunction.h"
 #include "StartTempoEstimator.h"
 #include "BeatClassifier.h"
 #include "Fermata.h"
@@ -65,14 +65,14 @@ private: // Basic tempo following
 
 	StartTempoEstimator startTempoEstimator_;
 	BeatClassifier beatClassifier_;
-	SpeedFunction acceleration_;
+	TempoFunction tempoFunction_;
 
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;
 	FermataBuffer fermatas_;
 
 	FermataState nextFermata_;
-	speed_t fermataReferenceSpeed_;
+	tempo_t fermataReferenceTempo_;
 	real_time_t fermataEndTime_;
 };
 

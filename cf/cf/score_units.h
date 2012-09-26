@@ -40,6 +40,10 @@ typedef bu::derived_dimension<
 	time_base_dimension, -1>::type tempo_dimension;
 
 typedef bu::derived_dimension<
+	beat_base_dimension, 1,
+	time_base_dimension, -2>::type tempo_change_dimension;
+
+typedef bu::derived_dimension<
 	sample_base_dimension, 1,
 	time_base_dimension, -1>::type samplerate_dimension;
 
@@ -107,6 +111,9 @@ BOOST_UNITS_STATIC_CONSTANT(seconds, physical_time);
 
 typedef bu::unit<tempo_dimension, system> tempo;
 BOOST_UNITS_STATIC_CONSTANT(beats_per_second, tempo);
+
+typedef bu::unit<tempo_change_dimension, system> tempo_change;
+BOOST_UNITS_STATIC_CONSTANT(beats_per_second_squared, tempo_change);
 
 typedef bu::unit<speed_change_dimension, system> speed_change;
 BOOST_UNITS_STATIC_CONSTANT(fractions_per_second, speed_change);

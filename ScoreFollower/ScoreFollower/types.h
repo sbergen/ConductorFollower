@@ -14,6 +14,7 @@ typedef timestamp_t real_time_t;
 // Score time, beats and tempo in Boost.Units
 typedef bu::quantity<score::physical_time> score_time_t;
 typedef bu::quantity<score::tempo> tempo_t;
+typedef bu::quantity<score::tempo_change> tempo_change_t;
 typedef bu::quantity<score::musical_time> beat_pos_t;
 typedef bu::quantity<score::bar_count> bar_pos_t;
 typedef bu::quantity<score::bar_duration> bar_duration_t;

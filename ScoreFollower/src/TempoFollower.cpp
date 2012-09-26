@@ -57,8 +57,8 @@ void
 TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
 	startTempoEstimator_.RegisterStartGesture(data);
-	auto speed = startTempoEstimator_.SpeedEstimate();
-	acceleration_.SetConstantSpeed(speed);
+	auto tempo = startTempoEstimator_.TempoEstimate();
+	tempoFunction_.SetConstantTempo(tempo);
 }
 
 BeatEvent
@@ -75,19 +75,20 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 
 	// TODO Move to estimator
 	auto accelerationTime = AccelerationTimeAt(scoreTime);
-	auto tempoChange = -classification.offset() / boost::units::pow<2>(accelerationTime);
-	SpeedFunction::SpeedChangeRate acceleration(tempoChange / tempoNow);
 
 	//LOG("Beat offset: %1%, tempo change: %2%, acceleartion: %3%",
 	//	offsetEstimate, tempoChange.value(), acceleration.value());
 		
 	// TODO clean up
 	if (nextFermata_.IsInFermata() && beatTime > fermataEndTime_) {
-		acceleration_.SetConstantSpeed(fermataReferenceSpeed_);
+		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
-		auto speed = acceleration_.SpeedAt(beatTime);
-		acceleration_.SetParameters(speed, beatTime, acceleration, accelerationTime);
+		auto tempo = tempoFunction_.TempoAt(beatTime);
+		tempoFunction_.SetParameters(
+			beatTime, accelerationTime,
+			tempo, classification.offset() / accelerationTime,
+			0.0 * score::beats); // TODO!!!
 	}
 
 	return ret;
@@ -103,14 +104,15 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	switch (nextFermata_.GetActionAtTime(scoreTime))
 	{
 	case FermataState::StoreReferenceTempo:
-		fermataReferenceSpeed_ = acceleration_.SpeedAt(time);
+		fermataReferenceTempo_ = tempoFunction_.TempoAt(time);
 		break;
 	case FermataState::EnterFermata:
 		EnterFermata(time, scoreTime);
 		break;
 	}
 
-	return acceleration_.SpeedAt(time);
+	auto tempo = tempoFunction_.TempoAt(time);
+	return tempo / ScorePositionAt(time).tempo();
 }
 
 ScorePosition
@@ -125,14 +127,14 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {
 	// TODO clean up (duplicate condition)
 	if (nextFermata_.IsInFermata() && time > fermataEndTime_) {
-		return beatClassifier_.ClassifyBeat(nextFermata_.FermataEnd(), 1.0);
+		return beatClassifier_.ResetOffsetAndClassifyBeat(nextFermata_.FermataEnd());
 	}
 
 	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
 	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
 
 	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
-	return beatClassifier_.ClassifyBeat(position, acceleration_.FractionAt(time));
+	return beatClassifier_.ClassifyBeat(position, tempoFunction_.CatchupAt(time));
 }
 
 score_time_t
@@ -157,7 +159,7 @@ void
 TempoFollower::EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime)
 {
 	fermataEndTime_ = timeWarper_.InverseWarpTimestamp(nextFermata_.FermataEnd().time(), realTime);
-	acceleration_.SetConstantSpeed(0.0);
+	tempoFunction_.SetConstantTempo(0.0 * score::beats_per_second);
 }
 
 void
