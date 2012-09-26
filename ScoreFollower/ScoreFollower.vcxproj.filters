@@ -66,9 +66,6 @@
     <ClInclude Include="src\BeatClassification.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpeedFunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\StartTempoEstimator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,6 +85,9 @@
       <Filter>ScoreFollower</Filter>
     </ClInclude>
     <ClInclude Include="src\TempoFollowerScoreEventBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TempoFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -125,7 +125,7 @@
     <ClCompile Include="src\BarProgressEstimator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpeedFunction.cpp">
+    <ClCompile Include="src\TempoFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -84,7 +84,7 @@
     <ClInclude Include="src\FollowerImpl.h" />
     <ClInclude Include="src\InstrumentPatchSwitcher.h" />
     <ClInclude Include="src\ScoreHelper.h" />
-    <ClInclude Include="src\SpeedFunction.h" />
+    <ClInclude Include="src\TempoFunction.h" />
     <ClInclude Include="src\StartTempoEstimator.h" />
     <ClInclude Include="src\TempoFollower.h" />
     <ClInclude Include="src\TempoFollowerScoreEventBuilder.h" />
@@ -100,7 +100,7 @@
     <ClCompile Include="src\FollowerImpl.cpp" />
     <ClCompile Include="src\InstrumentPatchSwitcher.cpp" />
     <ClCompile Include="src\ScoreHelper.cpp" />
-    <ClCompile Include="src\SpeedFunction.cpp" />
+    <ClCompile Include="src\TempoFunction.cpp" />
     <ClCompile Include="src\StartTempoEstimator.cpp" />
     <ClCompile Include="src\TempoFollower.cpp" />
     <ClCompile Include="src\TempoMap.cpp" />
