@@ -107,6 +107,7 @@
     <ClInclude Include="cf\TimeSignature.h" />
     <ClInclude Include="cf\TlsfAllocator.h" />
     <ClInclude Include="cf\units_math.h" />
+    <ClInclude Include="cf\unit_helpers.h" />
     <ClInclude Include="cf\ValueWrapper.h" />
     <ClInclude Include="cf\VectorND.h" />
     <ClInclude Include="cf\vector_helpers.h" />
