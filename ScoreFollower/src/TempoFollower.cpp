@@ -82,7 +82,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	tempo_t tempoChange = 0.0 * score::beats_per_second;
 	if (previousClassification_) {
 		auto beatPosDiff = classification.IntendedPosition() - previousClassification_.IntendedPosition();
-		auto beatTimeDiff = time::quantity_cast<time_quantity>(beatTime - previousBeatTime_);
+		auto beatTimeDiff = time_cast<time_quantity>(beatTime - previousBeatTime_);
 		tempo_t targetTempo = beatPosDiff / beatTimeDiff;
 		targetTempo = tempoFilter_.Run(targetTempo);
 		LOG("beatPosDiff %1% beatTimeDiff %2% targetTempo %3%", beatPosDiff, beatTimeDiff, targetTempo);

@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(TestLinearWarp)
 	score_time_t expectedScoreTime = originalScoreTime * linearSpeed;
 
 	// Calculate the respective real time
-	real_time_t realTime = referenceRealTime + time::duration_cast<duration_t>(originalScoreTime);
+	real_time_t realTime = referenceRealTime + time_cast<duration_t>(originalScoreTime);
 
 	// Check
 	BOOST_CHECK_EQUAL(warper.WarpTimestamp(realTime), expectedScoreTime);
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(TestWarpAtSpeedChange)
 	score_time_t expectedScoreTime = originalScoreTime * linearSpeed;
 
 	// Calculate the respective real time
-	real_time_t realTime = referenceRealTime + time::duration_cast<duration_t>(originalScoreTime);
+	real_time_t realTime = referenceRealTime + time_cast<duration_t>(originalScoreTime);
 
 	// Fix a warp point there
 	warper.FixTimeMapping(realTime, expectedScoreTime, 5.0);
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(TestMoreComplexWarp)
 	score_time_t afterWarped = warper.WarpTimestamp(warpPointRt + interval);
 
 	// Manual warp
-	score_time_t intervalSt = time::quantity_cast<score_time_t>(interval);
+	score_time_t intervalSt = time_cast<score_time_t>(interval);
 	score_time_t beforeExpected = warpPointSt - intervalSt * speed1;
 	score_time_t afterExpected = warpPointSt + intervalSt * speed2;
 

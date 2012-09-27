@@ -218,7 +218,7 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	/******************************/
 
-	time_quantity elapsedTime = time::quantity_cast<time_quantity>(time::now() - timeAtStartOfBlock);
+	time_quantity elapsedTime = time_cast<time_quantity>(time::now() - timeAtStartOfBlock);
 	time_quantity blockSize((samplesPerBlock_ * score::samples) / (samplerate_ * score::samples_per_second));
 	if (elapsedTime > (0.3 * blockSize)) {
 		LOG("Possible xrun! Process callback took %1% (max: %2%)", elapsedTime, blockSize);

@@ -58,7 +58,7 @@ TempoFunction::SetConstantTempo(tempo_t const & tempo)
 tempo_t
 TempoFunction::TempoAt(real_time_t const & time) const
 {
-	time_quantity t = time::quantity_cast<time_quantity>(time - startTime_);
+	time_quantity t = time_cast<time_quantity>(time - startTime_);
 	t = bu::min(t, changeTime_);
 	return startTempo_ + LinearTempoChangeAfter(t) + NonLinearTempoChangeAfter(t);
 }
@@ -66,7 +66,7 @@ TempoFunction::TempoAt(real_time_t const & time) const
 beat_pos_t
 TempoFunction::OffsetAt(real_time_t const & time) const
 {
-	time_quantity t = time::quantity_cast<time_quantity>(time - startTime_);
+	time_quantity t = time_cast<time_quantity>(time - startTime_);
 	t = bu::min(t, changeTime_);
 	return startOffset_ - (LinearOffsetAfter(t) + NonLinearOffsetAfter(t));
 }

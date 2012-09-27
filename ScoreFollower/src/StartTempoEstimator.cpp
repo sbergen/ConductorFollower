@@ -23,7 +23,7 @@ StartTempoEstimator::StartTimeEstimate() const
 {
 	if (!ReadyForEstimates()) { return real_time_t::max(); }
 
-	return preparatoryBeatTime_ + time::duration_cast<duration_t>(1.0 * score::beats / TempoFromStartGesture());
+	return preparatoryBeatTime_ + time_cast<duration_t>(1.0 * score::beats / TempoFromStartGesture());
 }
 
 tempo_t
@@ -55,7 +55,7 @@ StartTempoEstimator::ReadyForEstimates() const
 tempo_t
 StartTempoEstimator::TempoFromStartGesture() const
 {
-	return tempo_t(0.5 * score::beat / time::quantity_cast<time_quantity>(startGestureDuration_));
+	return tempo_t(0.5 * score::beat / time_cast<time_quantity>(startGestureDuration_));
 }
 
 } // namespace ScoreFollower

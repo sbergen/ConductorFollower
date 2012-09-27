@@ -27,7 +27,7 @@ MotionFilter::MotionFilter()
 unsigned
 MotionFilter::EstimateMissedUpdates(timestamp_t const & time)
 {
-	auto timeSinceLast = time::quantity_cast<time_quantity>(
+	auto timeSinceLast = time_cast<time_quantity>(
 		time - lastReceivedPosition_);
 	auto estimate = timeSinceLast / timeStep_;
 	unsigned intEstimate = static_cast<unsigned>(math::round(estimate));
@@ -137,9 +137,9 @@ MotionFilter::RegisterInterpolatorResult(boost::mpl::int_<Offset> offset, Interp
 	Point3D::data_type iPos(Point3D::dimension);
 
 	auto quantity = math::LinearRationalInterpolator<1, Interpolator::skip_amount + 1>(
-		time::quantity_cast<time_quantity>(lastReceivedPosition_.time_since_epoch()),
-		time::quantity_cast<time_quantity>(time.time_since_epoch()));
-	iTime = timestamp_t::time_point(time::duration_cast<duration_t>(quantity));
+		time_cast<time_quantity>(lastReceivedPosition_.time_since_epoch()),
+		time_cast<time_quantity>(time.time_since_epoch()));
+	iTime = timestamp_t::time_point(time_cast<duration_t>(quantity));
 	interpolator.NthMissingValue<Interpolator::skip_amount - Offset>(iPos);
 	RegisterPosition(iTime, iPos);
 

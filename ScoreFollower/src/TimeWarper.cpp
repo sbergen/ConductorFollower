@@ -20,7 +20,7 @@ TimeWarper::WarpPoint::Warp(real_time_t const & time, bool allowBackwardsWarping
 	}
 
 	duration_t diff = time - realTime_;
-	score_time_t progress = time::quantity_cast<score_time_t>(diff) * speed_;
+	score_time_t progress = time_cast<score_time_t>(diff) * speed_;
 	return scoreTime_ + progress;
 }
 
@@ -34,7 +34,7 @@ TimeWarper::WarpPoint::InverseWarp(score_time_t const & time) const
 	score_time_t diff = time - scoreTime_;
 	score_time_t progress = diff / speed_;
 
-	real_time_t result = realTime_ + time::duration_cast<duration_t>(progress);
+	real_time_t result = realTime_ + time_cast<duration_t>(progress);
 
 	return result;
 }

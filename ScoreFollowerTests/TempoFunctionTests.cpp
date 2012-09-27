@@ -12,7 +12,7 @@ using namespace cf::ScoreFollower;
 
 real_time_t make_time(real_time_t ref, time_quantity offset)
 {
-	return ref + time::duration_cast<real_time_t::duration>(offset);
+	return ref + time_cast<real_time_t::duration>(offset);
 }
 
 void RunEndTestWith(tempo_t tempoChange, beats_t catchup)
