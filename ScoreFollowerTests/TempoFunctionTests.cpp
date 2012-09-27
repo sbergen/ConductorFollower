@@ -59,16 +59,13 @@ void RunIntegralTestWith(tempo_t tempoChange, beats_t catchup)
 		position += tempo * step;
 	}
 
-	auto linearPosition = refTempo * time;
-	// tempo = at, a = change / t
-	// integral of tempo = at^2 / 2 = change * t / 2
-	//linearPosition += beats_t::from_value((0.5 * tempoChange * time).value());
+	auto linearPosition = (refTempo + tempoChange) * time;
 	BOOST_CHECK_CLOSE((linearPosition + catchup).value(), position.value(), 1.0);
 }
 
 void RunTestWith(tempo_t tempoChange, beats_t catchup)
 {
-	//RunEndTestWith(tempoChange, catchup);
+	RunEndTestWith(tempoChange, catchup);
 	RunIntegralTestWith(tempoChange, catchup);
 }
 
