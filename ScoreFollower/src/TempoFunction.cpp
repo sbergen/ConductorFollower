@@ -92,7 +92,9 @@ TempoFunction::LinearCatchupAfter(time_quantity const & time) const
 		[this](double t)
 		{
 			// Integral ax = ax^2/2
-			return 0.5 * linearTempoChange_.value() * t * t;
+			// The cathup is negative, because we are lagging
+			//  behind the target tempo at ax
+			return -0.5 * linearTempoChange_.value() * t * t;
 		});
 }
 
