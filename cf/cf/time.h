@@ -33,7 +33,8 @@ T time_cast(Y y, boost::mpl::false_, boost::mpl::true_)
 }
 
 // Dispatcher
-template<typename T, typename Y> T time_cast(Y y)
+template<typename T, typename Y>
+T time_cast(Y y)
 {
 	return time_cast<T>(y,
 		boost::units::is_quantity_of_dimension<T, boost::units::time_dimension>(),
