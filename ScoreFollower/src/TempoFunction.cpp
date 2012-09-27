@@ -23,24 +23,27 @@ void
 TempoFunction::SetParameters(
 	real_time_t const & startTime, time_quantity const & changeTime,
 	tempo_t const & startTempo, tempo_t const & tempoChange,
-	beat_pos_t const & catchup)
+	beat_pos_t const & offset)
 {
 	// Set variables
 	startTime_ = startTime;
 	changeTime_ = changeTime;
 	startTempo_ = startTempo;
+	tempoChange_ = tempoChange;
+	startOffset_ = offset;
 
 	// Caluculate parameters
 	linearTempoChange_ = tempoChange / changeTime;
-	auto linearCatchup = LinearCatchupAfter(changeTime);
+	auto linearOffset = LinearOffsetAfter(changeTime);
 
 	// non-linear catchup is a * sin(x pi / t),
 	// total catchup = 2at/pi, (integral from 0 to t)
 	// => a = pi * catchup / 2 t
-	auto catchupLeft = catchup - linearCatchup;
+	auto catchupLeft = offset - linearOffset;
 	nonLinearCoef_ = pi * catchupLeft.value() / (2 * changeTime.value());
 
 #if DEBUG_TEMPO_FUNCTION
+	LOG("Linear offset: %1%", linearOffset);
 	LOG("Linear change: %1%, non-linear coef: %2%", linearTempoChange_.value(), nonLinearCoef_);
 #endif
 }
@@ -61,11 +64,11 @@ TempoFunction::TempoAt(real_time_t const & time) const
 }
 
 beat_pos_t
-TempoFunction::CatchupAt(real_time_t const & time) const
+TempoFunction::OffsetAt(real_time_t const & time) const
 {
 	time_quantity t = time::quantity_cast<time_quantity>(time - startTime_);
 	t = bu::min(t, changeTime_);
-	return LinearCatchupAfter(t) + NonLinearCatchupAfter(t);
+	return startOffset_ - (LinearOffsetAfter(t) + NonLinearOffsetAfter(t));
 }
 
 tempo_t
@@ -86,20 +89,23 @@ TempoFunction::NonLinearTempoChangeAfter(time_quantity const & time) const
 }
 
 beat_pos_t
-TempoFunction::LinearCatchupAfter(time_quantity const & time) const
+TempoFunction::LinearOffsetAfter(time_quantity const & time) const
 {
+	// tempo diff to target = linearTempoChange * time - tempoChange
+	// integral = 0.5 * (linearTempoChange * t^2) - tempoChange * t
+
 	return unit_integral<score::tempo>(time,
 		[this](double t)
 		{
 			// Integral ax = ax^2/2
 			// The cathup is negative, because we are lagging
 			//  behind the target tempo at ax
-			return -0.5 * linearTempoChange_.value() * t * t;
+			return (0.5 * linearTempoChange_.value() * t * t) - (tempoChange_.value() * t);
 		});
 }
 
 beat_pos_t
-TempoFunction::NonLinearCatchupAfter(time_quantity const & time) const
+TempoFunction::NonLinearOffsetAfter(time_quantity const & time) const
 {
 	if (changeTime_.value() == 0.0) { return 0.0 * score::beats; }
 

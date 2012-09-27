@@ -4,6 +4,7 @@
 
 #include <boost/utility.hpp>
 
+#include "cf/EMA.h"
 #include "cf/EventBuffer.h"
 #include "cf/units_math.h"
 
@@ -69,6 +70,8 @@ private: // Basic tempo following
 
 	BeatClassification previousClassification_;
 	real_time_t previousBeatTime_;
+
+	EMA<2, tempo_t> tempoFilter_;
 
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;

@@ -17,6 +17,11 @@ public:
 		, previousValue_()
 	{}
 
+	void Reset(T const & value)
+	{
+		previousValue_ = value;
+	}
+
 	T Run(T const & nextValue)
 	{
 		previousValue_ = coef_ * nextValue +

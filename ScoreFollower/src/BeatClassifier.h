@@ -24,7 +24,7 @@ public:
 	BeatClassifier(TempoMap const & tempoMap);
 	void LearnPatterns(Data::PatternMap const & patternGroups);
 
-	BeatClassification ClassifyBeat(ScorePosition const & position, beats_t catchup);
+	BeatClassification ClassifyBeat(ScorePosition const & position, beats_t newOffset);
 
 	BeatClassification ResetOffsetAndClassifyBeat(ScorePosition const & position);
 

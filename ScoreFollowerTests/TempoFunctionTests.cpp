@@ -29,12 +29,12 @@ void RunEndTestWith(tempo_t tempoChange, beats_t catchup)
 
 	real_time_t checkTime = make_time(refTime, time);
 	BOOST_CHECK_CLOSE(f.TempoAt(checkTime).value(), (refTempo + tempoChange).value(), 0.001);
-	BOOST_CHECK_CLOSE(f.CatchupAt(checkTime).value(), catchup.value(), 0.001);
+	BOOST_CHECK_CLOSE(f.OffsetAt(checkTime).value(), 0.0, 0.001);
 
 	// Should stay the same
 	checkTime = make_time(refTime, 2.0 * time);
 	BOOST_CHECK_CLOSE(f.TempoAt(checkTime).value(), (refTempo + tempoChange).value(), 0.001);
-	BOOST_CHECK_CLOSE(f.CatchupAt(checkTime).value(), catchup.value(), 0.001);
+	BOOST_CHECK_CLOSE(f.OffsetAt(checkTime).value(), 0.0, 0.001);
 }
 
 void RunIntegralTestWith(tempo_t tempoChange, beats_t catchup)
@@ -86,7 +86,6 @@ BOOST_AUTO_TEST_CASE(TestNoTempoChangeCatchup)
 	RunTestWith(0.0 * score::beats_per_second, 1.0 * score::beats);
 	RunTestWith(0.0 * score::beats_per_second, -0.5 * score::beats);
 }
-
 
 BOOST_AUTO_TEST_CASE(TestNoCatchupTempoChange)
 {

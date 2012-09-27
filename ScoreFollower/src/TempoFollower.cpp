@@ -60,6 +60,7 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 {
 	startTempoEstimator_.RegisterStartGesture(data);
 	auto tempo = startTempoEstimator_.TempoEstimate();
+	tempoFilter_.Reset(tempo);
 	tempoFunction_.SetConstantTempo(tempo);
 }
 
@@ -83,6 +84,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		auto beatPosDiff = classification.IntendedPosition() - previousClassification_.IntendedPosition();
 		auto beatTimeDiff = time::quantity_cast<time_quantity>(beatTime - previousBeatTime_);
 		tempo_t targetTempo = beatPosDiff / beatTimeDiff;
+		targetTempo = tempoFilter_.Run(targetTempo);
 		LOG("beatPosDiff %1% beatTimeDiff %2% targetTempo %3%", beatPosDiff, beatTimeDiff, targetTempo);
 		tempoChange = targetTempo - tempoNow;
 	}
@@ -151,7 +153,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
 
 	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
-	return beatClassifier_.ClassifyBeat(position, tempoFunction_.CatchupAt(time));
+	return beatClassifier_.ClassifyBeat(position, tempoFunction_.OffsetAt(time));
 }
 
 score_time_t
