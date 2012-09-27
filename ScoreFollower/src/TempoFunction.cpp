@@ -34,12 +34,11 @@ TempoFunction::SetParameters(
 	linearTempoChange_ = tempoChange / changeTime;
 	auto linearCatchup = LinearCatchupAfter(changeTime);
 
-	// non-linear catchup is a * sin(t),
-	// t is scaled to 0 -> 0, changeTime -> pi
-	// total catchup is 2a,
-	// => a = catchup / 2
+	// non-linear catchup is a * sin(x pi / t),
+	// total catchup = 2at/pi, (integral from 0 to t)
+	// => a = pi * catchup / 2 t
 	auto catchupLeft = catchup - linearCatchup;
-	nonLinearCoef_ = -0.5 * catchupLeft.value();
+	nonLinearCoef_ = pi * catchupLeft.value() / (2 * changeTime.value());
 
 #if DEBUG_TEMPO_FUNCTION
 	LOG("Linear change: %1%, non-linear coef: %2%", linearTempoChange_.value(), nonLinearCoef_);
@@ -103,9 +102,11 @@ TempoFunction::NonLinearCatchupAfter(time_quantity const & time) const
 	if (changeTime_.value() == 0.0) { return 0.0 * score::beats; }
 
 	double t = (time / changeTime_) * pi;
-	// Integral of a sin(x) = -a cos(x)
-	// => normalize to 0 at x: a (1 - cos(x))
-	return beat_pos_t::from_value(nonLinearCoef_ * (1.0 - std::cos(t)));
+	// Integral of a sin(x pi / t) = -(at / pi) * cos(pi x / t)
+	// => normalize to 0 at x = 0:  (at / pi) * (1 - cos(pi x / t))
+	// at/pi... something already factored in, so divide per pi
+	// TODO clean up the math later!
+	return beat_pos_t::from_value(nonLinearCoef_ / pi * (1.0 - std::cos(t)));
 }
 
 } // namespace ScoreFollower

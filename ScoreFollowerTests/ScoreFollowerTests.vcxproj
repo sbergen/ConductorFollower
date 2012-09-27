@@ -78,9 +78,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TempoFunctionTests.cpp" />
     <ClCompile Include="TimeWarperTests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cf\cf.vcxproj">
+      <Project>{7005bd6e-b1e2-40e4-a496-e27362753395}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ScoreFollower\ScoreFollower.vcxproj">
       <Project>{262368e6-b5c0-4a0c-94db-e0baf6357069}</Project>
     </ProjectReference>

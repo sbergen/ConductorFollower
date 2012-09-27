@@ -101,7 +101,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
 			tempoNow, tempoChange,
-			classification.offset());
+			-classification.offset());
 	}
 
 	// TODO clean up
