@@ -52,6 +52,7 @@ TimeHelper::FixScoreRange(Status::FollowerStatus & status)
 
 	// Fix the starting point, ensures the next warp is "accurate"
 	speed_t speed = tempoFollower_.SpeedEstimateAt(rtRange_.first);
+	speed = std::max(speed, 0.0);
 	if (speed != previousSpeed_) {
 		previousSpeed_ = speed;
 		status.SetValue<Status::Speed>(speed);
