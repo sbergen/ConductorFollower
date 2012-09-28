@@ -27,7 +27,6 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	, startTempoEstimator_()
 	, beatClassifier_(tempoMap_)
 	, tempoFilter_(16, 1.5 * si::seconds)
-	, offsetFilter_(16, 1.5 * si::seconds)
 {
 }
 
@@ -105,8 +104,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
-		offsetFilter_.AddValue(beatTime, -classification.offset());
-		auto offsetToCompensate = 0.6 * offsetFilter_.ValueAt(beatTime);
+		//offsetFilter_.AddValue(beatTime, -classification.offset());
+		//auto offsetToCompensate = 0.6 * offsetFilter_.ValueAt(beatTime);
+		auto offsetToCompensate = 0.6 * -classification.offset();
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
 			tempoNow, tempoChange,
