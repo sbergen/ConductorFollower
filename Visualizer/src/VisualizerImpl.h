@@ -55,6 +55,7 @@ public: // Component overrides
 
 private:
 	juce::Colour ColorFromDepth(Data::depth_type depth);
+	void PaintPoint(Graphics & g, juce::Colour color, int x, int y, float width = 10.0);
 
 private:
 	int width_;

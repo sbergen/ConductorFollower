@@ -100,20 +100,20 @@ VisualizerImpl::paint(Graphics & g)
 
 		} else {
 			// last known position
-			g.setFillType(juce::FillType(juce::Colour(255, 0, 0)));
-			g.fillEllipse(it->pos.x, it->pos.y, 6.0f, 6.0f);
+			PaintPoint(g, juce::Colour((juce::uint8)255, 0, 0), 
+				it->pos.x, it->pos.y, 6.0f);
 		}
 
 		if (it->beat) {
-			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 255, 0, alpha)));
-			g.fillEllipse(it->pos.x, it->pos.y, 10.0f, 10.0f);
+			PaintPoint(g, juce::Colour((juce::uint8)0, 255, 0, alpha), 
+				it->pos.x, it->pos.y);
 			i = -3;
 		}
 
 		if (i == 0) {
 			// Filter lag for beat
-			g.setFillType(juce::FillType(juce::Colour((juce::uint8)0, 0, 255, alpha)));
-			g.fillEllipse(it->pos.x, it->pos.y, 10.0f, 10.0f);
+			PaintPoint(g, juce::Colour((juce::uint8)0, 0, 255, alpha), 
+				it->pos.x, it->pos.y);
 		}
 
 		if (*it) {
@@ -132,6 +132,13 @@ VisualizerImpl::ColorFromDepth(Data::depth_type depth)
 
 	float brightness = static_cast<float>(maxDepth_ - depth) / maxDepth_;
 	return juce::Colour(0.0f, 0.0f, brightness, 1.0f); 
+}
+
+void
+VisualizerImpl::PaintPoint(Graphics & g, juce::Colour color, int x, int y, float width)
+{
+	g.setFillType(juce::FillType(color));
+	g.fillEllipse(x - (width / 2), y - (width / 2), width, width);
 }
 
 void
