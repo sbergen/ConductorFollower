@@ -78,6 +78,7 @@
     <ClInclude Include="cf\EMA.h" />
     <ClInclude Include="cf\EventBuffer.h" />
     <ClInclude Include="cf\Fir.h" />
+    <ClInclude Include="cf\functional.h" />
     <ClInclude Include="cf\FusionMap.h" />
     <ClInclude Include="cf\FusionMapMacros.h" />
     <ClInclude Include="cf\inverse_matrix.h" />
@@ -104,6 +105,7 @@
     <ClInclude Include="cf\StringEnum.h" />
     <ClInclude Include="cf\time.h" />
     <ClInclude Include="cf\ChangeTracked.h" />
+    <ClInclude Include="cf\TimeFilters.h" />
     <ClInclude Include="cf\TimeSignature.h" />
     <ClInclude Include="cf\TlsfAllocator.h" />
     <ClInclude Include="cf\units_math.h" />

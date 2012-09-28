@@ -17,7 +17,7 @@ public:
 	void SetParameters(
 		real_time_t const & startTime, time_quantity const & changeTime,
 		tempo_t const & startTempo, tempo_t const & tempoChange,
-		beat_pos_t const & offset);
+		beat_pos_t const & offset, beat_pos_t const & offsetToCompensate);
 	void SetConstantTempo(tempo_t const & tempo);
 
 	tempo_t TempoAt(real_time_t const & time) const;

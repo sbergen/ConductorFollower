@@ -26,6 +26,8 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
 	, tempoMap_()
 	, startTempoEstimator_()
 	, beatClassifier_(tempoMap_)
+	, tempoFilter_(16, 1.5 * si::seconds)
+	, offsetFilter_(16, 1.5 * si::seconds)
 {
 }
 
@@ -60,7 +62,7 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 {
 	startTempoEstimator_.RegisterStartGesture(data);
 	auto tempo = startTempoEstimator_.TempoEstimate();
-	tempoFilter_.Reset(tempo);
+	tempoFilter_.Reset(startTempoEstimator_.StartTimeEstimate(), tempo);
 	tempoFunction_.SetConstantTempo(tempo);
 }
 
@@ -75,19 +77,22 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	score_time_t scoreTime = timeWarper_.WarpTimestamp(beatTime);
 	tempo_t tempoNow = tempoFunction_.TempoAt(beatTime);
 
-	// TODO Move to estimator
-	auto accelerationTime = AccelerationTimeAt(scoreTime);
+	// Beat time diff for accelerationTime
+	time_quantity beatTimeDiff = 1.0 * score::beats / tempoNow;
 
 	// Tempo
 	tempo_t tempoChange = 0.0 * score::beats_per_second;
 	if (previousClassification_) {
 		auto beatPosDiff = classification.IntendedPosition() - previousClassification_.IntendedPosition();
-		auto beatTimeDiff = time_cast<time_quantity>(beatTime - previousBeatTime_);
+		beatTimeDiff = time_cast<time_quantity>(beatTime - previousBeatTime_);
 		tempo_t targetTempo = beatPosDiff / beatTimeDiff;
-		targetTempo = tempoFilter_.Run(targetTempo);
+		tempoFilter_.AddValue(beatTime, targetTempo);
+		targetTempo = tempoFilter_.ValueAt(beatTime);
 		LOG("beatPosDiff %1% beatTimeDiff %2% targetTempo %3%", beatPosDiff, beatTimeDiff, targetTempo);
 		tempoChange = targetTempo - tempoNow;
 	}
+
+	auto accelerationTime = AccelerationTimeAt(scoreTime, beatTimeDiff);
 
 #if DEBUG_TEMPO_FOLLOWER
 	LOG("Classified with position %1% and offset %2%", classification.position().position(), classification.offset());
@@ -100,10 +105,12 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
+		offsetFilter_.AddValue(beatTime, -classification.offset());
+		auto offsetToCompensate = 0.6 * offsetFilter_.ValueAt(beatTime);
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
 			tempoNow, tempoChange,
-			-classification.offset());
+			-classification.offset(), offsetToCompensate);
 	}
 
 	// TODO clean up
@@ -157,21 +164,19 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 }
 
 score_time_t
-TempoFollower::AccelerationTimeAt(score_time_t time)
+TempoFollower::AccelerationTimeAt(score_time_t time, time_quantity beatInterval)
 {
 	// first beats can be before 0, but we want the sensitivity from the beginning
 	time = boost::units::max(time, 0.0 * score::seconds);
 
-	score_time_t const minAccelerationTime = time_quantity(0.3 * score::seconds);
-	score_time_t const accelerationTimeRange = time_quantity(3.0 * score::seconds);
-	score_time_t const defaultAccelerationTime = time_quantity(1.8 * score::seconds);
-
+	double sensitivity = 0.5;
 	auto changes = tempoSensitivities_.EventsSinceInclusive(time);
-	if (changes.Empty()) { return defaultAccelerationTime; }
+	if (!changes.Empty()) {
+		sensitivity = changes.Front().data.sensitivity;
+	}
 
-	auto sensitivity = changes.Front().data.sensitivity;
-	auto factor = 1.0 - sensitivity;
-	return minAccelerationTime + (factor * accelerationTimeRange);
+	// sensitivity of 0.5 means catchup in one beat
+	return (1.0 - sensitivity) * 2.0 * beatInterval;
 }
 
 void

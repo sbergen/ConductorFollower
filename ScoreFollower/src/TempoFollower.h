@@ -4,9 +4,9 @@
 
 #include <boost/utility.hpp>
 
-#include "cf/EMA.h"
 #include "cf/EventBuffer.h"
 #include "cf/units_math.h"
+#include "cf/TimeFilters.h"
 
 #include "MotionTracker/StartGestureData.h"
 
@@ -54,7 +54,7 @@ private:
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
 
-	score_time_t AccelerationTimeAt(score_time_t time);
+	score_time_t AccelerationTimeAt(score_time_t time, time_quantity beatInterval);
 
 	void EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime);
 	void LookupNextFermata(score_time_t const & timeNow);
@@ -71,7 +71,8 @@ private: // Basic tempo following
 	BeatClassification previousClassification_;
 	real_time_t previousBeatTime_;
 
-	EMA<2, tempo_t> tempoFilter_;
+	LinearDecayTimeFilter<tempo_t> tempoFilter_;
+	LinearDecayTimeFilter<beat_pos_t> offsetFilter_;
 
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;

@@ -23,7 +23,7 @@ void
 TempoFunction::SetParameters(
 	real_time_t const & startTime, time_quantity const & changeTime,
 	tempo_t const & startTempo, tempo_t const & tempoChange,
-	beat_pos_t const & offset)
+	beat_pos_t const & offset, beat_pos_t const & offsetToCompensate)
 {
 	// Set variables
 	startTime_ = startTime;
@@ -39,7 +39,7 @@ TempoFunction::SetParameters(
 	// non-linear catchup is a * sin(x pi / t),
 	// total catchup = 2at/pi, (integral from 0 to t)
 	// => a = pi * catchup / 2 t
-	auto catchupLeft = offset - linearOffset;
+	auto catchupLeft = offsetToCompensate - linearOffset;
 	nonLinearCoef_ = pi * catchupLeft.value() / (2 * changeTime.value());
 
 #if DEBUG_TEMPO_FUNCTION
