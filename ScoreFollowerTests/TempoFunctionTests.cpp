@@ -25,7 +25,7 @@ void RunEndTestWith(tempo_t tempoChange, beats_t catchup)
 	f.SetParameters(
 		refTime, time, 
 		refTempo, tempoChange,
-		catchup);
+		catchup, catchup);
 
 	real_time_t checkTime = make_time(refTime, time);
 	BOOST_CHECK_CLOSE(f.TempoAt(checkTime).value(), (refTempo + tempoChange).value(), 0.001);
@@ -50,7 +50,7 @@ void RunIntegralTestWith(tempo_t tempoChange, beats_t catchup)
 	f.SetParameters(
 		refTime, time, 
 		refTempo, tempoChange,
-		catchup);
+		catchup, catchup);
 
 	beat_pos_t position = 0.0 * score::beats;
 	for (int i = 0; i < steps; ++i) {
