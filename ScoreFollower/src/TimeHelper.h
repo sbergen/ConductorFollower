@@ -8,8 +8,8 @@
 #include "MotionTracker/StartGestureData.h"
 
 #include "ScoreFollower/types.h"
-#include "ScoreFollower/Follower.h"
 #include "ScoreFollower/StatusEvents.h"
+#include "ScoreFollower/FollowerStatus.h"
 
 #include "AudioBlockTimeManager.h"
 #include "TimeWarper.h"
@@ -18,6 +18,8 @@
 namespace cf {
 namespace ScoreFollower {
 
+class FollowerImpl;
+
 class TimeHelper : public boost::noncopyable
 {
 public:
@@ -25,7 +27,7 @@ public:
 	typedef std::pair<real_time_t, real_time_t> RealTimeBlock;
 
 public:
-	TimeHelper(Follower & parent, PatchMapper::ConductorContext & conductorContext);
+	TimeHelper(FollowerImpl & parent, PatchMapper::ConductorContext & conductorContext);
 	boost::shared_ptr<TimeHelper> FreshClone();
 	
 	void SetBlockParameters(unsigned samplerate, unsigned blockSize);
@@ -55,7 +57,7 @@ public:
 	}
 
 private:
-	Follower & parent_;
+	FollowerImpl & parent_;
 	PatchMapper::ConductorContext & conductorContext_;
 
 	boost::shared_ptr<AudioBlockTimeManager> timeManager_;

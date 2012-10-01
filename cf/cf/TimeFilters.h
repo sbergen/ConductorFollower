@@ -71,6 +71,11 @@ public:
 		, cutoffPoint_(cutoffPoint)
 	{}
 
+	void SetCutoffPoint(time_quantity cutoff)
+	{
+		cutoffPoint_ = cutoff;
+	}
+
 private:
 	double CoefFunction(time_quantity const & time) const
 	{

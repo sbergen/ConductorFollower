@@ -27,12 +27,12 @@ namespace cf {
 namespace ScoreFollower {
 
 class TimeWarper;
-class Follower;
+class FollowerImpl;
 
 class TempoFollower : public boost::noncopyable
 {
 public:
-	TempoFollower(TimeWarper const & timeWarper, Follower & parent);
+	TempoFollower(TimeWarper const & timeWarper, FollowerImpl & parent);
 
 	void ReadScore(ScoreReader & reader);
 	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_.LearnPatterns(patterns); }
@@ -61,7 +61,7 @@ private:
 
 private: // Basic tempo following
 	TimeWarper const & timeWarper_;
-	Follower & parent_;
+	FollowerImpl & parent_;
 	TempoMap tempoMap_;
 
 	StartTempoEstimator startTempoEstimator_;

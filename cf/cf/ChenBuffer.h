@@ -14,7 +14,7 @@ by Jing Chen and Alan Burns (1997)
 */
 
 template<typename T, int Readers, bool SynchronizeWriter = true>
-class ChenBuffer
+class ChenBuffer : boost::noncopyable
 {
 private:
 	typedef int reader_id;

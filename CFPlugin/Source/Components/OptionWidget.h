@@ -10,7 +10,7 @@
 template<typename KeyType, typename ValueType, int Presentation>
 class OptionWidget : public Component, public Slider::Listener
 {
-	typedef typename ValueType::value_type limited_type;
+	typedef ValueType limited_type;
 
 public:
 	OptionWidget()

@@ -2,14 +2,16 @@
 
 #include <boost/bind.hpp>
 #include <boost/variant/apply_visitor.hpp>
+#include <boost/units/systems/si/prefixes.hpp>
 
 #include "cf/globals.h"
 #include "cf/math.h"
 
-#include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
+#include "ScoreFollower/FollowerOptions.h"
 
 #include "TimeWarper.h"
+#include "FollowerImpl.h"
 
 #include "TempoFollowerScoreEventBuilder.h"
 
@@ -20,13 +22,13 @@ namespace ScoreFollower {
 
 namespace si = boost::units::si;
 
-TempoFollower::TempoFollower(TimeWarper const & timeWarper, Follower & parent)
+TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerImpl & parent)
 	: timeWarper_(timeWarper)
 	, parent_(parent)
 	, tempoMap_()
 	, startTempoEstimator_()
 	, beatClassifier_(tempoMap_)
-	, tempoFilter_(16, 1.5 * si::seconds)
+	, tempoFilter_(32, 2.5 * si::seconds)
 {
 }
 
@@ -68,6 +70,11 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 BeatEvent
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
+	auto & options = parent_.OptionsReader();
+	double tempoFilterCutoffMs;
+	options->GetValue<Options::TempoFilterTime>(tempoFilterCutoffMs);
+	tempoFilter_.SetCutoffPoint(time_quantity(tempoFilterCutoffMs * si::milli * si::seconds));
+
 	auto classification = ClassifyBeatAt(beatTime, clarity);
 	auto const & position = classification.position();
 	double offsetFraction = classification.offset() / (position.meter().BarDuration() * score::bar);
@@ -106,7 +113,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	} else {
 		//offsetFilter_.AddValue(beatTime, -classification.offset());
 		//auto offsetToCompensate = 0.6 * offsetFilter_.ValueAt(beatTime);
-		auto offsetToCompensate = 0.6 * -classification.offset();
+		double offsetFactor;
+		options->GetValue<Options::CatchupFraction>(offsetFactor);
+		auto offsetToCompensate = (offsetFactor / 100.0) * -classification.offset();
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
 			tempoNow, tempoChange,
@@ -119,7 +128,6 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 
 	return ret;
 }
-
 
 speed_t
 TempoFollower::SpeedEstimateAt(real_time_t const & time)

@@ -5,10 +5,12 @@
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerStatus.h"
 
+#include "FollowerImpl.h"
+
 namespace cf {
 namespace ScoreFollower {
 
-TimeHelper::TimeHelper(Follower & parent, PatchMapper::ConductorContext & conductorContext)
+TimeHelper::TimeHelper(FollowerImpl & parent, PatchMapper::ConductorContext & conductorContext)
 	: parent_(parent)
 	, conductorContext_(conductorContext)
 	, tempoFollower_(timeWarper_, parent) 

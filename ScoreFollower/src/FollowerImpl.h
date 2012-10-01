@@ -76,6 +76,9 @@ public: // Follower implementation
 	unsigned StartNewBlock();
 	void GetTrackEventsForBlock(unsigned track, BlockBuffer & events);
 
+public: // Module private "extensions" to Follower
+	OptionsBuffer::Reader & OptionsReader() { return optionsReader_; }
+
 private:
 	FollowerState State();
 	void SetState(FollowerState::Value state, bool propagateChange = true);
