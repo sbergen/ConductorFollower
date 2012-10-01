@@ -101,7 +101,7 @@ public:
 			valueRect_->setFill(FillType(Colours::green));
 		}
 
-		Rectangle<float> rect(
+		juce::Rectangle<float> rect(
 			static_cast<float>(valueRect_->getX()), static_cast<float>(valueRect_->getY()),
 			fraction * getWidth(), static_cast<float>(valueRect_->getHeight()));
 		valueRect_->setRectangle(rect);
