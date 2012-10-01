@@ -60,9 +60,6 @@
     <ClCompile Include="RefCountTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RCUTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ChenBufferTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

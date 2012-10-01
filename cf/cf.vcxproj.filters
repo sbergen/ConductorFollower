@@ -62,9 +62,6 @@
     <ClInclude Include="cf\algorithm.h">
       <Filter>cf</Filter>
     </ClInclude>
-    <ClInclude Include="cf\rcu.h">
-      <Filter>cf</Filter>
-    </ClInclude>
     <ClInclude Include="cf\globals.h">
       <Filter>cf</Filter>
     </ClInclude>
