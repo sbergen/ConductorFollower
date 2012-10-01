@@ -5,6 +5,13 @@
 
 #include <boost/thread.hpp>
 
+#define CF_MS_MEMORY_DEBUG 0
+#define CF_VLD 1
+
+#if CF_VLD && CF_MS_MEMORY_DEBUG
+#include <vld.h>
+#endif
+
 // Header only hack (static variable init)
 inline bool disallow_new_headeronly(boost::thread::id const & thread_id, bool check)
 {
@@ -39,7 +46,11 @@ inline void allow_new()
 inline void* operator new( size_t size )
 {
 	assert(!cf::new_disallowed());
+#if CF_MS_MEMORY_DEBUG
+	void * ret = _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__);
+#else
 	void * ret = malloc(size);
+#endif
 	if (!ret) { throw std::bad_alloc(); }
 	return ret;
 }
@@ -47,5 +58,9 @@ inline void* operator new( size_t size )
 inline void operator delete( void* ptr )
 {
 	assert(!cf::new_disallowed());
+#if CF_MS_MEMORY_DEBUG
+	_free_dbg(ptr, _NORMAL_BLOCK);
+#else
 	free(ptr);
+#endif
 }
