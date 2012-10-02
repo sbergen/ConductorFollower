@@ -126,6 +126,7 @@ private:
 
 	boost::atomic<bool> resetting_;
 
+	std::string errorString_;
 
 private:
     //==============================================================================

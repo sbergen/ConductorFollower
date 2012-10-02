@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/format.hpp>
+
 #include "cf/globals.h"
 
 namespace cf {
@@ -13,13 +15,17 @@ struct error_handler_impl
 
 	void operator()(qi::info const & what, Iterator const & whereBegin, Iterator const & whereEnd) const
 	{
-		// This need not be realtime safe
-		std::ostringstream ss;
-		ss << "* Parse error, expecting "
-			<< what
-			<< " here "
-			<< std::string(whereBegin, whereEnd);
-		LOG(ss.str().c_str());
+		auto where = std::string(whereBegin, whereEnd);
+		if (where.length() > 100) {
+			where.resize(100);
+			where += "...";
+		}
+
+		auto msg = (boost::format("Parse error, expecting %1%, right before:\n %2%")
+			% what % where).str();
+
+		GlobalsRef globals;
+		globals.ErrorBuffer()->enqueue(msg);
 	}
 };
 

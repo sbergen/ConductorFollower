@@ -6,9 +6,11 @@
 
 namespace cf {
 
+// Init statics
 boost::atomic<int> Globals::refCount_(0);
 boost::shared_ptr<ButlerThread> Globals::butler_;
 boost::shared_ptr<FileLogger> Globals::logger_;
+boost::shared_ptr<Globals::ErrorBuffer> Globals::errorBuffer_;
 
 void Globals::Ref()
 {
@@ -19,6 +21,8 @@ void Globals::Ref()
 
 	butler_ = boost::make_shared<ButlerThread>(milliseconds_t(50));
 	logger_ = boost::make_shared<FileLogger>("ScoreFollower.log", butler_);
+	errorBuffer_ = boost::make_shared<ErrorBuffer>(16);
+
 	LOG("Initialized!");
 }
 
@@ -28,6 +32,7 @@ void Globals::Unref()
 
 	logger_.reset();
 	butler_.reset();
+	errorBuffer_.reset();
 
 	// Free allocator memory
 	TlsfPool::Destroy();

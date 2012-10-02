@@ -9,6 +9,8 @@ namespace Data {
 template<template<typename, typename> class TGrammar, typename TData>
 bool ParseFromFile(std::string const & filename, TData & data)
 {
+	if (filename == "") { return false; }
+
 	typedef boost::spirit::basic_istream_iterator<char> iterator_type;
 	typedef CommentSkipper<iterator_type> skipper_type;
 

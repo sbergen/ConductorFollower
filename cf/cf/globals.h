@@ -5,6 +5,8 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
+#include <boost/lockfree/ringbuffer.hpp>
+
 #include "cf/Logger.h"
 #include "cf/ButlerThread.h"
 
@@ -18,12 +20,16 @@ namespace cf {
 
 class Globals
 {
+public:
+	typedef boost::lockfree::ringbuffer<std::string, 0> ErrorBuffer;
+
 protected:
 	static void Ref();
 	static void Unref();
 
 	static boost::shared_ptr<ButlerThread> butler_;
 	static boost::shared_ptr<FileLogger> logger_;
+	static boost::shared_ptr<ErrorBuffer> errorBuffer_;
 
 private:
 	static boost::atomic<int> refCount_;
@@ -39,8 +45,9 @@ public:
 	~GlobalsRef() { Globals::Unref(); }
 
 public:
-	boost::shared_ptr<ButlerThread> Butler() { return Globals::butler_; }
-	boost::shared_ptr<FileLogger> Logger() { return Globals::logger_; }
+	boost::shared_ptr<ButlerThread> Butler() const { return Globals::butler_; }
+	boost::shared_ptr<FileLogger> Logger() const { return Globals::logger_; }
+	boost::shared_ptr<ErrorBuffer> ErrorBuffer() const { return Globals::errorBuffer_; }
 
 };
 

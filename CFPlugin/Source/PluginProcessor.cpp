@@ -151,6 +151,19 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	RTContext rt; // Debug RT stuff in debug mode
 
 	auto timeAtStartOfBlock = time::now();
+	GlobalsRef globals;
+
+	{
+		// This will allocate IFF there is an error.
+		// Can't put the non-rt specifier within the while...
+		NonRTSection nonRt;
+		while (globals.ErrorBuffer()->dequeue(errorString_)) {
+			juce::NativeMessageBox::showMessageBoxAsync(
+				juce::AlertWindow::WarningIcon,
+				juce::String("Error!"),
+				juce::String(errorString_.c_str()));
+		}
+	}
 
 	/************************************************************************************/
 
