@@ -88,7 +88,8 @@ TempoFunction::ScaleToRelativeTempoChange(real_time_t const & time, double coef)
 	auto newTempoNow = TempoAt(time) * coef;
 	auto newTempoChange = newTargetTempo - newTempoNow;
 
-	auto newOffsetNow = OffsetAt(time) / coef;
+	// No need to scale the offset, as it is in beats
+	auto newOffsetNow = OffsetAt(time);
 
 	SetParameters(time, changeTime,
 		newTempoNow, newTempoChange,
