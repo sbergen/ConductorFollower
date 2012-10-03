@@ -2,8 +2,11 @@
 
 #include <cstdlib>
 #include <new>
+#include <map>
 
 #include <boost/thread.hpp>
+
+#include <boost/atomic.hpp>
 
 #define CF_MS_MEMORY_DEBUG 0
 #define CF_VLD 1
@@ -12,40 +15,70 @@
 #include <vld.h>
 #endif
 
-// Header only hack (static variable init)
-inline bool disallow_new_headeronly(boost::thread::id const & thread_id, bool check)
-{
-	static boost::thread::id disallowed_thread;
-	if (check) {
-		return (disallowed_thread == thread_id);
-	} else {
-		disallowed_thread = thread_id;
-		return false;
-	}
-}
-
 namespace cf {
+namespace detail {
 
-inline bool new_disallowed()
+class DebugAllocationState
 {
-	return disallow_new_headeronly(boost::this_thread::get_id(), true);
+private:
+	DebugAllocationState()
+		: allowed(true)
+	{}
+
+public:
+	static DebugAllocationState * Get()
+	{
+		// This is thread safe in c++11,
+		// not sure about current compiler implementations...
+		static boost::recursive_mutex mutex;
+		static boost::atomic<bool> initializing(false);
+		static boost::thread_specific_ptr<DebugAllocationState> ptr;
+
+		if (!ptr.get()) {
+			// Initializing will be a blocking operation.
+			boost::recursive_mutex::scoped_lock lock(mutex);
+
+			bool expected = false;
+			if (!initializing.compare_exchange_strong(expected, true)) {
+				return nullptr;
+			}
+			ptr.reset(new DebugAllocationState());
+			initializing.store(false);
+		}
+		
+		return ptr.get();
+	}
+
+	bool allowed;
+};
+
+inline bool new_allowed()
+{
+	DebugAllocationState * state = DebugAllocationState::Get();
+	if (!state) { return true; }
+	return state->allowed;
 }
 
 inline void disallow_new()
 {
-	disallow_new_headeronly(boost::this_thread::get_id(), false);
+	DebugAllocationState * state = DebugAllocationState::Get();
+	assert(state != nullptr);
+	state->allowed = false;
 }
 
 inline void allow_new()
 {
-	disallow_new_headeronly(boost::thread::id(), false);
+	DebugAllocationState * state = DebugAllocationState::Get();
+	assert(state != nullptr);
+	state->allowed = true;
 }
 
+} // namespace detail
 } // namespace cf
 
 inline void* operator new( size_t size )
 {
-	assert(!cf::new_disallowed());
+	assert(cf::detail::new_allowed());
 #if CF_MS_MEMORY_DEBUG
 	void * ret = _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__);
 #else
@@ -57,7 +90,7 @@ inline void* operator new( size_t size )
 
 inline void operator delete( void* ptr )
 {
-	assert(!cf::new_disallowed());
+	assert(cf::detail::new_allowed());
 #if CF_MS_MEMORY_DEBUG
 	_free_dbg(ptr, _NORMAL_BLOCK);
 #else

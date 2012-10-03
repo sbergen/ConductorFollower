@@ -20,12 +20,12 @@ class RTContext : public boost::noncopyable
 public:
 	RTContext()
 	{
-		disallow_new();
+		detail::disallow_new();
 	}
 
 	~RTContext()
 	{
-		 allow_new();
+		 detail::allow_new();
 	}
 };
 
@@ -33,14 +33,14 @@ class NonRTSection : public boost::noncopyable
 {
 public:
 	NonRTSection()
-		: wasRT_(new_disallowed())
+		: wasRT_(!detail::new_allowed())
 	{
-		if (wasRT_) { allow_new(); }
+		if (wasRT_) { detail::allow_new(); }
 	}
 
 	~NonRTSection()
 	{
-		if (wasRT_) { disallow_new(); }
+		if (wasRT_) { detail::disallow_new(); }
 	}
 
 private:
