@@ -23,7 +23,7 @@ void
 TempoFunction::SetParameters(
 	real_time_t const & startTime, time_quantity const & changeTime,
 	tempo_t const & startTempo, tempo_t const & tempoChange,
-	beat_pos_t const & offset, beat_pos_t const & offsetToCompensate)
+	beat_pos_t const & offset, double offsetCompensationFactor)
 {
 	// Set variables
 	startTime_ = startTime;
@@ -31,6 +31,7 @@ TempoFunction::SetParameters(
 	startTempo_ = startTempo;
 	tempoChange_ = tempoChange;
 	startOffset_ = offset;
+	offsetCompensationFactor_ = offsetCompensationFactor;
 
 	// Caluculate parameters
 	linearTempoChange_ = tempoChange / changeTime;
@@ -39,7 +40,7 @@ TempoFunction::SetParameters(
 	// non-linear catchup is a * sin(x pi / t),
 	// total catchup = 2at/pi, (integral from 0 to t)
 	// => a = pi * catchup / 2 t
-	auto catchupLeft = offsetToCompensate - linearOffset;
+	auto catchupLeft = (offset * offsetCompensationFactor_) - linearOffset;
 	nonLinearCoef_ = pi * catchupLeft.value() / (2 * changeTime.value());
 
 #if DEBUG_TEMPO_FUNCTION
@@ -69,6 +70,29 @@ TempoFunction::OffsetAt(real_time_t const & time) const
 	time_quantity t = time_cast<time_quantity>(time - startTime_);
 	t = bu::min(t, changeTime_);
 	return startOffset_ - (LinearOffsetAfter(t) + NonLinearOffsetAfter(t));
+}
+
+void
+TempoFunction::ScaleToRelativeTempoChange(real_time_t const & time, double coef)
+{
+	auto const timeLeft = startTime_ + time_cast<duration_t>(changeTime_) - time;
+	if (timeLeft.count() <= 0) {
+		SetConstantTempo(coef * TempoAt(time));
+		return;
+	}
+
+	auto changeTime = time_cast<time_quantity>(timeLeft);
+	
+	auto oldTargetTempo = startTempo_ + tempoChange_;
+	auto newTargetTempo = oldTargetTempo * coef;
+	auto newTempoNow = TempoAt(time) * coef;
+	auto newTempoChange = newTargetTempo - newTempoNow;
+
+	auto newOffsetNow = OffsetAt(time) / coef;
+
+	SetParameters(time, changeTime,
+		newTempoNow, newTempoChange,
+		newOffsetNow, offsetCompensationFactor_);
 }
 
 tempo_t

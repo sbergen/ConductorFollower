@@ -17,11 +17,13 @@ public:
 	void SetParameters(
 		real_time_t const & startTime, time_quantity const & changeTime,
 		tempo_t const & startTempo, tempo_t const & tempoChange,
-		beat_pos_t const & offset, beat_pos_t const & offsetToCompensate);
+		beat_pos_t const & offset, double offsetCompensationFactor);
 	void SetConstantTempo(tempo_t const & tempo);
 
 	tempo_t TempoAt(real_time_t const & time) const;
 	beat_pos_t OffsetAt(real_time_t const & time) const;
+
+	void ScaleToRelativeTempoChange(real_time_t const & time, double coef);
 
 private:
 	tempo_t LinearTempoChangeAfter(time_quantity const & time) const;
@@ -37,6 +39,7 @@ private:
 	tempo_t startTempo_;
 	tempo_t tempoChange_;
 	beat_pos_t startOffset_;
+	double offsetCompensationFactor_;
 
 	tempo_change_t linearTempoChange_;
 	double nonLinearCoef_;

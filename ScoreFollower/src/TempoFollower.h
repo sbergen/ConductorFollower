@@ -70,9 +70,9 @@ private: // Basic tempo following
 
 	BeatClassification previousClassification_;
 	real_time_t previousBeatTime_;
+	tempo_t previousScoreTempo_;
 
 	LinearDecayTimeFilter<tempo_t> tempoFilter_;
-	//LinearDecayTimeFilter<beat_pos_t> offsetFilter_;
 
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;

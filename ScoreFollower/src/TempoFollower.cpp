@@ -38,6 +38,7 @@ TempoFollower::ReadScore(ScoreReader & reader)
 	tempoMap_.ReadScore(reader);
 	auto start = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
 	startTempoEstimator_.SetStartTempo(start.tempo());
+	previousScoreTempo_ = start.tempo();
 }
 
 void
@@ -94,7 +95,6 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempo_t targetTempo = beatPosDiff / beatTimeDiff;
 		tempoFilter_.AddValue(beatTime, targetTempo);
 		targetTempo = tempoFilter_.ValueAt(beatTime);
-		LOG("beatPosDiff %1% beatTimeDiff %2% targetTempo %3%", beatPosDiff, beatTimeDiff, targetTempo);
 		tempoChange = targetTempo - tempoNow;
 	}
 
@@ -111,15 +111,12 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
-		//offsetFilter_.AddValue(beatTime, -classification.offset());
-		//auto offsetToCompensate = 0.6 * offsetFilter_.ValueAt(beatTime);
 		double offsetFactor;
 		options->GetValue<Options::CatchupFraction>(offsetFactor);
-		auto offsetToCompensate = (offsetFactor / 100.0) * -classification.offset();
 		tempoFunction_.SetParameters(
 			beatTime, accelerationTime,
 			tempoNow, tempoChange,
-			-classification.offset(), offsetToCompensate);
+			-classification.offset(), offsetFactor / 100.0);
 	}
 
 	// TODO clean up
@@ -143,6 +140,19 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	case FermataState::EnterFermata:
 		EnterFermata(time, scoreTime);
 		break;
+	}
+
+	// Tempo change
+	auto scoreTempo = ScorePositionAt(time).tempo();
+	if (scoreTempo != previousScoreTempo_) {
+		double factor = scoreTempo / previousScoreTempo_;
+		tempoFunction_.ScaleToRelativeTempoChange(time, factor);
+		
+		auto correctedConductedTempo = tempoFilter_.ValueAt(time) * factor;
+		tempoFilter_.Reset(time, correctedConductedTempo);
+		previousClassification_ = BeatClassification(); // Forget last beat
+
+		previousScoreTempo_ = scoreTempo;
 	}
 
 	auto tempo = tempoFunction_.TempoAt(time);
