@@ -1,6 +1,7 @@
 #include "TempoMap.h"
 
 #include <typeinfo>
+#include <vector>
 
 #include <boost/variant/apply_visitor.hpp>
 
@@ -15,32 +16,41 @@ namespace ScoreFollower {
 namespace {
 
 typedef boost::variant<TimeSignature, tempo_t> EventVariant;
-typedef std::pair<score_time_t, EventVariant> EventPair;
-typedef std::vector<EventPair> EventVector;
+
+struct EventPair {
+	EventPair(score_time_t const & time, EventVariant const & event)
+		: time(time), event(event)
+	{}
+
+	score_time_t time;
+	EventVariant event;
+};
+
+typedef std::list<EventPair> EventList;
 
 struct EventComparer
 {
 	bool operator() (EventPair const & lhs, EventPair const & rhs)
 	{
-		if (lhs.first < rhs.first) {
+		if (lhs.time < rhs.time) {
 			return true;
-		} else if (rhs.first < lhs.first) {
+		} else if (rhs.time < lhs.time) {
 			return false;
 		} else {
 			// Meter before tempo
-			return (lhs.second.type() == typeid(TimeSignature));
+			return (lhs.event.type() == typeid(TimeSignature));
 		}
 	}
 };
 
 template<typename Event, typename ReaderPtr>
-void ReadFromReader(ReaderPtr reader, EventVector & vector)
+void ReadFromReader(ReaderPtr reader, EventList & list)
 {
 	Event event;
 	score_time_t timestamp;
 
 	while (reader->NextEvent(timestamp, event)) {
-		vector.push_back(EventPair(timestamp, event));
+		list.push_back(EventPair(timestamp, event));
 	}
 }
 
@@ -124,43 +134,41 @@ TempoMap::TempoMap()
 void
 TempoMap::ReadScore(ScoreReader & reader)
 {
-	EventVector vector;
-	ReadFromReader<TimeSignature>(reader.MeterTrack(), vector);
-	ReadFromReader<tempo_t>(reader.TempoTrack(), vector);
-	std::sort(std::begin(vector), std::end(vector), EventComparer());
+	EventList list;
+	ReadFromReader<TimeSignature>(reader.MeterTrack(), list);
+	ReadFromReader<tempo_t>(reader.TempoTrack(), list);
+	list.sort(EventComparer());
 
 	// If empty set defaults and return
-	if (vector.empty()) {
+	if (list.empty()) {
 		EnsureChangesNotEmpty();
 		return;
 	}
 
 	// otherwise check the first time stamp
 	// if it is not at the beginning, add defaults to beginning
-	if (vector.front().first > 0.0 * score::seconds) {
+	if (list.front().time > 0.0 * score::seconds) {
 		EnsureChangesNotEmpty();
 	}
 
 	// Then iterate through the rest, note that begin() is 
 	// guaranteed to be valid at this stage
-	EventVector::iterator previous = vector.begin();
-	for (auto it = previous + 1; it != vector.end(); ++it) {
-		if (it->first > previous->first) {
+	while (!list.empty()) {
+		auto first = list.front();
+		list.pop_front();
+
+		// Peek at next one
+		if (!list.empty() && list.front().time == first.time) {
+			auto second = list.front();
+			list.pop_front();
 			boost::apply_visitor(
-				MakeChangeBuilder(changes_, previous->first),
-				previous->second);
-		} else if (it == vector.end() - 1) {
-			boost::apply_visitor(
-				MakeChangeBuilder(changes_, it->first),
-				it->second);
+				MakeChangeBuilder(changes_, first.time),
+				first.event, second.event);
 		} else {
 			boost::apply_visitor(
-				MakeChangeBuilder(changes_, previous->first),
-				previous->second,
-				it->second);
+				MakeChangeBuilder(changes_, first.time),
+				first.event);
 		}
-
-		previous = it;
 	}
 }
 
