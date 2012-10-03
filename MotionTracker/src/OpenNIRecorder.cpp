@@ -6,7 +6,7 @@ namespace MotionTracker {
 OpenNIRecorder::OpenNIRecorder(Mode mode, const XnChar * filename)
 	: mode_(mode)
 	, filename_(filename)
-	, utils_(std::clog)
+	, utils_()
 {
 }
 

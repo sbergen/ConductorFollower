@@ -16,7 +16,7 @@ namespace MotionTracker {
 namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
-	: utils_(std::cerr)
+	: utils_()
 	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
 {
 }

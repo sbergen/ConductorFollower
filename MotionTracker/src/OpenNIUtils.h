@@ -17,7 +17,7 @@ namespace MotionTracker {
 class OpenNIUtils : public boost::noncopyable
 {
 public:
-	OpenNIUtils(std::ostream & errorStream) : errorStream_(errorStream) {}
+	OpenNIUtils() {}
 
 	bool CheckStatus(XnStatus status, char const * taskDescription, char const * file, int line);
 
@@ -25,8 +25,6 @@ public:
 	bool ErrorsOccurred() { return errorsOccurred_; }
 
 private:
-
-	std::ostream & errorStream_;
 	bool errorsOccurred_;
 };
 
