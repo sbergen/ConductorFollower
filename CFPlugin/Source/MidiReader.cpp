@@ -1,5 +1,6 @@
 #include "MidiReader.h"
 
+#include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 
 #include "cf/globals.h"
@@ -24,8 +25,13 @@ MidiReader::OpenFile(std::string const & filename)
 {
 	File file(String(filename.c_str()));
 	FileInputStream stream(file);
-	file_.readFrom(stream);
-	file_.convertTimestampTicksToSeconds();
+	if (file_.readFrom(stream)) {
+		file_.convertTimestampTicksToSeconds();
+	} else {
+		GlobalsRef globals;
+		auto error = boost::format("Unable to read MIDI file %1%") % filename;
+		globals.ErrorBuffer()->enqueue(error.str());
+	}
 }
 
 sf::TrackReaderPtr
@@ -72,6 +78,8 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	auto rawTempo = (ePtr->message.getTempoSecondsPerQuarterNote() * score::seconds) / (1.0 * score::quarter_note);
 	// The two tempo representations are each others inverses
 	data = tempo_t(1.0 / rawTempo);
+
+	LOG("Read tempo %1% seconds per quarter note -> %2%", ePtr->message.getTempoSecondsPerQuarterNote(), data);
 	
 	++current_;
 	return true;
