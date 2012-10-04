@@ -53,6 +53,7 @@ void
 TempoFunction::SetConstantTempo(tempo_t const & tempo)
 {
 	startTempo_ = tempo;
+	startOffset_ = 0.0 * score::beats;
 	changeTime_ = 0.0 * score::seconds;
 }
 

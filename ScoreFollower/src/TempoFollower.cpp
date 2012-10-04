@@ -107,7 +107,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 #endif
 		
 	// TODO clean up
-	if (nextFermata_.IsInFermata() && beatTime > fermataEndTime_) {
+	if (nextFermata_.IsInFermata()) {
 		tempoFunction_.SetConstantTempo(fermataReferenceTempo_);
 		nextFermata_.Reset();
 	} else {
@@ -201,7 +201,9 @@ void
 TempoFollower::EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime)
 {
 	fermataEndTime_ = timeWarper_.InverseWarpTimestamp(nextFermata_.FermataEnd().time(), realTime);
-	tempoFunction_.SetConstantTempo(0.0 * score::beats_per_second);
+	// Dirty workaround to avoid dividing by zero anywhere :P
+	tempoFunction_.SetConstantTempo(1.0e-20 * score::beats_per_second);
+	previousClassification_ = BeatClassification(); // Forget last beat
 }
 
 void

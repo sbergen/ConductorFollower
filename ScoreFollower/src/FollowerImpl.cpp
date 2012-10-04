@@ -1,6 +1,7 @@
 #include "FollowerImpl.h"
 
 #include <boost/make_shared.hpp>
+#include <cmath>
 
 #include "cf/globals.h"
 #include "cf/math.h"
@@ -109,8 +110,10 @@ FollowerImpl::StartNewBlock()
 		// Use block end, as the visualization will have some lag
 		auto realTime = timeHelper_->CurrentRealTimeBlock().second;
 		auto scorePos = timeHelper_->ScorePositionAt(realTime);
+		double phase = scorePos.FractionOfBar();
+		assert(phase >= 0.0 && phase <= 1.0);
 		statusEventProvider_.buffer_.enqueue(
-			StatusEvent(realTime, StatusEvent::BarPhase, BarPhaseEvent(scorePos.FractionOfBar())));
+			StatusEvent(realTime, StatusEvent::BarPhase, BarPhaseEvent(phase)));
 	}
 
 	return ret;
