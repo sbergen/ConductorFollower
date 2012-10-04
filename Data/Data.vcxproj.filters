@@ -90,6 +90,9 @@
     <ClInclude Include="src\score_event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Data\ParseException.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\InstrumentParser.cpp">

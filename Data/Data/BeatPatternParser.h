@@ -20,7 +20,7 @@ class BeatPatternParser : public boost::noncopyable
 public:
 	BeatPatternParser();
 
-	bool parse(std::string const & filename);
+	void parse(std::string const & filename);
 	PatternMap const & Patterns() const { return data_; }
 
 private:

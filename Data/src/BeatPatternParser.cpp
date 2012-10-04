@@ -8,10 +8,10 @@ namespace Data {
 
 BeatPatternParser::BeatPatternParser() {}
 
-bool
+void
 BeatPatternParser::parse(std::string const & filename)
 {
-	return ParseFromFile<BeatPatternGrammar>(filename, data_);
+	ParseFromFile<BeatPatternGrammar>(filename, data_);
 }
 
 } // namespace Data

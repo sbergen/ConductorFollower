@@ -14,7 +14,7 @@ class ScoreParser : public boost::noncopyable
 public:
 	ScoreParser();
 
-	bool parse(std::string const & filename);
+	void parse(std::string const & filename);
 	Score const & data() const { return data_; }
 
 private:

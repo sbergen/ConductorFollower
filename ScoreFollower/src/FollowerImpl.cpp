@@ -7,6 +7,7 @@
 #include "Data/InstrumentParser.h"
 #include "Data/ScoreParser.h"
 #include "Data/BeatPatternParser.h"
+#include "Data/ParseException.h"
 #include "MotionTracker/EventProvider.h"
 #include "MotionTracker/EventThrottler.h"
 
@@ -224,34 +225,39 @@ FollowerImpl::CheckForConfigChange()
 void
 FollowerImpl::CollectData(std::string const & scoreFile)
 {
-	// TODO error handling
+	try {
 
-	// Parse score
-	Data::ScoreParser scoreParser;
-	scoreParser.parse(scoreFile);
+		// Parse score
+		Data::ScoreParser scoreParser;
+		scoreParser.parse(scoreFile);
 
-	// Parse instruments
-	Data::InstrumentParser instrumentParser;
-	instrumentParser.parse(scoreParser.data().instrumentFile);
+		// Parse instruments
+		Data::InstrumentParser instrumentParser;
+		instrumentParser.parse(scoreParser.data().instrumentFile);
 
-	// lock
-	Lock lock(configMutex_);
+		// lock
+		Lock lock(configMutex_);
 
-	// Score
-	scoreReader_->OpenFile(scoreParser.data().midiFile);
-	timeHelper_->ReadScore(*scoreReader_);
-	scoreHelper_->LearnScore(scoreReader_);
+		// Score
+		scoreReader_->OpenFile(scoreParser.data().midiFile);
+		timeHelper_->ReadScore(*scoreReader_);
+		scoreHelper_->LearnScore(scoreReader_);
 	
-	// Instrument mappings
-	scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
+		// Instrument mappings
+		scoreHelper_->LearnInstruments(instrumentParser.Instruments(), scoreParser.data().tracks);
 
-	// Beat patterns
-	Data::BeatPatternParser beatPatternParser;
-	beatPatternParser.parse(scoreParser.data().beatPatternFile);
-	timeHelper_->LearnPatterns(beatPatternParser.Patterns());
+		// Beat patterns
+		Data::BeatPatternParser beatPatternParser;
+		beatPatternParser.parse(scoreParser.data().beatPatternFile);
+		timeHelper_->LearnPatterns(beatPatternParser.Patterns());
 
-	// Events
-	timeHelper_->LearnScoreEvents(scoreParser.data().events);
+		// Events
+		timeHelper_->LearnScoreEvents(scoreParser.data().events);
+
+	} catch(Data::ParseException err) {
+		globalsRef_.ErrorBuffer()->enqueue(err.what());
+		return;
+	}
 
 	EnsureMotionTrackingIsStarted();
 }

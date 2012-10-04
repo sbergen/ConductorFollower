@@ -8,10 +8,10 @@ namespace Data {
 
 InstrumentParser::InstrumentParser() {}
 
-bool
+void
 InstrumentParser::parse(std::string const & filename)
 {
-	return ParseFromFile<InstrumentGrammar>(filename, data_);
+	ParseFromFile<InstrumentGrammar>(filename, data_);
 }
 
 } // namespace Data

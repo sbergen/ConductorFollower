@@ -2,7 +2,7 @@
 
 #include <boost/format.hpp>
 
-#include "cf/globals.h"
+#include "Data/ParseException.h"
 
 namespace cf {
 namespace Data {
@@ -21,11 +21,9 @@ struct error_handler_impl
 			where += "...";
 		}
 
-		auto msg = (boost::format("Parse error, expecting %1%, right before:\n %2%")
-			% what % where).str();
-
-		GlobalsRef globals;
-		globals.ErrorBuffer()->enqueue(msg);
+		auto msg = boost::format("Parse error, expecting %1%, right before:\n %2%")
+			% what % where;
+		throw ParseException(msg.str());
 	}
 };
 

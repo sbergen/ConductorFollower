@@ -17,7 +17,7 @@ class InstrumentParser : public boost::noncopyable
 public:
 	InstrumentParser();
 
-	bool parse(std::string const & filename);
+	void parse(std::string const & filename);
 	InstrumentMap const & Instruments() const { return data_; }
 
 private:

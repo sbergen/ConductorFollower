@@ -74,6 +74,7 @@
     <ClInclude Include="Data\Instrument.h" />
     <ClInclude Include="Data\InstrumentParser.h" />
     <ClInclude Include="Data\InstrumentPatch.h" />
+    <ClInclude Include="Data\ParseException.h" />
     <ClInclude Include="Data\Score.h" />
     <ClInclude Include="Data\ScoreEvent.h" />
     <ClInclude Include="Data\ScoreParser.h" />

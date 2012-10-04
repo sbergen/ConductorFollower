@@ -1,21 +1,29 @@
 #pragma once
 
 #include <fstream>
+
+#include <boost/format.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
+
+#include "Data/ParseException.h"
 
 namespace cf {
 namespace Data {
 
 template<template<typename, typename> class TGrammar, typename TData>
-bool ParseFromFile(std::string const & filename, TData & data)
+void ParseFromFile(std::string const & filename, TData & data)
 {
-	if (filename == "") { return false; }
-
 	typedef boost::spirit::basic_istream_iterator<char> iterator_type;
 	typedef CommentSkipper<iterator_type> skipper_type;
 
 	std::ifstream file(filename);
-	assert(file.is_open());
+
+	if (!file.is_open())
+	{
+		auto error = boost::format("Unable to open file \"%1%\" for parsing") % filename;
+		throw ParseException(error.str());
+	}
+	
 	file.unsetf(std::ios::skipws);
 
 	iterator_type iter(file);
@@ -24,7 +32,10 @@ bool ParseFromFile(std::string const & filename, TData & data)
 	TGrammar<iterator_type, skipper_type> grammar;
 	bool success = qi::phrase_parse(iter, end, grammar, skipper, data);
 
-	return (success && iter == end);
+	if (!success && iter != end) {
+		auto error = boost::format("Failed to parse file %1%") % filename;
+		throw ParseException(error.str());
+	}
 }
 
 } // namespace Data

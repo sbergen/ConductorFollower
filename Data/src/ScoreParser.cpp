@@ -8,10 +8,10 @@ namespace Data {
 
 ScoreParser::ScoreParser() {}
 
-bool
+void
 ScoreParser::parse(std::string const & filename)
 {
-	return ParseFromFile<ScoreGrammar>(filename, data_);
+	ParseFromFile<ScoreGrammar>(filename, data_);
 }
 
 } // namespace Data
