@@ -8,7 +8,10 @@ namespace MotionTracker {
 namespace si = boost::units::si;
 
 StartGestureDetector::StartGestureDetector()
-	: previousBeatTime_(timestamp_t::min())
+	: previousSteadyTimeStart_(timestamp_t::min())
+	, sufficientSteadyPeriodEnd_(timestamp_t::min())
+	, inSteadyState_(false)
+	, previousBeatTime_(timestamp_t::min())
 	, previousBottomTime_(timestamp_t::min())
 {
 }
@@ -22,8 +25,12 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 		previousBeatPosition_ = state.position;
 	}
 
-	// Run velocity Fir and check for apex and bottom
 	auto firOutput = velocityFir_.Run(state.velocity.get_raw<coord::Y>());
+
+	// Check steady state
+	bool steadyOk = CheckSteadyState(timestamp, firOutput);
+
+	// check for apex and bottom
 	bool bottomOccurred = (prevVelocityFirOutput_ < 0.0) && (firOutput >= 0.0);
 	bool apexOccurred = (prevVelocityFirOutput_ > 0.0) && (firOutput <= 0.0);
 	prevVelocityFirOutput_ = firOutput;
@@ -34,15 +41,16 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 		previousBottomTime_ = timestamp;
 	}
 
-	// Check that all three events have occurred in the right order
-	if (!(previousBottomTime_ < previousBeatTime_ && apexOccurred)) {
+	// Check that all events have occurred in the right order
+	//LOG("timeDiff: %1%, aped: %2%, steady: %3%", previousBottomTime_ < previousBeatTime_, apexOccurred, steadyOk);
+	if (!(previousBottomTime_ < previousBeatTime_ && apexOccurred && steadyOk)) {
 		return Result();
 	}
 
 	// Check y-movement magnitude
 	auto magnitude = geometry::distance_vector(previousBottomPosition_, state.position);
 	LOG("Start gesture y magnitude: %1%", magnitude.get<coord::Y>().value());
-	if (magnitude.get<coord::Y>() < coord_t(15 * si::centi * si::meters)) { return Result(); }
+	if (magnitude.get<coord::Y>() < coord_t(5 * si::centi * si::meters)) { return Result(); }
 
 	// Check duration, the duration is from bottom to apex, which is about half a beat
 	duration_t gestureLength = timestamp - previousBottomTime_;
@@ -53,6 +61,45 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 
 	// Done!
 	return Result(previousBeatTime_, gestureLength);
+}
+
+bool
+StartGestureDetector::CheckSteadyState(timestamp_t const & timestamp, double yFirOutput)
+{
+	// Check movement
+	bool endedPeriod = false;
+	double movementLimit = 1.0e-4;
+	if (std::abs(yFirOutput) < movementLimit) {
+		if (!inSteadyState_) {
+			previousSteadyTimeStart_ = timestamp;
+		}
+
+		inSteadyState_ = true;
+	} else {
+		if (inSteadyState_) {
+			endedPeriod = true;
+		}
+
+		inSteadyState_ = false;
+	}
+
+	if (endedPeriod) {
+		// Check duration
+		auto durationLimit = milliseconds_t(100);
+		auto steadyDuration = timestamp - previousSteadyTimeStart_;
+		if (steadyDuration >= durationLimit) {
+			sufficientSteadyPeriodEnd_ = timestamp;
+		}
+	}
+
+	if (sufficientSteadyPeriodEnd_ == timestamp_t::min()) { return false; }
+
+	// Check age
+	auto oldLimit = milliseconds_t(1500);
+	auto steadyAge = timestamp - sufficientSteadyPeriodEnd_;
+	if (steadyAge > oldLimit) { return false; }
+
+	return true;
 }
 
 } // namespace MotionTracker

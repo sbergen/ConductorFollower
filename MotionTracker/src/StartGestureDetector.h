@@ -28,8 +28,15 @@ public:
 	Result Detect(timestamp_t const & timestamp, MotionState const & state, bool beatOccurred);
 
 private:
+	bool CheckSteadyState(timestamp_t const & timestamp, double yFirOutput);
+
+private:
 	AveragingFir<3> velocityFir_;
 	double prevVelocityFirOutput_;
+
+	timestamp_t previousSteadyTimeStart_;
+	bool inSteadyState_;
+	timestamp_t sufficientSteadyPeriodEnd_;
 
 	timestamp_t previousBeatTime_;
 	Point3D previousBeatPosition_;

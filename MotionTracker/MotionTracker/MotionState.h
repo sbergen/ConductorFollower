@@ -11,6 +11,8 @@ namespace MotionTracker {
 
 struct MotionState
 {
+	Point3D unfilteredPosition;
+
 	Point3D position;
 	Velocity3D velocity;
 	Acceleration3D acceleration;

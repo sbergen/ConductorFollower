@@ -94,6 +94,8 @@ MotionFilter::RegisterPosition(timestamp_t const & time, Point3D const & pos)
 	filter_.AppendValue(pos.data());
 
 	MotionState state;
+	state.unfilteredPosition = pos;
+
 	filter_.RunFromValues();
 	EvaluateCoefs(state);
 	stateCache_.RegisterEvent(time, state);
