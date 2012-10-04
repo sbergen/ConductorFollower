@@ -18,59 +18,42 @@
 namespace cf {
 namespace detail {
 
-class DebugAllocationState
+struct DebugAllocationState
 {
-private:
-	DebugAllocationState()
-		: allowed(true)
-	{}
-
-public:
-	static DebugAllocationState * Get()
-	{
-		// This is thread safe in c++11,
-		// not sure about current compiler implementations...
-		static boost::recursive_mutex mutex;
-		static boost::atomic<bool> initializing(false);
-		static boost::thread_specific_ptr<DebugAllocationState> ptr;
-
-		if (!ptr.get()) {
-			// Initializing will be a blocking operation.
-			boost::recursive_mutex::scoped_lock lock(mutex);
-
-			bool expected = false;
-			if (!initializing.compare_exchange_strong(expected, true)) {
-				return nullptr;
-			}
-			ptr.reset(new DebugAllocationState());
-			initializing.store(false);
-		}
-		
-		return ptr.get();
-	}
-
 	bool allowed;
 };
 
+inline DebugAllocationState & GetDebugAllocationState()
+{
+	// boosts thread local storage can't be used within
+	// operator new and delete properly :(
+
+	// Special case for VS2010 (which I'm working on)
+	// otherwise use the C++11 version
+	// Feel free to implement other special cases,
+	// if c++11 support is lacking :)
+#if defined(_MSC_VER) && (_MSC_VER <= 1600)
+	__declspec( thread ) static DebugAllocationState state = { true };
+#else
+	thread_local static DebugAllocationState state = { true };
+#endif
+
+	return state;
+}
+
 inline bool new_allowed()
 {
-	DebugAllocationState * state = DebugAllocationState::Get();
-	if (!state) { return true; }
-	return state->allowed;
+	return GetDebugAllocationState().allowed;
 }
 
 inline void disallow_new()
 {
-	DebugAllocationState * state = DebugAllocationState::Get();
-	assert(state != nullptr);
-	state->allowed = false;
+	GetDebugAllocationState().allowed = false;
 }
 
 inline void allow_new()
 {
-	DebugAllocationState * state = DebugAllocationState::Get();
-	assert(state != nullptr);
-	state->allowed = true;
+	GetDebugAllocationState().allowed = true;
 }
 
 } // namespace detail
