@@ -84,7 +84,13 @@ void
 ButlerThread::RemoveCallback(CallbackIterator const & callback)
 {
 	unique_lock lock(callbackMutex_);
-	callbacks_.erase(callback);
+
+	if (callback == callbackIt_) {
+		callbackIt_ = callbacks_.erase(callback);
+		callbackItIncremented_ = true;
+	} else {
+		callbacks_.erase(callback);
+	}
 }
 
 void
@@ -124,8 +130,11 @@ ButlerThread::RunCallbacks(counter_t currentRound)
 	// (think about destruction time...)
 	unique_lock lock(callbackMutex_);
 
-	for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
-		(*it)();
+	callbackIt_ = callbacks_.begin();
+	while (callbackIt_ != callbacks_.end()) {
+		callbackItIncremented_ = false;
+		(*callbackIt_)();
+		if (!callbackItIncremented_) { ++callbackIt_; }
 	}
 }
 

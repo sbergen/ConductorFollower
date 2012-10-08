@@ -22,9 +22,15 @@ public:
 private:
 	class CallbackRef;
 
+	// Needs to be list so that iterators are not invalidated on insertions
 	typedef std::list<Callback> CallbackList;
 	typedef CallbackList::const_iterator CallbackIterator;
-	typedef boost::unique_lock<boost::mutex> unique_lock;
+
+	// Needs to be recursive, because callbacks can add and remove callbacks.
+	// We are ok with insertions, but removals will need a different mechanism.
+	// since it's a list!
+	typedef boost::recursive_mutex list_mutex;
+	typedef boost::unique_lock<list_mutex> unique_lock;
 
 public:
 	class CallbackHandle
@@ -78,8 +84,12 @@ private:
 private:
 
 	milliseconds_t runInterval_;
-	boost::mutex callbackMutex_;
+	
+	list_mutex callbackMutex_;
 	CallbackList callbacks_;
+	CallbackIterator callbackIt_;
+	bool callbackItIncremented_;
+
 	boost::shared_ptr<boost::thread> thread_;
 	
 	DeleteQueue deleteQueue_;
