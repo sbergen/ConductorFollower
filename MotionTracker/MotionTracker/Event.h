@@ -9,6 +9,8 @@
 
 #include "MotionTracker/MotionState.h"
 #include "MotionTracker/StartGestureData.h"
+#include "MotionTracker/HandState.h"
+#include "MotionTracker/TrackingState.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -20,8 +22,8 @@ public:
 	enum Type
 	{
 		Invalid = -1,
-		TrackingStarted,
-		TrackingEnded,
+		TrackingStateChanged,
+		HandStateChanged,
 		MotionStateUpdate,
 		Beat,
 		BeatProb,
@@ -38,6 +40,8 @@ public:
 		boost::blank,
 		double,
 		MotionState,
+		HandState,
+		TrackingState,
 		StartGestureData,
 		timestamp_t, duration_t,
 		Visualizer::DataBufferPtr, Visualizer::Position
@@ -45,14 +49,6 @@ public:
 
 	// Ctors
 	Event() : type_(Invalid) {}
-
-	Event(timestamp_t const & timestamp, Type type)
-		: timestamp_(timestamp)
-		, type_(type)
-	{
-		// Assert that a position event is not constructed without data
-		assert(type != MotionStateUpdate);
-	}
 
 	template<typename TData>
 	Event(timestamp_t const & timestamp, Type type, TData data)

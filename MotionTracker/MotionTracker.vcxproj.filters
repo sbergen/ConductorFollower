@@ -77,6 +77,15 @@
     <ClInclude Include="MotionTracker\EventQueue.h">
       <Filter>MotionTracker</Filter>
     </ClInclude>
+    <ClInclude Include="MotionTracker\TrackingState.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TrackingStateObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionTracker\HandState.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">

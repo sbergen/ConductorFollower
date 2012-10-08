@@ -10,6 +10,7 @@ namespace MotionTracker {
 
 class HandObserver;
 class VisualizationObserver;
+class TrackingStateObserver;
 
 class HandTracker : public boost::noncopyable
 {
@@ -22,6 +23,9 @@ public:
 
 	// Initialization
 	virtual bool Init() = 0;
+
+	// State changes
+	virtual void AddTrackingStateObserver(TrackingStateObserver & observer) = 0;
 
 	// Basic tracking
 	virtual bool StartTrackingHand(Gesture gesture, HandObserver & observer) = 0;

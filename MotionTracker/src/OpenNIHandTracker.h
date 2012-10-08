@@ -11,6 +11,8 @@
 
 #include "Visualizer/Data.h"
 
+#include "MotionTracker/TrackingState.h"
+
 #include "Gestures.h"
 #include "HandTracker.h"
 #include "HandObserver.h"
@@ -29,6 +31,7 @@ public:
 public:
 	// HandTracker implementation
 	bool Init();
+	void AddTrackingStateObserver(TrackingStateObserver & observer);
 	bool StartTrackingHand(Gesture gesture, HandObserver & observer);
 	bool StopTrackingHand(HandObserver & observer);
 	void AddVisualizationObserver(VisualizationObserver & observer);
@@ -68,6 +71,15 @@ private: // Callbacks
 		xn::HandsGenerator& generator,
         XnUserID id,
 		XnFloat time);
+
+	void DepthGenerationChangeCallback(
+		xn::ProductionNode &node);
+
+private: // State observers
+	void DispatchCurrentTrackingState();
+
+	TrackingState currentTrackingState_;
+	std::vector<boost::reference_wrapper<TrackingStateObserver> > stateObservers_;
 
 private: // Hand request stuff
 
@@ -113,6 +125,7 @@ private: // OpenNI stuff
 	XnCallbackHandle handsCallbackHandle_;
 
 	xn::DepthGenerator depthGenerator_;
+	XnCallbackHandle depthCallbackHandle_;
 
 private: // Recording
 

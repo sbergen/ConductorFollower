@@ -75,8 +75,10 @@
     <ClInclude Include="MotionTracker\EventProvider.h" />
     <ClInclude Include="MotionTracker\EventQueue.h" />
     <ClInclude Include="MotionTracker\EventThrottler.h" />
+    <ClInclude Include="MotionTracker\HandState.h" />
     <ClInclude Include="MotionTracker\MotionState.h" />
     <ClInclude Include="MotionTracker\StartGestureData.h" />
+    <ClInclude Include="MotionTracker\TrackingState.h" />
     <ClInclude Include="src\BeatDetector.h" />
     <ClInclude Include="src\CallbackWrappers.h" />
     <ClInclude Include="src\common_types.h" />
@@ -91,6 +93,7 @@
     <ClInclude Include="src\OpenNIRecorder.h" />
     <ClInclude Include="src\OpenNIUtils.h" />
     <ClInclude Include="src\StartGestureDetector.h" />
+    <ClInclude Include="src\TrackingStateObserver.h" />
     <ClInclude Include="src\VisualizationObserver.h" />
   </ItemGroup>
   <ItemGroup>

@@ -84,6 +84,8 @@ private:
 	void SetState(FollowerState::Value state, bool propagateChange = true);
 
 	void ConsumeEvent(MotionTracker::Event const & e);
+	void HandleTrackingStateChange(MotionTracker::TrackingState const & state);
+	void HandleHandStateChange(MotionTracker::HandState const & state);
 
 private: // Stuff related to butler thread
 	void CheckForConfigChange();

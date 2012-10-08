@@ -24,6 +24,7 @@
 #include "BeatDetector.h"
 #include "StartGestureDetector.h"
 #include "VisualizationObserver.h"
+#include "TrackingStateObserver.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -32,6 +33,7 @@ class EventProviderImpl
 	: public EventProvider
 	, public HandObserver
 	, public VisualizationObserver
+	, public TrackingStateObserver
 {
 
 private:
@@ -71,6 +73,9 @@ public: // VisualizationObserver implementation
 	void NewVisualizationData();
 	void NewVisualizationHandPosition(Visualizer::Position const & pos);
 
+public: // TrackingStateObserver implementation
+	void TrackingStateChanged(TrackingState const & newState);
+
 private:
 	void QueueEvent(Event const & e);
 	void CleanUpQueues();
@@ -83,6 +88,7 @@ private: // tracker thread state and event buffer
 	class TrackerThread;
 
 	boost::shared_ptr<LockfreeThread<TrackerThread> > trackerThread_;
+	boost::shared_ptr<HandTracker> tracker_;
 	std::vector<boost::shared_ptr<Queue> > queues_;
 	boost::mutex queueMutex_;
 

@@ -23,17 +23,8 @@ class EventProviderImpl::TrackerThread
 public:
 	TrackerThread(EventProviderImpl & parent)
 		: parent_(parent)
+		, tracker_(parent.tracker_)
 	{
-		tracker_ = MotionTracker::HandTracker::Create();
-
-		if (!tracker_->Init())
-		{
-			std::cout << "Failed to init!" << std::endl;
-			tracker_.reset();
-			return;
-		}
-
-		tracker_->AddVisualizationObserver(parent);
 		tracker_->StartTrackingHand(MotionTracker::GestureWave, parent);
 	}
 
@@ -53,9 +44,6 @@ EventProviderImpl::EventProviderImpl()
 	: visualizationData_(boost::make_shared<Visualizer::Data>())
 	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
 {
-	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
-	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
-		factory, *globalsRef_.Butler());
 }
 
 EventProviderImpl::~EventProviderImpl()
@@ -66,11 +54,32 @@ EventProviderImpl::~EventProviderImpl()
 
 void EventProviderImpl::StartProduction()
 {
+	if (!trackerThread_) {
+		tracker_ = MotionTracker::HandTracker::Create();
+
+		tracker_->AddTrackingStateObserver(*this);
+
+		if (!tracker_->Init())
+		{
+			GlobalsRef globals;
+			globals.ErrorBuffer()->enqueue("Failed to init Motion tracker!");
+			return;
+		}
+
+		tracker_->AddVisualizationObserver(*this);
+
+		auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
+		trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
+			factory, *globalsRef_.Butler());
+	}
+
 	trackerThread_->RequestStart();
 }
 
 void EventProviderImpl::StopProduction()
 {
+	if (!trackerThread_) { return; }
+
 	trackerThread_->RequestStop();
 }
 
@@ -90,13 +99,19 @@ EventProviderImpl::GetEventQueue()
 void
 EventProviderImpl::HandFound()
 {
-	QueueEvent(Event(time::now(), Event::TrackingStarted));
+	HandState state = { HandState::Right, HandState::Found };
+	QueueEvent(Event(time::now(), Event::HandStateChanged, state));
 }
 
 void
 EventProviderImpl::HandLost()
 {
-	QueueEvent(Event(time::now(), Event::TrackingEnded));
+	HandState state = { HandState::Right, HandState::Lost };
+	QueueEvent(Event(time::now(), Event::HandStateChanged, state));
+
+	// Restart automatically, this is in a callback,
+	// so it should be thread-safe
+	tracker_->StartTrackingHand(MotionTracker::GestureWave, *this);
 }
 
 void
@@ -146,6 +161,12 @@ void
 EventProviderImpl::NewVisualizationHandPosition(Visualizer::Position const & pos)
 {
 	QueueEvent(Event(time::now(), Event::VisualizationHandPosition, pos));
+}
+
+void
+EventProviderImpl::TrackingStateChanged(TrackingState const & newState)
+{
+	QueueEvent(Event(time::now(), Event::TrackingStateChanged, newState));
 }
 
 void

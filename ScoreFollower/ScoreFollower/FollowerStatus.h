@@ -9,9 +9,9 @@ namespace ScoreFollower {
 
 // TODO ambiguous name, come up with a better one
 CF_STRING_ENUM(FollowerState,
+	((StartingUp, "Starting up..."))
 	((WaitingForCalibration, "Waiting for wave gesture"))
 	((WaitingForStart, "Wait for start gesture"))
-	((GotStart, "Got start gesture"))
 	((Rolling, "Rolling"))
 	((Stopped, "Stopped"))
 )

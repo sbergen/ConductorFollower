@@ -84,17 +84,8 @@ FollowerImpl::StartNewBlock()
 		},
 		currentBlock.first);
 
-
-	// Check for starting state
-	if (State() == FollowerState::GotStart &&
-		currentBlock.second >= timeHelper_->StartTimeEstimate())
-	{
-		SetState(FollowerState::Rolling, false);
-	}
-
 	unsigned ret = 0;
-	if (State() == FollowerState::Rolling ||
-		State() == FollowerState::GotStart)
+	if (State() == FollowerState::Rolling)
 	{
 		// If rolling, fix score range
 		timeHelper_->FixScoreRange(status_);
@@ -154,17 +145,15 @@ FollowerImpl::ConsumeEvent(Event const & e)
 {
 	switch(e.type())
 	{
-	case Event::TrackingStarted:
-		SetState(FollowerState::WaitingForStart, false);
+	case Event::TrackingStateChanged:
+		HandleTrackingStateChange(e.data<TrackingState>());
 		break;
-	case Event::TrackingEnded:
-		SetState(FollowerState::Stopped, false);
-		eventProvider_->StopProduction();
+	case Event::HandStateChanged:
+		HandleHandStateChange(e.data<HandState>());
 		break;
 	case Event::MotionStateUpdate:
 		// Not used
 		break;
-
 	case Event::VelocityPeak:
 		status_.SetValue<Status::VelocityPeak>(e.data<double>());
 		conductorContext_.velocity = math::clamp(
@@ -184,7 +173,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 			0.3, 1.0);
 		break;
 	case Event::Beat:
-		if (State() == FollowerState::Rolling || State() == FollowerState::GotStart) {
+		if (State() == FollowerState::Rolling) {
 			auto beatEvent = timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
 			statusEventProvider_.buffer_.enqueue(
 				StatusEvent(e.timestamp(), StatusEvent::Beat, beatEvent));
@@ -196,8 +185,40 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
 			timeHelper_->RegisterStartGesture(e.data<StartGestureData>());
-			SetState(FollowerState::GotStart, false);
+			SetState(FollowerState::Rolling);
 		}
+		break;
+	}
+}
+
+void
+FollowerImpl::HandleTrackingStateChange(MotionTracker::TrackingState const & state)
+{
+	switch(state)
+	{
+		case TrackingStarting:
+			SetState(FollowerState::StartingUp, false);
+			break;
+		case TrackingOnline:
+			SetState(FollowerState::WaitingForCalibration, false);
+			break;
+		case TrackingStopped:
+			SetState(FollowerState::WaitingForCalibration, false);
+			EnsureMotionTrackingIsStarted();
+			break;
+	}
+}
+
+void
+FollowerImpl::HandleHandStateChange(MotionTracker::HandState const & state)
+{
+	switch(state.state)
+	{
+	case HandState::Found:
+		SetState(FollowerState::WaitingForStart, false);
+		break;
+	case HandState::Lost:
+		SetState(FollowerState::WaitingForCalibration, false);
 		break;
 	}
 }
@@ -280,15 +301,14 @@ FollowerImpl::EnsureMotionTrackingIsStarted()
 {
 	switch(State())
 	{
+	case FollowerState::StartingUp:
 	case FollowerState::WaitingForCalibration:
 	case FollowerState::WaitingForStart:
 		break;
-	case FollowerState::GotStart:
 	case FollowerState::Rolling:
 		SetState(FollowerState::WaitingForStart);
 		break;
 	case FollowerState::Stopped:
-		SetState(FollowerState::WaitingForCalibration);
 		eventProvider_->StartProduction();
 		break;
 	}

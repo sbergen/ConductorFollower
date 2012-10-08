@@ -9,6 +9,7 @@
 
 #include "CallbackWrappers.h"
 #include "VisualizationObserver.h"
+#include "TrackingStateObserver.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -17,6 +18,7 @@ namespace si = boost::units::si;
 
 OpenNIHandTracker::OpenNIHandTracker()
 	: utils_()
+	, currentTrackingState_(TrackingStopped)
 	, recorder_(OpenNIRecorder::Disabled, "recording.oni")
 {
 }
@@ -31,6 +33,9 @@ OpenNIHandTracker::~OpenNIHandTracker()
 bool
 OpenNIHandTracker::Init()
 {
+	currentTrackingState_ = TrackingStarting;
+	DispatchCurrentTrackingState();
+
 	utils_.ResetErrors();
 
 	XnStatus s = context_.Init();
@@ -45,6 +50,13 @@ OpenNIHandTracker::Init()
 	CheckXnStatus(utils_, s, "Start generating");
 
 	return !utils_.ErrorsOccurred();
+}
+
+void
+OpenNIHandTracker::AddTrackingStateObserver(TrackingStateObserver & observer)
+{
+	observer.TrackingStateChanged(currentTrackingState_);
+	stateObservers_.push_back(boost::ref(observer));
 }
 
 bool
@@ -112,6 +124,11 @@ OpenNIHandTracker::InitCallbacks()
 		&CallbackWrapper<xn::HandsGenerator&, XnUserID, XnFloat, OpenNIHandTracker, &OpenNIHandTracker::HandDestroyCallback>,
 		this, handsCallbackHandle_);
 	CheckXnStatus(utils_, s, "Register hand callbacks");
+
+	s = depthGenerator_.RegisterToGenerationRunningChange(
+		&CallbackWrapper<xn::ProductionNode &, OpenNIHandTracker, &OpenNIHandTracker::DepthGenerationChangeCallback>,
+		this, depthCallbackHandle_);
+	CheckXnStatus(utils_, s, "Register depth callbacks");
 }
 
 void
@@ -214,6 +231,23 @@ OpenNIHandTracker::HandDestroyCallback(
 	hands_.erase(it);
 }
 
+void
+OpenNIHandTracker::DepthGenerationChangeCallback(
+		xn::ProductionNode &node)
+{
+	currentTrackingState_ = depthGenerator_.IsGenerating() ? TrackingOnline : TrackingStopped;
+	DispatchCurrentTrackingState();
+}
+
+void
+OpenNIHandTracker::DispatchCurrentTrackingState()
+{
+	std::for_each(std::begin(stateObservers_), std::end(stateObservers_),
+		[&](TrackingStateObserver & observer)
+		{
+			observer.TrackingStateChanged(currentTrackingState_);
+		});
+}
 
 bool
 OpenNIHandTracker::ProcessNextHandRequest()
