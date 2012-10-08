@@ -21,6 +21,7 @@ class MotionFilter
 {
 private:
 	typedef SmoothingSavitzkyGolay<FrameRateDependent::filter_size, FrameRateDependent::filter_order, 3> Filter;
+	typedef SmoothingSavitzkyGolay<FrameRateDependent::fast_filter_size, FrameRateDependent::fast_filter_order, 3> FastFilter;
 
 	// TODO is using templates stupid/limiting here? TMP could be used...
 	typedef InterpolatingSavitzkyGolay<FrameRateDependent::filter_size, 1, 3> Interpolator1;
@@ -61,7 +62,9 @@ private:
 
 private:
 	time_quantity timeStep_;
+	
 	Filter filter_;
+	FastFilter fastFilter_;
 
 	Interpolator1 interpolator1_;
 	Interpolator2 interpolator2_;

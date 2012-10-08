@@ -13,6 +13,7 @@ namespace mpl = boost::mpl;
 MotionFilter::MotionFilter()
 	: timeStep_((1.0 / FrameRateDependent::frame_rate) * si::seconds) 
 	, filter_(timeStep_.value())
+	, fastFilter_(timeStep_.value())
 	, interpolator1_(timeStep_.value())
 	, interpolator2_(timeStep_.value())
 	, interpolator3_(timeStep_.value())
@@ -50,7 +51,9 @@ MotionFilter::FillCacheFromNewPosition(timestamp_t const & time, Point3D const &
 
 		lastReceivedPosition_ = time;
 		history_.RegisterEvent(time, pos);
+		
 		filter_.AppendValue(pos.data());
+		fastFilter_.AppendValue(pos.data());
 		return;
 	}
 
@@ -92,11 +95,13 @@ MotionFilter::RegisterPosition(timestamp_t const & time, Point3D const & pos)
 {	
 	history_.RegisterEvent(time, pos);
 	filter_.AppendValue(pos.data());
+	fastFilter_.AppendValue(pos.data());
 
 	MotionState state;
-	state.unfilteredPosition = pos;
+	state.position = pos;
 
 	filter_.RunFromValues();
+	fastFilter_.RunFromValues();
 	EvaluateCoefs(state);
 	stateCache_.RegisterEvent(time, state);
 }
@@ -104,7 +109,8 @@ MotionFilter::RegisterPosition(timestamp_t const & time, Point3D const & pos)
 void
 MotionFilter::EvaluateCoefs(MotionState & state)
 {
-	filter_.EvaluateDerivative<0>(state.position.data());
+	fastFilter_.EvaluateDerivative<1>(state.fastVelocity.data());
+
 	filter_.EvaluateDerivative<1>(state.velocity.data());
 	filter_.EvaluateDerivative<2>(state.acceleration.data());
 	filter_.EvaluateDerivative<3>(state.jerk.data());

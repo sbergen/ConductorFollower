@@ -25,7 +25,6 @@ private:
 	//typedef SavitzkyGolayPeakDetector<3, 2> PeakDetector;
 	//PeakDetector peakDetector_;
 
-	AveragingFir<3> vyFir_;
 	double prevVy_;
 
 	Point3D bottomPos_;

@@ -31,8 +31,7 @@ private:
 	bool CheckSteadyState(timestamp_t const & timestamp, double yFirOutput);
 
 private:
-	AveragingFir<3> velocityFir_;
-	double prevVelocityFirOutput_;
+	double prevVy_;
 
 	timestamp_t previousSteadyTimeStart_;
 	bool inSteadyState_;

@@ -25,15 +25,15 @@ StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & 
 		previousBeatPosition_ = state.position;
 	}
 
-	auto firOutput = velocityFir_.Run(state.velocity.get_raw<coord::Y>());
+	auto vy = state.fastVelocity.get_raw<coord::Y>();
 
 	// Check steady state
-	bool steadyOk = CheckSteadyState(timestamp, firOutput);
+	bool steadyOk = CheckSteadyState(timestamp, vy);
 
 	// check for apex and bottom
-	bool bottomOccurred = (prevVelocityFirOutput_ < 0.0) && (firOutput >= 0.0);
-	bool apexOccurred = (prevVelocityFirOutput_ > 0.0) && (firOutput <= 0.0);
-	prevVelocityFirOutput_ = firOutput;
+	bool bottomOccurred = (prevVy_ < 0.0) && (vy >= 0.0);
+	bool apexOccurred = (prevVy_ > 0.0) && (vy <= 0.0);
+	prevVy_ = vy;
 
 	if (bottomOccurred)
 	{

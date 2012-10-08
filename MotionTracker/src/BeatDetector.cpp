@@ -29,11 +29,9 @@ BeatDetector::Detect(MotionState const & state, double & strength)
 
 	strength = 0.0;
 
-	double vy = state.velocity.get_raw<coord::Y>();
-	double vyOut = vyFir_.Run(vy);
-
-	bool bottom = prevVy_ < 0.0 && vyOut >= 0.0;
-	prevVy_ = vyOut;
+	double vy = state.fastVelocity.get_raw<coord::Y>();
+	bool bottom = prevVy_ < 0.0 && vy >= 0.0;
+	prevVy_ = vy;
 
 	if (bottom) {
 		bottomPos_ = state.position;
