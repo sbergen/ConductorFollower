@@ -1,5 +1,7 @@
 #include "StartTempoEstimator.h"
 
+#include <boost/units/cmath.hpp>
+
 #include "cf/globals.h"
 
 namespace cf {
@@ -55,7 +57,15 @@ StartTempoEstimator::ReadyForEstimates() const
 tempo_t
 StartTempoEstimator::TempoFromStartGesture() const
 {
-	return tempo_t(0.5 * score::beat / time_cast<time_quantity>(startGestureDuration_));
+	// TODO take into account other beat patterns also?
+	auto duration = time_cast<time_quantity>(startGestureDuration_);
+	auto eightBeatTempo = tempo_t(0.5 * score::beat / duration);
+	auto quarterBeatTempo = tempo_t(1.0 * score::beat / duration);
+
+	auto eightDiff = bu::abs(eightBeatTempo - tempoInScore_);
+	auto quarterDiff = bu::abs(quarterBeatTempo - tempoInScore_);
+
+	return (eightDiff <= quarterDiff) ? eightBeatTempo : quarterBeatTempo;
 }
 
 } // namespace ScoreFollower

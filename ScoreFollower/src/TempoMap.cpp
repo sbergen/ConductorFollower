@@ -191,6 +191,8 @@ TempoMap::GetScorePositionAt(beat_pos_t const & absoluteBeatPosition, ScorePosit
 ScorePosition
 TempoMap::GetScorePositionAt(score_time_t const & time) const
 {
+	if (changes_.AllEvents().Empty()) { return ScorePosition(); }
+
 	// Scpecial case for before the start
 	if (time < 0.0 * score::seconds) {
 		return changes_.AllEvents().Front().data.ScorePositionAt(time);
