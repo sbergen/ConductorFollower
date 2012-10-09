@@ -1,7 +1,5 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
 #include "cf/physics.h"
 
 #include "Visualizer/Data.h"

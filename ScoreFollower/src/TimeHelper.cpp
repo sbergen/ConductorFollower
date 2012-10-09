@@ -95,5 +95,16 @@ TimeHelper::ScoreTimeToFrameOffset(score_time_t const & time) const
 	return timeManager_->ToSampleOffset(realTime);
 }
 
+TimeHelper::TempoInfo
+TimeHelper::CurrentTempoInfo()
+{
+	TempoInfo ret;
+
+	ret.score = tempoFollower_.ScorePositionAt(rtRange_.first).tempo();
+	ret.current = previousSpeed_ * ret.score;
+
+	return ret;
+}
+
 } // namespace ScoreFollower
 } // namespace cf

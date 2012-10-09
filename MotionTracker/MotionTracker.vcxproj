@@ -77,6 +77,7 @@
     <ClInclude Include="MotionTracker\EventThrottler.h" />
     <ClInclude Include="MotionTracker\HandState.h" />
     <ClInclude Include="MotionTracker\MotionState.h" />
+    <ClInclude Include="MotionTracker\MusicalContext.h" />
     <ClInclude Include="MotionTracker\StartGestureData.h" />
     <ClInclude Include="MotionTracker\TrackingState.h" />
     <ClInclude Include="src\BeatDetector.h" />

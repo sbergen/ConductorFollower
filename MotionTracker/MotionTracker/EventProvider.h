@@ -3,6 +3,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
+#include "MotionTracker/MusicalContext.h"
+
 namespace cf {
 namespace MotionTracker {
 
@@ -28,6 +30,9 @@ public:
 	// Create a new event queue for yourself,
 	// all events created go to all created queues
 	virtual boost::shared_ptr<EventQueue> GetEventQueue() = 0;
+
+	// Get the musical context writer
+	virtual MusicalContextBuffer::Writer GetMusicalContextWriter() = 0;
 };
 
 } // namespace MotionTracker

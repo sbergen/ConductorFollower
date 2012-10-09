@@ -61,6 +61,7 @@ public: // EventProvider implementation
 	void StartProduction();
 	void StopProduction();
 	boost::shared_ptr<EventQueue> GetEventQueue();
+	MusicalContextBuffer::Writer GetMusicalContextWriter();
 
 public: // HandObserver implementation, called from tracker thread
 	void HandFound();
@@ -91,6 +92,11 @@ private: // tracker thread state and event buffer
 	boost::shared_ptr<HandTracker> tracker_;
 	std::vector<boost::shared_ptr<Queue> > queues_;
 	boost::mutex queueMutex_;
+
+	MusicalContextBuffer musicalContextBuffer_;
+	MusicalContextBuffer::Reader musicalContextReader_;
+
+private: // Filters and detectors
 
 	MotionFilter motionFilter_;
 

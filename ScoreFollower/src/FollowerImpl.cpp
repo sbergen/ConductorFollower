@@ -94,12 +94,23 @@ FollowerImpl::StartNewBlock()
 
 	// Update stati
 
-	auto writer = statusBuffer_.GetWriter();
-	*writer = status_;
+	{
+		auto statusWriter = statusBuffer_.GetWriter();
+		*statusWriter = status_;
+	}
+
+	{
+		auto tempoInfo = timeHelper_->CurrentTempoInfo();
+		auto contextWriter = eventProvider_->GetMusicalContextWriter();
+		
+		contextWriter->currentTempo = tempoInfo.current;
+		contextWriter->scoreTempo = tempoInfo.score;
+		contextWriter->rolling = (State() == FollowerState::Rolling);
+	}
 
 	if (ret > 0) {
 		// Use block end, as the visualization will have some lag
-		auto realTime = timeHelper_->CurrentRealTimeBlock().second;
+		auto realTime = currentBlock.second;
 		auto scorePos = timeHelper_->ScorePositionAt(realTime);
 		double phase = scorePos.FractionOfBar();
 		assert(phase >= 0.0 && phase <= 1.0);

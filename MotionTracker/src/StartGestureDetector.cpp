@@ -7,8 +7,9 @@ namespace MotionTracker {
 
 namespace si = boost::units::si;
 
-StartGestureDetector::StartGestureDetector()
-	: previousSteadyTimeStart_(timestamp_t::min())
+StartGestureDetector::StartGestureDetector(MusicalContextBuffer::Reader & musicalContextReader)
+	: musicalContextReader_(musicalContextReader)
+	, previousSteadyTimeStart_(timestamp_t::min())
 	, sufficientSteadyPeriodEnd_(timestamp_t::min())
 	, inSteadyState_(false)
 	, previousBeatTime_(timestamp_t::min())
@@ -19,6 +20,8 @@ StartGestureDetector::StartGestureDetector()
 StartGestureDetector::Result
 StartGestureDetector::Detect(timestamp_t const & timestamp, MotionState const & state, bool beatOccurred)
 {
+	if (musicalContextReader_->rolling) { return Result(); }
+
 	// Register beats
 	if (beatOccurred) {
 		previousBeatTime_ = timestamp;

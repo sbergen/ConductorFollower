@@ -86,6 +86,9 @@
     <ClInclude Include="MotionTracker\HandState.h">
       <Filter>MotionTracker</Filter>
     </ClInclude>
+    <ClInclude Include="MotionTracker\MusicalContext.h">
+      <Filter>MotionTracker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugHandObserver.cpp">

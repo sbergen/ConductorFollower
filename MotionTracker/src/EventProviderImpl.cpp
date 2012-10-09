@@ -41,7 +41,9 @@ private:
 
 
 EventProviderImpl::EventProviderImpl()
-	: visualizationData_(boost::make_shared<Visualizer::Data>())
+	: musicalContextReader_(musicalContextBuffer_)
+	, startDetector_(musicalContextReader_)
+	, visualizationData_(boost::make_shared<Visualizer::Data>())
 	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
 {
 }
@@ -94,6 +96,12 @@ EventProviderImpl::GetEventQueue()
 	auto queue = boost::make_shared<Queue>();
 	queues_.push_back(queue);
 	return queue;
+}
+
+MusicalContextBuffer::Writer
+EventProviderImpl::GetMusicalContextWriter()
+{
+	return musicalContextBuffer_.GetWriter();
 }
 
 void

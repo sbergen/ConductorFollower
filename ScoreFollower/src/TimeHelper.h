@@ -26,6 +26,12 @@ public:
 	typedef std::pair<score_time_t, score_time_t> ScoreTimeBlock;
 	typedef std::pair<real_time_t, real_time_t> RealTimeBlock;
 
+	struct TempoInfo
+	{
+		tempo_t score;
+		tempo_t current;
+	};
+
 public:
 	TimeHelper(FollowerImpl & parent, PatchMapper::ConductorContext & conductorContext);
 	boost::shared_ptr<TimeHelper> FreshClone();
@@ -55,6 +61,8 @@ public:
 	{
 		return tempoFollower_.ScorePositionAt(time);
 	}
+
+	TempoInfo CurrentTempoInfo();
 
 private:
 	FollowerImpl & parent_;

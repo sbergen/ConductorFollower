@@ -3,6 +3,7 @@
 #include "cf/Fir.h"
 
 #include "MotionTracker/MotionState.h"
+#include "MotionTracker/MusicalContext.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -10,7 +11,7 @@ namespace MotionTracker {
 class StartGestureDetector
 {
 public:
-	StartGestureDetector();
+	StartGestureDetector(MusicalContextBuffer::Reader & musicalContextReader);
 
 	struct Result
 	{
@@ -31,6 +32,8 @@ private:
 	bool CheckSteadyState(timestamp_t const & timestamp, double yFirOutput);
 
 private:
+	MusicalContextBuffer::Reader & musicalContextReader_;
+
 	double prevVy_;
 
 	timestamp_t previousSteadyTimeStart_;
