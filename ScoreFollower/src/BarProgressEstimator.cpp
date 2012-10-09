@@ -103,7 +103,7 @@ BarProgressEstimator::AddPenaltyForUnusedBeats(BeatList::iterator currentBeat)
 	for (auto it = std::begin(beats_); it != currentBeat; ++it) {
 		if (!it->used) {
 			// TODO adjust penalty amount?
-			auto penaltyBarFraction = (1.0 / beats_.size()) * score::bars;
+			auto penaltyBarFraction = (0.25 / beats_.size()) * score::bars;
 			auto penaltyOffset = pattern_.meter.BarDuration() * penaltyBarFraction;
 			qualityForThisBar_ += BeatClassification::QualityFromOffset(penaltyOffset);
 			it->used = true;
