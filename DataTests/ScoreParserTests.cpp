@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(BasicTest)
 	}
 
 	ScoreParser parser;
-	BOOST_CHECK(parser.parse(filename));
+	BOOST_CHECK_NO_THROW(parser.parse(filename));
 	auto score = parser.data();
 
 	// Score

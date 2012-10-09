@@ -8,8 +8,7 @@ using namespace cf::MotionTracker;
 
 BOOST_AUTO_TEST_CASE(Stati)
 {
-	std::ostream nullStream(nullptr);
-	OpenNIUtils utils(nullStream);
+	OpenNIUtils utils;
 
 	BOOST_CHECK(CheckXnStatus(utils, XN_STATUS_OK, "Should not fail"));
 	BOOST_CHECK(!CheckXnStatus(utils, XN_STATUS_ERROR, "Failing on purpose"));
@@ -17,8 +16,7 @@ BOOST_AUTO_TEST_CASE(Stati)
 
 BOOST_AUTO_TEST_CASE(ErrorCatching)
 {
-	std::ostream nullStream(nullptr);
-	OpenNIUtils utils(nullStream);
+	OpenNIUtils utils;
 
 	utils.ResetErrors();
 	BOOST_CHECK(!utils.ErrorsOccurred());
