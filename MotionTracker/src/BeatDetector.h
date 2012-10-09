@@ -6,6 +6,7 @@
 #include "cf/SavitzkyGolay.h"
 
 #include "MotionTracker/MotionState.h"
+#include "MotionTracker/MusicalContext.h"
 
 namespace cf {
 namespace MotionTracker {
@@ -13,20 +14,19 @@ namespace MotionTracker {
 class BeatDetector
 {
 public:
-	BeatDetector();
+	BeatDetector(MusicalContextBuffer::Reader & musicalContextReader);
 
-	bool Detect(MotionState const & state, double & strength);
+	bool Detect(timestamp_t const & time, MotionState const & state, double & strength);
 
 private:
 	void ResetBottom();
 
 private:
-
-	//typedef SavitzkyGolayPeakDetector<3, 2> PeakDetector;
-	//PeakDetector peakDetector_;
+	MusicalContextBuffer::Reader & musicalContextReader_;
 
 	double prevVy_;
 
+	timestamp_t bottomTime_;
 	Point3D bottomPos_;
 };
 

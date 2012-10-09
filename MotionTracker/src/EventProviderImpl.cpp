@@ -42,6 +42,7 @@ private:
 
 EventProviderImpl::EventProviderImpl()
 	: musicalContextReader_(musicalContextBuffer_)
+	, beatDetector_(musicalContextReader_)
 	, startDetector_(musicalContextReader_)
 	, visualizationData_(boost::make_shared<Visualizer::Data>())
 	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
@@ -242,7 +243,7 @@ bool
 EventProviderImpl::DetectBeat(timestamp_t const & timeNow, MotionState const & state)
 {
 	double beatVal;
-	bool beat = beatDetector_.Detect(state, beatVal);
+	bool beat = beatDetector_.Detect(timeNow, state, beatVal);
 	QueueEvent(Event(timeNow, Event::BeatProb, beatVal));
 	if (beat) {
 		QueueEvent(Event(timeNow, Event::Beat, beatVal));

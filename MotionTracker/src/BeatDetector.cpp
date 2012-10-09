@@ -9,7 +9,8 @@ namespace MotionTracker {
 
 namespace si = boost::units::si;
 
-BeatDetector::BeatDetector()
+BeatDetector::BeatDetector(MusicalContextBuffer::Reader & musicalContextReader)
+	: musicalContextReader_(musicalContextReader)
 {
 	ResetBottom();
 }
@@ -18,10 +19,11 @@ void
 BeatDetector::ResetBottom()
 {
 	bottomPos_.set_raw<coord::Y>(std::numeric_limits<double>::max());
+	bottomTime_ = timestamp_t::min();
 }
 
 bool
-BeatDetector::Detect(MotionState const & state, double & strength)
+BeatDetector::Detect(timestamp_t const & time, MotionState const & state, double & strength)
 {
 	// Calculate a_t
 	//auto prod = ublas::inner_prod(state.acceleration.data(), state.velocity.data());
@@ -34,13 +36,21 @@ BeatDetector::Detect(MotionState const & state, double & strength)
 	prevVy_ = vy;
 
 	if (bottom) {
+		bottomTime_ = time;
 		bottomPos_ = state.position;
 	} else {
-		Point3D::quantity diff = state.position.get<coord::Y>() - bottomPos_.get<coord::Y>();
-		Point3D::quantity threshold(2.0 * si::centi * si::meters);
-		if (diff > threshold) {
-			strength = 1.0;
+		Point3D::quantity yDiff = state.position.get<coord::Y>() - bottomPos_.get<coord::Y>();
+		Point3D::quantity yThreshold(2.0 * si::centi * si::meters);
+		Point3D::quantity timeResetYThreshold(0.5 * si::centi * si::meters);
+
+		auto timeDiff = time_cast<time_quantity>(time - bottomTime_);
+		time_quantity timeThreshold(0.2 * score::beats / musicalContextReader_->currentTempo);
+
+		if (yDiff > yThreshold && timeDiff >= timeThreshold) {
+			strength = yDiff / yThreshold;
 			ResetBottom();
+		} else if (yDiff < timeResetYThreshold) {
+			bottomTime_ = time;
 		}
 	}
 	
