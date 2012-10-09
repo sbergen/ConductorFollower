@@ -76,7 +76,7 @@ BarProgressEstimator::ResetIfBarChanged(beat_pos_t const & beginningOfBar)
 BarProgressEstimator::BeatList::iterator
 BarProgressEstimator::ClassifyBeat(beat_pos_t const & estimationPosition)
 {
-	beat_pos_t bestEstimatedOffset = 100.0 * score::beats;
+	beat_pos_t bestEstimatedOffset = std::numeric_limits<double>::max() * score::beats;
 	BeatList::iterator bestIt = std::end(beats_);
 
 	for (auto it = std::begin(beats_); it != std::end(beats_); ++it) {
