@@ -18,19 +18,18 @@ CF_STATUS_GROUP(TestStatGroup,
 
 namespace cf {
 
-// Mapped values should derive from cf::ChangeTracked<...>
 template<typename MapType>
 class StatusGroup : public FusionMapBase<MapType>
 {
 public:
 	template<typename OptionType>
-	auto at() -> decltype(boost::fusion::at_key<OptionType>(const_cast<MapType &>(MapType())))
+	auto at() -> decltype(boost::fusion::at_key<OptionType>(*((MapType *)nullptr)))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
 
 	template<typename OptionType>
-	auto at() const -> decltype(boost::fusion::at_key<OptionType>(MapType()))
+	auto at() const -> decltype(boost::fusion::at_key<OptionType>(*((MapType const *)nullptr)))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
