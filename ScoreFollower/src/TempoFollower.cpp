@@ -68,8 +68,7 @@ BeatEvent
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 {
 	auto & options = parent_.OptionsReader();
-	double tempoFilterCutoffMs;
-	options->GetValue<Options::TempoFilterTime>(tempoFilterCutoffMs);
+	double tempoFilterCutoffMs = options->at<Options::TempoFilterTime>();
 	tempoFilter_.SetCutoffPoint(time_quantity(tempoFilterCutoffMs * si::milli * si::seconds));
 
 	auto classification = ClassifyBeatAt(beatTime, clarity);
@@ -102,8 +101,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	LOG("Beat offset: %1%, tempo change: %2%, tempoNow: %3%", classification.offset(), tempoChange, tempoNow);
 #endif
 		
-	double offsetFactor;
-	options->GetValue<Options::CatchupFraction>(offsetFactor);
+	double offsetFactor = options->at<Options::CatchupFraction>();
 	tempoFunction_.SetParameters(
 		beatTime, accelerationTime,
 		tempoNow, tempoChange,

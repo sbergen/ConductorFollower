@@ -47,7 +47,7 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Change tracking
-	optionsReader_->GetValue<Options::ScoreDefinition>(scoreFile_);
+	scoreFile_ = optionsReader_->at<Options::ScoreDefinition>();
 
 	// Hook up to butler thread
 	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
@@ -134,15 +134,14 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 FollowerState
 FollowerImpl::State()
 {
-	FollowerState state;
-	status_.GetValue<Status::State>(state);
+	FollowerState state = status_.at<Status::State>();
 	return state;
 }
 
 void
 FollowerImpl::SetState(FollowerState::Value state, bool propagateChange)
 {
-	status_.SetValue<Status::State>(state);
+	status_.at<Status::State>() = state;
 	if (propagateChange)
 	{
 		auto writer = statusBuffer_.GetWriter();
@@ -165,19 +164,19 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		// Not used
 		break;
 	case Event::VelocityPeak:
-		status_.SetValue<Status::VelocityPeak>(e.data<double>());
+		status_.at<Status::VelocityPeak>() = e.data<double>();
 		conductorContext_.velocity = math::clamp(
 			e.data<double>() / Status::VelocityPeakType::max_value,
 			0.0, 1.0);
 		break;
 	case Event::VelocityDynamicRange:
-		status_.SetValue<Status::VelocityRange>(e.data<double>());
+		status_.at<Status::VelocityRange>() = e.data<double>();
 		conductorContext_.attack = math::clamp(
 			e.data<double>() / Status::VelocityRangeType::max_value,
 			0.3, 1.0);
 		break;
 	case Event::JerkPeak:
-		status_.SetValue<Status::JerkPeak>(e.data<double>());
+		status_.at<Status::JerkPeak>() = e.data<double>();
 		conductorContext_.weight = math::clamp(
 			e.data<double>() / Status::JerkPeakType::max_value,
 			0.3, 1.0);
@@ -190,7 +189,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	case Event::BeatProb:
-		status_.SetValue<Status::Beat>(e.data<double>());
+		status_.at<Status::Beat>() = e.data<double>();
 		break;
 	case Event::StartGesture:
 		if (State() == FollowerState::WaitingForStart) {
@@ -238,16 +237,15 @@ FollowerImpl::CheckForConfigChange()
 {
 	// Restart
 	bool forceScoreRead = false;
-	Banger restart;
-	optionsReader_->GetValue<Options::Restart>(restart);
+	Banger const & restart = optionsReader_->at<Options::Restart>();
+	//optionsReader_->GetValue<Options::Restart>(restart);
 	if (restart.check()) {
 		forceScoreRead = true;
 		RestartScore();
 	}
 
 	// Score file
-	std::string scoreFile;
-	optionsReader_->GetValue<Options::ScoreDefinition>(scoreFile);
+	std::string scoreFile = optionsReader_->at<Options::ScoreDefinition>();
 
 	if ((forceScoreRead ||scoreFile != scoreFile_) && scoreFile != "") {
 		scoreFile_ = scoreFile;

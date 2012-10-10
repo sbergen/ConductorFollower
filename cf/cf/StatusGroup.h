@@ -23,16 +23,16 @@ template<typename MapType>
 class StatusGroup : public FusionMapBase<MapType>
 {
 public:
-	template<typename OptionType, typename ValueType>
-	void SetValue(ValueType const & value)
+	template<typename OptionType>
+	auto at() -> decltype(boost::fusion::at_key<OptionType>(const_cast<MapType &>(MapType())))
 	{
-		boost::fusion::at_key<OptionType>(map()) = value;
+		return boost::fusion::at_key<OptionType>(map());
 	}
 
-	template<typename OptionType, typename ValueType>
-	void GetValue(ValueType & result) const
+	template<typename OptionType>
+	auto at() const -> decltype(boost::fusion::at_key<OptionType>(MapType()))
 	{
-		result = boost::fusion::at_key<OptionType>(map());
+		return boost::fusion::at_key<OptionType>(map());
 	}
 };
 

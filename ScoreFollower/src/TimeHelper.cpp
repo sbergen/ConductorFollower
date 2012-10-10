@@ -57,7 +57,7 @@ TimeHelper::FixScoreRange(Status::FollowerStatus & status)
 	speed = std::max(speed, 0.0);
 	if (speed != previousSpeed_) {
 		previousSpeed_ = speed;
-		status.SetValue<Status::Speed>(speed);
+		status.at<Status::Speed>() = speed;
 		conductorContext_.tempo = speed;
 		timeWarper_.FixTimeMapping(rtRange_.first, scoreRange_.first, speed);
 	}
@@ -65,6 +65,9 @@ TimeHelper::FixScoreRange(Status::FollowerStatus & status)
 	// Now use the new estimate for this block
 	scoreRange_.second = timeWarper_.WarpTimestamp(rtRange_.second);
 	//LOG("Score range for audio block: %1% to %2%", scoreRange_.first, scoreRange_.second);
+
+	assert(math::isfinite(scoreRange_.first.value()));
+	assert(math::isfinite(scoreRange_.second.value()));
 }
 
 void

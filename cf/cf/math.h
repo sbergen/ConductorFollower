@@ -3,6 +3,8 @@
 #include <cmath>
 #include <vector>
 
+#include <boost/math/special_functions.hpp>
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/storage.hpp>
 
@@ -36,6 +38,13 @@ T clamp(T val, T min, T max)
 inline float_type round(float_type number)
 {
     return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
+
+// isfinite (should be in c++11)
+template<typename T>
+bool isfinite(T t)
+{
+	return boost::math::isfinite(t);
 }
 
 // Allocator and array types

@@ -19,12 +19,12 @@ public:
 		version_++;
 	}
 
-	bool peek()
+	bool peek() const
 	{
 		return version_ != checkedVersion_;
 	}
 
-	bool check()
+	bool check() const
 	{
 		bool ret = peek();
 		checkedVersion_ = version_;
@@ -33,7 +33,7 @@ public:
 
 private:
 	int version_;
-	int checkedVersion_;
+	mutable int checkedVersion_;
 
 private: // Serialization
 	friend class boost::serialization::access;

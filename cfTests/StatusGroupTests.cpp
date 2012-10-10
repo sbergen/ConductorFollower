@@ -40,6 +40,12 @@ struct Transformer
 	mutable T & t;
 };
 
+BOOST_AUTO_TEST_CASE(AtTest)
+{
+	TestStatGroup group;
+	auto & s1 = group.at<Stat1>();
+}
+
 BOOST_AUTO_TEST_CASE(TransformTest)
 {
 	TestStatGroup group;
@@ -57,21 +63,21 @@ BOOST_AUTO_TEST_CASE(TestCopying)
 
 	int i, i2;
 
-	group2.SetValue<Stat1>(37);
+	group2.at<Stat1>() = 37;
 
-	group.GetValue<Stat1>(i);
-	group2.GetValue<Stat1>(i2);
+	i = group.at<Stat1>();
+	i2 = group2.at<Stat1>();
 	BOOST_CHECK_EQUAL(i, 42);
 	BOOST_CHECK_EQUAL(i2, 37);
 
 	// Assignment
 	group2 = group;
-	group2.GetValue<Stat1>(i2);
+	i2 = group2.at<Stat1>();
 	BOOST_CHECK_EQUAL(i2, 42);
 
 	// Changes don't affect copies
-	group.SetValue<Stat1>(37);
-	group2.GetValue<Stat1>(i2);
+	group.at<Stat1>() = 37;
+	group2.at<Stat1>() = i2;
 	BOOST_CHECK_EQUAL(i2, 42);
 }
 
