@@ -237,11 +237,16 @@ FollowerImpl::CheckForConfigChange()
 {
 	// Restart
 	bool forceScoreRead = false;
-	Banger const & restart = optionsReader_->at<Options::Restart>();
-	//optionsReader_->GetValue<Options::Restart>(restart);
+	auto & restart = optionsReader_->at<Options::Restart>();
 	if (restart.check()) {
 		forceScoreRead = true;
 		RestartScore();
+	}
+
+	// "Preview"
+	auto & listen = optionsReader_->at<Options::Listen>();
+	if (listen.check() && !scoreFile_.empty()) {
+		ListenToScore();
 	}
 
 	// Score file
@@ -296,11 +301,21 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 void
 FollowerImpl::RestartScore()
 {
-	// Lock
 	Lock lock(configMutex_);
 	timeHelper_ = timeHelper_->FreshClone();
 	scoreHelper_->ResetTimeHelper(timeHelper_);
 	EnsureMotionTrackingIsStarted();
+}
+
+void
+FollowerImpl::ListenToScore()
+{
+	Lock lock(configMutex_);
+	// TODO, if rolling, do something here
+	//timeHelper_ = timeHelper_->FreshClone();
+	scoreHelper_->ResetTimeHelper(timeHelper_);
+	timeHelper_->StartAtDefaultTempo();
+	SetState(FollowerState::Rolling);
 }
 
 void

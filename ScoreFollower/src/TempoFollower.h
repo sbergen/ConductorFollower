@@ -45,6 +45,9 @@ public:
 
 	ScorePosition ScorePositionAt(real_time_t const & time) const;
 
+public: // "Special" stuff
+	void StartAtDefaultTempo();
+
 private:
 	class ScoreEventBuilder;
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;

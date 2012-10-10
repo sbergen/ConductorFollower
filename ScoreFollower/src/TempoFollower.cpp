@@ -143,6 +143,15 @@ TempoFollower::ScorePositionAt(real_time_t const & time) const
 	return tempoMap_.GetScorePositionAt(scoreTime);
 }
 
+void
+TempoFollower::StartAtDefaultTempo()
+{
+	auto pos = tempoMap_.GetScorePositionAt(score_time_t::from_value(0.0));
+	auto fakeDuration = time_cast<duration_t>(0.5 * score::beats / pos.tempo());
+	auto fakeStart = time::now();
+	RegisterStartGesture(MotionTracker::StartGestureData(fakeStart, fakeDuration));
+}
+
 BeatClassification
 TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 {

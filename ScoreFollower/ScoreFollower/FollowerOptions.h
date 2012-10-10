@@ -16,6 +16,7 @@ CF_STATUS_GROUP
 FollowerOptions,
 	((ScoreDefinition, "Score definition file", FileType))
 	((Restart, "Restart score", BangType))
+	((Listen, "Listen to score", BangType))
 	((CatchupFraction, "Cathup fraction (%)", PercentType))
 	((TempoFilterTime, "Tempo filter cutoff time (ms)", TimeFilterCoefType))
 )

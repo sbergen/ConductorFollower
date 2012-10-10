@@ -64,6 +64,9 @@ public:
 
 	TempoInfo CurrentTempoInfo();
 
+public: // "Special" stuff
+	void StartAtDefaultTempo() { tempoFollower_.StartAtDefaultTempo(); }
+
 private:
 	FollowerImpl & parent_;
 	PatchMapper::ConductorContext & conductorContext_;

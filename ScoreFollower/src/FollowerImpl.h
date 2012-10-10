@@ -91,6 +91,7 @@ private: // Stuff related to butler thread
 	void CheckForConfigChange();
 	void CollectData(std::string const & scoreFile);
 	void RestartScore();
+	void ListenToScore();
 	void EnsureMotionTrackingIsStarted();
 
 private:
