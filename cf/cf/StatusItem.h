@@ -3,6 +3,7 @@
 #include <string>
 
 #include "cf/Limited.h"
+#include "cf/Banger.h"
 #include "cf/ValueWrapper.h"
 
 namespace cf {
@@ -21,7 +22,7 @@ namespace Status
 		Text,
 		Bar,
 		File,
-		Bang // as in Max
+		Bang // as in Max/MSP
 	};
 
 } // namespace Status
@@ -88,10 +89,10 @@ struct BooleanStatusItem : public LimitedStatusItem<Type, Status::Boolean, bool,
 
 // Shorthand for bang
 template<Status::Type Type>
-struct BangStatusItem : public StatusItemBase<Type, Status::Bang, int>
-{
-	using StatusItemBase::operator=;
-};
+struct BangStatusItem
+	: public StatusItemTags<Type, Status::Bang>
+	, public Banger
+{};
 
 // Shorthand for double
 template<Status::Type Type, Status::Presentation Presentation,

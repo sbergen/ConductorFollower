@@ -168,7 +168,7 @@ public:
 	{
 		if (!clicked_) { return; }
 		clicked_ = false;
-		value = value + 1;
+		value.bang();
 	}
 
 public: // Button::Listener implementation

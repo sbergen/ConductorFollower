@@ -47,7 +47,6 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	scoreHelper_ = boost::make_shared<ScoreHelper>(timeHelper_, conductorContext_);
 
 	// Change tracking
-	optionsReader_->GetValue<Options::Restart>(restartVersion_);
 	optionsReader_->GetValue<Options::ScoreDefinition>(scoreFile_);
 
 	// Hook up to butler thread
@@ -238,11 +237,10 @@ void
 FollowerImpl::CheckForConfigChange()
 {
 	// Restart
-	int restart;
 	bool forceScoreRead = false;
+	Banger restart;
 	optionsReader_->GetValue<Options::Restart>(restart);
-	if (restart != restartVersion_) {
-		restartVersion_ = restart;
+	if (restart.check()) {
 		forceScoreRead = true;
 		RestartScore();
 	}

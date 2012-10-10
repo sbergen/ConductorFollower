@@ -99,7 +99,6 @@ private:
 	typedef boost::unique_lock<boost::mutex> Lock;
 
 private: // Change tracking
-	int restartVersion_;
 	std::string scoreFile_; // Used from ctor and butler
 
 private:

@@ -158,6 +158,9 @@
     <ClInclude Include="cf\TimeFilters.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\Banger.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
