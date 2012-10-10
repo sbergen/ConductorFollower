@@ -21,7 +21,6 @@
 #include "TempoFunction.h"
 #include "StartTempoEstimator.h"
 #include "BeatClassifier.h"
-#include "Fermata.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -49,15 +48,10 @@ public:
 private:
 	class ScoreEventBuilder;
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;
-	typedef EventBuffer<Fermata, score_time_t, std::vector> FermataBuffer;
 
 private:
 	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
-
 	score_time_t AccelerationTimeAt(score_time_t time, time_quantity beatInterval);
-
-	void EnterFermata(real_time_t const & realTime, score_time_t const & scoreTime);
-	void LookupNextFermata(score_time_t const & timeNow);
 
 private: // Basic tempo following
 	TimeWarper const & timeWarper_;
@@ -76,11 +70,6 @@ private: // Basic tempo following
 
 private: // Score events
 	TempoSensitivityBuffer tempoSensitivities_;
-	FermataBuffer fermatas_;
-
-	FermataState nextFermata_;
-	tempo_t fermataReferenceTempo_;
-	real_time_t fermataEndTime_;
 };
 
 } // namespace ScoreFollower

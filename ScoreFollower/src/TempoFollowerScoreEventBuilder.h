@@ -1,5 +1,7 @@
 #include "TempoFollower.h"
 
+#include "Data/ScoreEvent.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -17,15 +19,9 @@ public:
 		parent_.tempoSensitivities_.RegisterEvent(scoreTime, change);
 	}
 
-	void operator() (Data::Fermata const & fermata) const
+	void operator() (Data::Fermata const &) const
 	{
-		Fermata f(fermata, parent_.tempoMap_);
-
-		if (!parent_.fermatas_.AllEvents().Empty()) {
-			assert(parent_.fermatas_.AllEvents().Back().data.end < f.tempoReference);
-		}
-
-		parent_.fermatas_.RegisterEvent(f.tempoReference.time(), f);
+		// TODO not implemented
 	}
 
 private:
