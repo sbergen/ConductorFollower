@@ -49,7 +49,7 @@ public:
 	}
 
 public: // Slider::Listener implementation
-	void sliderValueChanged (Slider *slider)
+	void sliderValueChanged (Slider *)
 	{
 		changed_ = true;
 	}
