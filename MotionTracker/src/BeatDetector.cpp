@@ -44,7 +44,7 @@ BeatDetector::Detect(timestamp_t const & time, MotionState const & state, double
 		Point3D::quantity timeResetYThreshold(0.5 * si::centi * si::meters);
 
 		auto timeDiff = time_cast<time_quantity>(time - bottomTime_);
-		time_quantity timeThreshold(0.2 * score::beats / musicalContextReader_->currentTempo);
+		time_quantity timeThreshold(0.15 * score::beats / musicalContextReader_->currentTempo);
 
 		if (yDiff > yThreshold && timeDiff >= timeThreshold) {
 			strength = yDiff / yThreshold;
