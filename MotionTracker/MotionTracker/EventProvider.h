@@ -19,6 +19,9 @@ public:
 public:
 	virtual ~EventProvider() {}
 
+	// Do non-realtime operations that needs to happen post construction
+	virtual void Init() {}
+
 	// Will eventually start producing data in separate thread
 	// If previously stopped, a restart is not quaranteed.
 	virtual void StartProduction() = 0;

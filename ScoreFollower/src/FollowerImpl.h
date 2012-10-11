@@ -80,18 +80,11 @@ public: // Module private "extensions" to Follower
 	OptionsBuffer::Reader & OptionsReader() { return optionsReader_; }
 
 private:
-	FollowerState State();
-	void SetState(FollowerState::Value state, bool propagateChange = true);
-
 	void ConsumeEvent(MotionTracker::Event const & e);
-	void HandleTrackingStateChange(MotionTracker::TrackingState const & state);
-	void HandleHandStateChange(MotionTracker::HandState const & state);
 
 private: // Stuff related to butler thread
 	void CheckForConfigChange();
 	void CollectData(std::string const & scoreFile);
-	void RestartScore();
-	void ListenToScore();
 	void EnsureMotionTrackingIsStarted();
 
 private:
@@ -108,8 +101,6 @@ private:
 
 	OptionsBuffer optionsBuffer_;
 	OptionsBuffer::Reader optionsReader_;
-
-	FollowerState state_;
 	
 	boost::mutex configMutex_;
 
@@ -123,7 +114,39 @@ private:
 
 	StatusEventProviderImpl statusEventProvider_;
 
-	// Destroy this very first
+private: // State
+	class State
+	{
+	public:
+		State(Status::FollowerStatus & status, StatusBuffer & statusBuffer);
+		
+		operator FollowerState::Value() const { return static_cast<FollowerState>(status_.at<Status::State>()); }
+		
+		bool ShouldDeliverEvents() const { return rolling_ || playback_; }
+		bool TrackingStopped() const { return trackingState_ == MotionTracker::TrackingStopped; }
+
+		void SetMotionTrackerState(MotionTracker::TrackingState trackingState, bool propagateChange = true);
+		void SetHandState(MotionTracker::HandState handState, bool propagateChange = true);
+		void SetRolling(bool rolling, bool propagateChange = true);
+		void SetPlayback(bool playback, bool propagateChange = true);
+
+	private:
+		void UpdateState(bool propagateChange);
+		FollowerState::Value ResolveState();
+
+	private:
+		Status::FollowerStatus & status_;
+		StatusBuffer & statusBuffer_;
+
+		MotionTracker::TrackingState trackingState_;
+		MotionTracker::HandState::State handState_;
+		bool rolling_;
+		bool playback_;
+	};
+
+	State state_;
+
+private: // Destroy this very first
 	ButlerThread::CallbackHandle configCallbackHandle_;
 };
 

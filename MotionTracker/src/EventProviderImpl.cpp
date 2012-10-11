@@ -55,31 +55,37 @@ EventProviderImpl::~EventProviderImpl()
 	trackerThread_.reset();
 }
 
-void EventProviderImpl::StartProduction()
+void
+EventProviderImpl::Init()
 {
-	if (!trackerThread_) {
-		tracker_ = MotionTracker::HandTracker::Create();
+	if (trackerThread_) { return; }
 
-		tracker_->AddTrackingStateObserver(*this);
+	tracker_ = MotionTracker::HandTracker::Create();
 
-		if (!tracker_->Init())
-		{
-			GlobalsRef globals;
-			globals.ErrorBuffer()->enqueue("Failed to init Motion tracker!");
-			return;
-		}
+	tracker_->AddTrackingStateObserver(*this);
 
-		tracker_->AddVisualizationObserver(*this);
-
-		auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
-		trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
-			factory, *globalsRef_.Butler());
+	if (!tracker_->Init())
+	{
+		GlobalsRef globals;
+		globals.ErrorBuffer()->enqueue("Failed to init Motion tracker!");
+		return;
 	}
 
+	tracker_->AddVisualizationObserver(*this);
+
+	auto factory = boost::bind(boost::make_shared<TrackerThread, EventProviderImpl &>, boost::ref(*this));
+	trackerThread_ = boost::make_shared<LockfreeThread<TrackerThread> >(
+		factory, *globalsRef_.Butler());
+}
+
+void
+EventProviderImpl::StartProduction()
+{
 	trackerThread_->RequestStart();
 }
 
-void EventProviderImpl::StopProduction()
+void
+EventProviderImpl::StopProduction()
 {
 	if (!trackerThread_) { return; }
 

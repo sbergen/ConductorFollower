@@ -36,10 +36,8 @@ Follower::Create(boost::shared_ptr<ScoreReader> scoreReader)
 FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	: optionsReader_(optionsBuffer_)
 	, scoreReader_(scoreReader)
+	, state_(status_, statusBuffer_)
 {
-	// Set proper initial state
-	SetState(FollowerState::Stopped);
-
 	// Construct memebers
 	timeHelper_ = boost::make_shared<TimeHelper>(*this, conductorContext_);
 	eventProvider_= EventProvider::Create();
@@ -52,6 +50,8 @@ FollowerImpl::FollowerImpl(boost::shared_ptr<ScoreReader> scoreReader)
 	// Hook up to butler thread
 	configCallbackHandle_ = globalsRef_.Butler()->AddCallback(
 		boost::bind(&FollowerImpl::CheckForConfigChange, this));
+
+	eventProvider_->Init();
 }
 
 FollowerImpl::~FollowerImpl()
@@ -84,7 +84,7 @@ FollowerImpl::StartNewBlock()
 		currentBlock.first);
 
 	unsigned ret = 0;
-	if (State() == FollowerState::Rolling)
+	if (state_.ShouldDeliverEvents())
 	{
 		// If rolling, fix score range
 		timeHelper_->FixScoreRange(status_);
@@ -104,7 +104,7 @@ FollowerImpl::StartNewBlock()
 		
 		contextWriter->currentTempo = tempoInfo.current;
 		contextWriter->scoreTempo = tempoInfo.score;
-		contextWriter->rolling = (State() == FollowerState::Rolling);
+		contextWriter->rolling = (state_ == FollowerState::Rolling);
 	}
 
 	if (ret > 0) {
@@ -126,27 +126,9 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 	events.Clear();
 	TryLock lock(configMutex_);
 	if (!lock.owns_lock()) { return; }
-	if (State() != FollowerState::Rolling) { return; }
+	if (!state_.ShouldDeliverEvents()) { return; }
 
 	scoreHelper_->GetTrackEventsForBlock(track, events);
-}
-
-FollowerState
-FollowerImpl::State()
-{
-	FollowerState state = status_.at<Status::State>();
-	return state;
-}
-
-void
-FollowerImpl::SetState(FollowerState::Value state, bool propagateChange)
-{
-	status_.at<Status::State>() = state;
-	if (propagateChange)
-	{
-		auto writer = statusBuffer_.GetWriter();
-		*writer = status_;
-	}
 }
 
 void
@@ -155,10 +137,11 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	switch(e.type())
 	{
 	case Event::TrackingStateChanged:
-		HandleTrackingStateChange(e.data<TrackingState>());
+		state_.SetMotionTrackerState(e.data<TrackingState>());
+		EnsureMotionTrackingIsStarted();
 		break;
 	case Event::HandStateChanged:
-		HandleHandStateChange(e.data<HandState>());
+		state_.SetHandState(e.data<HandState>());
 		break;
 	case Event::MotionStateUpdate:
 		// Not used
@@ -182,7 +165,7 @@ FollowerImpl::ConsumeEvent(Event const & e)
 			0.3, 1.0);
 		break;
 	case Event::Beat:
-		if (State() == FollowerState::Rolling) {
+		if (state_ == FollowerState::Rolling) {
 			auto beatEvent = timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
 			statusEventProvider_.buffer_.enqueue(
 				StatusEvent(e.timestamp(), StatusEvent::Beat, beatEvent));
@@ -192,42 +175,10 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		status_.at<Status::Beat>() = e.data<double>();
 		break;
 	case Event::StartGesture:
-		if (State() == FollowerState::WaitingForStart) {
+		if (state_ == FollowerState::WaitingForStart) {
 			timeHelper_->RegisterStartGesture(e.data<StartGestureData>());
-			SetState(FollowerState::Rolling);
+			state_.SetRolling(true);
 		}
-		break;
-	}
-}
-
-void
-FollowerImpl::HandleTrackingStateChange(MotionTracker::TrackingState const & state)
-{
-	switch(state)
-	{
-		case TrackingStarting:
-			SetState(FollowerState::StartingUp, false);
-			break;
-		case TrackingOnline:
-			SetState(FollowerState::WaitingForCalibration, false);
-			break;
-		case TrackingStopped:
-			SetState(FollowerState::WaitingForCalibration, false);
-			EnsureMotionTrackingIsStarted();
-			break;
-	}
-}
-
-void
-FollowerImpl::HandleHandStateChange(MotionTracker::HandState const & state)
-{
-	switch(state.state)
-	{
-	case HandState::Found:
-		SetState(FollowerState::WaitingForStart, false);
-		break;
-	case HandState::Lost:
-		SetState(FollowerState::WaitingForCalibration, false);
 		break;
 	}
 }
@@ -235,27 +186,33 @@ FollowerImpl::HandleHandStateChange(MotionTracker::HandState const & state)
 void
 FollowerImpl::CheckForConfigChange()
 {
-	// Restart
-	bool forceScoreRead = false;
-	auto & restart = optionsReader_->at<Options::Restart>();
-	if (restart.check()) {
-		forceScoreRead = true;
-		RestartScore();
-	}
-
-	// "Preview"
-	auto & listen = optionsReader_->at<Options::Listen>();
-	if (listen.check() && !scoreFile_.empty()) {
-		ListenToScore();
-	}
-
-	// Score file
+	bool restart = optionsReader_->at<Options::Restart>().check();
+	bool listen = optionsReader_->at<Options::Listen>().check();
 	std::string scoreFile = optionsReader_->at<Options::ScoreDefinition>();
 
-	if ((forceScoreRead ||scoreFile != scoreFile_) && scoreFile != "") {
-		scoreFile_ = scoreFile;
-		CollectData(scoreFile);
+	// If no action is required, return
+	if (!(listen || restart || (scoreFile != scoreFile_)) ||
+		scoreFile == "") {
+		return;
 	}
+
+	// Reset score file comparison
+	scoreFile_ = scoreFile;
+
+	Lock lock(configMutex_);
+
+	timeHelper_ = timeHelper_->FreshClone();
+	scoreHelper_->ResetTimeHelper(timeHelper_);
+
+	if (listen) {
+		timeHelper_->StartAtDefaultTempo();
+	}
+	
+	CollectData(scoreFile);
+	EnsureMotionTrackingIsStarted();
+
+	state_.SetRolling(false);
+	state_.SetPlayback(listen);
 }
 
 void
@@ -270,9 +227,6 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 		// Parse instruments
 		Data::InstrumentParser instrumentParser;
 		instrumentParser.parse(scoreParser.data().instrumentFile);
-
-		// lock
-		Lock lock(configMutex_);
 
 		// Score
 		scoreReader_->OpenFile(scoreParser.data().midiFile);
@@ -299,41 +253,104 @@ FollowerImpl::CollectData(std::string const & scoreFile)
 }
 
 void
-FollowerImpl::RestartScore()
-{
-	Lock lock(configMutex_);
-	timeHelper_ = timeHelper_->FreshClone();
-	scoreHelper_->ResetTimeHelper(timeHelper_);
-	EnsureMotionTrackingIsStarted();
-}
-
-void
-FollowerImpl::ListenToScore()
-{
-	Lock lock(configMutex_);
-	// TODO, if rolling, do something here
-	//timeHelper_ = timeHelper_->FreshClone();
-	scoreHelper_->ResetTimeHelper(timeHelper_);
-	timeHelper_->StartAtDefaultTempo();
-	SetState(FollowerState::Rolling);
-}
-
-void
 FollowerImpl::EnsureMotionTrackingIsStarted()
 {
-	switch(State())
-	{
-	case FollowerState::StartingUp:
-	case FollowerState::WaitingForCalibration:
-	case FollowerState::WaitingForStart:
-		break;
-	case FollowerState::Rolling:
-		SetState(FollowerState::WaitingForStart);
-		break;
-	case FollowerState::Stopped:
+	if (state_.TrackingStopped()) {
 		eventProvider_->StartProduction();
+	}
+}
+
+FollowerImpl::State::State(Status::FollowerStatus & status, StatusBuffer & statusBuffer)
+	: status_(status)
+	, statusBuffer_(statusBuffer)
+	, trackingState_(MotionTracker::TrackingStopped)
+	, handState_(MotionTracker::HandState::Lost)
+	, rolling_(false)
+	, playback_(false)
+{
+	status_.at<Status::State>() = FollowerState::Stopped;
+}
+
+void
+FollowerImpl::State::SetMotionTrackerState(MotionTracker::TrackingState trackingState, bool propagateChange)
+{
+	trackingState_ = trackingState;
+
+	// Stop everything on all tracker events (this is a feature)
+	playback_ = false;
+	rolling_ = false;
+
+	UpdateState(propagateChange);
+}
+
+void
+FollowerImpl::State::SetHandState(MotionTracker::HandState handState, bool propagateChange)
+{
+	handState_ = handState.state;
+
+	// Stop everything on all hand events (this is a feature)
+	playback_ = false;
+	rolling_ = false;
+
+	UpdateState(propagateChange);
+}
+
+void
+FollowerImpl::State::SetRolling(bool rolling, bool propagateChange)
+{
+	rolling_ = rolling;
+	UpdateState(propagateChange);
+}
+
+void
+FollowerImpl::State::SetPlayback(bool playback, bool propagateChange)
+{
+	playback_ = playback;
+	UpdateState(propagateChange);
+}
+
+void
+FollowerImpl::State::UpdateState(bool propagateChange)
+{
+	status_.at<Status::State>() = ResolveState();
+	if (propagateChange)
+	{
+		auto writer = statusBuffer_.GetWriter();
+		*writer = status_;
+	}
+}
+
+FollowerState::Value
+FollowerImpl::State::ResolveState()
+{
+	if (playback_) {
+		return FollowerState::Playback;
+	}
+
+	if (rolling_) {
+		return FollowerState::Rolling;
+	}
+
+	switch (trackingState_)
+	{
+	case MotionTracker::TrackingStopped:
+		return FollowerState::Stopped;
+	case MotionTracker::TrackingStarting:
+		return FollowerState::StartingUp;
+	case MotionTracker::TrackingOnline:
+		// Chceck hand state
 		break;
 	}
+
+	switch (handState_)
+	{
+	case MotionTracker::HandState::Lost:
+		return FollowerState::WaitingForCalibration;
+	case MotionTracker::HandState::Found:
+		return FollowerState::WaitingForStart;
+	}
+
+	throw std::runtime_error("Logic error in follower state handling code!");
 }
 
 } // namespace ScoreFollower

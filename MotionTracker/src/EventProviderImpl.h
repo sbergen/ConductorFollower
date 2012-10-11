@@ -58,6 +58,7 @@ public:
 	~EventProviderImpl();
 
 public: // EventProvider implementation
+	void Init();
 	void StartProduction();
 	void StopProduction();
 	boost::shared_ptr<EventQueue> GetEventQueue();

@@ -13,6 +13,7 @@ CF_STRING_ENUM(FollowerState,
 	((WaitingForCalibration, "Waiting for wave gesture"))
 	((WaitingForStart, "Wait for start gesture"))
 	((Rolling, "Rolling"))
+	((Playback, "Playback"))
 	((Stopped, "Stopped"))
 )
 
