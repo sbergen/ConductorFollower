@@ -124,6 +124,7 @@ private: // State
 		
 		bool ShouldDeliverEvents() const { return rolling_ || playback_; }
 		bool TrackingStopped() const { return trackingState_ == MotionTracker::TrackingStopped; }
+		bool InPlayback() const { return playback_; }
 
 		void SetMotionTrackerState(MotionTracker::TrackingState trackingState, bool propagateChange = true);
 		void SetHandState(MotionTracker::HandState handState, bool propagateChange = true);

@@ -147,18 +147,21 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		// Not used
 		break;
 	case Event::VelocityPeak:
+		if (state_.InPlayback()) { break; }
 		status_.at<Status::VelocityPeak>() = e.data<double>();
 		conductorContext_.velocity = math::clamp(
 			e.data<double>() / Status::VelocityPeakType::max_value,
 			0.0, 1.0);
 		break;
 	case Event::VelocityDynamicRange:
+		if (state_.InPlayback()) { break; }
 		status_.at<Status::VelocityRange>() = e.data<double>();
 		conductorContext_.attack = math::clamp(
 			e.data<double>() / Status::VelocityRangeType::max_value,
 			0.3, 1.0);
 		break;
 	case Event::JerkPeak:
+		if (state_.InPlayback()) { break; }
 		status_.at<Status::JerkPeak>() = e.data<double>();
 		conductorContext_.weight = math::clamp(
 			e.data<double>() / Status::JerkPeakType::max_value,
@@ -205,6 +208,7 @@ FollowerImpl::CheckForConfigChange()
 	scoreHelper_->ResetTimeHelper(timeHelper_);
 
 	if (listen) {
+		conductorContext_ = PatchMapper::ConductorContext();
 		timeHelper_->StartAtDefaultTempo();
 	}
 	
