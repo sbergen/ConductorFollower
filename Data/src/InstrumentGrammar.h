@@ -56,7 +56,8 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 		patches = lit("patches") > ':' > "[" > *(patch >> elem_separator) > "]";
 		shortest_note_threshold = lit("shortest_note_threshold") > ':' > double_ >> elem_separator;
 		longest_note_threshold = lit("longest_note_threshold") > ':' > double_ >> elem_separator;
-		instrument_body = name ^ shortest_note_threshold ^ longest_note_threshold ^ patches;
+		channels = lit("channels") > ':' > "[" > *(int_ >> elem_separator) > "]" >> elem_separator;
+		instrument_body = name ^ shortest_note_threshold ^ longest_note_threshold ^ channels ^ patches;
 		instrument = lit("instrument") > '{' > -instrument_body > '}';
 
 		// Start
@@ -83,6 +84,7 @@ struct InstrumentGrammar : qi::grammar<Iterator, InstrumentMap(), SkipperType>
 	qi::rule<Iterator, std::vector<InstrumentPatch>(), SkipperType> patches;
 	qi::rule<Iterator, double(), SkipperType> shortest_note_threshold;
 	qi::rule<Iterator, double(), SkipperType> longest_note_threshold;
+	qi::rule<Iterator, std::vector<int>(), SkipperType> channels;
 	
 	qi::rule<Iterator, InstrumentPatch(), SkipperType> patch;
 	qi::rule<Iterator, InstrumentPatch(), SkipperType> patch_body;

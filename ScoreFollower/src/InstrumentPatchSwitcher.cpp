@@ -17,9 +17,10 @@ public:
 	}
 };
 
-InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instrument, PatchMapper::ConductorContext const & conductorContext)
+InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instrument, int channel, PatchMapper::ConductorContext const & conductorContext)
 	: instrumentContext_(instrument)
 	, conductorContext_(conductorContext)
+	, channel_(channel)
 	, currentPatch_(-1)
 {
 	auto const & patches = instrument.patches;
@@ -33,6 +34,8 @@ InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instru
 void
 InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed)
 {
+	data->SetChannel(channel_);
+
 	if (data->IsNoteOn()) {
 		SwitchPathIfNecessary(events, data, position, currentSpeed);
 	}

@@ -18,5 +18,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(std::string, name)
 	(double, shortest_note_threshold)
 	(double, longest_note_threshold)
+	(std::vector<int>, channels)
 	(std::vector<cf::Data::InstrumentPatch>, patches)
 )

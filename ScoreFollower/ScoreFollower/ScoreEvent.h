@@ -20,6 +20,7 @@ public:
 	virtual bool IsNoteOn() = 0;
 
 	virtual void ApplyVelocity(double velocity) = 0;
+	virtual void SetChannel(int channel) = 0;
 
 	// These would normally be static, but since they are virtual...
 	virtual ScoreEventPtr MakeKeyswitch(int note) = 0;

@@ -17,6 +17,12 @@ MidiEventBase::ApplyVelocity(double velocity)
 	msg_.setVelocity(static_cast<float>(velocity));
 }
 
+void
+MidiEventBase::SetChannel(int channel)
+{
+	msg_.setChannel(channel);
+}
+
 // KeyswitchEvent
 
 KeyswitchEvent::KeyswitchEvent(int channel)
@@ -43,6 +49,15 @@ MidiEvent::MidiEvent(juce::MidiMessage const & message, sf::score_time_t const &
 	// Create keyswitch only for note ons
 	if (message.isNoteOn()) {
 		keyswitchEvent_ = boost::make_shared<KeyswitchEvent>(message.getChannel());
+	}
+}
+
+void
+MidiEvent::SetChannel(int channel)
+{
+	MidiEventBase::SetChannel(channel);
+	if (keyswitchEvent_) {
+		keyswitchEvent_->SetChannel(channel);
 	}
 }
 

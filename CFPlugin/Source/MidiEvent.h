@@ -19,6 +19,7 @@ public: // ScoreEvent implementation
 	bool IsNoteOn() { return msg_.isNoteOn(); }
 
 	void ApplyVelocity(double velocity);
+	void SetChannel(int channel);
 
 	// MakeKeyswitch needs to be implemented in deriving classes
 
@@ -50,6 +51,7 @@ public:
 	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
 
 public: // ScoreEvent implementation
+	void SetChannel(int channel);
 	sf::ScoreEventPtr MakeKeyswitch(int note);
 
 private:

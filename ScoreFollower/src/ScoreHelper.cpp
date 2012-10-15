@@ -46,13 +46,23 @@ ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::Tra
 	trackInstruments_.clear();
 	trackInstruments_.reserve(tracks.size());
 
+	std::map<std::string, int> instrumentUsage;
+
 	for(auto it = tracks.begin(); it != tracks.end(); ++it) {
 		auto instrumentIt = instruments.find(it->instrument);
 		if (instrumentIt == instruments.end()) {
 			throw std::runtime_error("Instrument not found!");	
 		}
 
-		trackInstruments_.push_back(new InstrumentPatchSwitcher(instrumentIt->second, conductorContext_));
+		auto const & instrument = instrumentIt->second;
+
+		auto usageIndex = instrumentUsage[it->instrument]++;
+		if (usageIndex >= instrument.channels.size()) {
+			throw std::runtime_error("Too many instruments of the same kind!");
+		}
+
+		trackInstruments_.push_back(
+			new InstrumentPatchSwitcher(instrument, instrument.channels[usageIndex], conductorContext_));
 	}
 }
 

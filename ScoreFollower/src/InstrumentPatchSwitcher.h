@@ -17,7 +17,7 @@ namespace ScoreFollower {
 class InstrumentPatchSwitcher : public boost::noncopyable
 {
 public:
-	InstrumentPatchSwitcher(Data::Instrument const & instrument, PatchMapper::ConductorContext const & conductorContext);
+	InstrumentPatchSwitcher(Data::Instrument const & instrument, int channel, PatchMapper::ConductorContext const & conductorContext);
 
 	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed);
 
@@ -31,6 +31,7 @@ private:
 private:
 	PatchMapper::InstrumentContext instrumentContext_;
 	PatchMapper::ConductorContext const & conductorContext_;
+	int const channel_;
 
 	int currentPatch_;
 	std::vector<PatchKeyswitchPair> patches_;
