@@ -28,8 +28,9 @@ private:
 
 private:
 	tempo_t tempoInScore_;
-	duration_t startGestureDuration_;
-	real_time_t preparatoryBeatTime_;
+
+	real_time_t startTimeEstimate_;
+	tempo_t tempoEstimate_;
 };
 
 } // namespace ScoreFollower

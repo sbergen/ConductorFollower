@@ -1,5 +1,6 @@
 #include "StartTempoEstimator.h"
 
+#include <boost/array.hpp>
 #include <boost/units/cmath.hpp>
 
 #include "cf/globals.h"
@@ -8,41 +9,56 @@ namespace cf {
 namespace ScoreFollower {
 
 StartTempoEstimator::StartTempoEstimator()
-	: startGestureDuration_(0)
-	, preparatoryBeatTime_(real_time_t::min())
+	: tempoInScore_(0.0 * score::beats_per_minute)
+	, startTimeEstimate_(timestamp_t::max())
+	, tempoEstimate_(0.0 * score::beats_per_minute)
 {
 }
 
 void
 StartTempoEstimator::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 {
-	startGestureDuration_ = data.gestureDuration;
-	preparatoryBeatTime_ = data.preparatoryBeatTime;
+	// TODO take into account other beat patterns also?
+	boost::array<beats_t, 2> periods = { 1.0 * score::beats, 2.0 * score::beats };
+	auto duration = time_cast<time_quantity>(data.gestureDuration);
+
+	tempo_t bestTempo(0.0 * score::beats_per_minute);
+	tempo_t bestDiff(std::numeric_limits<double>::max() * score::beats_per_minute);
+	beats_t bestPeriod(0.0 * score::beats);
+	std::for_each(std::begin(periods), std::end(periods),
+		[&](beats_t const & period)
+		{
+			auto tempo = tempo_t(period / 2.0 / duration);
+			auto diff = bu::abs(tempo - tempoInScore_);
+
+			if (diff < bestDiff) {
+				bestDiff = diff;
+				bestTempo = tempo;
+				bestPeriod = period;
+			}
+		});
+	
+	tempoEstimate_ = bestTempo;
+	startTimeEstimate_ = data.preparatoryBeatTime + time_cast<duration_t>(bestPeriod / bestTempo);
 }
 
 real_time_t
 StartTempoEstimator::StartTimeEstimate() const
 {
-	if (!ReadyForEstimates()) { return real_time_t::max(); }
-
-	return preparatoryBeatTime_ + time_cast<duration_t>(1.0 * score::beats / TempoFromStartGesture());
+	return startTimeEstimate_;
 }
 
 tempo_t
 StartTempoEstimator::TempoEstimate() const
 {
-	if (!ReadyForEstimates()) { return tempoInScore_; }
-	auto tempo = TempoFromStartGesture();
-	LOG("Starting tempo: %1%", tempo);
-	return tempo;
+	return tempoEstimate_;
 }
 
 speed_t
 StartTempoEstimator::SpeedEstimate() const
 {
 	if (!ReadyForEstimates()) { return 1.0; }
-	speed_t speed = TempoEstimate() / tempoInScore_;
-
+	speed_t speed = tempoEstimate_ / tempoInScore_;
 	LOG("Starting speed_: %1%", speed);
 	return speed;
 }
@@ -50,22 +66,8 @@ StartTempoEstimator::SpeedEstimate() const
 bool
 StartTempoEstimator::ReadyForEstimates() const
 {
-	return (startGestureDuration_ != duration_t(0) &&
-	        preparatoryBeatTime_ != real_time_t::min());
-}
-
-tempo_t
-StartTempoEstimator::TempoFromStartGesture() const
-{
-	// TODO take into account other beat patterns also?
-	auto duration = time_cast<time_quantity>(startGestureDuration_);
-	auto eightBeatTempo = tempo_t(0.5 * score::beat / duration);
-	auto quarterBeatTempo = tempo_t(1.0 * score::beat / duration);
-
-	auto eightDiff = bu::abs(eightBeatTempo - tempoInScore_);
-	auto quarterDiff = bu::abs(quarterBeatTempo - tempoInScore_);
-
-	return (eightDiff <= quarterDiff) ? eightBeatTempo : quarterBeatTempo;
+	return (tempoInScore_ != tempo_t(0.0 * score::beats_per_minute) &&
+		startTimeEstimate_ != real_time_t::max());
 }
 
 } // namespace ScoreFollower
