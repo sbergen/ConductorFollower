@@ -24,6 +24,8 @@ public:
 	void PreNodeInit(xn::Context & context);
 	void PostNodeInit(xn::Context & context);
 
+	bool ProvidingDepthData() { return mode_ == Playback; }
+
 private:
 	Mode mode_;
 	XnChar const * filename_;

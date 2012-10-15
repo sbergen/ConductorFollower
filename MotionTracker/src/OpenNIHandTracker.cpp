@@ -49,6 +49,11 @@ OpenNIHandTracker::Init()
 	s = context_.StartGeneratingAll();
 	CheckXnStatus(utils_, s, "Start generating");
 
+	if (recorder_.ProvidingDepthData()) {
+		currentTrackingState_ = TrackingOnline;
+		DispatchCurrentTrackingState();
+	}
+
 	return !utils_.ErrorsOccurred();
 }
 
