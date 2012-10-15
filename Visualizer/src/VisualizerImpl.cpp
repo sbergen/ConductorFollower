@@ -88,8 +88,7 @@ VisualizerImpl::paint(Graphics & g)
 	g.setColour(color);
 
 	PositionData prevPosition;
-	int i = 1;
-	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it, ++i) {
+	for (auto it = handBuffer_.rbegin(); it != handBuffer_.rend(); ++it) {
 		if (prevPosition) {
 			alpha *= 0.9f;
 			g.setColour(color.withAlpha(alpha));
@@ -106,13 +105,6 @@ VisualizerImpl::paint(Graphics & g)
 
 		if (it->beat) {
 			PaintPoint(g, juce::Colour((juce::uint8)0, 255, 0, alpha), 
-				it->pos.x, it->pos.y);
-			i = -3;
-		}
-
-		if (i == 0) {
-			// Filter lag for beat
-			PaintPoint(g, juce::Colour((juce::uint8)0, 0, 255, alpha), 
 				it->pos.x, it->pos.y);
 		}
 
