@@ -93,7 +93,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoChange = targetTempo - tempoNow;
 	}
 
-	auto accelerationTime = AccelerationTimeAt(scoreTime, beatTimeDiff);
+	// Maximum beat interval is a little under two beats
+	auto accelerationInterval= bu::min(beatTimeDiff, time_quantity(1.8 * score::beats / tempoNow));
+	auto accelerationTime = AccelerationTimeAt(scoreTime, accelerationInterval);
 
 #if DEBUG_TEMPO_FOLLOWER
 	LOG("Classified with position %1% and offset %2%", classification.position().position(), classification.offset());

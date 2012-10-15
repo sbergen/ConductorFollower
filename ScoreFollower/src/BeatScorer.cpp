@@ -32,7 +32,7 @@ BeatScorer::BeatScorer(Data::BeatPattern const & pattern, unsigned index)
 BeatScorer::score_t
 BeatScorer::ScoreForBeat(beat_pos_t pos) const
 {
-	LOG("** Scoring: pos: %1%, ref: %2%, score: %3%", pos, position_,  -TempoChangeFraction(pos));
+	//LOG("** Scoring: pos: %1%, ref: %2%, score: %3%", pos, position_,  -TempoChangeFraction(pos));
 	return -std::abs((pos - position_).value());
 	//return -TempoChangeFraction(pos);
 }

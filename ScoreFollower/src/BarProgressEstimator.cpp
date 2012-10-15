@@ -56,10 +56,11 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	// Else evaluate for this bar
 	if(!beatIt->used) {
 		beatIt->used = true;
-		qualityForThisBar_ += beatIt->scorer.ScoreForBeat(positions.estimation);
+		qualityForThisBar_ += thisBarScore;
 		LOG("Progress estimator returning offset: %1%, quality: %2%", offsets.absolute, qualityForThisBar_);
 		return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
 	} else {
+		qualityForThisBar_ += beatIt->scorer.BeatPenaltyForUsed();
 		return BeatClassification(position);
 	}
 }
@@ -84,7 +85,6 @@ BarProgressEstimator::ClassifyBeat(beat_pos_t const & estimationPosition)
 
 	for (auto it = std::begin(beats_); it != std::end(beats_); ++it) {
 		BeatScorer::score_t estimate = it->scorer.ScoreForBeat(estimationPosition);
-		if (it->used) { estimate += it->scorer.BeatPenaltyForUsed(); }
 
 		if (estimate > bestEstimate) {
 			bestEstimate = estimate;
@@ -100,6 +100,7 @@ BarProgressEstimator::AddPenaltyForUnusedBeats(BeatList::iterator currentBeat)
 {
 	for (auto it = std::begin(beats_); it != currentBeat; ++it) {
 		if (!it->used) {
+			LOG("Adding penalty for unused!");
 			qualityForThisBar_ += it->scorer.BarPenaltyForMissed();
 			it->used = true;
 		}
