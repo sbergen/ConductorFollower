@@ -4,7 +4,7 @@
 
 #include "BeatClassification.h"
 
-#define DEBUG_BAR_PROGRESS_ESTIMATOR 0
+#define DEBUG_BAR_PROGRESS_ESTIMATOR 1
 
 namespace cf {
 namespace ScoreFollower {
@@ -13,8 +13,8 @@ BarProgressEstimator::BarProgressEstimator(Data::BeatPattern const & pattern)
 	: pattern_(pattern)
 	, qualityForThisBar_(0.0)
 {
-	for (auto it = std::begin(pattern_.beats); it != std::end(pattern_.beats); ++it) {
-		beats_.push_back(Beat(it->time * score::beats));
+	for (auto i = 0; i < pattern.beats.size(); ++i) {
+		beats_.push_back(Beat(pattern, i));
 	}
 }
 
@@ -28,14 +28,15 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 		position.position() - beginningOfBar,
 		position.position() - beginningOfBar - offsetEstimate);
 
-	// nearest neighbour
+	// Best from this bar
 	auto beatIt = ClassifyBeat(positions.estimation);
+	auto thisBarScore = beatIt->scorer.ScoreForBeat(positions.estimation);
 	AddPenaltyForUnusedBeats(beatIt);
 
 	// Offsets
 	OffsetPair offsets(
-		positions.absolute - beatIt->position,
-		positions.estimation - beatIt->position);
+		beatIt->scorer.OffsetTo(positions.absolute),
+		beatIt->scorer.OffsetTo(positions.estimation));
 
 #if DEBUG_BAR_PROGRESS_ESTIMATOR
 	LOG("Relative position: %1%, estimation position: %2%",
@@ -44,17 +45,19 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 		offsets.absolute, offsets.estimation, beatIt->used);
 #endif
 
-	auto nextBarOffsets = EstimateForNextBar(positions);
-	// Check end of bar
-	if (boost::units::abs(nextBarOffsets.estimation) < boost::units::abs(offsets.estimation)) {
-		qualityForThisBar_ += BeatClassification::QualityFromOffset(nextBarOffsets.estimation);
+	// Check next bar
+	auto nextBarOffsets = OffsetsForNextBar(positions);
+	auto nextBarScore = beats_.front().scorer.ScoreForBeat(nextBarOffsets.estimation);
+	if (nextBarScore > thisBarScore) {
+		qualityForThisBar_ += nextBarScore;
 		return BeatClassification(position, BeatClassification::NextBar, nextBarOffsets.absolute, qualityForThisBar_);
 	}
 
 	// Else evaluate for this bar
-	qualityForThisBar_ += BeatClassification::QualityFromOffset(offsets.estimation);
 	if(!beatIt->used) {
 		beatIt->used = true;
+		qualityForThisBar_ += beatIt->scorer.ScoreForBeat(positions.estimation);
+		LOG("Progress estimator returning offset: %1%, quality: %2%", offsets.absolute, qualityForThisBar_);
 		return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
 	} else {
 		return BeatClassification(position);
@@ -76,20 +79,15 @@ BarProgressEstimator::ResetIfBarChanged(beat_pos_t const & beginningOfBar)
 BarProgressEstimator::BeatList::iterator
 BarProgressEstimator::ClassifyBeat(beat_pos_t const & estimationPosition)
 {
-	beat_pos_t bestEstimatedOffset = std::numeric_limits<double>::max() * score::beats;
+	BeatScorer::score_t bestEstimate = std::numeric_limits<BeatScorer::score_t>::lowest();
 	BeatList::iterator bestIt = std::end(beats_);
 
 	for (auto it = std::begin(beats_); it != std::end(beats_); ++it) {
-		// TODO adjust penalty amount?
-		// This penalty is only for selection, will not apply to bar quality
-		auto penaltyBarFraction = (0.25 / beats_.size()) * score::bars;
-		auto penaltyOffset = pattern_.meter.BarDuration() * penaltyBarFraction;
-		beat_pos_t estimatedOffset =
-			boost::units::abs(estimationPosition - it->position) +
-			(it->used ? penaltyOffset : (0.0 * score::beats));
+		BeatScorer::score_t estimate = it->scorer.ScoreForBeat(estimationPosition);
+		if (it->used) { estimate += it->scorer.BeatPenaltyForUsed(); }
 
-		if (estimatedOffset < bestEstimatedOffset) {
-			bestEstimatedOffset = estimatedOffset;
+		if (estimate > bestEstimate) {
+			bestEstimate = estimate;
 			bestIt = it;
 		}
 	}
@@ -102,17 +100,14 @@ BarProgressEstimator::AddPenaltyForUnusedBeats(BeatList::iterator currentBeat)
 {
 	for (auto it = std::begin(beats_); it != currentBeat; ++it) {
 		if (!it->used) {
-			// TODO adjust penalty amount?
-			auto penaltyBarFraction = (0.25 / beats_.size()) * score::bars;
-			auto penaltyOffset = pattern_.meter.BarDuration() * penaltyBarFraction;
-			qualityForThisBar_ += BeatClassification::QualityFromOffset(penaltyOffset);
+			qualityForThisBar_ += it->scorer.BarPenaltyForMissed();
 			it->used = true;
 		}
 	}
 }
 
 BarProgressEstimator::OffsetPair
-BarProgressEstimator::EstimateForNextBar(OffsetPair const & positions)
+BarProgressEstimator::OffsetsForNextBar(OffsetPair const & positions)
 {
 	auto barLength = pattern_.meter.BarDuration() * score::bar;
 	auto offset = positions.absolute - barLength;

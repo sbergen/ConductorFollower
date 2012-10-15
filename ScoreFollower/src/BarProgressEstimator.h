@@ -7,6 +7,7 @@
 #include "ScoreFollower/types.h"
 
 #include "ScorePosition.h"
+#include "BeatScorer.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -24,14 +25,15 @@ public:
 private:
 	struct Beat
 	{
-		explicit Beat(beat_pos_t const & position)
-			: position(position), used(false) {}
-
-		beat_pos_t position;
+		explicit Beat(Data::BeatPattern const & pattern, unsigned index)
+			: scorer(pattern, index)
+			, used(false)
+		{}
+		
+		BeatScorer scorer;
 		bool used;
 
-		bool operator==(Beat const & other) const
-			{ return position == other.position; }
+		bool operator==(Beat const & other) const { return scorer == other.scorer; }
 	};
 
 	struct OffsetPair
@@ -49,7 +51,7 @@ private:
 	void ResetIfBarChanged(beat_pos_t const & beginningOfBar);
 	BeatList::iterator ClassifyBeat(beat_pos_t const & estimationPosition);
 	void AddPenaltyForUnusedBeats(BeatList::iterator currentBeat);
-	OffsetPair EstimateForNextBar(OffsetPair const & positions);
+	OffsetPair OffsetsForNextBar(OffsetPair const & positions);
 
 private:
 	Data::BeatPattern pattern_;

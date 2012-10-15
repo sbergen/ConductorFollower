@@ -23,8 +23,6 @@ public:
 		NextBar
 	};
 
-	static double QualityFromOffset(beat_pos_t const & offset) { return -std::abs(offset.value()); }
-
 public:
 	BeatClassification()
 		: type_(NotClassified)
@@ -38,13 +36,6 @@ public:
 		, position_(position)
 		, offset_(0.0 * score::beats)
 		, quality_(std::numeric_limits<double>::lowest())
-	{}
-
-	BeatClassification(ScorePosition position, Type type, beat_pos_t offset)
-		: type_(type)
-		, position_(position)
-		, offset_(offset)
-		, quality_(QualityFromOffset(offset))
 	{}
 
 	BeatClassification(ScorePosition position, Type type, beat_pos_t offset, double quality)
