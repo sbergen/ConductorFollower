@@ -12,6 +12,7 @@
 
 #include "TimeWarper.h"
 #include "FollowerImpl.h"
+#include "ProgressFollowingBeatClassifier.h"
 
 #include "TempoFollowerScoreEventBuilder.h"
 
@@ -27,7 +28,7 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerImpl & paren
 	, parent_(parent)
 	, tempoMap_()
 	, startTempoEstimator_()
-	, beatClassifier_(tempoMap_)
+	, beatClassifier_(new ProgressFollowingBeatClassifier(tempoMap_))
 	, tempoFilter_(32, 2.5 * si::seconds)
 {
 }
@@ -161,7 +162,7 @@ TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
 	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
 
 	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
-	return beatClassifier_.ClassifyBeat(position, tempoFunction_.OffsetAt(time));
+	return beatClassifier_->ClassifyBeat(position, tempoFunction_.OffsetAt(time));
 }
 
 score_time_t

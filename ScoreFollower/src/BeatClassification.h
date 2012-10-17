@@ -10,6 +10,8 @@
 
 #include "ScoreFollower/types.h"
 
+#include "ScorePosition.h"
+
 namespace cf {
 namespace ScoreFollower {
 

@@ -1,22 +1,23 @@
-#include "BeatClassifier.h"
+#include "ProgressFollowingBeatClassifier.h"
 
 #include "Data/BeatPatternParser.h"
 
 #include "BeatClassification.h"
 #include "ScorePosition.h"
+#include "TempoMap.h"
 
 namespace cf {
 namespace ScoreFollower {
 
 using namespace Data;
 
-BeatClassifier::BeatClassifier(TempoMap const & tempoMap)
+ProgressFollowingBeatClassifier::ProgressFollowingBeatClassifier(TempoMap const & tempoMap)
 	: tempoMap_(tempoMap)
 {
 }
 
 void
-BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
+ProgressFollowingBeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 {
 	estimators_.clear();
 	int totalPatterns = 0;
@@ -39,14 +40,7 @@ BeatClassifier::LearnPatterns(Data::PatternMap const & patternGroups)
 }
 
 BeatClassification
-BeatClassifier::ResetOffsetAndClassifyBeat(ScorePosition const & position)
-{
-	currentOffsetEstimate_ = 0.0 * score::beats;
-	return ClassifyBeat(position, 0.0 * score::beats);
-}
-
-BeatClassification
-BeatClassifier::ClassifyBeat(ScorePosition const & position, beats_t newOffset)
+ProgressFollowingBeatClassifier::ClassifyBeat(ScorePosition const & position, beats_t newOffset)
 {
 	BeatClassification bestClassification(position);
 
@@ -80,7 +74,7 @@ BeatClassifier::ClassifyBeat(ScorePosition const & position, beats_t newOffset)
 }
 
 void
-BeatClassifier::ProgressToNextBar()
+ProgressFollowingBeatClassifier::ProgressToNextBar()
 {
 	LOG("Switching to next bar in classification");
 
@@ -93,7 +87,7 @@ BeatClassifier::ProgressToNextBar()
 }
 
 void
-BeatClassifier::AddEstimatorsForPattern(Data::BeatPattern const & pattern)
+ProgressFollowingBeatClassifier::AddEstimatorsForPattern(Data::BeatPattern const & pattern)
 {
 	estimators_.insert(std::make_pair(pattern.meter, pattern));
 }

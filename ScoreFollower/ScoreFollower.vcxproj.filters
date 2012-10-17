@@ -93,6 +93,9 @@
     <ClInclude Include="src\BeatScorer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ProgressFollowingBeatClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeWarper.cpp">
@@ -122,9 +125,6 @@
     <ClCompile Include="src\StartTempoEstimator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BeatClassifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BarProgressEstimator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,6 +132,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\BeatScorer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProgressFollowingBeatClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

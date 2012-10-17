@@ -34,7 +34,7 @@ public:
 	TempoFollower(TimeWarper const & timeWarper, FollowerImpl & parent);
 
 	void ReadScore(ScoreReader & reader);
-	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_.LearnPatterns(patterns); }
+	void LearnPatterns(Data::PatternMap const & patterns) { beatClassifier_->LearnPatterns(patterns); }
 	void LearnScoreEvents(Data::ScoreEventList const & events);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
@@ -62,7 +62,7 @@ private: // Basic tempo following
 	TempoMap tempoMap_;
 
 	StartTempoEstimator startTempoEstimator_;
-	BeatClassifier beatClassifier_;
+	boost::shared_ptr<BeatClassifier> beatClassifier_;
 	TempoFunction tempoFunction_;
 
 	BeatClassification previousClassification_;
