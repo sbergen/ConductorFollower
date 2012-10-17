@@ -76,14 +76,6 @@ TempoFunction::OffsetAt(real_time_t const & time) const
 void
 TempoFunction::ScaleToRelativeTempoChange(real_time_t const & time, double coef)
 {
-	auto const timeLeft = startTime_ + time_cast<duration_t>(changeTime_) - time;
-	if (timeLeft.count() <= 0) {
-		SetConstantTempo(coef * TempoAt(time));
-		return;
-	}
-
-	auto changeTime = time_cast<time_quantity>(timeLeft);
-	
 	auto oldTargetTempo = startTempo_ + tempoChange_;
 	auto newTargetTempo = oldTargetTempo * coef;
 	auto newTempoNow = TempoAt(time) * coef;
@@ -92,9 +84,15 @@ TempoFunction::ScaleToRelativeTempoChange(real_time_t const & time, double coef)
 	// No need to scale the offset, as it is in beats
 	auto newOffsetNow = OffsetAt(time);
 
-	SetParameters(time, changeTime,
+	// The change time will not be changed, otherwise things will blow up
+	// (changes approaching infinity as the time left approaches 0)
+	if (changeTime_ == time_quantity(0.0 * score::seconds)) { changeTime_ = 1.0 * score::seconds; }
+	SetParameters(time, changeTime_,
 		newTempoNow, newTempoChange,
 		newOffsetNow, offsetCompensationFactor_);
+
+	LOG("Tempo change %1%: oldTargetTempo: %2%, newTargetTempo: %3%, newTempoChange: %4%, newOffsetNow: %5%",
+		coef, oldTargetTempo, newTargetTempo, newTempoChange, newOffsetNow);
 }
 
 tempo_t
