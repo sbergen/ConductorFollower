@@ -19,7 +19,7 @@ class BarProgressEstimator
 public:
 	BarProgressEstimator(Data::BeatPattern const & pattern);
 
-	BeatClassification ClassifyBeat(
+	BeatClassification ClassifyBeat(timestamp_t const & timestamp,
 		ScorePosition const & position, beat_pos_t beginningOfBar, beat_pos_t offsetEstimate);
 
 private:

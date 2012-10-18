@@ -27,37 +27,42 @@ public:
 
 public:
 	BeatClassification()
-		: type_(NotClassified)
+		: timestamp_(timestamp_t::min())
+		, type_(NotClassified)
 		, position_(ScorePosition())
 		, offset_(0.0 * score::beats)
 		, quality_(std::numeric_limits<double>::lowest())
 	{}
 
-	BeatClassification(ScorePosition position)
-		: type_(NotClassified)
+	BeatClassification(timestamp_t timestamp, ScorePosition position)
+		: timestamp_(timestamp)
+		, type_(NotClassified)
 		, position_(position)
 		, offset_(0.0 * score::beats)
 		, quality_(std::numeric_limits<double>::lowest())
 	{}
 
-	BeatClassification(ScorePosition position, Type type, beat_pos_t offset, double quality)
-		: type_(type)
+	BeatClassification(timestamp_t timestamp, ScorePosition position, Type type, beat_pos_t offset, double quality)
+		: timestamp_(timestamp)
+		, type_(type)
 		, position_(position)
 		, offset_(offset)
 		, quality_(quality)
 	{}
 
+	timestamp_t timestamp() const { return timestamp_; }
 	Type type() const { return type_; }
 	ScorePosition const & position() const { return position_; }
 	beat_pos_t offset() const { return offset_; }
 	double quality() const { return quality_; }
 
-	beat_pos_t IntendedPosition() { return position_.position() - offset_; }
+	beat_pos_t IntendedPosition() const { return position_.position() - offset_; }
 
 	operator bool() const { return type_ != NotClassified; }
 
 private:
 	// non-const for assignability
+	timestamp_t timestamp_;
 	Type type_;
 	ScorePosition position_;
 	beat_pos_t offset_;

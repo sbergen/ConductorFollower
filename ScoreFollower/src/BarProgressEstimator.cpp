@@ -19,7 +19,8 @@ BarProgressEstimator::BarProgressEstimator(Data::BeatPattern const & pattern)
 }
 
 BeatClassification
-BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t beginningOfBar, beat_pos_t offsetEstimate)
+BarProgressEstimator::ClassifyBeat(timestamp_t const & timestamp,
+	ScorePosition const & position, beat_pos_t beginningOfBar, beat_pos_t offsetEstimate)
 {
 	ResetIfBarChanged(beginningOfBar);
 	
@@ -50,7 +51,7 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 	auto nextBarScore = beats_.front().scorer.ScoreForBeat(nextBarOffsets.estimation);
 	if (nextBarScore > thisBarScore) {
 		qualityForThisBar_ += nextBarScore;
-		return BeatClassification(position, BeatClassification::NextBar, nextBarOffsets.absolute, qualityForThisBar_);
+		return BeatClassification(timestamp, position, BeatClassification::NextBar, nextBarOffsets.absolute, qualityForThisBar_);
 	}
 
 	// Else evaluate for this bar
@@ -58,10 +59,10 @@ BarProgressEstimator::ClassifyBeat(ScorePosition const & position, beat_pos_t be
 		beatIt->used = true;
 		qualityForThisBar_ += thisBarScore;
 		LOG("Progress estimator returning offset: %1%, quality: %2%", offsets.absolute, qualityForThisBar_);
-		return BeatClassification(position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
+		return BeatClassification(timestamp, position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
 	} else {
 		qualityForThisBar_ += beatIt->scorer.BeatPenaltyForUsed();
-		return BeatClassification(position);
+		return BeatClassification(timestamp, position);
 	}
 }
 

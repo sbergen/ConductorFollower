@@ -18,7 +18,8 @@ public:
 
 public: // BeatClassifier implementation
 	void LearnPatterns(Data::PatternMap const & patternGroups);
-	BeatClassification ClassifyBeat(ScorePosition const & position, beats_t newOffset);
+	void SetClassificationCallback(ClassificationCallback callback) { callback_ = callback; }
+	void RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset);
 
 private:
 	void ProgressToNextBar();
@@ -35,6 +36,8 @@ private:
 	ScorePosition nextBarStart_;
 
 	beat_pos_t currentOffsetEstimate_;
+
+	ClassificationCallback callback_;
 };
 
 

@@ -76,11 +76,11 @@ TimeHelper::RegisterStartGesture(MotionTracker::StartGestureData const & data)
 	tempoFollower_.RegisterStartGesture(data);
 }
 
-BeatEvent
+void
 TimeHelper::RegisterBeat(real_time_t const & time, double prob)
 {
 	assert(time < timeManager_->CurrentBlockStart());
-	return tempoFollower_.RegisterBeat(time, prob);
+	tempoFollower_.RegisterBeat(time, prob);
 }
 
 samples_t

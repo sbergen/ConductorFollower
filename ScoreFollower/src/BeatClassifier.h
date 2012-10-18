@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/function.hpp>
+
 #include "ScoreFollower/types.h"
 
 #include "Data/BeatPatternParser.h"
@@ -15,7 +17,11 @@ class BeatClassifier
 public:
 	virtual ~BeatClassifier() {}
 	virtual void LearnPatterns(Data::PatternMap const & patternGroups) = 0;
-	virtual BeatClassification ClassifyBeat(ScorePosition const & position, beats_t newOffset) = 0;
+
+	typedef boost::function<void (BeatClassification const &)> ClassificationCallback;
+	virtual void SetClassificationCallback(ClassificationCallback callback) = 0;
+
+	virtual void RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset) = 0;
 };
 
 

@@ -46,7 +46,7 @@ public:
 	void FixScoreRange(Status::FollowerStatus & status);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
-	BeatEvent RegisterBeat(real_time_t const & time, double prob);
+	void RegisterBeat(real_time_t const & time, double prob);
 
 	real_time_t StartTimeEstimate() { return tempoFollower_.StartTimeEstimate(); }
 

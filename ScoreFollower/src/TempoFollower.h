@@ -38,7 +38,8 @@ public:
 	void LearnScoreEvents(Data::ScoreEventList const & events);
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
-	BeatEvent RegisterBeat(real_time_t const & beatTime, double prob);
+	void RegisterBeat(real_time_t const & beatTime, double prob);
+	// TODO beat events!
 
 	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
 	speed_t SpeedEstimateAt(real_time_t const & time);
@@ -53,7 +54,7 @@ private:
 	typedef EventBuffer<Data::TempoSensitivityChange, score_time_t, std::vector> TempoSensitivityBuffer;
 
 private:
-	BeatClassification ClassifyBeatAt(real_time_t const & time, double clarity);
+	void BeatClassified(BeatClassification const & classification);
 	score_time_t AccelerationTimeAt(score_time_t time, time_quantity beatInterval);
 
 private: // Basic tempo following

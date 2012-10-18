@@ -39,17 +39,17 @@ ProgressFollowingBeatClassifier::LearnPatterns(Data::PatternMap const & patternG
 		totalPatterns, (int)patternGroups.size());
 }
 
-BeatClassification
-ProgressFollowingBeatClassifier::ClassifyBeat(ScorePosition const & position, beats_t newOffset)
+void
+ProgressFollowingBeatClassifier::RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset)
 {
-	BeatClassification bestClassification(position);
+	BeatClassification bestClassification(timestamp, position);
 
 	auto range = estimators_.equal_range(currentTimeSignature_);
 	for (auto it = range.first; it != range.second; ++it) {
 		auto offset = newOffset;
 		LOG("--- Offset at beat classification: %1%", offset);
 		BeatClassification classification =
-			it->second.ClassifyBeat(position, currentBarStart_.position(), offset);
+			it->second.ClassifyBeat(timestamp, position, currentBarStart_.position(), offset);
 		if (classification.quality() > bestClassification.quality()) {
 			bestClassification = classification;
 		}
@@ -59,8 +59,8 @@ ProgressFollowingBeatClassifier::ClassifyBeat(ScorePosition const & position, be
 	{
 	case BeatClassification::NextBar:
 		ProgressToNextBar();
-		bestClassification = ClassifyBeat(position, newOffset);
-		break;
+		RegisterBeat(timestamp, position, newOffset);
+		return;
 	case BeatClassification::CurrentBar:
 		currentOffsetEstimate_ = bestClassification.offset();
 		LOG("Offset estimate: %1%", currentOffsetEstimate_);
@@ -70,7 +70,9 @@ ProgressFollowingBeatClassifier::ClassifyBeat(ScorePosition const & position, be
 		break;
 	}
 
-	return bestClassification;
+	if (!callback_.empty()) {
+		callback_(bestClassification);
+	}
 }
 
 void

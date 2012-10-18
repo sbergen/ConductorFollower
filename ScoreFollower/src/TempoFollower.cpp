@@ -31,6 +31,7 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerImpl & paren
 	, beatClassifier_(new ProgressFollowingBeatClassifier(tempoMap_))
 	, tempoFilter_(32, 2.5 * si::seconds)
 {
+	beatClassifier_->SetClassificationCallback(boost::bind(&TempoFollower::BeatClassified, this, _1));
 }
 
 void
@@ -65,20 +66,29 @@ TempoFollower::RegisterStartGesture(MotionTracker::StartGestureData const & data
 	tempoFunction_.SetConstantTempo(tempo);
 }
 
-BeatEvent
+void
 TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
+{
+	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(beatTime);
+	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
+
+	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
+	beatClassifier_->RegisterBeat(beatTime, position, tempoFunction_.OffsetAt(beatTime));
+}
+
+void
+TempoFollower::BeatClassified(BeatClassification const & classification)
 {
 	auto & options = parent_.OptionsReader();
 	double tempoFilterCutoffMs = options->at<Options::TempoFilterTime>();
 	tempoFilter_.SetCutoffPoint(time_quantity(tempoFilterCutoffMs * si::milli * si::seconds));
 
-	auto classification = ClassifyBeatAt(beatTime, clarity);
 	auto const & position = classification.position();
 	double offsetFraction = classification.offset() / (position.meter().BarDuration() * score::bar);
-	BeatEvent ret(position.FractionOfBar(), offsetFraction);
-	
-	score_time_t scoreTime = timeWarper_.WarpTimestamp(beatTime);
-	tempo_t tempoNow = tempoFunction_.TempoAt(beatTime);
+	auto const & beatTime = classification.timestamp();
+
+	score_time_t scoreTime = classification.position().time();
+	tempo_t tempoNow = classification.position().tempo();
 
 	// Beat time diff for accelerationTime
 	time_quantity beatTimeDiff = 1.0 * score::beats / tempoNow;
@@ -94,7 +104,7 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 		tempoChange = targetTempo - tempoNow;
 	}
 
-	// Maximum beat interval is a little under two beats
+	// Maximum acceleration interval is a little under two beats
 	auto accelerationInterval= bu::min(beatTimeDiff, time_quantity(1.8 * score::beats / tempoNow));
 	auto accelerationTime = AccelerationTimeAt(scoreTime, accelerationInterval);
 
@@ -114,7 +124,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 	previousClassification_ = classification;
 	previousBeatTime_ = beatTime;
 
-	return ret;
+	// TODO
+	//BeatEvent ret(position.FractionOfBar(), offsetFraction);
+	//return ret;
 }
 
 speed_t
@@ -153,16 +165,6 @@ TempoFollower::StartAtDefaultTempo()
 	auto fakeDuration = time_cast<duration_t>(0.5 * score::beats / pos.tempo());
 	auto fakeStart = time::now();
 	RegisterStartGesture(MotionTracker::StartGestureData(fakeStart, fakeDuration));
-}
-
-BeatClassification
-TempoFollower::ClassifyBeatAt(real_time_t const & time, double clarity)
-{
-	score_time_t beatScoreTime = timeWarper_.WarpTimestamp(time);
-	ScorePosition position = tempoMap_.GetScorePositionAt(beatScoreTime);
-
-	LOG("Got beat at: %1% | %2%", position.bar(), position.beat());
-	return beatClassifier_->ClassifyBeat(position, tempoFunction_.OffsetAt(time));
 }
 
 score_time_t
