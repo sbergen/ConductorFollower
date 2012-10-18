@@ -116,7 +116,7 @@ TempoFollower::BeatClassified(BeatClassification const & classification)
 		
 	double offsetFactor = options->at<Options::CatchupFraction>();
 	tempoFunction_.SetParameters(
-		beatTime, accelerationTime,
+		time::now(), accelerationTime,
 		tempoNow, tempoChange,
 		-classification.offset(), offsetFactor / 100.0);
 
