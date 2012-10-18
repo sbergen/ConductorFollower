@@ -69,6 +69,7 @@
   <ItemGroup>
     <ClInclude Include="cf\algorithm.h" />
     <ClInclude Include="cf\Banger.h" />
+    <ClInclude Include="cf\bounded_vector.h" />
     <ClInclude Include="cf\ButlerDeletable.h" />
     <ClInclude Include="cf\ButlerDeleter.h" />
     <ClInclude Include="cf\ButlerThread.h" />

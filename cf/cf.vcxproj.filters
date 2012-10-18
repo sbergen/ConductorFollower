@@ -161,6 +161,9 @@
     <ClInclude Include="cf\Banger.h">
       <Filter>cf</Filter>
     </ClInclude>
+    <ClInclude Include="cf\bounded_vector.h">
+      <Filter>cf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">

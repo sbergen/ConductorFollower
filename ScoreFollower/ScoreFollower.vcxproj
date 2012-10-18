@@ -80,6 +80,7 @@
     <ClInclude Include="src\BarProgressEstimator.h" />
     <ClInclude Include="src\BeatClassification.h" />
     <ClInclude Include="src\BeatClassifier.h" />
+    <ClInclude Include="src\BeatPattern.h" />
     <ClInclude Include="src\BeatScorer.h" />
     <ClInclude Include="src\Fermata.h" />
     <ClInclude Include="src\FollowerImpl.h" />
@@ -98,6 +99,7 @@
   <ItemGroup>
     <ClCompile Include="src\AudioBlockTimeManager.cpp" />
     <ClCompile Include="src\BarProgressEstimator.cpp" />
+    <ClCompile Include="src\BeatPattern.cpp" />
     <ClCompile Include="src\ProgressFollowingBeatClassifier.cpp" />
     <ClCompile Include="src\BeatScorer.cpp" />
     <ClCompile Include="src\FollowerImpl.cpp" />

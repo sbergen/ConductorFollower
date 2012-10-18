@@ -54,7 +54,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>"$(TargetDir)\$(TargetName).exe" --result_code=yes --report_level=no</Command>
+      <Command>"$(TargetDir)\$(TargetName).exe" --result_code=no --report_level=no</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -78,6 +78,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BarProgressEstimatorTests.cpp" />
+    <ClCompile Include="BeatPatternTests.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TempoFunctionTests.cpp" />
     <ClCompile Include="TimeWarperTests.cpp" />
@@ -89,6 +90,9 @@
     <ProjectReference Include="..\ScoreFollower\ScoreFollower.vcxproj">
       <Project>{262368e6-b5c0-4a0c-94db-e0baf6357069}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BeatPatternCommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

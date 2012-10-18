@@ -3,58 +3,17 @@
 #include "src/BarProgressEstimator.h"
 #include "src/BeatClassification.h"
 
+#include "BeatPatternCommon.h"
+
 BOOST_AUTO_TEST_SUITE(BarProgressEstimatorTests)
 
 using namespace cf;
 using namespace cf::ScoreFollower;
 
-real_time_t make_time(real_time_t ref, time_quantity offset)
-{
-	return ref + time_cast<real_time_t::duration>(offset);
-}
-
-BarProgressEstimator make_quarter_estimator()
-{
-	Data::BeatPattern pattern;
-	pattern.meter = TimeSignature(4, 4);
-	
-	Data::Beat beat;
-
-	beat.time = 0.0;
-	pattern.beats.push_back(beat);
-
-	beat.time = 1.0;
-	pattern.beats.push_back(beat);
-
-	beat.time = 2.0;
-	pattern.beats.push_back(beat);
-
-	beat.time = 3.0;
-	pattern.beats.push_back(beat);
-
-	return pattern;
-}
-
-BarProgressEstimator make_half_estimator()
-{
-	Data::BeatPattern pattern;
-	pattern.meter = TimeSignature(4, 4);
-	
-	Data::Beat beat;
-
-	beat.time = 0.0;
-	pattern.beats.push_back(beat);
-
-	beat.time = 2.0;
-	pattern.beats.push_back(beat);
-
-	return pattern;
-}
-
 BOOST_AUTO_TEST_CASE(TestSimpleSelection)
 {
-	auto qEstimator = make_quarter_estimator();
-	auto hEstimator = make_half_estimator();
+	BarProgressEstimator qEstimator(make_quarter_pattern());
+	BarProgressEstimator hEstimator(make_half_pattern());
 
 	ScorePosition pos; // Default constructed is ok
 
@@ -82,8 +41,8 @@ BOOST_AUTO_TEST_CASE(TestSimpleSelection)
 
 BOOST_AUTO_TEST_CASE(TestMissingOne)
 {
-	auto qEstimator = make_quarter_estimator();
-	auto hEstimator = make_half_estimator();
+	BarProgressEstimator qEstimator(make_quarter_pattern());
+	BarProgressEstimator hEstimator(make_half_pattern());
 
 	ScorePosition pos; // Default constructed is ok
 
