@@ -53,4 +53,24 @@ ForwardIterator nearest_neighbour_linear(ForwardIterator first, ForwardIterator 
 	return best;
 }
 
+template<typename FwdIt, typename Func>
+std::pair<FwdIt, double>
+max_score(FwdIt first, FwdIt last, Func evaluator)
+{
+	double bestScore = std::numeric_limits<double>::lowest();
+	FwdIt best = last;
+
+	if (first == last) { return std::make_pair(best, bestScore); }
+
+	for (auto it = first; it != last; ++it) {
+		auto score = evaluator(*it);
+		if (score > bestScore) {
+			bestScore = score;
+			best = it;
+		}
+	}
+
+	return std::make_pair(best, bestScore);
+}
+
 } // namespace cf

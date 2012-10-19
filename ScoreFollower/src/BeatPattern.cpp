@@ -1,5 +1,7 @@
 #include "BeatPattern.h"
 
+#include "cf/algorithm.h"
+
 namespace cf {
 namespace ScoreFollower {
 
@@ -52,18 +54,30 @@ BeatPattern::MatchScaled(beat_array const & beats) const
 	return score;
 }
 
+beat_pos_t
+BeatPattern::OffsetToBest(beat_pos_t const & pos) const
+{
+	auto best = max_score(
+		scorers_.begin(), scorers_.end(),
+		[=](BeatScorer const & scorer)
+		{
+			return scorer.ScoreForBeat(pos);
+		});
+	return best.first->OffsetTo(pos);
+}
+
 void
 BeatPattern::AdvanceScorer(scorer_array::const_iterator & it,
 	beat_pos_t const & pos, beat_pos_t & barOffset,
 	double & score, bool first) const
 {
-	std::cout << "-- Scoring: " << pos << std::endl;
+	//std::cout << "-- Scoring: " << pos << std::endl;
 
 	auto initial = it;
 
 	while (true) {
 		if (it == scorers_.end()) {
-			std::cout << "!! Going to next bar" << std::endl;
+			//std::cout << "!! Going to next bar" << std::endl;
 			it = scorers_.begin();
 			barOffset += meter_.BarDuration() * score::bar;
 		}
@@ -73,7 +87,7 @@ BeatPattern::AdvanceScorer(scorer_array::const_iterator & it,
 		std::advance(next, 1);
 		auto nextOffsetPos = pos - barOffset;
 		if (next == scorers_.end()) {
-			std::cout << "! Next is in next bar" << std::endl;
+			//std::cout << "! Next is in next bar" << std::endl;
 			nextOffsetPos -= meter_.BarDuration() * score::bar;
 			next = scorers_.begin();
 		}
@@ -81,16 +95,16 @@ BeatPattern::AdvanceScorer(scorer_array::const_iterator & it,
 		auto curScore = it->ScoreForBeat(offsetPos);
 		auto nextScore = next->ScoreForBeat(nextOffsetPos);
 
-		std::cout << "NextScore: " << nextScore << ", curScore: " << curScore << std::endl;
+		//std::cout << "NextScore: " << nextScore << ", curScore: " << curScore << std::endl;
 		if (nextScore < curScore) {
 			if (it == initial && !first) {
 				// duplicate classification
 				score += it->BeatPenaltyForUsed();
-				std::cout << "used penalty" << std::endl;
+				//std::cout << "used penalty" << std::endl;
 			}
 
 			// we found the best one
-			std::cout << "beat score: " << curScore << std::endl << std::endl;
+			//std::cout << "beat score: " << curScore << std::endl << std::endl;
 			score += curScore;
 			return;
 		}
@@ -98,11 +112,11 @@ BeatPattern::AdvanceScorer(scorer_array::const_iterator & it,
 		if (it != initial && !first) {
 			// We have skipped one
 			score += it->BarPenaltyForMissed();
-			std::cout << "skip penalty" << std::endl;
+			//std::cout << "skip penalty" << std::endl;
 		}
 
 		++it;
-		std::cout << "going for next loop" << std::endl;
+		//std::cout << "going for next loop" << std::endl;
 	}
 }
 

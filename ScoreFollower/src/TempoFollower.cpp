@@ -13,6 +13,7 @@
 #include "TimeWarper.h"
 #include "FollowerImpl.h"
 #include "ProgressFollowingBeatClassifier.h"
+#include "PatternMatchingBeatClassifier.h"
 
 #include "TempoFollowerScoreEventBuilder.h"
 
@@ -28,7 +29,8 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerImpl & paren
 	, parent_(parent)
 	, tempoMap_()
 	, startTempoEstimator_()
-	, beatClassifier_(new ProgressFollowingBeatClassifier(tempoMap_))
+	//, beatClassifier_(new ProgressFollowingBeatClassifier(tempoMap_))
+	, beatClassifier_(new PatternMatchingBeatClassifier(tempoMap_))
 	, tempoFilter_(32, 2.5 * si::seconds)
 {
 	beatClassifier_->SetClassificationCallback(boost::bind(&TempoFollower::BeatClassified, this, _1));

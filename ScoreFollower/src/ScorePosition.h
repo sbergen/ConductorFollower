@@ -2,6 +2,7 @@
 
 #include <boost/operators.hpp>
 
+#include "cf/math.h"
 #include "cf/units_math.h"
 #include "cf/TimeSignature.h"
 
@@ -170,9 +171,11 @@ private: // "explicit" construction is private, use the generation methods other
 				if (diffToEnd <= beat_) {
 					// Round up
 					bar_ += 1.0 * score::bars;
+					absoluteTime_ = AbsoluteTimeAt(absolutePosition_ + diffToEnd);
 					absolutePosition_ += diffToEnd;
 				} else {
 					// Round down
+					absoluteTime_ = AbsoluteTimeAt(absolutePosition_ - beat_);
 					absolutePosition_ -=  beat_;
 				}
 
@@ -180,8 +183,21 @@ private: // "explicit" construction is private, use the generation methods other
 			}
 			break;
 		case RoundToBeat:
-			assert(false); // Not implemented
+			{
+			auto corrected = beats_t::from_value(math::round(beat_.value()));
+			auto diff = corrected - beat_;
+			
+			absoluteTime_ = AbsoluteTimeAt(absolutePosition_ + diff);
+			absolutePosition_ += diff;
+
+			beat_ = corrected;
+			auto barDuration = meter_.BarDuration() * score::bar;
+			if (beat_ >= barDuration) {
+				beat_ -= barDuration;
+				bar_ += 1.0 * score::bars;
+			}
 			break;
+			}
 		case RoundToMeterDivision:
 			assert(false); // Not implemented
 			break;

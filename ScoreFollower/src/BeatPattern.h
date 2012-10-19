@@ -3,6 +3,7 @@
 #include <list>
 
 #include <boost/units/io.hpp>
+#include <boost/utility.hpp>
 
 #include <cf/bounded_vector.h>
 
@@ -28,6 +29,7 @@ public:
 	BeatPattern(Data::BeatPattern const & pattern);
 	
 	double MatchQuality(beat_array const & beats, double scale) const;
+	beat_pos_t OffsetToBest(beat_pos_t const & pos) const;
 
 private:
 	beat_pos_t ScaleWithPivot(beat_pos_t pos, beat_pos_t pivot, double scale) const;
