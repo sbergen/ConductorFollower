@@ -1,6 +1,7 @@
 #include "BeatPattern.h"
 
 #include "cf/algorithm.h"
+#include "cf/globals.h"
 
 namespace cf {
 namespace ScoreFollower {
@@ -57,13 +58,12 @@ BeatPattern::MatchScaled(beat_array const & beats) const
 beat_pos_t
 BeatPattern::OffsetToBest(beat_pos_t const & pos) const
 {
-	auto best = max_score(
-		scorers_.begin(), scorers_.end(),
-		[=](BeatScorer const & scorer)
-		{
-			return scorer.ScoreForBeat(pos);
-		});
-	return best.first->OffsetTo(pos);
+	beat_pos_t barOffset = 0.0 * score::beats;
+	auto scorerIt = scorers_.begin();
+	auto score = 0.0;
+	bool first = true;
+	AdvanceScorer(scorerIt, pos, barOffset, score, first);
+	return scorerIt->OffsetTo(pos - barOffset);
 }
 
 void
