@@ -78,6 +78,7 @@ public: // Follower implementation
 
 public: // Module private "extensions" to Follower
 	OptionsBuffer::Reader & OptionsReader() { return optionsReader_; }
+	StatusEventProviderImpl & statusEventProviderImpl() { return statusEventProvider_; }
 
 private:
 	void ConsumeEvent(MotionTracker::Event const & e);

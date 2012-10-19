@@ -126,9 +126,9 @@ TempoFollower::BeatClassified(BeatClassification const & classification)
 	previousClassification_ = classification;
 	previousBeatTime_ = beatTime;
 
-	// TODO
-	//BeatEvent ret(position.FractionOfBar(), offsetFraction);
-	//return ret;
+	parent_.statusEventProviderImpl().buffer_.enqueue(
+		StatusEvent(classification.timestamp(), StatusEvent::Beat,
+		            BeatEvent(position.FractionOfBar(), offsetFraction)));
 }
 
 speed_t
