@@ -109,7 +109,7 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 		if (nextScore < curScore) {
 			if (it == initial && !first) {
 				// duplicate classification
-				score += it->BeatPenaltyForUsed();
+				score += it->PenaltyForUsed();
 				//std::cout << "used penalty" << std::endl;
 			}
 
@@ -121,7 +121,7 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 
 		if (it != initial && !first) {
 			// We have skipped one
-			score += it->BarPenaltyForMissed();
+			score += it->PenaltyForMissed();
 			//std::cout << "skip penalty" << std::endl;
 		}
 

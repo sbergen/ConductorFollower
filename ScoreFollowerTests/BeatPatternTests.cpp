@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(TestOneMissing)
 		beats.push_back(3.0 * score::beats);
 
 		auto scorer = BeatScorer(make_quarter_pattern(), i);
-		auto missQuality = scorer.BarPenaltyForMissed();
+		auto missQuality = scorer.PenaltyForMissed();
 		auto quality = pattern.MatchQuality(beats, 1.0);
 		BOOST_CHECK_CLOSE(quality, missQuality, 0.01);
 	}
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(TestMissingLastInBar)
 	beats.push_back(7.0 * score::beats);
 
 	auto scorer = BeatScorer(make_quarter_pattern(), 3);
-	auto missQuality = scorer.BarPenaltyForMissed();
+	auto missQuality = scorer.PenaltyForMissed();
 	auto quality = pattern.MatchQuality(beats, 1.0);
 	BOOST_CHECK_CLOSE(quality, missQuality, 0.01);
 }
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(TestMissingFirstInBar)
 	beats.push_back(7.0 * score::beats);
 
 	auto scorer = BeatScorer(make_quarter_pattern(), 0);
-	auto missQuality = scorer.BarPenaltyForMissed();
+	auto missQuality = scorer.PenaltyForMissed();
 	auto quality = pattern.MatchQuality(beats, 1.0);
 	BOOST_CHECK_CLOSE(quality, missQuality, 0.01);
 }

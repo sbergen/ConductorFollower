@@ -17,8 +17,8 @@ public:
 	BeatScorer(Data::BeatPattern const & pattern, unsigned index);
 
 	score_t ScoreForBeat(beat_pos_t pos) const;
-	score_t BarPenaltyForMissed() const;
-	score_t BeatPenaltyForUsed() const;
+	score_t PenaltyForMissed() const;
+	score_t PenaltyForUsed() const;
 
 	beats_t OffsetTo(beat_pos_t pos) const { return pos - position_; }
 

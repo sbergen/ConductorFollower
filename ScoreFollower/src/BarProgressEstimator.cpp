@@ -61,7 +61,7 @@ BarProgressEstimator::ClassifyBeat(timestamp_t const & timestamp,
 		LOG("Progress estimator returning offset: %1%, quality: %2%", offsets.absolute, qualityForThisBar_);
 		return BeatClassification(timestamp, position, BeatClassification::CurrentBar, offsets.absolute, qualityForThisBar_);
 	} else {
-		qualityForThisBar_ += beatIt->scorer.BeatPenaltyForUsed();
+		qualityForThisBar_ += beatIt->scorer.PenaltyForUsed();
 		return BeatClassification(timestamp, position);
 	}
 }
@@ -102,7 +102,7 @@ BarProgressEstimator::AddPenaltyForUnusedBeats(BeatList::iterator currentBeat)
 	for (auto it = std::begin(beats_); it != currentBeat; ++it) {
 		if (!it->used) {
 			LOG("Adding penalty for unused!");
-			qualityForThisBar_ += it->scorer.BarPenaltyForMissed();
+			qualityForThisBar_ += it->scorer.PenaltyForMissed();
 			it->used = true;
 		}
 	}
