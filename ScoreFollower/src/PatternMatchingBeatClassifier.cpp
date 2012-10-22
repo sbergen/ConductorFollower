@@ -143,7 +143,8 @@ PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern const & winningPattern, 
 		break;
 	case 1:		
 		if (nthUnclassified > 0) { break; }
-		// TODO check confidence, and return only if bad!
+		if (winningPattern.IsConfidentEstimate(classification)) { break; }
+
 		beat.ignore = true;
 		LOG("Ignored beat at: %1%", beat.position.position());
 		return;
