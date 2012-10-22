@@ -57,6 +57,20 @@ public:
 	double quality() const { return quality_; }
 
 	beat_pos_t IntendedPosition() const { return position_.position() - offset_; }
+	
+	beat_pos_t IntendedBeginningOfBar() const
+	{
+		// Prevent getting position backwards in time
+		auto positionDefinitelyInBar = (offset_.value() > 0.0) ? position_.position() : IntendedPosition();
+		return position_.ScorePositionAt(positionDefinitelyInBar, ScorePosition::RoundToBeat).BeginningOfThisBar();
+	}
+
+	bars_t IntendedBar() const
+	{
+		// Prevent getting position backwards in time
+		if (offset_.value() > 0.0) { return position_.bar(); }
+		return position_.ScorePositionAt(IntendedPosition(), ScorePosition::RoundToBeat).bar();
+	}
 
 	operator bool() const { return type_ != NotClassified; }
 

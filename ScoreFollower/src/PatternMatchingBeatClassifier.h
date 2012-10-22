@@ -30,17 +30,25 @@ private:
 
 	struct BeatInfo
 	{
-		BeatInfo() : timestamp(timestamp_t::min()) {}
+		BeatInfo() : timestamp(timestamp_t::min()), ignore(false) {}
 		BeatInfo(timestamp_t const & timestamp, ScorePosition const & position)
-			: timestamp(timestamp), position(position) {}
+			: timestamp(timestamp), position(position), ignore(false) {}
 
 		timestamp_t timestamp;
 		ScorePosition position;
+		BeatClassification classification;
+		bool ignore;
 	};
 
 private:
-	void ClassifyWithNewBeat(BeatInfo const & newBeat);
-	BeatPattern::beat_array MakeBeatArray(BeatInfo const & newBeat);
+	typedef bounded_vector<BeatInfo, BeatPattern::MaxBeats> BeatInfoArray;
+
+private:
+	void DiscardOldBeats();
+	void RunClassification();
+	void ClassifyFirstBeat();
+	void ClassifyBeat(BeatPattern const & winningPattern, BeatInfo & beat, int nthUnclassified);
+	BeatPattern::beat_array MakeBeatArray();
 
 private:
 	TempoMap const & tempoMap_;
@@ -48,9 +56,9 @@ private:
 	PatternMap patterns_;
 
 	TimeSignature currentTimeSignature_;
-	BeatClassification knownClassification_;
-	BeatInfo classifiedBeat_;
-	BeatInfo beatToClassify_;
+	bars_t currentBar_;
+	int classifiedInCurrentBar_;
+	BeatInfoArray beats_;
 
 	ClassificationCallback callback_;
 };

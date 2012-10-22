@@ -29,6 +29,8 @@ PatternMatchingBeatClassifier::LearnPatterns(Data::PatternMap const & patternGro
 	}
 
 	currentTimeSignature_ = tempoMap_.GetMeterAt(0.0 * score::seconds);
+	currentBar_ = 0.0 * score::bars;
+	classifiedInCurrentBar_ = 0;
 
 	LOG("Using a total of %1% beat patterns for %2% different time signatures",
 		totalPatterns, (int)patternGroups.size());
@@ -38,68 +40,143 @@ void
 PatternMatchingBeatClassifier::RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset)
 {
 	BeatInfo newBeat(timestamp, position);
-	ClassifyWithNewBeat(newBeat);
-	classifiedBeat_ = beatToClassify_;
-	beatToClassify_ = newBeat;
+	beats_.push_back(newBeat);
+	DiscardOldBeats();
+	RunClassification();
 }
 
 void
-PatternMatchingBeatClassifier::ClassifyWithNewBeat(BeatInfo const & newBeat)
+PatternMatchingBeatClassifier::DiscardOldBeats()
 {
-	// TODO clean up
-	static bool inited = false;
-	if (classifiedBeat_.timestamp == timestamp_t::min()) { return; }
-	if (!inited) {
-		inited = true;
-		knownClassification_ = BeatClassification(beatToClassify_.timestamp,
-			beatToClassify_.position,
-			// TODO type and quality are not part of the "Base"
-			// classification
-			BeatClassification::CurrentBar,
-			0.0 * score::beats, 1.0);
+	auto it = beats_.cbegin();
+	while (it != beats_.cend()) {
+		// Keep all unclassified and unignored beats
+		if (!it->classification && !it->ignore) { break; }
+
+		// TODO fix!
+		// Keep anything in the current bar and onwards
+		auto bar = it->classification.IntendedBar();
+		if (bar >= currentBar_) {
+			break;
+		}
+
+		LOG("Discarding beat from bar %1%", bar);
+
+		// Else erase
+		it = beats_.erase(it);
+	}
+}
+
+void
+PatternMatchingBeatClassifier::RunClassification()
+{
+	// The very first beat is known
+	if (beats_.size() == 1) {
+		ClassifyFirstBeat();
+		return;
 	}
 
-	auto beats = MakeBeatArray(newBeat);
+	auto beats = MakeBeatArray();
 	auto range = patterns_.equal_range(currentTimeSignature_);
 	auto best = max_score(range.first, range.second,
 		[&beats](PatternMap::const_reference pair)
 		{
 			return pair.second.MatchQuality(beats, 1.0);
 		});
-
 	auto const & winningPattern = best.first->second;
-	auto offset = winningPattern.OffsetToBest(beatToClassify_.position.beat());
 
-	knownClassification_ = BeatClassification(
-			beatToClassify_.timestamp,
-			beatToClassify_.position,
-			// TODO type and quality are not part of the "Base"
-			// classification
-			BeatClassification::CurrentBar,
-			offset, 1.0);
+	int nthUnclassified = 0;
+	for (auto it = beats_.begin(); it != beats_.end(); ++it) {
+		if (it->classification) { continue; }
+		if (!it->ignore) {
+			ClassifyBeat(winningPattern, *it, nthUnclassified);
+		}
+		++nthUnclassified;
+	}
+}
 
+void
+PatternMatchingBeatClassifier::ClassifyFirstBeat()
+{
+	assert(currentBar_ == 0.0 * score::bars);
+
+	auto & beat = beats_.front();
+	beat.classification = BeatClassification(
+		beat.timestamp,
+		beat.position,
+		BeatClassification::CurrentBar, // TODO remove these from base class...
+		beat.position.position(), // This will explode if we get here in the wrong place (which is good!)
+		1.0); // TODO remove this also...
+	
 	if (!callback_.empty()) {
-		callback_(knownClassification_);
+		callback_(beat.classification);
+	}
+
+	classifiedInCurrentBar_ = 1;
+}
+
+void
+PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern const & winningPattern, BeatInfo & beat, int nthUnclassified)
+{
+	LOG("Classifying beat at: %1%", beat.position.position());
+
+	// Make classification
+	auto offset = winningPattern.OffsetToBest(beat.position.beat());
+	BeatClassification classification(
+		beat.timestamp, beat.position,
+		// TODO type and quality are not part of the "Base" classification
+		BeatClassification::CurrentBar,
+		offset, 1.0);
+
+	// Check for bar switch
+	auto bar = classification.IntendedBar();
+	if (bar > currentBar_) {
+		LOG("Switching from bar %1% to bar %2%", currentBar_, bar);
+		currentBar_ = bar;
+		classifiedInCurrentBar_ = 0;
+	}
+
+	switch (classifiedInCurrentBar_) {
+	case 0:
+		// Now using previous bar beats as help
+		// => classify first according to them
+		break;
+	case 1:		
+		if (nthUnclassified > 0) { break; }
+		// TODO check confidence, and return only if bad!
+		beat.ignore = true;
+		LOG("Ignored beat at: %1%", beat.position.position());
+		return;
+	case 2:
+		// All clear
+		break;
+	}
+
+	beat.classification = classification;
+	++classifiedInCurrentBar_;
+	if (!callback_.empty()) {
+		callback_(classification);
 	}
 }
 
 BeatPattern::beat_array
-PatternMatchingBeatClassifier::MakeBeatArray(BeatInfo const & newBeat)
+PatternMatchingBeatClassifier::MakeBeatArray()
 {
-	auto offset = knownClassification_.offset();
-	auto intendedPosition = knownClassification_.IntendedPosition();
-	// If the offset is negative, we need to take it into account,
-	// otherwise we get an invalid score position calculation
-	auto positionDefinitelyInBar = (offset.value() > 0.0) ? knownClassification_.position().position() : intendedPosition;
-	auto beginningOfBar = classifiedBeat_.position.ScorePositionAt(positionDefinitelyInBar, ScorePosition::RoundToBeat).BeginningOfThisBar();
-	auto offsetBeginningOfBar = beginningOfBar + offset; // careful with the signs here...
+	// The first beat is the first in this bar, use it as reference
+	// The last one might be in the next bar, but we don't know that yet
+	auto const & firstBeat = beats_.front();
+	assert(firstBeat.classification);
+	auto const & firstClassification = firstBeat.classification;
+	auto offsetBeginningOfBar = // careful with the signs here...
+		firstClassification.IntendedBeginningOfBar() +
+		firstClassification.offset();
 
-	BeatPattern::beat_array beats;
-	beats.push_back(intendedPosition - beginningOfBar);
-	beats.push_back(beatToClassify_.position.position() - offsetBeginningOfBar);
-	beats.push_back(newBeat.position.position() - offsetBeginningOfBar);
+	BeatPattern::beat_array ret;
+	for (auto it = beats_.cbegin(); it != beats_.cend(); ++it) {
+		ret.push_back(it->position.position() - offsetBeginningOfBar);
+	}
 
-	return beats;
+	return ret;
 }
 
 } // namespace ScoreFollower

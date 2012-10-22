@@ -206,6 +206,7 @@ public: // modifiers:
 		auto insertIt = begin() + distance;
 		std::move(begin() + distance + 1, end(), insertIt);
 		--size_;
+		return insertIt;
 	}
 
 	iterator erase(const_iterator first, const_iterator last)
@@ -215,6 +216,7 @@ public: // modifiers:
 		auto insertIt = begin() + fDistance;
 		std::move(begin() + lDistance + 1, end(), insertIt);
 		size_ -= lDistance - fDistance;
+		return insertIt;
 	}
 
 	void swap(bounded_vector& other)
