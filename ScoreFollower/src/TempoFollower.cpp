@@ -81,6 +81,9 @@ TempoFollower::RegisterBeat(real_time_t const & beatTime, double clarity)
 void
 TempoFollower::BeatClassified(BeatClassification const & classification)
 {
+	// Ignore duplicates
+	if (classification.IntendedPosition() == previousClassification_.IntendedPosition()) { return; }
+
 	auto & options = parent_.OptionsReader();
 	double tempoFilterCutoffMs = options->at<Options::TempoFilterTime>();
 	tempoFilter_.SetCutoffPoint(time_quantity(tempoFilterCutoffMs * si::milli * si::seconds));
@@ -89,13 +92,10 @@ TempoFollower::BeatClassified(BeatClassification const & classification)
 	double offsetFraction = classification.offset() / (position.meter().BarDuration() * score::bar);
 	auto const & beatTime = classification.timestamp();
 
-	score_time_t scoreTime = classification.position().time();
-	tempo_t tempoNow = classification.position().tempo();
-
-	// Beat time diff for accelerationTime
-	time_quantity beatTimeDiff = 1.0 * score::beats / tempoNow;
-
 	// Tempo
+	auto timeNow = time::now();
+	tempo_t tempoNow = tempoFunction_.TempoAt(timeNow);
+	time_quantity beatTimeDiff = 1.0 * score::beats / tempoNow;
 	tempo_t tempoChange = 0.0 * score::beats_per_second;
 	if (previousClassification_) {
 		auto beatPosDiff = classification.IntendedPosition() - previousClassification_.IntendedPosition();
@@ -107,6 +107,7 @@ TempoFollower::BeatClassified(BeatClassification const & classification)
 	}
 
 	// Maximum acceleration interval is a little under two beats
+	score_time_t scoreTime = classification.position().time();
 	auto accelerationInterval= bu::min(beatTimeDiff, time_quantity(1.8 * score::beats / tempoNow));
 	auto accelerationTime = AccelerationTimeAt(scoreTime, accelerationInterval);
 
