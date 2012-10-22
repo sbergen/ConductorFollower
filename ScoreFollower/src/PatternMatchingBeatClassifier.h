@@ -47,7 +47,7 @@ private:
 	void DiscardOldBeats();
 	void RunClassification();
 	void ClassifyFirstBeat();
-	void ClassifyBeat(BeatPattern const & winningPattern, BeatInfo & beat, int nthUnclassified);
+	void ClassifyBeat(BeatPattern::MatchResult const & matchResult, BeatInfo & beat, int nthUnclassified);
 	BeatPattern::beat_array MakeBeatArray();
 
 private:

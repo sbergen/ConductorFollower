@@ -83,13 +83,13 @@ PatternMatchingBeatClassifier::RunClassification()
 		{
 			return pair.second.MatchQuality(beats, 1.0);
 		});
-	auto const & winningPattern = best.first->second;
+	auto match = best.first->second.Match(beats, 1.0);
 
 	int nthUnclassified = 0;
 	for (auto it = beats_.begin(); it != beats_.end(); ++it) {
 		if (it->classification) { continue; }
 		if (!it->ignore) {
-			ClassifyBeat(winningPattern, *it, nthUnclassified);
+			ClassifyBeat(match, *it, nthUnclassified);
 		}
 		++nthUnclassified;
 	}
@@ -116,12 +116,12 @@ PatternMatchingBeatClassifier::ClassifyFirstBeat()
 }
 
 void
-PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern const & winningPattern, BeatInfo & beat, int nthUnclassified)
+PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern::MatchResult const & matchResult, BeatInfo & beat, int nthUnclassified)
 {
 	LOG("Classifying beat at: %1%", beat.position.position());
 
 	// Make classification
-	auto offset = winningPattern.OffsetToBest(beat.position.beat());
+	auto offset = matchResult.OffsetToBest(beat.position.beat());
 	BeatClassification classification(
 		beat.timestamp, beat.position,
 		// TODO type and quality are not part of the "Base" classification
@@ -143,7 +143,7 @@ PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern const & winningPattern, 
 		break;
 	case 1:		
 		if (nthUnclassified > 0) { break; }
-		if (winningPattern.IsConfidentEstimate(classification)) { break; }
+		if (matchResult.IsConfident(classification)) { break; }
 
 		beat.ignore = true;
 		LOG("Ignored beat at: %1%", beat.position.position());

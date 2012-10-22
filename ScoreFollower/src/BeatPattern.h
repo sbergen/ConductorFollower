@@ -20,19 +20,37 @@ class BeatClassification;
 
 class BeatPattern
 {
-public:
-	enum { MaxBeats = 16 };
-	typedef bounded_vector<beat_pos_t, MaxBeats> beat_array;
-
 private:
 	typedef std::list<BeatScorer> scorer_array; // Scorer not default constructible
 
 public:
+	enum { MaxBeats = 16 };
+	typedef bounded_vector<beat_pos_t, MaxBeats> beat_array;
+
+	class MatchResult
+	{
+	public:
+		MatchResult(BeatPattern const & parent, beat_array const & beats, double scale);
+
+		double quality() const { return quality_; }
+		beat_pos_t OffsetToBest(beat_pos_t const & pos) const;
+		bool IsConfident(BeatClassification const & classification) const;
+
+	private:
+		beat_pos_t ScaleWithPivot(beat_pos_t pos) const;
+
+	private:
+		BeatPattern const & parent_;
+		double scale_;
+		beat_pos_t pivot_;
+		double quality_;
+	};
+
+public:
 	BeatPattern(Data::BeatPattern const & pattern);
 	
-	double MatchQuality(beat_array const & beats, double scale) const;
-	beat_pos_t OffsetToBest(beat_pos_t const & pos) const;
-	bool IsConfidentEstimate(BeatClassification const & classification) const;
+	MatchResult Match(beat_array const & beats, double scale) const;
+	double MatchQuality(beat_array const & beats, double scale) const { return Match(beats, scale).quality(); }
 
 private:
 	struct IterationHelper
@@ -55,9 +73,6 @@ private:
 	};
 
 private:
-	beat_pos_t ScaleWithPivot(beat_pos_t pos, beat_pos_t pivot, double scale) const;
-	double MatchScaled(beat_array const & beats) const;
-	
 	template<typename It>
 	void WrappingAdvance(It & it, int count) const
 	{

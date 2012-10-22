@@ -8,6 +8,71 @@
 namespace cf {
 namespace ScoreFollower {
 
+/* MatchResult */
+
+BeatPattern::MatchResult::MatchResult(BeatPattern const & parent, beat_array const & beats, double scale)
+	: parent_(parent)
+	, scale_(scale)
+{
+	assert(!parent_.scorers_.empty());
+	assert(!beats.empty());
+	pivot_ = beats.front();
+
+	beat_array scaled;
+	std::for_each(std::begin(beats), std::end(beats),
+		[&](beat_pos_t const & beat)
+		{
+			scaled.push_back(ScaleWithPivot(beat));
+		});
+
+	IterationHelper helper(parent);
+	std::for_each(std::begin(scaled), std::end(scaled),
+		[&](beat_pos_t const & beat)
+		{
+			helper.Advance(beat);
+		});
+
+	quality_ = helper.score;
+}
+
+beat_pos_t
+BeatPattern::MatchResult::ScaleWithPivot(beat_pos_t pos) const
+{
+	auto distanceFromPivot = pos - pivot_;
+	return pivot_ + scale_ * distanceFromPivot;
+}
+
+
+beat_pos_t
+BeatPattern::MatchResult::OffsetToBest(beat_pos_t const & pos) const
+{
+	auto scaled = ScaleWithPivot(pos);
+	IterationHelper helper(parent_);
+	helper.Advance(scaled);
+	return helper.it->OffsetTo(pos - helper.barOffset);
+}
+
+bool
+BeatPattern::MatchResult::IsConfident(BeatClassification const & classification) const
+{
+	auto pos = classification.position().beat();
+	auto scaled = ScaleWithPivot(pos);
+	IterationHelper helper(parent_);
+	helper.Advance(scaled);
+
+	auto best = helper.it;
+	auto next = best, prev = best;
+	parent_.WrappingAdvance(prev, -1);
+	parent_.WrappingAdvance(next, 1);
+
+	// Assumes all scores are negative or zero!
+	double factor = 0.3;
+	return (best->ScoreForBeat(scaled) > factor * next->ScoreForBeat(scaled)) &&
+	       (best->ScoreForBeat(scaled) > factor * prev->ScoreForBeat(scaled));
+}
+
+/* Beat Pattern */
+
 BeatPattern::BeatPattern(Data::BeatPattern const & pattern)
 	: meter_(pattern.meter)
 {
@@ -16,66 +81,10 @@ BeatPattern::BeatPattern(Data::BeatPattern const & pattern)
 	}
 }
 
-double
-BeatPattern::MatchQuality(beat_array const & beats, double scale) const
+BeatPattern::MatchResult
+BeatPattern::Match(beat_array const & beats, double scale) const
 {
-	if (scorers_.size() == 0) { return 0.0; }
-	auto pivot = beats.front();
-
-	beat_array scaled;
-	std::for_each(std::begin(beats), std::end(beats),
-		[&](beat_pos_t const & beat)
-		{
-			scaled.push_back(ScaleWithPivot(beat, pivot, scale));
-		});
-
-	return MatchScaled(scaled);
-}
-
-beat_pos_t
-BeatPattern::ScaleWithPivot(beat_pos_t pos, beat_pos_t pivot, double scale) const
-{
-	auto distanceFromPivot = pos - pivot;
-	return pivot + scale * distanceFromPivot;
-}
-
-double
-BeatPattern::MatchScaled(beat_array const & beats) const
-{
-	IterationHelper helper(*this);
-	std::for_each(std::begin(beats), std::end(beats),
-		[&, this](beat_pos_t const & beat)
-		{
-			helper.Advance(beat);
-		});
-
-	return helper.score;
-}
-
-beat_pos_t
-BeatPattern::OffsetToBest(beat_pos_t const & pos) const
-{
-	IterationHelper helper(*this);
-	helper.Advance(pos);
-	return helper.it->OffsetTo(pos - helper.barOffset);
-}
-
-bool
-BeatPattern::IsConfidentEstimate(BeatClassification const & classification) const
-{
-	auto pos = classification.position().beat();
-	IterationHelper helper(*this);
-	helper.Advance(pos);
-
-	auto best = helper.it;
-	auto next = best, prev = best;
-	WrappingAdvance(prev, -1);
-	WrappingAdvance(next, 1);
-
-	// Assumes all scores are negative or zero!
-	double factor = 0.3;
-	return (best->ScoreForBeat(pos) > factor * next->ScoreForBeat(pos)) &&
-	       (best->ScoreForBeat(pos) > factor * prev->ScoreForBeat(pos));
+	return MatchResult(*this, beats, scale);
 }
 
 void
