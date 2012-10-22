@@ -53,7 +53,6 @@ PatternMatchingBeatClassifier::DiscardOldBeats()
 		// Keep all unclassified and unignored beats
 		if (!it->classification && !it->ignore) { break; }
 
-		// TODO fix!
 		// Keep anything in the current bar and onwards
 		auto bar = it->classification.IntendedBar();
 		if (bar >= currentBar_) {
@@ -78,11 +77,27 @@ PatternMatchingBeatClassifier::RunClassification()
 
 	auto beats = MakeBeatArray();
 	auto range = patterns_.equal_range(currentTimeSignature_);
-	auto best = max_score(range.first, range.second,
-		[&beats](PatternMap::const_reference pair)
-		{
-			return pair.second.MatchQuality(beats, 1.0);
-		});
+	std::pair<decltype(range.first), double> best(range.second, std::numeric_limits<double>::lowest());
+
+	for (auto stretch = 0.8; stretch <= 1.3; stretch += 0.05) {
+		auto bestForThis = max_score(range.first, range.second,
+			[&](PatternMap::const_reference pair)
+			{
+				return pair.second.MatchQuality(beats, stretch);
+			});
+
+		// Assumes negative scores!
+		if (stretch > 1.0) {
+			bestForThis.second *= stretch;
+		} else {
+			bestForThis.second *= (1.0 / stretch);
+		}
+
+		if (bestForThis.second >= best.second) {
+			best = bestForThis;
+		}
+	}
+
 	auto match = best.first->second.Match(beats, 1.0);
 
 	int nthUnclassified = 0;

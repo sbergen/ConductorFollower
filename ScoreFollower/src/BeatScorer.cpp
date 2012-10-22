@@ -40,14 +40,14 @@ BeatScorer::ScoreForBeat(beat_pos_t pos) const
 BeatScorer::score_t
 BeatScorer::PenaltyForMissed() const
 {
-	if (position_ == 0.0 * score::beats) { return penaltyBase_; }
-	return 0.25 * penaltyBase_;
+	if (position_ == 0.0 * score::beats) { return 1.5 * penaltyBase_; }
+	return penaltyBase_;
 }
 
 BeatScorer::score_t
 BeatScorer::PenaltyForUsed() const
 {
-	return 0.25 * penaltyBase_;
+	return penaltyBase_;
 }
 
 BeatScorer::fraction_t
