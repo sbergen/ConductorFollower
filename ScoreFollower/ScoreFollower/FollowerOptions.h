@@ -9,7 +9,7 @@ namespace Options {
 typedef StringStatusItem<cf::Status::Setting, cf::Status::File> FileType;
 typedef BangStatusItem<cf::Status::Setting> BangType;
 typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, 35, 0, 100> CatchupFractionType;
-typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, 2500, 100, 5000> TimeFilterCoefType;
+typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, 1500, 100, 5000> TimeFilterCoefType;
 
 CF_STATUS_GROUP
 (
