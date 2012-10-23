@@ -43,7 +43,15 @@ public: // Constructors and generation methods
 		beats_t beat((barsFromBeginningOfThisBar - wholeBars) * barDuration);
 		beat_pos_t position = AbsolutePositionAt(time);
 
-		return ScorePosition(time, position, tempo, meter, bar_ + wholeBars, beat);
+		auto ret = ScorePosition(time, position, tempo, meter, bar_ + wholeBars, beat);
+		if (meter != meter_) {
+			// Do some dumb rounding here to get rid of rounding errors...
+			if (ret.beat_ > 0.0 * score::beats) {
+				ret.beat_ = 0.0 * score::beats;
+				ret.bar_ += 1.0 * score::bars;
+			}
+		}
+		return ret;
 	}
 
 	ScorePosition ChangeAt(score_time_t const & time, tempo_t const & tempo, TimeSignature const & meter) const
