@@ -37,7 +37,7 @@ public: // Constructors and generation methods
 
 	ScorePosition ChangeAt(score_time_t const & time, TimeSignature const & meter, tempo_t const & tempo) const
 	{
-		auto barDuration = meter.BarDuration();
+		auto barDuration = meter_.BarDuration();
 		bars_t barsFromBeginningOfThisBar((BeatsTo(time) + beat_) / barDuration);
 		bars_t wholeBars = boost::units::floor(barsFromBeginningOfThisBar);
 		beats_t beat((barsFromBeginningOfThisBar - wholeBars) * barDuration);
@@ -157,7 +157,7 @@ private: // "explicit" construction is private, use the generation methods other
 		return absoluteTime_ + (beatDiff / tempo_);
 	}
 
-	void Round(Rounding rounding)
+	ScorePosition & Round(Rounding rounding)
 	{
 		switch (rounding)
 		{
@@ -183,24 +183,32 @@ private: // "explicit" construction is private, use the generation methods other
 			}
 			break;
 		case RoundToBeat:
-			{
-			auto corrected = beats_t::from_value(math::round(beat_.value()));
-			auto diff = corrected - beat_;
-			
-			absoluteTime_ = AbsoluteTimeAt(absolutePosition_ + diff);
-			absolutePosition_ += diff;
-
-			beat_ = corrected;
-			auto barDuration = meter_.BarDuration() * score::bar;
-			if (beat_ >= barDuration) {
-				beat_ -= barDuration;
-				bar_ += 1.0 * score::bars;
-			}
+			RoundToDuration(1.0 * score::beats);
 			break;
-			}
 		case RoundToMeterDivision:
-			assert(false); // Not implemented
+			RoundToDuration((1.0 / meter_.division()) * score::beats);
 			break;
+		}
+
+		return *this;
+	}
+
+	void RoundToDuration(beats_t len)
+	{
+		double factor = score::beat / len;
+		double rounded = math::round(factor * beat_.value()) / factor;
+
+		auto corrected = beats_t::from_value(rounded);
+		auto diff = corrected - beat_;
+			
+		absoluteTime_ = AbsoluteTimeAt(absolutePosition_ + diff);
+		absolutePosition_ += diff;
+
+		beat_ = corrected;
+		auto barDuration = meter_.BarDuration() * score::bar;
+		if (beat_ >= barDuration) {
+			beat_ -= barDuration;
+			bar_ += 1.0 * score::bars;
 		}
 	}
 
