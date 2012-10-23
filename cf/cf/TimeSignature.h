@@ -2,11 +2,13 @@
 
 #include <stdexcept>
 
+#include <boost/operators.hpp>
+
 #include "cf/score_units.h"
 
 namespace cf {
 
-class TimeSignature
+class TimeSignature : public boost::totally_ordered<TimeSignature>
 {
 public:
 	// Default to 4/4
@@ -41,6 +43,11 @@ public: // For ordering
 		return (division_ != other.division_) ? 
 			division_ < other.division_ :
 			count_ < other.count_;
+	}
+
+	bool operator== (TimeSignature const & other) const
+	{
+		return (division_ == other.division_) && (count_ == other.count_);
 	}
 
 private:

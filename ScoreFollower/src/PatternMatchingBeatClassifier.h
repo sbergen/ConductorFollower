@@ -45,9 +45,9 @@ private:
 
 private:
 	void DiscardOldBeats();
-	void RunClassification();
+	bool RunClassification();
 	void ClassifyFirstBeat();
-	void ClassifyBeat(BeatPattern::MatchResult const & matchResult, BeatInfo & beat, int nthUnclassified);
+	bool ClassifyBeat(BeatPattern::MatchResult const & matchResult, BeatInfo & beat, int nthUnclassified);
 	BeatPattern::beat_array MakeBeatArray();
 
 private:

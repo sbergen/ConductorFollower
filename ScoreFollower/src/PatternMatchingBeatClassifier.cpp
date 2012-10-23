@@ -42,7 +42,7 @@ PatternMatchingBeatClassifier::RegisterBeat(timestamp_t const & timestamp, Score
 	BeatInfo newBeat(timestamp, position);
 	beats_.push_back(newBeat);
 	DiscardOldBeats();
-	RunClassification();
+	while (!RunClassification()) {}
 }
 
 void
@@ -66,13 +66,13 @@ PatternMatchingBeatClassifier::DiscardOldBeats()
 	}
 }
 
-void
+bool
 PatternMatchingBeatClassifier::RunClassification()
 {
 	// The very first beat is known
 	if (beats_.size() == 1) {
 		ClassifyFirstBeat();
-		return;
+		return true;
 	}
 
 	auto beats = MakeBeatArray();
@@ -104,10 +104,13 @@ PatternMatchingBeatClassifier::RunClassification()
 	for (auto it = beats_.begin(); it != beats_.end(); ++it) {
 		if (it->classification) { continue; }
 		if (!it->ignore) {
-			ClassifyBeat(match, *it, nthUnclassified);
+			bool success = ClassifyBeat(match, *it, nthUnclassified);
+			if (!success) { return false; }
 		}
 		++nthUnclassified;
 	}
+
+	return true;
 }
 
 void
@@ -130,10 +133,17 @@ PatternMatchingBeatClassifier::ClassifyFirstBeat()
 	classifiedInCurrentBar_ = 1;
 }
 
-void
+bool
 PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern::MatchResult const & matchResult, BeatInfo & beat, int nthUnclassified)
 {
 	LOG("Classifying beat at: %1%", beat.position.position());
+
+	auto newMeter = beat.position.meter();
+	if (newMeter != currentTimeSignature_)
+	{
+		currentTimeSignature_ = newMeter;
+		return false;
+	}
 
 	// Make classification
 	auto offset = matchResult.OffsetToBest(beat.position.beat());
@@ -162,7 +172,7 @@ PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern::MatchResult const & mat
 
 		beat.ignore = true;
 		LOG("Ignored beat at: %1%", beat.position.position());
-		return;
+		return true;
 	case 2:
 		// All clear
 		break;
@@ -173,6 +183,8 @@ PatternMatchingBeatClassifier::ClassifyBeat(BeatPattern::MatchResult const & mat
 	if (!callback_.empty()) {
 		callback_(classification);
 	}
+
+	return true;
 }
 
 BeatPattern::beat_array
