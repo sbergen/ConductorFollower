@@ -77,8 +77,7 @@ public:
 
 	void operator() (tempo_t const & tempo) const
 	{
-		LOG("Tempo change to %1% at %2%",
-			tempo, time_);
+		//LOG("Tempo change to %1% at %2%", tempo, time_);
 
 		map_.RegisterEvent(
 			time_, previousPosition_.ChangeAt(time_, tempo));

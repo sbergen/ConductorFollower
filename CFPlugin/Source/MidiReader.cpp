@@ -79,7 +79,7 @@ MidiReader::TempoReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 	// The two tempo representations are each others inverses
 	data = tempo_t(1.0 / rawTempo);
 
-	LOG("Read tempo %1% seconds per quarter note -> %2%", ePtr->message.getTempoSecondsPerQuarterNote(), data);
+	//LOG("Read tempo %1% seconds per quarter note -> %2%", ePtr->message.getTempoSecondsPerQuarterNote(), data);
 	
 	++current_;
 	return true;
