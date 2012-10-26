@@ -56,7 +56,11 @@ ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::Tra
 
 		auto const & instrument = instrumentIt->second;
 		// Check for "ignore"
-		if (instrument.channels[0] == -1) { continue; }
+		if (instrument.channels[0] == -1) {
+			trackInstruments_.push_back(
+				new InstrumentPatchSwitcher(instrument, -1, conductorContext_));
+			continue;
+		}
 
 		auto usageIndex = instrumentUsage[it->instrument]++;
 		if (usageIndex >= instrument.channels.size()) {
