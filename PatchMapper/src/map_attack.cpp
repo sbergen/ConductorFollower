@@ -5,9 +5,18 @@ namespace PatchMapper {
 
 double map_attack(MappingContext const & context)
 {
-	// When weight is high, attack shouldn't quite as high...
+	// TODO hmm? Why is this not in use?
+	// When weight is high, attack shouldn't be quite as high...
 	double weightCorrection = -context.conductorContext.weight / 5.0;
-	return context.conductorContext.attack;
+
+	time_quantity legatoThreshold = 0.005 * si::seconds;
+	double stacatoPrevention = 0.0;
+	if (context.noteContext.timeToNext < legatoThreshold) {
+		stacatoPrevention = -0.2;
+	}
+
+	return context.conductorContext.attack
+		   + stacatoPrevention;
 }
 
 } // namespace PatchMapper
