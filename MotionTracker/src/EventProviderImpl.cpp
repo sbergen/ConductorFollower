@@ -140,7 +140,6 @@ EventProviderImpl::NewHandPosition(float time, Point3D const & pos)
 		{
 			RunMotionFilters(time, state);
 			bool beatOccurred = DetectBeat(time, state);
-			// TODO don't run start gesture detection all the time
 			DetectStartGesture(time, state, beatOccurred);
 		});	
 }
