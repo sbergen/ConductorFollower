@@ -56,9 +56,9 @@ ScoreHelper::LearnInstruments(Data::InstrumentMap const & instruments, Data::Tra
 
 		auto const & instrument = instrumentIt->second;
 		// Check for "ignore"
-		if (instrument.channels[0] == -1) {
+		if (instrument.channels.empty()) {
 			trackInstruments_.push_back(
-				new InstrumentPatchSwitcher(instrument, -1, conductorContext_));
+				new InstrumentPatchSwitcher(instrument, InstrumentPatchSwitcher::IgnoreChannel, conductorContext_));
 			continue;
 		}
 

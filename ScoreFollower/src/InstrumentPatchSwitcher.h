@@ -17,6 +17,8 @@ namespace ScoreFollower {
 class InstrumentPatchSwitcher : public boost::noncopyable
 {
 public:
+	// Use IgnoreChannel as channel to ignore instrument
+	enum { IgnoreChannel = -1 };
 	InstrumentPatchSwitcher(Data::Instrument const & instrument, int channel, PatchMapper::ConductorContext const & conductorContext);
 
 	void InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed);

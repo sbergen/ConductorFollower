@@ -34,7 +34,7 @@ InstrumentPatchSwitcher::InstrumentPatchSwitcher(Data::Instrument const & instru
 void
 InstrumentPatchSwitcher::InsertEventAndPatchSwitchesToBuffer(Follower::BlockBuffer & events, ScoreEventPtr data, samples_t position, double currentSpeed)
 {
-	if (channel_ == -1) { return; }
+	if (channel_ == IgnoreChannel) { return; }
 
 	data->SetChannel(channel_);
 
