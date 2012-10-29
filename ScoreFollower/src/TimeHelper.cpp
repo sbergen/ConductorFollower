@@ -14,6 +14,7 @@ TimeHelper::TimeHelper(FollowerImpl & parent, PatchMapper::ConductorContext & co
 	: parent_(parent)
 	, conductorContext_(conductorContext)
 	, tempoFollower_(timeWarper_, parent) 
+	, previousSpeed_(1.0)
 {
 }
 
