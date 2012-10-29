@@ -10,7 +10,9 @@
 #include "cf/Logger.h"
 #include "cf/ButlerThread.h"
 
-#ifdef NDEBUG
+#define ALWAYS_LOG
+
+#if !defined(ALWAYS_LOG) && defined(NDEBUG)
 	#define LOG(...)
 #else
 	#define LOG(fmt, ...) cf::GlobalsRef().Logger()->Log((cf::LogItem(fmt), __VA_ARGS__))
