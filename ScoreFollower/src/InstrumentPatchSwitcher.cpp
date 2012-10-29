@@ -49,7 +49,7 @@ InstrumentPatchSwitcher::SwitchPathIfNecessary(Follower::BlockBuffer & events, S
 {
 	if (patches_.empty()) { return; }
 
-	PatchMapper::NoteContext noteContext(data->GetNoteLength(), currentSpeed, data->GetVelocity());
+	PatchMapper::NoteContext noteContext(data->GetNoteLength(), data->GetTimeToNextNote(), currentSpeed, data->GetVelocity());
 	auto targetParams = PatchMapper::SynthParametersFromContexts(instrumentContext_, noteContext, conductorContext_);
 	auto best = nearest_neighbour_linear(patches_.begin(), patches_.end(), targetParams, PatchDistance());
 

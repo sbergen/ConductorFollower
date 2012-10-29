@@ -17,6 +17,7 @@ public:
 
 	virtual double GetVelocity() = 0;
 	virtual score_time_t GetNoteLength() = 0;
+	virtual score_time_t GetTimeToNextNote() = 0;
 	virtual bool IsNoteOn() = 0;
 
 	virtual void ApplyVelocity(double velocity) = 0;

@@ -133,8 +133,21 @@ MidiReader::TrackReaderImpl::NextEvent(cf::ScoreFollower::score_time_t & timesta
 		noteLength = offTimestamp - timestamp;
 	}
 
+	score_time_t timeToNext = std::numeric_limits<double>::max() * score::seconds;
+	if (offTimestamp > 0.0 * score::seconds) {
+		// Try to find the next note on event
+		for (auto i = sequence_.getIndexOfMatchingKeyUp(current_) + 1; i < count_; ++i) {
+			auto msg = sequence_.getEventPointer(i)->message;
+			if (msg.isNoteOn()) {
+				auto nextTimestamp = sequence_.getEventTime(i) * score::seconds;
+				timeToNext = nextTimestamp - offTimestamp;
+				break;
+			}
+		}
+	}
+
 	auto eventPtr = sequence_.getEventPointer(current_);
-	data = boost::make_shared<MidiEvent>(eventPtr->message, noteLength);
+	data = boost::make_shared<MidiEvent>(eventPtr->message, noteLength, timeToNext);
 
 #if DEBUG_SCORE
 	if (current_ < 10) {

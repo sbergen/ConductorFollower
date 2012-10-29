@@ -4,9 +4,10 @@
 
 // MidiEventBase
 
-MidiEventBase::MidiEventBase(juce::MidiMessage const & message, sf::score_time_t const & noteLength)
+MidiEventBase::MidiEventBase(juce::MidiMessage const & message, sf::score_time_t const & noteLength, sf::score_time_t const & timeToNext)
 	: msg_(message)
 	, noteLength_(noteLength)
+	, timeToNext_(timeToNext)
 {	
 }
 
@@ -26,7 +27,7 @@ MidiEventBase::SetChannel(int channel)
 // KeyswitchEvent
 
 KeyswitchEvent::KeyswitchEvent(int channel)
-	: MidiEventBase(juce::MidiMessage::noteOn(channel, 0, 1.0f), 0.0 * cf::score::seconds)
+	: MidiEventBase(juce::MidiMessage::noteOn(channel, 0, 1.0f))
 {}
 
 void
@@ -43,8 +44,9 @@ KeyswitchEvent::MakeKeyswitch(int)
 
 // MidiEvent
 
-MidiEvent::MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength)
-	: MidiEventBase(message, noteLength)
+MidiEvent::MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength,
+	sf::score_time_t const & timeToNext)
+	: MidiEventBase(message, noteLength, timeToNext)
 {
 	// Create keyswitch only for note ons
 	if (message.isNoteOn()) {

@@ -11,11 +11,14 @@ namespace sf = cf::ScoreFollower;
 class MidiEventBase : public sf::ScoreEvent
 {
 public:
-	MidiEventBase(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
+	MidiEventBase(juce::MidiMessage const & message,
+		sf::score_time_t const & noteLength = 0.0 * cf::score::seconds,
+		sf::score_time_t const & timeToNext = std::numeric_limits<double>::max() * cf::score::seconds);
 
 public: // ScoreEvent implementation
 	double GetVelocity() { return msg_.getFloatVelocity(); }
 	sf::score_time_t GetNoteLength() { return noteLength_; }
+	sf::score_time_t GetTimeToNextNote() { return timeToNext_; }
 	bool IsNoteOn() { return msg_.isNoteOn(); }
 
 	void ApplyVelocity(double velocity);
@@ -31,6 +34,7 @@ protected:
 
 private:
 	sf::score_time_t noteLength_;
+	sf::score_time_t timeToNext_;
 };
 
 // Keyswitch event, may not produce more keyswitches (will throw)
@@ -48,7 +52,8 @@ public: // ScoreEvent implementation
 class MidiEvent : public MidiEventBase
 {
 public:
-	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength);
+	MidiEvent(juce::MidiMessage const & message, sf::score_time_t const & noteLength,
+		sf::score_time_t const & timeToNext = std::numeric_limits<double>::max() * cf::score::seconds);
 
 public: // ScoreEvent implementation
 	void SetChannel(int channel);
