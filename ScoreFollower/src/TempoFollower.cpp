@@ -140,12 +140,20 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	// Tempo change
 	auto scoreTempo = ScorePositionAt(time).tempo();
 	if (scoreTempo != previousScoreTempo_) {
+		auto statusReader = parent_.status().GetUnsafeReader();
+
 		double factor = scoreTempo / previousScoreTempo_;
-		tempoFunction_.ScaleToRelativeTempoChange(time, factor);
+		if (statusReader->at<Status::State>() == FollowerState::Playback) {
+			tempoFunction_.ScaleToRelativeTempoChange(time, factor);
+		}
+		beatClassifier_->RegisterTempoChange(factor);
 		
-		auto correctedConductedTempo = tempoFilter_.ValueAt(time) * factor;
-		tempoFilter_.Reset(time, correctedConductedTempo);
-		previousClassification_ = BeatClassification(); // Forget last beat
+		// Reset filter to some time before now,
+		// so that it reacts faster
+		auto diffToUnity = std::abs(factor - 1.0);
+		auto timeToSubtract = diffToUnity * tempoFilter_.GetCutoffPoint();
+		auto resetTime = time - time_cast<timestamp_t::duration>(timeToSubtract);
+		tempoFilter_.Reset(resetTime, tempoFilter_.ValueAt(time));
 
 		previousScoreTempo_ = scoreTempo;
 	}

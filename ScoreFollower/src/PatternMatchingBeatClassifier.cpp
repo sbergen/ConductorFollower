@@ -10,6 +10,7 @@ namespace ScoreFollower {
 
 PatternMatchingBeatClassifier::PatternMatchingBeatClassifier(TempoMap const & tempoMap)
 	: tempoMap_(tempoMap)
+	, tempoChangeExpectation_(1.0)
 {
 
 }
@@ -37,12 +38,26 @@ PatternMatchingBeatClassifier::LearnPatterns(Data::PatternMap const & patternGro
 }
 
 void
+PatternMatchingBeatClassifier::RegisterTempoChange(double newTempoFraction)
+{
+	tempoChangeExpectation_ *= newTempoFraction;
+}
+
+void
 PatternMatchingBeatClassifier::RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset)
 {
 	BeatInfo newBeat(timestamp, position);
 	beats_.push_back(newBeat);
 	DiscardOldBeats();
 	while (!RunClassification()) {}
+	DecayTempoChangeExpectation();
+}
+
+void
+PatternMatchingBeatClassifier::DecayTempoChangeExpectation()
+{
+	double const factor = 0.5;
+	tempoChangeExpectation_ = 1.0 + factor * (tempoChangeExpectation_ - 1.0);
 }
 
 void
@@ -69,6 +84,8 @@ PatternMatchingBeatClassifier::DiscardOldBeats()
 bool
 PatternMatchingBeatClassifier::RunClassification()
 {
+	LOG("Running beat classification with tempo change expectation of %1%", tempoChangeExpectation_);
+
 	// The very first beat is known
 	if (beats_.size() == 1) {
 		ClassifyFirstBeat();
@@ -77,13 +94,22 @@ PatternMatchingBeatClassifier::RunClassification()
 
 	auto beats = MakeBeatArray();
 	auto range = patterns_.equal_range(currentTimeSignature_);
-	std::pair<decltype(range.first), double> best(range.second, std::numeric_limits<double>::lowest());
+
+	struct best_t
+	{
+		decltype(range.first) it;
+		double score;
+		double stretch;
+	};
+
+	best_t best = { range.second, std::numeric_limits<double>::lowest(), 1.0 };
 
 	for (auto stretch = 0.8; stretch <= 1.3; stretch += 0.05) {
+		auto correctedStretch = stretch * tempoChangeExpectation_;
 		auto bestForThis = max_score(range.first, range.second,
 			[&](PatternMap::const_reference pair)
 			{
-				return pair.second.MatchQuality(beats, stretch);
+				return pair.second.MatchQuality(beats, correctedStretch);
 			});
 
 		// Assumes negative scores!
@@ -93,12 +119,15 @@ PatternMatchingBeatClassifier::RunClassification()
 			bestForThis.second *= (1.0 / stretch);
 		}
 
-		if (bestForThis.second >= best.second) {
-			best = bestForThis;
+		if (bestForThis.second >= best.score) {
+			best.it = bestForThis.first;
+			best.score = bestForThis.second;
+			best.stretch = correctedStretch;
 		}
 	}
 
-	auto match = best.first->second.Match(beats, 1.0);
+	auto match = best.it->second.Match(beats, best.stretch);
+	LOG("Winning stretch: %1%", best.stretch);
 
 	int nthUnclassified = 0;
 	for (auto it = beats_.begin(); it != beats_.end(); ++it) {

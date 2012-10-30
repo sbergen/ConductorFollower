@@ -76,6 +76,8 @@ public:
 		cutoffPoint_ = cutoff;
 	}
 
+	time_quantity GetCutoffPoint() const { return cutoffPoint_; }
+
 private:
 	double CoefFunction(time_quantity const & time) const
 	{

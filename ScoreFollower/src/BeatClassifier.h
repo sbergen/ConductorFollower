@@ -21,6 +21,7 @@ public:
 	typedef boost::function<void (BeatClassification const &)> ClassificationCallback;
 	virtual void SetClassificationCallback(ClassificationCallback callback) = 0;
 
+	virtual void RegisterTempoChange(double newTempoFraction) = 0;
 	virtual void RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset) = 0;
 };
 

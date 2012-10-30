@@ -22,6 +22,7 @@ public:
 public: // BeatClassifier implementation
 	void LearnPatterns(Data::PatternMap const & patternGroups);
 	void SetClassificationCallback(ClassificationCallback callback) { callback_ = callback; }
+	void RegisterTempoChange(double newTempoFraction);
 	void RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset);
 
 private:
@@ -44,6 +45,7 @@ private:
 	typedef bounded_vector<BeatInfo, BeatPattern::MaxBeats> BeatInfoArray;
 
 private:
+	void DecayTempoChangeExpectation();
 	void DiscardOldBeats();
 	bool RunClassification();
 	void ClassifyFirstBeat();
@@ -61,6 +63,8 @@ private:
 	BeatInfoArray beats_;
 
 	ClassificationCallback callback_;
+
+	double tempoChangeExpectation_;
 };
 
 } // namespace ScoreFollower
