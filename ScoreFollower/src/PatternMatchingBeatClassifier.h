@@ -3,6 +3,7 @@
 #include <map>
 
 #include <boost/utility.hpp>
+#include <boost/math/distributions.hpp>
 
 #include "cf/TimeSignature.h"
 
@@ -64,6 +65,7 @@ private:
 
 	ClassificationCallback callback_;
 
+	boost::math::normal stretchScalingDist_;
 	double tempoChangeExpectation_;
 };
 

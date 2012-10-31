@@ -3,13 +3,14 @@
 #include "cf/algorithm.h"
 #include "cf/globals.h"
 
-#include <boost/range/adaptor/transformed.hpp>
-
 namespace cf {
 namespace ScoreFollower {
 
+namespace bm = boost::math;
+
 PatternMatchingBeatClassifier::PatternMatchingBeatClassifier(TempoMap const & tempoMap)
 	: tempoMap_(tempoMap)
+	, stretchScalingDist_(1.0, 0.4)
 	, tempoChangeExpectation_(1.0)
 {
 
@@ -104,7 +105,7 @@ PatternMatchingBeatClassifier::RunClassification()
 
 	best_t best = { range.second, std::numeric_limits<double>::lowest(), 1.0 };
 
-	for (auto stretch = 0.8; stretch <= 1.3; stretch += 0.05) {
+	for (auto stretch = 0.1; stretch <= 3.0; stretch += 0.05) {
 		auto correctedStretch = stretch * tempoChangeExpectation_;
 		auto bestForThis = max_score(range.first, range.second,
 			[&](PatternMap::const_reference pair)
@@ -112,16 +113,12 @@ PatternMatchingBeatClassifier::RunClassification()
 				return pair.second.MatchQuality(beats, correctedStretch);
 			});
 
-		// Assumes negative scores!
-		if (stretch > 1.0) {
-			bestForThis.second *= stretch;
-		} else {
-			bestForThis.second *= (1.0 / stretch);
-		}
+		auto correctedBest = std::pow(1.1, bestForThis.second);
+		correctedBest *= bm::pdf(stretchScalingDist_, stretch);
 
-		if (bestForThis.second >= best.score) {
+		if (correctedBest >= best.score) {
 			best.it = bestForThis.first;
-			best.score = bestForThis.second;
+			best.score = correctedBest;
 			best.stretch = correctedStretch;
 		}
 	}
