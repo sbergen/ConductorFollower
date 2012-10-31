@@ -89,7 +89,7 @@ PatternMatchingBeatClassifier::RunClassification()
 
 	best_t best = { range.second, std::numeric_limits<double>::lowest(), 1.0 };
 	auto tempoFraction = currentTempo_ / currentScoreTempo_;
-	auto shape = (1.0 - tempoFraction);
+	auto shape = 0.5 * (1.0 - tempoFraction);
 	auto dist = bm::skew_normal(1.0, 0.5, shape);
 
 	for (auto stretch = 0.5; stretch <= 1.5; stretch += 0.025) {
