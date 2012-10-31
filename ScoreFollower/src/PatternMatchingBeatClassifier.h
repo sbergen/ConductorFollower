@@ -3,7 +3,6 @@
 #include <map>
 
 #include <boost/utility.hpp>
-#include <boost/math/distributions.hpp>
 
 #include "cf/TimeSignature.h"
 
@@ -23,7 +22,8 @@ public:
 public: // BeatClassifier implementation
 	void LearnPatterns(Data::PatternMap const & patternGroups);
 	void SetClassificationCallback(ClassificationCallback callback) { callback_ = callback; }
-	void RegisterTempoChange(double newTempoFraction);
+	void RegisterCurrentScoreTempo(tempo_t newTempo) { currentScoreTempo_ = newTempo; }
+	void RegisterCurrentTempo(tempo_t newTempo) { currentTempo_ = newTempo; }
 	void RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset);
 
 private:
@@ -46,7 +46,6 @@ private:
 	typedef bounded_vector<BeatInfo, BeatPattern::MaxBeats> BeatInfoArray;
 
 private:
-	void DecayTempoChangeExpectation();
 	void DiscardOldBeats();
 	bool RunClassification();
 	void ClassifyFirstBeat();
@@ -65,8 +64,8 @@ private:
 
 	ClassificationCallback callback_;
 
-	boost::math::normal stretchScalingDist_;
-	double tempoChangeExpectation_;
+	tempo_t currentTempo_;
+	tempo_t currentScoreTempo_;
 };
 
 } // namespace ScoreFollower

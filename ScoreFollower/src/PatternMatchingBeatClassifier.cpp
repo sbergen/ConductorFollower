@@ -1,5 +1,7 @@
 #include "PatternMatchingBeatClassifier.h"
 
+#include <boost/math/distributions/skew_normal.hpp>
+
 #include "cf/algorithm.h"
 #include "cf/globals.h"
 
@@ -10,8 +12,6 @@ namespace bm = boost::math;
 
 PatternMatchingBeatClassifier::PatternMatchingBeatClassifier(TempoMap const & tempoMap)
 	: tempoMap_(tempoMap)
-	, stretchScalingDist_(1.0, 0.4)
-	, tempoChangeExpectation_(1.0)
 {
 
 }
@@ -39,26 +39,12 @@ PatternMatchingBeatClassifier::LearnPatterns(Data::PatternMap const & patternGro
 }
 
 void
-PatternMatchingBeatClassifier::RegisterTempoChange(double newTempoFraction)
-{
-	tempoChangeExpectation_ *= newTempoFraction;
-}
-
-void
 PatternMatchingBeatClassifier::RegisterBeat(timestamp_t const & timestamp, ScorePosition const & position, beats_t newOffset)
 {
 	BeatInfo newBeat(timestamp, position);
 	beats_.push_back(newBeat);
 	DiscardOldBeats();
 	while (!RunClassification()) {}
-	DecayTempoChangeExpectation();
-}
-
-void
-PatternMatchingBeatClassifier::DecayTempoChangeExpectation()
-{
-	double const factor = 0.5;
-	tempoChangeExpectation_ = 1.0 + factor * (tempoChangeExpectation_ - 1.0);
 }
 
 void
@@ -85,8 +71,6 @@ PatternMatchingBeatClassifier::DiscardOldBeats()
 bool
 PatternMatchingBeatClassifier::RunClassification()
 {
-	LOG("Running beat classification with tempo change expectation of %1%", tempoChangeExpectation_);
-
 	// The very first beat is known
 	if (beats_.size() == 1) {
 		ClassifyFirstBeat();
@@ -104,22 +88,30 @@ PatternMatchingBeatClassifier::RunClassification()
 	};
 
 	best_t best = { range.second, std::numeric_limits<double>::lowest(), 1.0 };
+	auto tempoFraction = currentTempo_ / currentScoreTempo_;
+	auto shape = (1.0 - tempoFraction);
+	auto dist = bm::skew_normal(1.0, 0.5, shape);
 
-	for (auto stretch = 0.1; stretch <= 3.0; stretch += 0.05) {
-		auto correctedStretch = stretch * tempoChangeExpectation_;
+	for (auto stretch = 0.5; stretch <= 1.5; stretch += 0.025) {
+		auto tempoBeingEstimated = currentTempo_ * stretch;
+		//auto stretchToScore = tempoBeingEstimated / currentScoreTempo_;
+		LOG("stretch: %1%, tempoBeingEstimated: %2%, scoreTempo: %3%",
+			stretch, tempoBeingEstimated, currentScoreTempo_);
+
 		auto bestForThis = max_score(range.first, range.second,
 			[&](PatternMap::const_reference pair)
 			{
-				return pair.second.MatchQuality(beats, correctedStretch);
+				return pair.second.MatchQuality(beats, stretch);
 			});
 
-		auto correctedBest = std::pow(1.1, bestForThis.second);
-		correctedBest *= bm::pdf(stretchScalingDist_, stretch);
+		auto weightedBest = std::pow(1.1, bestForThis.second);
+		weightedBest *= bm::pdf(dist, stretch);
+		LOG("skewness: %1%, pdf: %2%", shape, bm::pdf(dist, stretch));
 
-		if (correctedBest >= best.score) {
+		if (weightedBest >= best.score) {
 			best.it = bestForThis.first;
-			best.score = correctedBest;
-			best.stretch = correctedStretch;
+			best.score = weightedBest;
+			best.stretch = stretch;
 		}
 	}
 

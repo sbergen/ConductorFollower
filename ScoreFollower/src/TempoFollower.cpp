@@ -43,6 +43,7 @@ TempoFollower::ReadScore(ScoreReader & reader)
 	auto start = tempoMap_.GetScorePositionAt(0.0 * score::seconds);
 	startTempoEstimator_.SetStartTempo(start.tempo());
 	previousScoreTempo_ = start.tempo();
+	beatClassifier_->RegisterCurrentScoreTempo(previousScoreTempo_);
 }
 
 void
@@ -140,13 +141,13 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	// Tempo change
 	auto scoreTempo = ScorePositionAt(time).tempo();
 	if (scoreTempo != previousScoreTempo_) {
-		auto statusReader = parent_.status().GetUnsafeReader();
+		beatClassifier_->RegisterCurrentScoreTempo(scoreTempo);
 
+		auto statusReader = parent_.status().GetUnsafeReader();
 		double factor = scoreTempo / previousScoreTempo_;
 		if (statusReader->at<Status::State>() == FollowerState::Playback) {
 			tempoFunction_.ScaleToRelativeTempoChange(time, factor);
 		}
-		beatClassifier_->RegisterTempoChange(factor);
 		
 		// Reset filter to some time before now,
 		// so that it reacts faster
@@ -159,6 +160,7 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 	}
 
 	auto tempo = tempoFunction_.TempoAt(time);
+	beatClassifier_->RegisterCurrentTempo(tempo);
 	return tempo / ScorePositionAt(time).tempo();
 }
 

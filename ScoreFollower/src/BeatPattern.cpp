@@ -66,7 +66,7 @@ BeatPattern::MatchResult::IsConfident(BeatClassification const & classification)
 	parent_.WrappingAdvance(next, 1);
 
 	// Assumes all scores are negative or zero!
-	double factor = 0.5;
+	double factor = 0.8;
 	return (best->ScoreForBeat(scaled) > factor * next->ScoreForBeat(scaled)) &&
 	       (best->ScoreForBeat(scaled) > factor * prev->ScoreForBeat(scaled));
 }
