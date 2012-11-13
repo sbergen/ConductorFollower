@@ -106,7 +106,6 @@ private: // Filters and detectors
 
 	EMA<4> velocityFir_;
 	PeakHolder<20> velocityPeakHolder_;
-	DynamicRange<20> velocityRange_;
 
 	AveragingFir<10> jerkFir_;
 	DipHolder<40> jerkPeakHolder_;

@@ -220,7 +220,6 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState con
 	state.velocity.reduceDimension(vel2D);
 
 	auto const velocity = geometry::abs(vel2D).value();
-	auto const velocityRange = velocityRange_.Run(velocity);
 	auto const velFirOut = velocityFir_.Run(velocity);
 	auto const velocityPeak = velocityPeakHolder_.Run(velFirOut);
 

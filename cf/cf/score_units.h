@@ -115,9 +115,6 @@ BOOST_UNITS_STATIC_CONSTANT(beats_per_second, tempo);
 typedef bu::unit<tempo_change_dimension, system> tempo_change;
 BOOST_UNITS_STATIC_CONSTANT(beats_per_second_squared, tempo_change);
 
-typedef bu::unit<speed_change_dimension, system> speed_change;
-BOOST_UNITS_STATIC_CONSTANT(fractions_per_second, speed_change);
-
 // scaled units
 
 typedef bu::make_scaled_unit<musical_time, bu::scale<4, bu::static_rational<1> > >::type full_note_duration;
