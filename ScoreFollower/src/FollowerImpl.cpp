@@ -178,7 +178,6 @@ FollowerImpl::ConsumeEvent(Event const & e)
 		}
 		break;
 	case Event::BeatProb:
-		status_.at<Status::Beat>() = e.data<double>();
 		break;
 	case Event::StartGesture:
 		if (state_ == FollowerState::WaitingForStart) {

@@ -147,6 +147,11 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		double factor = scoreTempo / previousScoreTempo_;
 		if (statusReader->at<Status::State>() == FollowerState::Playback) {
 			tempoFunction_.ScaleToRelativeTempoChange(time, factor);
+		} else {
+			// Only use a fraction of the chane (from options)
+			double followFactor = parent_.OptionsReader()->at<Options::TempoChangeFollowing>() / 100.0;
+			factor = 1.0 + followFactor * (factor - 1.0);
+			tempoFunction_.ScaleToRelativeTempoChange(time, factor);
 		}
 		
 		// Reset filter to some time before now,
