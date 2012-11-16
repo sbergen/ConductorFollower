@@ -92,7 +92,8 @@ PatternMatchingBeatClassifier::RunClassification()
 	auto shape = 0.5 * (1.0 - tempoFraction);
 	auto dist = bm::skew_normal(1.0, 0.5, shape);
 
-	for (auto stretch = 0.5; stretch <= 1.5; stretch += 0.025) {
+	auto const stretchStep = 0.025;
+	for (auto stretch = 0.5; stretch <= 1.5; stretch += stretchStep) {
 		auto tempoBeingEstimated = currentTempo_ * stretch;
 		//auto stretchToScore = tempoBeingEstimated / currentScoreTempo_;
 		LOG("stretch: %1%, tempoBeingEstimated: %2%, scoreTempo: %3%",
@@ -105,8 +106,9 @@ PatternMatchingBeatClassifier::RunClassification()
 			});
 
 		auto weightedBest = std::pow(1.1, bestForThis.second);
-		weightedBest *= bm::pdf(dist, stretch);
-		LOG("skewness: %1%, pdf: %2%", shape, bm::pdf(dist, stretch));
+		auto factor = bm::cdf(dist, stretch + 0.5 * stretchStep) -
+		              bm::cdf(dist, stretch - 0.5 * stretchStep);
+		weightedBest *= factor;
 
 		if (weightedBest >= best.score) {
 			best.it = bestForThis.first;
