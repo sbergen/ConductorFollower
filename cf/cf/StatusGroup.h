@@ -8,8 +8,8 @@
 
 // Couldn't figure out how to do this with C++11 stuff,
 // at least not in VS2010 :(
-#define VAL(T) (*((T *)nullptr))
-#define CONST_VAL(T) (VAL(T const))
+#define VAL_AT(TMap, TOption) boost::fusion::at_key<TOption>(*((TMap *)nullptr))
+#define CONST_VAL_AT(TMap, TOption) (VAL_AT(TMap const, TOption))
 
 /*
 Use this like:
@@ -28,13 +28,13 @@ class StatusGroup : public FusionMapBase<MapType>
 {
 public:
 	template<typename OptionType>
-	auto at() -> decltype(boost::fusion::at_key<OptionType>(VAL(MapType)))
+	auto at() -> decltype(VAL_AT(MapType, OptionType))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
 
 	template<typename OptionType>
-	auto at() const -> decltype(boost::fusion::at_key<OptionType>(CONST_VAL(MapType)))
+	auto at() const -> decltype(CONST_VAL_AT(MapType, OptionType))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
