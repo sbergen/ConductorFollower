@@ -42,5 +42,5 @@ public:
 
 } // namespace cf
 
-#undef VAL
-#undef CONST_VAL
+#undef VAL_AT
+#undef CONST_VAL_AT
