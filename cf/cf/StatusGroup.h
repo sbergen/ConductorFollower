@@ -6,6 +6,11 @@
 #include "cf/FusionMap.h"
 #include "cf/StatusItem.h"
 
+// Couldn't figure out how to do this with C++11 stuff,
+// at least not in VS2010 :(
+#define VAL(T) (*((T *)nullptr))
+#define CONST_VAL(T) (VAL(T const))
+
 /*
 Use this like:
 CF_STATUS_GROUP(TestStatGroup,
@@ -23,13 +28,13 @@ class StatusGroup : public FusionMapBase<MapType>
 {
 public:
 	template<typename OptionType>
-	auto at() -> decltype(boost::fusion::at_key<OptionType>(*((MapType *)nullptr)))
+	auto at() -> decltype(boost::fusion::at_key<OptionType>(VAL(MapType)))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
 
 	template<typename OptionType>
-	auto at() const -> decltype(boost::fusion::at_key<OptionType>(*((MapType const *)nullptr)))
+	auto at() const -> decltype(boost::fusion::at_key<OptionType>(CONST_VAL(MapType)))
 	{
 		return boost::fusion::at_key<OptionType>(map());
 	}
@@ -37,3 +42,5 @@ public:
 
 } // namespace cf
 
+#undef VAL
+#undef CONST_VAL

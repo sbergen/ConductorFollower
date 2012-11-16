@@ -3,11 +3,9 @@
 #include <array>
 #include <cassert>
 
-namespace cf {
+#include "cf/workarounds.h"
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1600)
-#define noexcept
-#endif
+namespace cf {
 
 // Bounded vecotr class
 // TODO does not run destructors on resizes!
@@ -281,9 +279,5 @@ void swap(bounded_vector<T, Size>& x, bounded_vector<T, Size>& y)
 {
 	x.swap(y);
 }
-
-#ifdef noexcept
-#undef noexcept
-#endif
 
 } // namespace cf
