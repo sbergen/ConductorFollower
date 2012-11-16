@@ -39,7 +39,6 @@ public:
 
 	void RegisterStartGesture(MotionTracker::StartGestureData const & data);
 	void RegisterBeat(real_time_t const & beatTime, double prob);
-	// TODO beat events!
 
 	real_time_t StartTimeEstimate() { return startTempoEstimator_.StartTimeEstimate(); }
 	speed_t SpeedEstimateAt(real_time_t const & time);

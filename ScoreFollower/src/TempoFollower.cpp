@@ -150,9 +150,10 @@ TempoFollower::SpeedEstimateAt(real_time_t const & time)
 		}
 		
 		// Reset filter to some time before now,
-		// so that it reacts faster
+		// so that it reacts faster.
+		// 1/3 tempo change resets completely
 		auto diffToUnity = std::abs(factor - 1.0);
-		auto timeToSubtract = diffToUnity * tempoFilter_.GetCutoffPoint();
+		auto timeToSubtract = 3.0 * diffToUnity * tempoFilter_.GetCutoffPoint();
 		auto resetTime = time - time_cast<timestamp_t::duration>(timeToSubtract);
 		tempoFilter_.Reset(resetTime, tempoFilter_.ValueAt(time));
 
