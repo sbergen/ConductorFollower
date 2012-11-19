@@ -68,9 +68,12 @@ CfpluginAudioProcessorEditor::LayoutWidgets()
 		LayoutAutomaticWidgets<cf::Status::Advanced>() :
 		LayoutAutomaticWidgets<cf::Status::Basic>();
 
+	int const buttonHeight = 20;
 	expandButton.setButtonText(expanded ?
 		"Show less options" : "Show more options");
-	expandButton.setBounds(padding, bottomY, optionsWidth, 20);
+	expandButton.setBounds(padding, bottomY, optionsWidth, buttonHeight);
+	bottomY += buttonHeight + padding;
+	setSize (totalWidth, std::max(totalHeight, bottomY));
 }
 
 //==============================================================================
