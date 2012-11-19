@@ -26,57 +26,9 @@ CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcess
 	, eventQueue_(ownerFilter->EventProvider().GetEventQueue())
 {
     // This is where our plugin's editor size is set.
-    setSize (700, 800);
+    setSize (totalWidth, totalHeight);
 	BuildUI();
 	ownerFilter->changeBroadcaster.addChangeListener(this);
-}
-
-
-void
-CfpluginAudioProcessorEditor::BuildUI()
-{
-	{
-		using namespace cf::ScoreFollower::Status;
-		auto status = ownerFilter->StatusReader();
-		WidgetInitializer<FollowerStatusWidgets> initializer(statusWidgets);
-		boost::fusion::for_each(status->map(), initializer);
-
-		std::vector<Component *> components;
-		WidgetCollector<std::vector<Component *> > collector(components);
-		boost::fusion::for_each(statusWidgets, collector);
-
-		int yPos = 0;
-		int const height = 30;
-		for(auto it = components.begin(); it != components.end(); ++it) {
-			addAndMakeVisible(*it);
-			(*it)->setBounds(0, yPos, 300, height);
-			yPos += height;
-		}
-	}
-
-	/**************************/
-	{
-		using namespace cf::ScoreFollower::Options;
-		auto options = ownerFilter->OptionsReader();
-		WidgetInitializer<FollowerOptionWidgets> initializer(optionWidgets);
-		boost::fusion::for_each(options->map(), initializer);
-
-		std::vector<Component *> components;
-		WidgetCollector<std::vector<Component *> > collector(components);
-		boost::fusion::for_each(optionWidgets, collector);
-
-		int yPos = 0;
-		int const height = 50;
-		for(auto it = components.begin(); it != components.end(); ++it) {
-			addAndMakeVisible(*it);
-			(*it)->setBounds(300, yPos, 300, height);
-			yPos += height;
-		}
-	}
-
-	addAndMakeVisible(visualizer_.get());
-	visualizer_->setBounds(0, 300, 700, 500);
-	visualizer_->SetSize(700, 500);
 }
 
 CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
@@ -84,6 +36,24 @@ CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 	ownerFilter->changeBroadcaster.removeChangeListener(this);
 	// The automatic child components are in the fusion::maps,
 	// and deleteAllChildren() should NOT be called!
+}
+
+void
+CfpluginAudioProcessorEditor::BuildUI()
+{
+	BuildWidgets();
+
+	addAndMakeVisible(visualizer_.get());
+	visualizer_->setBounds(optionsWidth, 0, totalWidth, visualizationHeight);
+	visualizer_->SetSize(visualizationWidth, visualizationHeight);
+}
+
+void
+CfpluginAudioProcessorEditor::BuildWidgets()
+{
+	int yPos = 0;
+	BuildOneWidgetSet(yPos, statusWidgetHeight, statusWidgets, ownerFilter->StatusReader());
+	BuildOneWidgetSet(yPos, optionWidgetHeight, optionWidgets, ownerFilter->OptionsReader());
 }
 
 //==============================================================================

@@ -49,11 +49,27 @@ public:
 public:
 	void changeListenerCallback(ChangeBroadcaster *source);
 
-private:
-	void BuildUI();
-
-private:
 	CfpluginAudioProcessor* ownerFilter;
+
+private: // UI functions
+	void BuildUI();
+	void BuildWidgets();
+
+private: // UI constants
+
+	// Making dynamic UIs with Juce is retarded,
+	// so we just do this...
+	static int const optionsWidth = 300;
+	static int const optionWidgetHeight = 40;
+	static int const statusWidgetHeight = 30;
+
+	static int const visualizationWidth = 700;
+	static int const visualizationHeight = 700;
+
+	static int const totalWidth = optionsWidth + visualizationWidth;
+	static int const totalHeight = visualizationHeight;
+
+private: // UI Data
 
 	typedef Status::FollowerStatus::transformed<StatusWidget>::type FollowerStatusWidgets;
 	FollowerStatusWidgets statusWidgets;
@@ -69,6 +85,25 @@ private: // Event stuff
 
 	cf::Visualizer::DataBufferPtr visualizationData_;
 	boost::shared_ptr<cf::MotionTracker::EventQueue> eventQueue_;
+
+
+private: // Template functions (just for keeping the stuff above cleaner)
+	template<typename TWidgets, typename TSource>
+	void BuildOneWidgetSet(int & yPos, int height, TWidgets & widgets, TSource & source)
+	{
+		WidgetInitializer<TWidgets> initializer(widgets);
+		boost::fusion::for_each(source->map(), initializer);
+
+		std::vector<Component *> components;
+		WidgetCollector<std::vector<Component *> > collector(components);
+		boost::fusion::for_each(widgets, collector);
+
+		for(auto it = components.begin(); it != components.end(); ++it) {
+			addAndMakeVisible(*it);
+			(*it)->setBounds(0, yPos, optionsWidth, height);
+			yPos += height;
+		}
+	}
 };
 
 
