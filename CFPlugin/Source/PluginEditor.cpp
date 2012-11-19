@@ -22,6 +22,8 @@
 CfpluginAudioProcessorEditor::CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 	, ownerFilter(ownerFilter)
+	, expandButton("Expand Button")
+	, expanded(false)
 	, visualizer_(cf::Visualizer::Visualizer::Create())
 	, eventQueue_(ownerFilter->EventProvider().GetEventQueue())
 {
@@ -41,7 +43,8 @@ CfpluginAudioProcessorEditor::~CfpluginAudioProcessorEditor()
 void
 CfpluginAudioProcessorEditor::BuildUI()
 {
-	BuildWidgets();
+	InitializeWidgets();
+	LayoutWidgets();
 
 	addAndMakeVisible(visualizer_.get());
 	visualizer_->setBounds(optionsWidth + 2 * padding, 0, visualizationWidth, visualizationHeight);
@@ -49,11 +52,25 @@ CfpluginAudioProcessorEditor::BuildUI()
 }
 
 void
-CfpluginAudioProcessorEditor::BuildWidgets()
+CfpluginAudioProcessorEditor::InitializeWidgets()
 {
-	int yPos = 0;
-	BuildOneWidgetSet(yPos, statusWidgetHeight, statusWidgets, ownerFilter->StatusReader());
-	BuildOneWidgetSet(yPos, optionWidgetHeight, optionWidgets, ownerFilter->OptionsReader());
+	expandButton.addListener(this);
+	addAndMakeVisible(&expandButton);
+
+	InitializeOneWidgetSet(statusWidgets, ownerFilter->StatusReader());
+	InitializeOneWidgetSet(optionWidgets, ownerFilter->OptionsReader());
+}
+
+void
+CfpluginAudioProcessorEditor::LayoutWidgets()
+{
+	int bottomY = expanded ?
+		LayoutAutomaticWidgets<cf::Status::Advanced>() :
+		LayoutAutomaticWidgets<cf::Status::Basic>();
+
+	expandButton.setButtonText(expanded ?
+		"Show less options" : "Show more options");
+	expandButton.setBounds(padding, bottomY, optionsWidth, 20);
 }
 
 //==============================================================================
@@ -94,6 +111,15 @@ CfpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster * /*sourc
 		auto options = ownerFilter->OptionsWriter();
 		WidgetUpdater<FollowerOptionWidgets> updater(optionWidgets);
 		boost::fusion::for_each(options->map(), updater);
+	}
+}
+
+void
+CfpluginAudioProcessorEditor::buttonClicked(Button *button)
+{
+	if (button == &expandButton) {
+		expanded = !expanded;
+		LayoutWidgets();
 	}
 }
 

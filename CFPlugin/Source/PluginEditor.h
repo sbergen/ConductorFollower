@@ -37,6 +37,7 @@ using namespace cf::ScoreFollower;
 class CfpluginAudioProcessorEditor
 	: public AudioProcessorEditor
 	, public ChangeListener
+	, public Button::Listener
 {
 public:
     CfpluginAudioProcessorEditor (CfpluginAudioProcessor* ownerFilter);
@@ -48,12 +49,55 @@ public:
 
 public:
 	void changeListenerCallback(ChangeBroadcaster *source);
+	void buttonClicked(Button *button);
 
 	CfpluginAudioProcessor* ownerFilter;
 
 private: // UI functions
 	void BuildUI();
-	void BuildWidgets();
+	void InitializeWidgets();
+	void LayoutWidgets();
+
+	template<typename TWidgets, typename TSource>
+	void InitializeOneWidgetSet(TWidgets & widgets, TSource source)
+	{
+		WidgetInitializer<TWidgets> initializer(widgets);
+		boost::fusion::for_each(source->map(), initializer);
+	}
+
+	template<cf::Status::Level Level, typename TWidgets>
+	void LayoutOneWidgetSet(int & yPos, int height, TWidgets & widgets)
+	{
+		std::vector<Component *> components;
+		
+		auto allCollector = make_widget_collector<cf::Status::Advanced>(components);
+		boost::fusion::for_each(widgets, allCollector);
+		std::for_each(components.begin(), components.end(),
+			[this](Component * c)
+			{
+				removeChildComponent(c);
+			});
+
+		components.clear();
+		auto showCollector = make_widget_collector<Level>(components);
+		boost::fusion::for_each(widgets, showCollector);
+		std::for_each(components.begin(), components.end(),
+			[&](Component * c)
+			{
+				addAndMakeVisible(c);
+				c->setBounds(padding, yPos, optionsWidth, height);
+				yPos += height + padding;
+			});
+	}
+
+	template<cf::Status::Level Level>
+	int LayoutAutomaticWidgets()
+	{
+		int yPos = 0;
+		LayoutOneWidgetSet<Level>(yPos, statusWidgetHeight, statusWidgets);
+		LayoutOneWidgetSet<Level>(yPos, optionWidgetHeight, optionWidgets);
+		return yPos;
+	}
 
 private: // UI constants
 
@@ -79,6 +123,9 @@ private: // UI Data
 	typedef Options::FollowerOptions::transformed<StatusWidget>::type FollowerOptionWidgets;
 	FollowerOptionWidgets optionWidgets;
 
+	TextButton expandButton;
+	bool expanded;
+
 	cf::Visualizer::Visualizer::Ptr visualizer_;
 
 private: // Event stuff
@@ -87,25 +134,6 @@ private: // Event stuff
 
 	cf::Visualizer::DataBufferPtr visualizationData_;
 	boost::shared_ptr<cf::MotionTracker::EventQueue> eventQueue_;
-
-
-private: // Template functions (just for keeping the stuff above cleaner)
-	template<typename TWidgets, typename TSource>
-	void BuildOneWidgetSet(int & yPos, int height, TWidgets & widgets, TSource source)
-	{
-		WidgetInitializer<TWidgets> initializer(widgets);
-		boost::fusion::for_each(source->map(), initializer);
-
-		std::vector<Component *> components;
-		WidgetCollector<std::vector<Component *> > collector(components);
-		boost::fusion::for_each(widgets, collector);
-
-		for(auto it = components.begin(); it != components.end(); ++it) {
-			addAndMakeVisible(*it);
-			(*it)->setBounds(padding, yPos, optionsWidth, height);
-			yPos += height + padding;
-		}
-	}
 };
 
 

@@ -36,7 +36,7 @@ private:
 	mutable MapType & map_;
 };
 
-template<typename TContainer>
+template<typename TContainer, cf::Status::Level Level>
 class WidgetCollector : public boost::noncopyable
 {
 public:
@@ -46,9 +46,17 @@ public:
 	template<typename PairType>
 	void operator()(PairType & pair) const
 	{
+		if (pair.second.level() > Level) { return; }
 		container_.push_back(static_cast<Component *>(&pair.second));
 	}
 
 private:
 	mutable TContainer & container_;
 };
+
+template<cf::Status::Level Level, typename TContainer>
+WidgetCollector<TContainer, Level>
+make_widget_collector(TContainer & container)
+{
+	return WidgetCollector<TContainer, Level>(container);
+}
