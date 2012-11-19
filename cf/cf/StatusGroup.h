@@ -6,7 +6,7 @@
 #include "cf/FusionMap.h"
 #include "cf/StatusItem.h"
 
-// Couldn't figure out how to do this with C++11 stuff,
+// Couldn't figure out how to do this with "proper" C++11 stuff,
 // at least not in VS2010 :(
 #define VAL_AT(TMap, TOption) boost::fusion::at_key<TOption>(*((TMap *)nullptr))
 #define CONST_VAL_AT(TMap, TOption) (VAL_AT(TMap const, TOption))
@@ -15,7 +15,7 @@
 Use this like:
 CF_STATUS_GROUP(TestStatGroup,
 	((Stat1, "This is the stat number 1", int))
-	(Stat2, "This is the stat number 2", float)
+	((Stat2, "This is the stat number 2", float))
 )
 */
 
