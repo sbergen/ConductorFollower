@@ -44,7 +44,7 @@ CfpluginAudioProcessorEditor::BuildUI()
 	BuildWidgets();
 
 	addAndMakeVisible(visualizer_.get());
-	visualizer_->setBounds(optionsWidth, 0, totalWidth, visualizationHeight);
+	visualizer_->setBounds(optionsWidth + 2 * padding, 0, visualizationWidth, visualizationHeight);
 	visualizer_->SetSize(visualizationWidth, visualizationHeight);
 }
 

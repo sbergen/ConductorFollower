@@ -59,14 +59,16 @@ private: // UI constants
 
 	// Making dynamic UIs with Juce is retarded,
 	// so we just do this...
-	static int const optionsWidth = 300;
+	static int const padding = 6;
+
+	static int const optionsWidth = 330;
 	static int const optionWidgetHeight = 40;
 	static int const statusWidgetHeight = 30;
 
-	static int const visualizationWidth = 700;
-	static int const visualizationHeight = 700;
+	static int const visualizationWidth = 640;
+	static int const visualizationHeight = 480;
 
-	static int const totalWidth = optionsWidth + visualizationWidth;
+	static int const totalWidth = optionsWidth + visualizationWidth + 2 * padding;
 	static int const totalHeight = visualizationHeight;
 
 private: // UI Data
@@ -100,8 +102,8 @@ private: // Template functions (just for keeping the stuff above cleaner)
 
 		for(auto it = components.begin(); it != components.end(); ++it) {
 			addAndMakeVisible(*it);
-			(*it)->setBounds(0, yPos, optionsWidth, height);
-			yPos += height;
+			(*it)->setBounds(padding, yPos, optionsWidth, height);
+			yPos += height + padding;
 		}
 	}
 };
