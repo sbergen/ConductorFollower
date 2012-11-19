@@ -19,13 +19,12 @@ CF_STRING_ENUM(FollowerState,
 
 namespace Status {
 
-typedef BooleanStatusItem<cf::Status::Information, false> BooleanTypeFalse;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 1, 0, 2> SpeedType;
-typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, FollowerState, FollowerState::Stopped> StateType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, cf::Status::Advanced, 1, 0, 2> SpeedType;
+typedef EnumStatusItem<cf::Status::Information, cf::Status::Text, cf::Status::Basic, FollowerState, FollowerState::Stopped> StateType;
 
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityPeakType;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 3> VelocityRangeType;
-typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, 0, 0, 200> JerkPeakType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, cf::Status::Advanced, 0, 0, 3> VelocityPeakType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, cf::Status::Advanced, 0, 0, 3> VelocityRangeType;
+typedef FloatStatusItem<cf::Status::Information, cf::Status::Bar, cf::Status::Advanced, 0, 0, 200> JerkPeakType;
 
 CF_STATUS_GROUP
 (

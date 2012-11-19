@@ -91,7 +91,7 @@ private: // Event stuff
 
 private: // Template functions (just for keeping the stuff above cleaner)
 	template<typename TWidgets, typename TSource>
-	void BuildOneWidgetSet(int & yPos, int height, TWidgets & widgets, TSource & source)
+	void BuildOneWidgetSet(int & yPos, int height, TWidgets & widgets, TSource source)
 	{
 		WidgetInitializer<TWidgets> initializer(widgets);
 		boost::fusion::for_each(source->map(), initializer);

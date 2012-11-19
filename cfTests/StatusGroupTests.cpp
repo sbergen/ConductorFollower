@@ -8,8 +8,8 @@
 
 using namespace cf;
 
-typedef LimitedStatusItem<Status::Setting, Status::Text, int, 42, 0, 100> IntStatus;
-typedef FloatStatusItem<Status::Setting, Status::Bar, 5, 0, 10> FloatStatus;
+typedef LimitedStatusItem<Status::Setting, Status::Text, cf::Status::Basic, int, 42, 0, 100> IntStatus;
+typedef FloatStatusItem<Status::Setting, Status::Bar, cf::Status::Basic, 5, 0, 10> FloatStatus;
 
 CF_STATUS_GROUP(TestStatGroup,
 	((Stat1, "This is the stat number 1", IntStatus))
