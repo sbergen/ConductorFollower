@@ -9,7 +9,7 @@ double map_attack(MappingContext const & context)
 {
 	// Expand the dynamic range by not taking into account the lowest values
 	double contextAttack = context.conductorContext.attack;
-	double const lowerLimit = 0.2 + 0.3 * context.conductorContext.velocity;
+	double const lowerLimit = 0.3;
 	contextAttack = (contextAttack - lowerLimit) / (1.0 - lowerLimit);
 
 	// Take velocity into account
@@ -22,7 +22,7 @@ double map_attack(MappingContext const & context)
 		stacatoPrevention = -0.2;
 	}
 
-	return math::clamp(contextAttack + stacatoPrevention, 0.0, 1.0);
+	return scale_to_expression_amount(contextAttack + stacatoPrevention, context);
 }
 
 } // namespace PatchMapper

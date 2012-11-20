@@ -12,12 +12,15 @@ struct ConductorContext
 		, weight(0.5)
 		, attack(0.5)
 		, velocity(0.5)
+		, expressionAmount(0.5)
 	{}
 
 	double tempo;
 	double weight;
 	double attack;
 	double velocity;
+
+	double expressionAmount;
 };
 
 } // namespace PatchMapper

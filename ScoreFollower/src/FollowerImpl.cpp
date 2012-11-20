@@ -128,6 +128,7 @@ FollowerImpl::GetTrackEventsForBlock(unsigned track, BlockBuffer & events)
 	if (!lock.owns_lock()) { return; }
 	if (!state_.ShouldDeliverEvents()) { return; }
 
+	conductorContext_.expressionAmount = optionsReader_->at<Options::ExpressionAmount>() / 100.0;
 	scoreHelper_->GetTrackEventsForBlock(track, events);
 }
 
@@ -156,7 +157,8 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::VelocityDynamicRange:
 		if (state_.InPlayback()) { break; }
 		status_.at<Status::VelocityRange>() = e.data<double>();
-		conductorContext_.attack = e.data<double>() / Status::VelocityRangeType::max_value;
+		conductorContext_.attack =
+			e.data<double>() / Status::VelocityRangeType::max_value;
 		break;
 	case Event::JerkPeak:
 		if (state_.InPlayback()) { break; }
@@ -168,11 +170,6 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::Beat:
 		if (state_ == FollowerState::Rolling) {
 			timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
-			// TODO beat events
-			/*auto beatEvent = timeHelper_->RegisterBeat(e.timestamp(), e.data<double>());
-			statusEventProvider_.buffer_.enqueue(
-				StatusEvent(e.timestamp(), StatusEvent::Beat, beatEvent));
-				*/
 		}
 		break;
 	case Event::BeatProb:

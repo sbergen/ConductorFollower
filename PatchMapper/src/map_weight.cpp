@@ -5,7 +5,7 @@ namespace PatchMapper {
 
 double map_weight(MappingContext const & context)
 {
-	return context.conductorContext.weight;
+	return scale_to_expression_amount(context.conductorContext.weight, context);
 }
 
 } // namespace PatchMapper
