@@ -16,6 +16,7 @@
 namespace cf {
 
 typedef VectorND<3, boost::units::si::length> Point3D;
+typedef VectorND<2, boost::units::si::length> Point2D;
 
 typedef Point3D::quantity distance_t;
 typedef distance_t coord_t;
@@ -59,6 +60,12 @@ namespace geometry
 	get_raw<cf::coord::X>, get_raw<cf::coord::Y>, get_raw<cf::coord::Z>, \
 	set_raw<cf::coord::X>, set_raw<cf::coord::Y>, set_raw<cf::coord::Z>)
 
+#define REGISTER_VECTOR_AS_POINT_2D(type) \
+	BOOST_GEOMETRY_REGISTER_POINT_2D_GET_SET(type, type::raw_type, boost::geometry::cs::cartesian, \
+	get_raw<cf::coord::X>, get_raw<cf::coord::Y>, \
+	set_raw<cf::coord::X>, set_raw<cf::coord::Y>)
+
 REGISTER_VECTOR_AS_POINT(cf::Point3D);
+REGISTER_VECTOR_AS_POINT_2D(cf::Point2D);
 
 BOOST_GEOMETRY_REGISTER_LINESTRING_TEMPLATED(cf::IteratorLinestring)

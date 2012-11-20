@@ -112,6 +112,8 @@ private: // Filters and detectors
 
 	StdDev<20> velocityDev_;
 
+	EventBuffer<Point2D, timestamp_t> positionBuffer_;
+
 private: // Visualization stuff
 	Visualizer::DataPtr visualizationData_;
 	Visualizer::DataBufferPtr visualizationBuffer_;

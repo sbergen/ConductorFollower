@@ -146,26 +146,24 @@ FollowerImpl::ConsumeEvent(Event const & e)
 	case Event::MotionStateUpdate:
 		// Not used
 		break;
-	case Event::VelocityPeak:
+	case Event::MotionLength:
 		if (state_.InPlayback()) { break; }
-		status_.at<Status::VelocityPeak>() = e.data<double>();
+		status_.at<Status::MotionLength>() = e.data<double>();
 		conductorContext_.velocity = math::clamp(
-			e.data<double>() / Status::VelocityPeakType::max_value,
+			e.data<double>() / Status::MotionLengthType::max_value,
 			0.0, 1.0);
 		break;
 	case Event::VelocityDynamicRange:
 		if (state_.InPlayback()) { break; }
 		status_.at<Status::VelocityRange>() = e.data<double>();
-		conductorContext_.attack = math::clamp(
-			e.data<double>() / Status::VelocityRangeType::max_value,
-			0.3, 1.0);
+		conductorContext_.attack = e.data<double>() / Status::VelocityRangeType::max_value;
 		break;
 	case Event::JerkPeak:
 		if (state_.InPlayback()) { break; }
 		status_.at<Status::JerkPeak>() = e.data<double>();
 		conductorContext_.weight = math::clamp(
 			e.data<double>() / Status::JerkPeakType::max_value,
-			0.3, 1.0);
+			0.0, 1.0);
 		break;
 	case Event::Beat:
 		if (state_ == FollowerState::Rolling) {

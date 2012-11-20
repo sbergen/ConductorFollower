@@ -36,7 +36,7 @@ private:
 	void CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data,
 		Follower::BlockBuffer & events, InstrumentPatchSwitcher & patchSwitcher) const;
 
-	double NewVelocityAt(double oldVelocity, score_time_t const & time) const;
+	double NewVelocityAt(double originalVelocity, score_time_t const & time) const;
 
 private:
 	boost::shared_ptr<TimeHelper> timeHelper_;

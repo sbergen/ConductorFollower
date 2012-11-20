@@ -28,7 +28,7 @@ public:
 		Beat,
 		BeatProb,
 		StartGesture,
-		VelocityPeak,
+		MotionLength,
 		VelocityDynamicRange,
 		JerkPeak,
 		VisualizationData,

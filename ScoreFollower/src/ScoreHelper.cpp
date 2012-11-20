@@ -105,10 +105,11 @@ ScoreHelper::CopyEventToBuffer(score_time_t const & time, ScoreEventPtr data,
 }
 
 double
-ScoreHelper::NewVelocityAt(double oldVelocity, score_time_t const & time) const
+ScoreHelper::NewVelocityAt(double originalVelocity, score_time_t const & time) const
 {
-	// TODO use time and something fancier :)
-	auto velocity = 0.3 * conductorContext_.velocity + 0.7 * oldVelocity;
+	double factor = 0.7;
+	auto velocity = factor * conductorContext_.velocity +
+	                (1.0 - factor) * originalVelocity;
 	velocity = math::clamp(velocity, 0.05, 1.0);
 	return velocity;
 }

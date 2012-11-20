@@ -1,6 +1,7 @@
 #include "EventProviderImpl.h"
 
 #include <boost/make_shared.hpp>
+#include <boost/geometry/geometry.hpp>
 
 #include "cf/geometry.h"
 #include "cf/globals.h"
@@ -10,6 +11,8 @@
 
 namespace cf {
 namespace MotionTracker {
+
+namespace bg = boost::geometry;
 
 // factory function
 boost::shared_ptr<EventProvider>
@@ -44,6 +47,7 @@ EventProviderImpl::EventProviderImpl()
 	: musicalContextReader_(musicalContextBuffer_)
 	, beatDetector_(musicalContextReader_)
 	, startDetector_(musicalContextReader_)
+	, positionBuffer_(30)
 	, visualizationData_(boost::make_shared<Visualizer::Data>())
 	, visualizationBuffer_(boost::make_shared<Visualizer::DataBuffer>())
 {
@@ -216,6 +220,13 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState con
 	// Ugly and temporary
 	static Point3D prevPoint;
 
+	Point2D pos2D;
+	state.position.reduceDimension(pos2D);
+	positionBuffer_.RegisterEvent(timeNow, pos2D);
+	auto linestring = positionBuffer_.AllEvents().DataAs<IteratorLinestring>();
+	auto motionLength = bg::length(linestring);
+	QueueEvent(Event(timeNow, Event::MotionLength, 100 * motionLength));
+
 	Velocity3D::reduced<2>::type vel2D;
 	state.velocity.reduceDimension(vel2D);
 
@@ -225,8 +236,7 @@ EventProviderImpl::RunMotionFilters(timestamp_t const & timeNow, MotionState con
 
 	auto const velocityDev = velocityDev_.Run(geometry::abs(geometry::distance_vector(state.position, prevPoint)).value() * 100);
 
-	QueueEvent(Event(timeNow, Event::VelocityDynamicRange, velocityDev));
-	QueueEvent(Event(timeNow, Event::VelocityPeak, velocityPeak));
+	QueueEvent(Event(timeNow, Event::VelocityDynamicRange, 100 * velocityDev));
 
 	//Acceleration3D::reduced<2>::type acc2D;
 	//state.acceleration.reduceDimension(acc2D);
