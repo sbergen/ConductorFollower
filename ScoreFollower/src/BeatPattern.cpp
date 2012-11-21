@@ -73,8 +73,9 @@ BeatPattern::MatchResult::IsConfident(BeatClassification const & classification)
 
 /* Beat Pattern */
 
-BeatPattern::BeatPattern(Data::BeatPattern const & pattern)
-	: meter_(pattern.meter)
+BeatPattern::BeatPattern(Data::BeatPattern const & pattern, Follower::OptionsBuffer::Reader & optionsReader)
+	: optionsReader_(optionsReader)
+	, meter_(pattern.meter)
 {
 	for (int i = 0; i < pattern.beats.size(); ++i) {
 		scorers_.push_back(BeatScorer(pattern, i));

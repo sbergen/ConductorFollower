@@ -30,7 +30,7 @@ TempoFollower::TempoFollower(TimeWarper const & timeWarper, FollowerImpl & paren
 	, tempoMap_()
 	, startTempoEstimator_()
 	//, beatClassifier_(new ProgressFollowingBeatClassifier(tempoMap_))
-	, beatClassifier_(new PatternMatchingBeatClassifier(tempoMap_))
+	, beatClassifier_(new PatternMatchingBeatClassifier(tempoMap_, parent_.OptionsReader()))
 	, tempoFilter_(32, 2.5 * si::seconds)
 {
 	beatClassifier_->SetClassificationCallback(boost::bind(&TempoFollower::BeatClassified, this, _1));

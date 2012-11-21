@@ -6,6 +6,8 @@
 
 #include "cf/TimeSignature.h"
 
+#include "ScoreFollower/Follower.h"
+
 #include "BeatClassifier.h"
 #include "BeatClassification.h"
 #include "BeatPattern.h"
@@ -17,7 +19,7 @@ namespace ScoreFollower {
 class PatternMatchingBeatClassifier : public BeatClassifier, public boost::noncopyable
 {
 public:
-	PatternMatchingBeatClassifier(TempoMap const & tempoMap);
+	PatternMatchingBeatClassifier(TempoMap const & tempoMap, Follower::OptionsBuffer::Reader & optionsReader);
 
 public: // BeatClassifier implementation
 	void LearnPatterns(Data::PatternMap const & patternGroups);
@@ -54,6 +56,7 @@ private:
 
 private:
 	TempoMap const & tempoMap_;
+	Follower::OptionsBuffer::Reader & optionsReader_;
 
 	PatternMap patterns_;
 

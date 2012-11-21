@@ -10,8 +10,9 @@ namespace ScoreFollower {
 
 namespace bm = boost::math;
 
-PatternMatchingBeatClassifier::PatternMatchingBeatClassifier(TempoMap const & tempoMap)
+PatternMatchingBeatClassifier::PatternMatchingBeatClassifier(TempoMap const & tempoMap, Follower::OptionsBuffer::Reader & optionsReader)
 	: tempoMap_(tempoMap)
+	, optionsReader_(optionsReader)
 {
 
 }
@@ -25,7 +26,7 @@ PatternMatchingBeatClassifier::LearnPatterns(Data::PatternMap const & patternGro
 	for (auto gIt = patternGroups.begin(); gIt != patternGroups.end(); ++gIt) {
 		auto const & patterns = gIt->second;
 		for (auto pIt = patterns.begin(); pIt != patterns.end(); ++pIt) {
-			patterns_.insert(std::make_pair(pIt->meter, BeatPattern(*pIt)));
+			patterns_.insert(std::make_pair(pIt->meter, BeatPattern(*pIt, optionsReader_)));
 			totalPatterns++;
 		}
 	}

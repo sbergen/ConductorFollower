@@ -10,6 +10,8 @@
 #include "Data/BeatPattern.h"
 
 #include "ScoreFollower/types.h"
+#include "ScoreFollower/Follower.h"
+#include "ScoreFollower/FollowerOptions.h"
 
 #include "BeatScorer.h"
 
@@ -47,7 +49,7 @@ public:
 	};
 
 public:
-	BeatPattern(Data::BeatPattern const & pattern);
+	BeatPattern(Data::BeatPattern const & pattern, Follower::OptionsBuffer::Reader & optionsReader);
 	
 	MatchResult Match(beat_array const & beats, double scale) const;
 	double MatchQuality(beat_array const & beats, double scale) const { return Match(beats, scale).quality(); }
@@ -88,6 +90,7 @@ private:
 	}
 
 private:
+	Follower::OptionsBuffer::Reader & optionsReader_;
 	TimeSignature meter_;
 	scorer_array scorers_;
 };
