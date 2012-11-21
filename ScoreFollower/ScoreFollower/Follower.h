@@ -29,7 +29,7 @@ public:
 	typedef EventBuffer<ScoreEventPtr, samples_t> BlockBuffer;
 
 	typedef cf::ChenBuffer<Status::FollowerStatus, 1> StatusBuffer;
-	typedef cf::ChenBuffer<Options::FollowerOptions, 1> OptionsBuffer;
+	typedef cf::ChenBuffer<Options::FollowerOptions, 2> OptionsBuffer;
 
 public: // Not real time safe functions
 

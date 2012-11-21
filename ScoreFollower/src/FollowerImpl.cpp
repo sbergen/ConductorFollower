@@ -186,9 +186,10 @@ FollowerImpl::ConsumeEvent(Event const & e)
 void
 FollowerImpl::CheckForConfigChange()
 {
-	bool restart = optionsReader_->at<Options::Restart>().check();
-	bool listen = optionsReader_->at<Options::Listen>().check();
-	std::string scoreFile = optionsReader_->at<Options::ScoreDefinition>();
+	auto options = optionsBuffer_.GetReader();
+	bool restart = options->at<Options::Restart>().check();
+	bool listen = options->at<Options::Listen>().check();
+	std::string scoreFile = options->at<Options::ScoreDefinition>();
 
 	// If no action is required, return
 	if (!(listen || restart || (scoreFile != scoreFile_)) ||
