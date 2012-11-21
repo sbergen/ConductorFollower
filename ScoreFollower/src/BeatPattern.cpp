@@ -91,13 +91,10 @@ BeatPattern::Match(beat_array const & beats, double scale) const
 void
 BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 {
-	//std::cout << "-- Scoring: " << pos << std::endl;
-
 	auto initial = it;
 
 	while (true) {
 		if (it == parent.scorers_.end()) {
-			//std::cout << "!! Going to next bar" << std::endl;
 			it = parent.scorers_.begin();
 			barOffset += parent.meter_.BarDuration() * score::bar;
 		}
@@ -107,7 +104,6 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 		std::advance(next, 1);
 		auto nextOffsetPos = pos - barOffset;
 		if (next == parent.scorers_.end()) {
-			//std::cout << "! Next is in next bar" << std::endl;
 			nextOffsetPos -= parent.meter_.BarDuration() * score::bar;
 			next = parent.scorers_.begin();
 		}
@@ -115,16 +111,13 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 		auto curScore = it->ScoreForBeat(offsetPos);
 		auto nextScore = next->ScoreForBeat(nextOffsetPos);
 
-		//std::cout << "NextScore: " << nextScore << ", curScore: " << curScore << std::endl;
 		if (nextScore < curScore) {
 			if (it == initial && !first) {
 				// duplicate classification
 				score += it->PenaltyForUsed();
-				//std::cout << "used penalty" << std::endl;
 			}
 
 			// we found the best one
-			//std::cout << "beat score: " << curScore << std::endl << std::endl;
 			score += curScore;
 			break;
 		}
@@ -136,7 +129,6 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 		}
 
 		++it;
-		//std::cout << "going for next loop" << std::endl;
 	}
 
 	first = false;
