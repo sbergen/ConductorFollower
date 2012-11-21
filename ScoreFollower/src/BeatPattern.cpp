@@ -92,6 +92,8 @@ void
 BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 {
 	auto initial = it;
+	// penalty factor for missing or extra beats
+	auto anomalyFactor = parent.optionsReader_->at<Options::BeatAnomalyCoef>();
 
 	while (true) {
 		if (it == parent.scorers_.end()) {
@@ -114,7 +116,7 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 		if (nextScore < curScore) {
 			if (it == initial && !first) {
 				// duplicate classification
-				score += it->PenaltyForUsed();
+				score += anomalyFactor * it->PenaltyForUsed();
 			}
 
 			// we found the best one
@@ -124,7 +126,7 @@ BeatPattern::IterationHelper::Advance(beat_pos_t const & pos)
 
 		if (it != initial && !first) {
 			// We have skipped one
-			score += it->PenaltyForMissed();
+			score += anomalyFactor * it->PenaltyForMissed();
 			//std::cout << "skip penalty" << std::endl;
 		}
 

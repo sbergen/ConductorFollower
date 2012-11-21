@@ -10,6 +10,7 @@ typedef StringStatusItem<cf::Status::Setting, cf::Status::File, cf::Status::Basi
 typedef BangStatusItem<cf::Status::Setting, cf::Status::Basic> BasicBangType;
 typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, cf::Status::Advanced, 50, 0, 100> ExpressionAmountType;
 typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, cf::Status::Advanced, 15, 0, 100> CatchupFractionType;
+typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, cf::Status::Advanced, 1, 0, 3> BeatAnomalyCoefType;
 typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, cf::Status::Advanced, 900, 100, 3000> TimeFilterCoefType;
 typedef FloatStatusItem<cf::Status::Setting, cf::Status::Bar, cf::Status::Advanced, 50, 0, 100> TempoChangeFollowingType;
 
@@ -22,6 +23,7 @@ FollowerOptions,
 	((ExpressionAmount, "Expression sensitivity", ExpressionAmountType))
 	((CatchupFraction, "Cathup fraction (%)", CatchupFractionType))
 	((TempoFilterTime, "Tempo filter cutoff time (ms)", TimeFilterCoefType))
+	((BeatAnomalyCoef, "Beat anomaly penalty", BeatAnomalyCoefType))
 	((TempoChangeFollowing, "Tempo change following (%)", TempoChangeFollowingType))
 )
 
