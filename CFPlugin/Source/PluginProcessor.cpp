@@ -292,8 +292,15 @@ void CfpluginAudioProcessor::setStateInformation (const void* data, int sizeInBy
 	std::istringstream ss(str);
 	boost::archive::text_iarchive ia(ss);
 
-	auto writer = follower_->options().GetWriter();
-	ia >> *writer;
+	// If something goes wrong, fall back to defaults
+	Options::FollowerOptions options;
+	try {
+		ia >> options;
+		auto writer = follower_->options().GetWriter();
+		*writer = options;
+	} catch(std::exception &) {
+		//Do nothing, since the options weren't touched
+	}
 }
 
 //==============================================================================
