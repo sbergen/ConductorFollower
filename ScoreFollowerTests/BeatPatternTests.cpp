@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
+#include "ScoreFollower/Follower.h"
+
 #include "src/BeatPattern.h"
 #include "src/BeatClassification.h"
 
@@ -12,7 +14,8 @@ using namespace cf::ScoreFollower;
 
 BOOST_AUTO_TEST_CASE(TestOneBarOfCorrectPattern)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(0.0 * score::beats);
@@ -26,7 +29,8 @@ BOOST_AUTO_TEST_CASE(TestOneBarOfCorrectPattern)
 
 BOOST_AUTO_TEST_CASE(TestTwoCorrectBars)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(0.0 * score::beats);
@@ -44,7 +48,8 @@ BOOST_AUTO_TEST_CASE(TestTwoCorrectBars)
 
 BOOST_AUTO_TEST_CASE(TestStartAndEndIngoring)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(1.0 * score::beats);
@@ -56,7 +61,8 @@ BOOST_AUTO_TEST_CASE(TestStartAndEndIngoring)
 
 BOOST_AUTO_TEST_CASE(TestOneMissing)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	for (int i = 1; i < 3; ++i) {
 		BeatPattern::beat_array beats;
@@ -75,7 +81,8 @@ BOOST_AUTO_TEST_CASE(TestOneMissing)
 
 BOOST_AUTO_TEST_CASE(TestMissingLastInBar)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(0.0 * score::beats);
@@ -94,7 +101,8 @@ BOOST_AUTO_TEST_CASE(TestMissingLastInBar)
 
 BOOST_AUTO_TEST_CASE(TestMissingFirstInBar)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(0.0 * score::beats);
@@ -113,7 +121,8 @@ BOOST_AUTO_TEST_CASE(TestMissingFirstInBar)
 
 BOOST_AUTO_TEST_CASE(TestStretchFromZero)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(0.0 * score::beats);
@@ -130,7 +139,8 @@ BOOST_AUTO_TEST_CASE(TestStretchFromZero)
 
 BOOST_AUTO_TEST_CASE(TestStretchFromNonZero)
 {
-	auto pattern = BeatPattern(make_quarter_pattern());
+	Follower::OptionsBuffer options;
+	auto pattern = BeatPattern(make_quarter_pattern(), options.GetReader());
 
 	BeatPattern::beat_array beats;
 	beats.push_back(1.0 * score::beats);
