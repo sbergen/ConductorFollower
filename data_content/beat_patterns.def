@@ -1,0 +1,105 @@
+[
+	// 2/4
+	
+	beat_pattern {
+		meter: 2/4,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 1.0, },
+		]
+	},
+	
+	beat_pattern {
+		meter: 2/4,
+		beats: [
+			beat { time: 0.0 },
+		]
+	},
+	
+	// 3/4
+	
+	beat_pattern {
+		meter: 3/4,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 1.0, },
+			beat { time: 2.0, },
+		]
+	},
+	
+	beat_pattern {
+		meter: 3/4,
+		beats: [
+			beat { time: 0.0 },
+		]
+	},
+
+	// 4/4
+
+	beat_pattern {
+		meter: 4/4,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 1.0 },
+			beat { time: 2.0 },
+			beat { time: 3.0 },
+		]
+	},
+	
+	beat_pattern {
+		meter: 4/4,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 2.0, },
+		]
+	},
+	
+	beat_pattern {
+		meter: 4/4,
+		beats: [
+			beat { time: 0.0 },
+		]
+	},
+	
+	// 6/8
+	
+	beat_pattern {
+		meter: 6/8,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 0.5 },
+			beat { time: 1.0 },
+			beat { time: 1.5 },
+			beat { time: 2.0 },
+			beat { time: 2.5 },
+		]
+	},
+	
+	beat_pattern {
+		meter: 6/8,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 1.5 },
+		]
+	},
+	
+	beat_pattern {
+		meter: 6/8,
+		beats: [
+			beat { time: 0.0 },
+		]
+	},
+	
+	
+	// 12/8
+	
+	beat_pattern {
+		meter: 12/8,
+		beats: [
+			beat { time: 0.0 },
+			beat { time: 1.5 },
+			beat { time: 3.0 },
+			beat { time: 4.5 },
+		]
+	},
+]
