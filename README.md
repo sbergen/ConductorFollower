@@ -18,6 +18,7 @@ External dependencies:
 - OpenNI SDK (http://www.openni.org/)
 - Juce (http://www.rawmaterialsoftware.com/juce.php)
 
-All original code under GPL v3 for now, Copyright (C) Sakari Bergen 2012.
-Unofficial Boost libraries (sources included) are under the Boost license.
-JUCE ("amalgamated" sources included) is dual licensed. Non-commercial usage under the GPL.
+Licensing: 
+- All original code under GPL v3 for now, Copyright (C) Sakari Bergen 2012.
+- Unofficial Boost libraries (sources included) are under the Boost license.
+- JUCE ("amalgamated" sources included) is dual licensed. Non-commercial usage under the GPL.
