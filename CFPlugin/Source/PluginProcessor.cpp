@@ -17,7 +17,6 @@
 #include <boost/archive/text_oarchive.hpp>
 
 #include "cf/serialization.h"
-#include "cf/globals.h"
 #include "cf/RTContext.h"
 
 #include "PluginProcessor.h"
@@ -33,7 +32,11 @@ CfpluginAudioProcessor::CfpluginAudioProcessor()
 	: eventBuffer_(128)
 	, resetting_(false)
 {
-	follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
+	try {
+		follower_ = ScoreFollower::Create(boost::make_shared<MidiReader>());
+	} catch(std::exception) {
+		// Error should be shown anyway, do nothing...
+	}
 }
 
 CfpluginAudioProcessor::~CfpluginAudioProcessor()
@@ -137,6 +140,7 @@ void CfpluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 	samplerate_ = sampleRate;
 	samplesPerBlock_ = samplesPerBlock;
 
+	if (!follower_) { return; }
 	follower_->SetBlockParameters(static_cast<unsigned>(sampleRate), samplesPerBlock);
 }
 
@@ -151,13 +155,12 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 	RTContext rt; // Debug RT stuff in debug mode
 
 	auto timeAtStartOfBlock = time::now();
-	GlobalsRef globals;
 
 	{
 		// This will allocate IFF there is an error.
 		// Can't put the non-rt specifier within the while...
 		NonRTSection nonRt;
-		while (globals.ErrorBuffer()->dequeue(errorString_)) {
+		while (globals_.ErrorBuffer()->dequeue(errorString_)) {
 			juce::NativeMessageBox::showMessageBoxAsync(
 				juce::AlertWindow::WarningIcon,
 				juce::String("Error!"),
@@ -174,6 +177,7 @@ void CfpluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
 	/************************************************************************************/
 
+	if (!follower_) { return; }
 	unsigned trackCount = follower_->StartNewBlock();
 
 	if (trackCount == 0) {

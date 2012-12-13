@@ -8,8 +8,23 @@
 namespace cf {
 namespace MotionTracker {
 
-bool
+void
 OpenNIUtils::CheckStatus(XnStatus status, char const * taskDescription, char const * file, int line)
+{
+	if (!CheckStatusNothrow(status, taskDescription, file, line)) {
+		NonRTSection nonRT;
+
+		throw std::runtime_error(
+			(boost::format("'%1%' failed with status '%2%' (%3%:%4%)")
+			% taskDescription
+			% xnGetStatusString(status)
+			% file
+			% line).str());
+	}
+}
+
+bool
+OpenNIUtils::CheckStatusNothrow(XnStatus status, char const * taskDescription, char const * file, int line)
 {
 	if (status == XN_STATUS_OK) { return true; }
 

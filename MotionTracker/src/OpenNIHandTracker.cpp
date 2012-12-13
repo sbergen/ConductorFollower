@@ -93,7 +93,7 @@ bool
 OpenNIHandTracker::WaitForData()
 {
 	XnStatus s = context_.WaitAndUpdateAll();
-	if (!CheckXnStatus(utils_, s, "WaitAndUpdateAll")) { return false; }
+	if (!CheckXnStatusNothrow(utils_, s, "WaitAndUpdateAll")) { return false; }
 
 	NotifyVisualizationObservers();
 
@@ -107,8 +107,9 @@ OpenNIHandTracker::InitNodes()
 	CheckXnStatus(utils_, s, "Create gesture generator");
 
 	s = handsGenerator_.Create(context_);
-	handsGenerator_.SetSmoothing(static_cast<XnFloat>(0.3));
 	CheckXnStatus(utils_, s, "Create hands generator");
+	s = handsGenerator_.SetSmoothing(static_cast<XnFloat>(0.3));
+	CheckXnStatus(utils_, s, "Set hand tracking smoothing");
 
 	s = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depthGenerator_);
 	CheckXnStatus(utils_, s, "Get depth generator");
@@ -264,7 +265,7 @@ OpenNIHandTracker::ProcessNextHandRequest()
 		
 	request.isPending = true;
 	XnStatus s = gestureGenerator_.AddGesture(request.gestureName, 0);
-	return CheckXnStatus(utils_, s, "Start tracking gesture");
+	return CheckXnStatusNothrow(utils_, s, "Start tracking gesture");
 }
 
 void

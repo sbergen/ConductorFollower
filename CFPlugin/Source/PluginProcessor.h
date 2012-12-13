@@ -13,6 +13,8 @@
 
 #include <boost/atomic.hpp>
 
+#include "cf/globals.h"
+
 #include "ScoreFollower/Follower.h"
 #include "ScoreFollower/FollowerOptions.h"
 #include "ScoreFollower/FollowerStatus.h"
@@ -28,6 +30,9 @@
 */
 class CfpluginAudioProcessor  : public AudioProcessor
 {
+private: // construct first, destruct last...
+	cf::GlobalsRef globals_;
+
 public:
     //==============================================================================
     CfpluginAudioProcessor();

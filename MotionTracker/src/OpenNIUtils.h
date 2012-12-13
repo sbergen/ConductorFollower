@@ -13,13 +13,15 @@ namespace cf {
 namespace MotionTracker {
 
 #define CheckXnStatus(obj, status, desc) obj.CheckStatus(status, desc, __FILE__, __LINE__)
+#define CheckXnStatusNothrow(obj, status, desc) obj.CheckStatusNothrow(status, desc, __FILE__, __LINE__)
 
 class OpenNIUtils : public boost::noncopyable
 {
 public:
 	OpenNIUtils() {}
 
-	bool CheckStatus(XnStatus status, char const * taskDescription, char const * file, int line);
+	void CheckStatus(XnStatus status, char const * taskDescription, char const * file, int line);
+	bool CheckStatusNothrow(XnStatus status, char const * taskDescription, char const * file, int line);
 
 	void ResetErrors() { errorsOccurred_ = false; }
 	bool ErrorsOccurred() { return errorsOccurred_; }
