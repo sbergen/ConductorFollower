@@ -1,0 +1,470 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=false,raiselinks=false,breaklinks=true}
+\hypersetup{pdfborder={0 0 0}}
+\hypersetup{bookmarksnumbered=true}
+\hypersetup{bookmarksopen=true,bookmarksopenlevel=1}
+
+\usepackage{enumitem}
+\setlist[itemize]{topsep=0.5ex,itemsep=0ex,parsep=0.5ex}
+\setlist[enumerate]{topsep=0.5ex,itemsep=0ex,parsep=0.5ex}
+\setlist[description]{topsep=1.2ex,itemsep=0.3ex,parsep=0ex,style=multiline,leftmargin=24ex}
+
+\author{Sakari Bergen}
+\title{Conductor Follower Documentation}
+
+\newcommand{\CF}{Conductor Follower}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Overview}
+
+\textit{\CF{}} is a VST plugin that follows conducting gestures using a \textit{Kinect}%
+\footnote{Any OpenNI compatible device may be used,
+but if it runs at anything but 30 Hz,
+you will need to make some modifications to the system.},
+and processes MIDI events based on the gestural input.
+The system requires a score to be provided as a MIDI file,
+and additionally, a number of configuration files.
+
+\section{Setting up the Environment}
+
+In order to work, \CF{} requires:
+\begin{itemize}
+\item A sample-based synthesis engine
+\item A VST host
+\item A working OpenNI\footnote{\url{http://openni.org/}} installation
+\item Some MIDI scores
+\item Properly set up configuration files:
+\begin{itemize}
+\item A score definition for each MIDI score
+\item An instrument definition file for the synthesis environment
+\item A beat pattern definition file
+\end{itemize}
+\end{itemize}
+The synthesis engine, VST host and OpenNI are discussed in this section,
+while the MIDI scores and configuration files
+are discussed in the next.
+
+\subsection{The Synthesis Engine}
+
+During the development of \CF{},
+only the \textit{Vienna Symphonic Library} Suite (VSL)%
+\footnote{\url{http://www.vsl.co.at/}}
+was used.
+However, any sample-based VST-compatible synthesis engine
+that supports switching patches via keyswitch events should work.
+In order to make the system work properly,
+an instrument definition file must be provided.
+The available patches per instrument,
+and the respective keyswitches are defined in this file.
+Instrument definition files are discussed in detail in section
+\ref{sec:instrument_definition_files}.
+
+\subsection{The VST Host}
+
+As \CF{} is a plugin, it obviously needs a host to run.
+Unfortunately VSL does not support running MIDI-generating
+VST plugins directly, so with VSL,
+a separate VST host is required.
+Other synthesis engines might support hosting such plugins,
+and in such a case,
+it is recommended to host the plugin directly in the synthesis engine.
+In theory, any VST host should work with \CF{}.
+
+During development, the Juce%
+\footnote{\url{http://www.rawmaterialsoftware.com/juce.php}}
+audio plugin host was used.
+The source code for the audio plugin host
+can be found in the \texttt{extras/audio plugin host} directory
+of the Juce source package.
+Since the host can be self-built and run in a debugger,
+it makes debugging the plugin a lot easier.
+
+\subsection{OpenNI}
+
+In order to work,
+\CF{} requires a functioning install of OpenNI.
+If you happen to receive \CF{} in binary form,
+a compatible version of OpenNI should be provided with it.
+Otherwise, you will need to install OpenNI
+as part of fulfilling the build requirements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Running \CF{}}
+
+Running \CF{} requires some setting up,
+after which the graphical and gestural user interfaces
+are used to control the system.
+
+\subsection{Setting up the Plugin Host and Synthesis Engine}
+
+In order to get the system to work,
+you need to load the \CF{} plugin and your
+synthesis engine in the host.
+The plugin has an audio input and output,
+which were added only because some hosts
+did not support plugins with zero audio outputs and inputs.
+However, these ports do not do anything and may be left unconnected.
+The only port which needs to be connected,
+is the is the MIDI output port,
+which should be connected to the synthesis engine.
+
+\subsection{The Graphical User Interface}
+
+The GUI of the plugin contains a set of adjustments and status indicators.
+The basic set initially visible contains the following items:
+\begin{description}
+\item[State] The current state: "Waiting for wave gesture", "Waiting for start gesture", "Rolling", or "Stopped". These should be self explanatory.
+\item[Score definition file] File selector for the score definition, as discussed in section \ref{sec:score_definition_files}.
+\item[Restart score] Pressing this button will cause the score to be rewound, and the system will wait for either the start or wave gesture,
+depending on its current state.
+\item[Listen to score] Plays back the score from the beginning. Press \textit{Restart score} to start conducting again (from the beginning).
+\item[Show more options] Shows the options described below.
+\end{description}
+
+When pressing the \textit{Show more options} button,
+a set of status indicators and options appear.
+The status indicators show relative values,
+the bar ranging from minimum value to maximum value.
+The status indicator are based on the tempo and movement
+features, as described in the thesis:
+\begin{description}
+\item[Speed] The current tempo relative to the transcribed tempo.
+\item[Motion length] The windowed trajectory length of the hand.
+\item[Velocity dynamic range] The windowed standard deviation of the absolute velocity.
+\item[Jerk peak] The filtered and windowed peak of jerk (derivative of acceleration).
+\end{description}
+The extra options presented are:
+\begin{description}
+\item[Expression sensitivity] The amount of expressive features applied to the score. At $0$ the expressive features of conducting have zero effect on the output, and the patch selection is solely based on the note lengths and velocities in the score. At $100$, the maximum amount of expression is applied.
+\item[Catchup fraction] The percentage of position difference to be corrected at each detected beat. Lower values react more slowly, but are more musical.
+\item[Tempo filter cutoff time] The time over which tempo is averaged over. Lower values will follow tempo changes faster, while they will also be more sensitive to misclassifications. Larger values are more stable, but will follow tempo changes slower, and might cause misclassifications during fast tempo changes.
+\item[Beat anomaly penalty] A relative value for how much penalty is given for extra or missing beats in beat pattern classification. A high value will follow clear conducting more reliably, but if the motion tracking component detects extra beats, or skips beats, large values will cause classification errors.
+\item[Tempo change following] The percentage of tempo changes to apply when a score contains a tempo change.
+\end{description}
+
+
+\subsection{The Gestural Interface}
+
+The gestural interface only follows one hand,
+usually the right hand.
+The most critical gestures to learn are
+the wave gesture,
+the start gesture,
+and the beat gestures.
+The rest of the gestural interface can be discovered via experimenting.
+
+The Wave gesture is required for the OpenNI hand tracking to find your hand.
+Simply wave to the motion tracker as if saying bye-bye,
+until you see a red trace following your hand in the visualization.
+The wave has to have a large enough amplitude and speed.
+
+The start gesture requires holding your hand steady for a while,
+and after that doing an downward and upward motion.
+That is steady -- down -- up.
+The initial tempo is taken from the length of this gesture.
+
+After the piece has started,
+the tempo is beat with the vertical movement of the hand,
+movement mostly horizontal movement,
+and very little vertical movement will not work as expected.
+
+\subsection{Problems Loading Presets or Running Multiple Instances}
+
+Due to thread safety issues in OpenNI,
+running multiple instances of \CF{} in the same process is not stable.
+This includes the case of loading a VST host preset including \CF{},
+if \CF{} is already loaded in the host.
+You can, however, run two different VST hosts,
+and \CF{} should work fine in both,
+due to the hosts being different processes.
+The workaround to the preset problem is to close
+\CF{} or the host each time a preset is loaded.
+Based on every crash observed so far,
+this is solely a OpenNI problem,
+and might be fixed just by using a later version of OpenNI.
+
+\subsection{Vienna Symphonic Library Recommendations}
+
+In order to save time when loading samples,
+it is recommended to start
+one or more instances of \textit{Vienna Ensemble Server}.
+Once the samples are loaded in the server instance,
+loading them in the VSL plugin is a multitude faster.
+
+\subsection{A Note on MIDI Files}
+
+The quality of the MIDI files used as scores carries
+a huge importance on the functional quality of the system.
+In addition to overall quality,
+it is especially important to note the following points:
+\begin{itemize}
+\item The score must be in proper tempo and meter.
+That is, notes must be properly aligned along bars and beats.
+Many MIDI files lack proper tempo and time signature information.
+\item There must be one MIDI channel per instrument.
+One common problem is putting all the strings on one "string ensemble" track.
+\item Tempo changes can be problematic.
+If the conductor does not follow the tempo changes exactly,
+the changes may cause issues.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Configuration Files}
+
+The configuration files all use a JSON-like format.
+The format looks like this:
+\begin{verbatim}
+object_name {
+  // This is a one line comment
+  property_name: "string value",
+  another_property: 0.85,
+  a_list_property: [
+  	list_element {
+  	  property: 1
+  	},
+  	/* This is a
+  	   multi-line
+  	   comment
+  	*/
+  	list_element {
+  	  property: 2
+  	}
+  ]
+}
+\end{verbatim}
+The format should be pretty self explanatory.
+Whitespace does not carry meaning,
+and most delimiting commas are optional.
+
+Score positions values are in the format \texttt{<bar>|<beat>},
+e.g. \texttt{5|1.5}.
+
+\subsection{The Score Definition File}
+\label{sec:score_definition_files}
+
+The score definition file includes the following properties
+\begin{description}
+\item[\texttt{name}] A human readable name for the score.
+\item[\texttt{midi\_file}] The path of the related midi file.
+\item[\texttt{instrument\_file}] The path of the related instrument definition file.
+\item[\texttt{beat\_pattern\_file}] The path of the related beat pattern file.
+\item[\texttt{tracks}] A list of track to instrument mappings.
+\item[\texttt{events}] A list of score events.
+\end{description}
+
+The \texttt{tracks} list contains \texttt{track} objects, 
+which have the following properties:
+\begin{description}
+\item[\texttt{name}] A human readable name for the track.
+\item[\texttt{instrument}] The name of the instrument, which must match that in the instrument definition file.
+\end{description}
+
+The \texttt{events} list currently only supports
+\texttt{tempo\_sensitivity} objects,
+which have the following properties:
+\begin{description}
+\item[\texttt{position}] The position of the event (\texttt{<bar>|<beat>}).
+\item[\texttt{instrument}] The tempo sensitivity, $[0.0, 1.0]$.
+\end{description}
+
+\subsection{The Instrument Definition File}
+\label{sec:instrument_definition_files}
+
+The instrument definition file contains a
+top-level unnamed list of \texttt{instrument} objects.
+Each instrument contains the following properties:
+\begin{description}[leftmargin=32ex]
+\item[\texttt{name}] A human readable name for the instrument
+\item[\texttt{shortest\_note\_threshold}] The length in seconds, that equals a relative length of zero.
+\item[\texttt{longest\_note\_threshold}] The length in seconds, that equals a relative length of one.
+\item[\texttt{channels}] A list of MIDI channels (integers) this instrument is available on.
+\item[\texttt{patches}] A list of \texttt{patch} objects, describing the available patches.
+\end{description}
+
+Each \texttt{patch} object contains the following properties:
+\begin{description}
+\item[\texttt{name}] The name of the instrument (must be unique).
+\item[\texttt{keyswitch}] The key for switching to this patch.
+\item[\texttt{length}] The relative maximum length of notes, $[0.0, 1.0]$.
+\item[\texttt{attack}] The amount of attack in the patch, $[0.0, 1.0]$.
+\item[\texttt{weight}] The amount of weight in the patch, $[0.0, 1.0]$.
+\end{description}
+Keyswitches are in the format \texttt{<note><octave>},
+where note is the capital name of the note,
+e.g. \texttt{C\#}, only including neutral and sharp notes (no flats).
+The octave is the octave as an integer.
+Thus, valid examples of keyswitch values are
+\texttt{C1}, \texttt{C\#1} and \texttt{C12}.
+Invalid values include
+\texttt{1C}, \texttt{Db1} and \texttt{c12}.
+
+\subsection{The Beat Pattern Definition File}
+
+The beat pattern definition file contains a
+top-level unnamed list of \texttt{beat\_pattern} objects.
+Each beat pattern contains the following properties:
+\begin{description}
+\item[\texttt{meter}] The time signature this pattern is associated with.
+\item[\texttt{beats}] A list of beats.
+\end{description}
+The meter is in the format \texttt{<count>/<division>},
+where both values are integers.
+Valid values include e.g. \texttt{4/4} and \texttt{6/8}.
+The \texttt{beats} list contains \texttt{beat} objects,
+each including a single property \texttt{time},
+which indicates the time of the beat as a
+floating point value of beats into the bar.
+A period is used as the decimal point.
+Valid values for \texttt{time} are thus e.g.
+\texttt{1} and \texttt{1.5} .
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Compiling \CF{}}
+
+The source code is currently available at
+\url{http://github.com/sbergen/ConductorFollower}.
+In addition, you will need to install a number of libraries.
+Ready project files are available only for \textit{Visual Studio 2010},
+but the code should be trivially portable to other systems also.
+
+\newcommand{\utfta}{Unit tests for the above}
+The project is divided into the following sub-projects:
+\begin{description}[leftmargin=32ex]
+\item[cf] Common Utilities
+\item[cfTests] \utfta
+\item[CFPlugin] The VST Plugin
+\item[Data] Configuration file parsers
+\item[DataTests] \utfta
+\item[MotionTracker] The motion tracking component
+\item[MotionTrackerTests] \utfta
+\item[ScoreFollower] Score following component
+\item[ScoreFollowerTests] \utfta
+\item[PatchMapper] Patch mapping functionality
+\item[Visualizer] Visualizer component used in the GUI
+\end{description}
+
+\subsection{Requirements}
+
+The following libraries are required for building \CF{}:
+\begin{description}[leftmargin=12ex]
+\item[Boost:] \url{http://www.boost.org/}
+\\Version 1.51 has been tested.
+\item[OpenNI:] \url{http://openni.org/}
+\\Version 1.5.2.23 has been tested.
+\item[Juce:] \url{http://www.rawmaterialsoftware.com/juce.php}
+\\Version 2.0 has been tested.
+\end{description}
+
+\subsection{Building on Visual Studio}
+
+The git repository includes project files for VS2010.
+Currently only the 64-bit build targets are properly set up,
+but copying over the configuration to the 32-bit targets
+should be rather trivial.
+In order for the project files to work,
+the following environment variables need to be set:
+\begin{description}[leftmargin=32ex]
+\item[BOOST\_INCLUDE] The path to the boost headers.
+\item[BOOST\_LIB] The path to the boost binary libraries.
+\item[OPEN\_NI\_INCLUDE]  The path to the OpenNI headers.
+\item[OPEN\_NI\_LIB64] The path to the OpenNI 64-bit binary libraries.
+\end{description}
+
+The \textit{CFPlugin} project is the plugin,
+and it should automatically build all its dependencies.
+However, it is recommended to also build all the unit test projects,
+which will be automatically run after building.
+
+\subsection{Building on Other Compilers}
+
+No support for other compilers is currently present,
+but since the code was written bearing compatibility in mind,
+it should be trivial to port the project to any
+C++11 compatible compiler.
+The required libraries should support at least
+OS X and Linux in addition to Windows.
+It is recommended to use Visual Studio to
+look at the project structure if build scripts for other
+platforms are to be made,
+but the structure should be easy to figure
+out via trial and error even without using VS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adding Support for Different Interfaces}
+
+Some parts of the system were designed to be easily
+modifiable to work with alternative libraries.
+These include the plugin interface (currently VST),
+the score format (currently MIDI),
+and the motion tracking interface (currently OpenNI).
+All class names mentioned in this section
+omit the common namespace \textit{cf}.
+
+\subsection{The Plugin Interface}
+
+Juce already supports at least
+AudioUnit, RTAS, NPAPI, ActiveX and LADSPA.
+Porting the code to work with these formats should be easy.
+However, if something not supported by Juce is needed,
+the porting should be rather easy even then.
+
+The main functionality of the plugin is platform agnostic,
+and is used via the \texttt{ScoreFollower::\allowbreak Follower} interface.
+The actual usage requires only about 20 lines of code
+(currently in the function \texttt{CfpluginAudioProcessor::\allowbreak processBlock()}
+in the \textit{CFPlugin} project).
+
+The UI for the plugin operates on two classes:
+\texttt{Score\allowbreak Follower::\allowbreak Follower\allowbreak Options} and \texttt{ScoreFollower::\allowbreak FollowerStatus}.
+The current implementation uses some
+C++ template metaprogramming tricks provided by \textit{Boost.Fusion}
+to automatically generate the UI during compile time,
+but making a UI that manually uses these structures should be trivial --
+just take a look at how the structures are used in the \textit{ScoreFollower} project.
+
+\subsection{The Score Format}
+
+The Following interfaces are used by the \textit{ScoreFollower}
+to read the score and operate on the score events:
+\begin{itemize}
+\item \texttt{ScoreFollower::ScoreReader}
+\item \texttt{ScoreFollower::TrackReader}
+\item \texttt{ScoreFollower::ScoreEvent}
+\end{itemize}
+These should all be rather trivial to implement
+on any other score format,
+given a good library that supports operating on the data.
+
+\subsection{The Motion Tracking Interface}
+
+The motion tracking interface,
+which currently only tacks one hand,
+is defined in \texttt{MotionTracker::\allowbreak HandTracker}.
+The \textit{OpenNI} implementation is respectively in 
+\texttt{MotionTracker::\allowbreak OpenNI\allowbreak HandTracker},
+and may be used as an example implementation.
+
+The Kinect depth sensor runs at 30 Hz.
+If some other device with a differing frame rate were to be used,
+some parameters would need adjusting.
+Some of the frame rate dependent variables are in the class
+\texttt{MotionTracker::\allowbreak FrameRateDependent},
+but several variables got also left out.
+These variables should be tracked down and added to
+the aforementioned class,
+and some logic should be made for selecting
+the right set of variables.
+
+\end{document}
