@@ -280,6 +280,8 @@ AudioProcessorEditor* CfpluginAudioProcessor::createEditor()
 //==============================================================================
 void CfpluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
+	if (!follower_) { return; }
+
 	auto options = OptionsReader();
 
 	std::ostringstream ss;
@@ -292,6 +294,8 @@ void CfpluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 
 void CfpluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+	if (!follower_) { return; }
+
     std::string str(static_cast<const char *>(data), sizeInBytes);
 	std::istringstream ss(str);
 	boost::archive::text_iarchive ia(ss);
