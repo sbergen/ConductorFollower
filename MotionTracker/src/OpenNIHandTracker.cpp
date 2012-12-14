@@ -40,6 +40,7 @@ OpenNIHandTracker::Init()
 
 	XnStatus s = context_.Init();
 	CheckXnStatus(utils_, s, "Context init");
+	context_.SetGlobalMirror(true);
 
 	recorder_.PreNodeInit(context_);
 	InitNodes();
